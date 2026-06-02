@@ -1,0 +1,19 @@
+# build output
+/ai-guard
+/bin/
+*.exe
+
+# go
+*.test
+*.out
+
+# os / editor
+.DS_Store
+.idea/
+.vscode/
+
+# local working/agent docs (do not push)
+memory.md
+CLAUDE.md
+AGENT.md
+project.md
