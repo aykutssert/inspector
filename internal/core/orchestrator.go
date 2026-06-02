@@ -38,13 +38,17 @@ func (o *Orchestrator) Run(ctx ProjectContext) Report {
 		// error-level finding (non-zero exit), never a silent pass. A clean scan
 		// must mean the tools actually ran.
 		if !a.Available() {
+			fix := "install " + a.Name() + " to enable this scanner"
+			if ih, ok := a.(Installable); ok {
+				fix = ih.InstallHint()
+			}
 			report.Findings = append(report.Findings, Finding{
 				Analyzer: a.Name(),
 				RuleID:   "analyzer-unavailable",
 				Severity: SeverityError,
 				Level:    SeverityError.String(),
 				Message:  a.Name() + " is not installed",
-				Fix:      "install " + a.Name() + " to enable this scanner",
+				Fix:      fix,
 			})
 			continue
 		}

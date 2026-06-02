@@ -19,6 +19,12 @@ type Analyzer interface {
 	Scan(ctx ProjectContext) ([]Finding, error)
 }
 
+// Installable is optional: an analyzer implements it when the tool to install
+// differs from its Name (e.g. analyzer "git-log" needs the "git" binary).
+type Installable interface {
+	InstallHint() string
+}
+
 // add a language by implementing this; core stays untouched
 type LanguageAdapter interface {
 	Language() string

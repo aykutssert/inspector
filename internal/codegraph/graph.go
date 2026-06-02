@@ -32,8 +32,8 @@ type Graph struct {
 
 	defsBySymbol  map[string][]DefLoc
 	callsBySymbol map[string][]CallLoc
-	imports       map[string][]string                  // file -> resolved relative files it imports
-	importers     map[string][]string                  // file -> files that import it
+	imports       map[string][]string                   // file -> resolved relative files it imports
+	importers     map[string][]string                   // file -> files that import it
 	bindings      map[string]map[string]resolvedBinding // file -> local name -> binding
 	reachCache    map[string]map[string]bool
 }

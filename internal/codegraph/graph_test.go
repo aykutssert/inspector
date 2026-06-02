@@ -158,12 +158,14 @@ func TestAliasCallerResolution(t *testing.T) {
 	root, files := writeProject(t, map[string]string{
 		"a.js":       `export function handler() {}`,
 		"d.js":       `function handler() {}; module.exports = handler`,
+		"e.js":       `function handler() {}; module.exports = { handler }`,
 		"esAlias.js": `import { handler as h } from './a'; function go() { h() }`,
 		"cjsDef.js":  `const h = require('./d'); function go() { h() }`,
+		"cjsPair.js": `const { handler: h } = require('./e'); function go() { h() }`,
 	})
 	g := Build(root, files)
 
-	want := map[string]string{"esAlias.js": "a.js", "cjsDef.js": "d.js"}
+	want := map[string]string{"esAlias.js": "a.js", "cjsDef.js": "d.js", "cjsPair.js": "e.js"}
 	got := map[string]bool{}
 	for _, d := range g.GetContext("handler").Definitions {
 		for _, c := range d.Callers {

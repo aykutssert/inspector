@@ -35,6 +35,8 @@ var _ core.Analyzer = (*Analyzer)(nil)
 
 func (a *Analyzer) Name() string { return "osv" }
 
+func (a *Analyzer) InstallHint() string { return "install osv-scanner" }
+
 func (a *Analyzer) Available() bool {
 	_, err := exec.LookPath("osv-scanner")
 	return err == nil

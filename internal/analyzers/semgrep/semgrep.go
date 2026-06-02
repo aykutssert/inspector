@@ -22,6 +22,8 @@ var _ core.Analyzer = (*Analyzer)(nil)
 
 func (a *Analyzer) Name() string { return "semgrep" }
 
+func (a *Analyzer) InstallHint() string { return "install semgrep (pip install semgrep)" }
+
 func (a *Analyzer) Available() bool {
 	_, err := exec.LookPath("semgrep")
 	return err == nil

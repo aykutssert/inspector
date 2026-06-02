@@ -74,7 +74,12 @@ func changedFiles(root string) ([]string, error) {
 		if len(line) < 4 {
 			continue
 		}
-		// porcelain: "XY path" or "XY old -> new" (rename)
+		// porcelain status is "XY path": X=staged, Y=worktree. Skip deletions —
+		// the path no longer exists, so handing it to a scanner would error.
+		if line[0] == 'D' || line[1] == 'D' {
+			continue
+		}
+		// "XY path" or "XY old -> new" (rename); keep the new path.
 		path := strings.TrimSpace(line[3:])
 		if idx := strings.Index(path, " -> "); idx >= 0 {
 			path = path[idx+4:]

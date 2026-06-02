@@ -17,6 +17,8 @@ var _ core.Analyzer = (*Analyzer)(nil)
 
 func (a *Analyzer) Name() string { return "git-log" }
 
+func (a *Analyzer) InstallHint() string { return "install git" }
+
 func (a *Analyzer) Available() bool {
 	if _, err := exec.LookPath("git"); err != nil {
 		return false

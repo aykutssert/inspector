@@ -120,6 +120,9 @@ const bindingsQuery = `
 (variable_declarator
   name: (object_pattern (shorthand_property_identifier_pattern) @rprop)
   value: (call_expression function: (identifier) @rfn arguments: (arguments (string) @rsrc)))
+(variable_declarator
+  name: (object_pattern (pair_pattern key: (property_identifier) @rpairkey value: (identifier) @rpairval))
+  value: (call_expression function: (identifier) @rfn arguments: (arguments (string) @rsrc)))
 `
 
 func ParseJS(path string) (*FileParse, error) {
@@ -424,6 +427,10 @@ func collectBindings(fp *FileParse, root *sitter.Node, lang *sitter.Language, sr
 			// `const { a } = require(...)` -> destructured named export.
 			name := p.Content(src)
 			fp.Bindings = append(fp.Bindings, Binding{Local: name, Source: source, Imported: name})
+		}
+		if k, v := caps["rpairkey"], caps["rpairval"]; k != nil && v != nil {
+			// `const { orig: local } = require(...)` -> renamed named export.
+			fp.Bindings = append(fp.Bindings, Binding{Local: v.Content(src), Source: source, Imported: k.Content(src)})
 		}
 	})
 }

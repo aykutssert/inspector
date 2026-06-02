@@ -42,6 +42,7 @@ imports it needs to change code without breaking the rest of the project.
 - The context graph is built in-process from a tree-sitter parse.
 - Add an analyzer or a language without touching the core (plugin design).
 
-External tools are optional and auto-skipped if missing.
+A missing external tool is reported as an error, not skipped: a clean scan
+means the scanners actually ran.
 
 First language: **JS/TS**. More to come.
