@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
@@ -9,6 +10,7 @@ import (
 	"github.com/aykutssert/inspector/internal/analyzers/gitlog"
 	"github.com/aykutssert/inspector/internal/analyzers/osv"
 	"github.com/aykutssert/inspector/internal/analyzers/semgrep"
+	"github.com/aykutssert/inspector/internal/codegraph"
 	"github.com/aykutssert/inspector/internal/core"
 	"github.com/aykutssert/inspector/internal/lang"
 	"github.com/aykutssert/inspector/internal/lang/javascript"
@@ -24,6 +26,8 @@ func main() {
 	switch os.Args[1] {
 	case "scan":
 		runScan(os.Args[2:])
+	case "context":
+		runContext(os.Args[2:])
 	default:
 		usage()
 		os.Exit(2)
@@ -32,7 +36,9 @@ func main() {
 
 func usage() {
 	fmt.Fprintln(os.Stderr, "ai-guard — deterministic code security/quality scanner")
-	fmt.Fprintln(os.Stderr, "usage: ai-guard scan [--diff] [--json] [path]")
+	fmt.Fprintln(os.Stderr, "usage:")
+	fmt.Fprintln(os.Stderr, "  ai-guard scan [--diff] [--json] [path]")
+	fmt.Fprintln(os.Stderr, "  ai-guard context [--root dir] <file | file:symbol | symbol>")
 }
 
 func runScan(args []string) {
@@ -93,5 +99,39 @@ func runScan(args []string) {
 		if f.Severity == core.SeverityError {
 			os.Exit(1)
 		}
+	}
+}
+
+func runContext(args []string) {
+	fs := flag.NewFlagSet("context", flag.ExitOnError)
+	rootFlag := fs.String("root", ".", "project root to index")
+	_ = fs.Parse(args)
+	if fs.NArg() == 0 {
+		fmt.Fprintln(os.Stderr, "error: missing target (file, file:symbol, or symbol)")
+		os.Exit(2)
+	}
+	target := fs.Arg(0)
+
+	absRoot, err := filepath.Abs(*rootFlag)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "error:", err)
+		os.Exit(1)
+	}
+
+	adapters := []core.LanguageAdapter{javascript.New("")}
+	files, err := scan.Discover(absRoot, false, adapters)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "error discovering files:", err)
+		os.Exit(1)
+	}
+
+	g := codegraph.Build(absRoot, files)
+	ctx := g.GetContext(target)
+
+	enc := json.NewEncoder(os.Stdout)
+	enc.SetIndent("", "  ")
+	if err := enc.Encode(ctx); err != nil {
+		fmt.Fprintln(os.Stderr, "error:", err)
+		os.Exit(1)
 	}
 }
