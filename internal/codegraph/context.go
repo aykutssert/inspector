@@ -8,19 +8,22 @@ import (
 
 type DefDetail struct {
 	DefLoc
-	Callees []string `json:"callees,omitempty"`
-	Source  string   `json:"source,omitempty"`
+	Callees []string  `json:"callees,omitempty"`
+	Callers []CallLoc `json:"callers,omitempty"`
+	Source  string    `json:"source,omitempty"`
 }
 
 type Context struct {
 	Target      string      `json:"target"`
 	Kind        string      `json:"kind"`
 	Definitions []DefDetail `json:"definitions,omitempty"`
-	Callers     []CallLoc   `json:"callers,omitempty"`
 	Defs        []DefLoc    `json:"defs,omitempty"`
 	Imports     []string    `json:"imports,omitempty"`
 	ImportedBy  []string    `json:"imported_by,omitempty"`
+	Diagnostics []string    `json:"diagnostics,omitempty"`
 }
+
+const maxDiagnostics = 20
 
 const maxSourceLines = 60
 
@@ -30,13 +33,20 @@ const maxSourceLines = 60
 //	"path/to/file.js:symbol"   -> symbol context scoped to that file
 //	"symbol"                   -> symbol context across the whole project
 func (g *Graph) GetContext(target string) Context {
+	var c Context
 	if file, sym, ok := g.splitFileSymbol(target); ok {
-		return g.symbolContext(target, sym, file)
+		c = g.symbolContext(target, sym, file)
+	} else if g.Files[target] != nil {
+		c = g.fileContext(target)
+	} else {
+		c = g.symbolContext(target, target, "")
 	}
-	if _, ok := g.Files[target]; ok {
-		return g.fileContext(target)
+	diags := g.Diagnostics
+	if len(diags) > maxDiagnostics {
+		diags = diags[:maxDiagnostics]
 	}
-	return g.symbolContext(target, target, "")
+	c.Diagnostics = diags
+	return c
 }
 
 func (g *Graph) splitFileSymbol(target string) (file, sym string, ok bool) {
@@ -60,28 +70,34 @@ func (g *Graph) symbolContext(target, sym, scopeFile string) Context {
 		c.Definitions = append(c.Definitions, DefDetail{
 			DefLoc:  d,
 			Callees: g.calleesIn(d),
+			Callers: g.callersOf(sym, d),
 			Source:  g.readSource(d.File, d.Line, d.EndLine),
 		})
 		c.Imports = appendAll(c.Imports, g.Imports(d.File))
 		c.ImportedBy = appendAll(c.ImportedBy, g.Importers(d.File))
 	}
-	for _, call := range g.Calls(sym) {
-		if scopeFile != "" {
-			// keep only call sites outside the definition itself
-			skip := false
-			for _, d := range c.Definitions {
-				if call.File == d.File && call.Line >= d.Line && call.Line <= d.EndLine {
-					skip = true
-					break
-				}
-			}
-			if skip {
-				continue
-			}
-		}
-		c.Callers = append(c.Callers, call)
-	}
 	return c
+}
+
+// callersOf attributes call sites of sym to a specific definition d using the
+// import graph: a call in d's own file counts (excluding d's own body), and a
+// call elsewhere counts only if that file can transitively reach d's file.
+// This disambiguates same-named symbols defined in unrelated files.
+func (g *Graph) callersOf(sym string, d DefLoc) []CallLoc {
+	var callers []CallLoc
+	for _, call := range g.Calls(sym) {
+		if call.File == d.File {
+			if call.Line >= d.Line && call.Line <= d.EndLine {
+				continue // inside the definition itself
+			}
+			callers = append(callers, call)
+			continue
+		}
+		if g.reachableFiles(call.File)[d.File] {
+			callers = append(callers, call)
+		}
+	}
+	return callers
 }
 
 func (g *Graph) fileContext(file string) Context {

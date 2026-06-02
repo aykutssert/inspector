@@ -37,7 +37,7 @@ func main() {
 func usage() {
 	fmt.Fprintln(os.Stderr, "ai-guard — deterministic code security/quality scanner")
 	fmt.Fprintln(os.Stderr, "usage:")
-	fmt.Fprintln(os.Stderr, "  ai-guard scan [--diff] [--json] [path]")
+	fmt.Fprintln(os.Stderr, "  ai-guard scan [--diff] [--json] [--fail-closed] [path]")
 	fmt.Fprintln(os.Stderr, "  ai-guard context [--root dir] <file | file:symbol | symbol>")
 }
 
@@ -46,6 +46,7 @@ func runScan(args []string) {
 	diff := fs.Bool("diff", false, "scan only locally changed files")
 	asJSON := fs.Bool("json", false, "emit JSON report (for agent harnesses)")
 	rulesDir := fs.String("rules", "rules", "directory holding YAML rule packs")
+	failClosed := fs.Bool("fail-closed", false, "treat a missing tool or analyzer error as an error (non-zero exit)")
 	_ = fs.Parse(args)
 
 	root := "."
@@ -70,10 +71,11 @@ func runScan(args []string) {
 	}
 
 	ctx := core.ProjectContext{
-		Root:      absRoot,
-		DiffOnly:  *diff,
-		Files:     files,
-		Languages: registry.Detect(files),
+		Root:       absRoot,
+		DiffOnly:   *diff,
+		Files:      files,
+		Languages:  registry.Detect(files),
+		FailClosed: *failClosed,
 	}
 
 	// Analyzers — add new analyzers here, orchestrator stays untouched.

@@ -2,11 +2,21 @@ package codegraph
 
 import (
 	"context"
+	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
+	"time"
 
 	sitter "github.com/smacker/go-tree-sitter"
 	"github.com/smacker/go-tree-sitter/javascript"
+	"github.com/smacker/go-tree-sitter/typescript/tsx"
+	"github.com/smacker/go-tree-sitter/typescript/typescript"
+)
+
+const (
+	maxFileBytes = 1 << 20 // 1 MiB; larger files are reported as diagnostics, not parsed
+	parseTimeout = 5 * time.Second
 )
 
 type Import struct {
@@ -24,14 +34,30 @@ type Def struct {
 
 type Call struct {
 	Name string `json:"name"`
+	Recv string `json:"recv,omitempty"` // receiver for method calls, e.g. "db" in db.query()
 	Line int    `json:"line"`
 }
 
 type FileParse struct {
-	Path    string   `json:"path"`
-	Imports []Import `json:"imports,omitempty"`
-	Defs    []Def    `json:"defs,omitempty"`
-	Calls   []Call   `json:"calls,omitempty"`
+	Path     string   `json:"path"`
+	Imports  []Import `json:"imports,omitempty"`
+	Defs     []Def    `json:"defs,omitempty"`
+	Calls    []Call   `json:"calls,omitempty"`
+	HasError bool     `json:"has_error,omitempty"`
+}
+
+// langForPath selects the tree-sitter grammar by file extension. The
+// JavaScript grammar cannot parse TypeScript type syntax, so .ts/.tsx route
+// to their own grammars.
+func langForPath(path string) *sitter.Language {
+	switch strings.ToLower(filepath.Ext(path)) {
+	case ".ts", ".mts", ".cts":
+		return typescript.GetLanguage()
+	case ".tsx":
+		return tsx.GetLanguage()
+	default:
+		return javascript.GetLanguage()
+	}
 }
 
 const defsQuery = `
@@ -50,7 +76,7 @@ const defsQuery = `
 
 const callsQuery = `
 (call_expression function: (identifier) @id)
-(call_expression function: (member_expression property: (property_identifier) @prop))
+(call_expression function: (member_expression) @member)
 `
 
 const importsQuery = `
@@ -65,28 +91,42 @@ func ParseJS(path string) (*FileParse, error) {
 	if err != nil {
 		return nil, err
 	}
-	lang := javascript.GetLanguage()
+	if len(src) > maxFileBytes {
+		return nil, fmt.Errorf("file too large: %d bytes (limit %d)", len(src), maxFileBytes)
+	}
+	lang := langForPath(path)
 	parser := sitter.NewParser()
+	defer parser.Close()
 	parser.SetLanguage(lang)
-	tree, err := parser.ParseCtx(context.Background(), nil, src)
+	ctx, cancel := context.WithTimeout(context.Background(), parseTimeout)
+	defer cancel()
+	tree, err := parser.ParseCtx(ctx, nil, src)
 	if err != nil {
 		return nil, err
 	}
+	defer tree.Close()
 	root := tree.RootNode()
 
-	fp := &FileParse{Path: path}
-	collectDefs(fp, root, lang, src)
-	collectCalls(fp, root, lang, src)
-	collectImports(fp, root, lang, src)
+	fp := &FileParse{Path: path, HasError: root.HasError()}
+	for _, collect := range []func(*FileParse, *sitter.Node, *sitter.Language, []byte) error{
+		collectDefs, collectCalls, collectImports,
+	} {
+		if err := collect(fp, root, lang, src); err != nil {
+			return nil, err
+		}
+	}
+	markExported(fp, root, lang, src)
 	return fp, nil
 }
 
-func runQuery(q string, root *sitter.Node, lang *sitter.Language, fn func(name string, node *sitter.Node)) {
+func runQuery(q string, root *sitter.Node, lang *sitter.Language, fn func(name string, node *sitter.Node)) error {
 	query, err := sitter.NewQuery([]byte(q), lang)
 	if err != nil {
-		return
+		return err
 	}
+	defer query.Close()
 	qc := sitter.NewQueryCursor()
+	defer qc.Close()
 	qc.Exec(query, root)
 	for {
 		m, ok := qc.NextMatch()
@@ -97,10 +137,37 @@ func runQuery(q string, root *sitter.Node, lang *sitter.Language, fn func(name s
 			fn(query.CaptureNameForId(c.Index), c.Node)
 		}
 	}
+	return nil
 }
 
-func collectDefs(fp *FileParse, root *sitter.Node, lang *sitter.Language, src []byte) {
-	runQuery(defsQuery, root, lang, func(name string, node *sitter.Node) {
+// runMatches is like runQuery but hands each match as a whole, so patterns with
+// correlated captures (e.g. left object + property of an assignment) can be
+// inspected together rather than one capture at a time.
+func runMatches(q string, root *sitter.Node, lang *sitter.Language, fn func(caps map[string]*sitter.Node)) error {
+	query, err := sitter.NewQuery([]byte(q), lang)
+	if err != nil {
+		return err
+	}
+	defer query.Close()
+	qc := sitter.NewQueryCursor()
+	defer qc.Close()
+	qc.Exec(query, root)
+	for {
+		m, ok := qc.NextMatch()
+		if !ok {
+			break
+		}
+		caps := map[string]*sitter.Node{}
+		for _, c := range m.Captures {
+			caps[query.CaptureNameForId(c.Index)] = c.Node
+		}
+		fn(caps)
+	}
+	return nil
+}
+
+func collectDefs(fp *FileParse, root *sitter.Node, lang *sitter.Language, src []byte) error {
+	return runQuery(defsQuery, root, lang, func(name string, node *sitter.Node) {
 		var d Def
 		d.Line = int(node.StartPoint().Row) + 1
 		d.EndLine = int(node.EndPoint().Row) + 1
@@ -131,26 +198,39 @@ func collectDefs(fp *FileParse, root *sitter.Node, lang *sitter.Language, src []
 	})
 }
 
-func collectCalls(fp *FileParse, root *sitter.Node, lang *sitter.Language, src []byte) {
+func collectCalls(fp *FileParse, root *sitter.Node, lang *sitter.Language, src []byte) error {
 	seen := map[string]bool{}
-	runQuery(callsQuery, root, lang, func(name string, node *sitter.Node) {
-		text := node.Content(src)
-		if text == "" || text == "require" {
+	return runQuery(callsQuery, root, lang, func(name string, node *sitter.Node) {
+		var c Call
+		c.Line = int(node.StartPoint().Row) + 1
+		switch name {
+		case "id":
+			c.Name = node.Content(src)
+		case "member":
+			prop := node.ChildByFieldName("property")
+			if prop == nil {
+				return
+			}
+			c.Name = prop.Content(src)
+			if obj := node.ChildByFieldName("object"); obj != nil {
+				c.Recv = obj.Content(src)
+			}
+		}
+		if c.Name == "" || c.Name == "require" {
 			return
 		}
-		line := int(node.StartPoint().Row) + 1
-		key := text + ":" + itoa(line)
+		key := c.Name + ":" + c.Recv + ":" + itoa(c.Line)
 		if seen[key] {
 			return
 		}
 		seen[key] = true
-		fp.Calls = append(fp.Calls, Call{Name: text, Line: line})
+		fp.Calls = append(fp.Calls, c)
 	})
 }
 
-func collectImports(fp *FileParse, root *sitter.Node, lang *sitter.Language, src []byte) {
+func collectImports(fp *FileParse, root *sitter.Node, lang *sitter.Language, src []byte) error {
 	var lastFn string
-	runQuery(importsQuery, root, lang, func(name string, node *sitter.Node) {
+	return runQuery(importsQuery, root, lang, func(name string, node *sitter.Node) {
 		switch name {
 		case "src":
 			fp.Imports = append(fp.Imports, Import{
@@ -169,6 +249,77 @@ func collectImports(fp *FileParse, root *sitter.Node, lang *sitter.Language, src
 			lastFn = ""
 		}
 	})
+}
+
+const exportAssignQuery = `
+(assignment_expression
+  left: (member_expression object: (identifier) @lobj property: (property_identifier) @lprop)
+  right: (identifier) @rhs)
+(assignment_expression
+  left: (member_expression object: (identifier) @lobj property: (property_identifier) @lprop)
+  right: (object) @robj)
+`
+
+const exportEsQuery = `
+(export_specifier name: (identifier) @name)
+(export_statement (identifier) @name)
+`
+
+// markExported flags defs reachable through CommonJS (module.exports / exports.x)
+// and ES (export {}, export default) so callers know the public surface. ES
+// inline forms (export function f) are already caught by hasExportAncestor.
+func markExported(fp *FileParse, root *sitter.Node, lang *sitter.Language, src []byte) {
+	exported := map[string]bool{}
+	_ = runMatches(exportAssignQuery, root, lang, func(caps map[string]*sitter.Node) {
+		lobj := nodeText(caps["lobj"], src)
+		lprop := nodeText(caps["lprop"], src)
+		moduleExports := lobj == "module" && lprop == "exports"
+		exportsDot := lobj == "exports"
+		if !moduleExports && !exportsDot {
+			return
+		}
+		if rhs := caps["rhs"]; rhs != nil {
+			exported[rhs.Content(src)] = true
+		}
+		if exportsDot {
+			exported[lprop] = true
+		}
+		if robj := caps["robj"]; robj != nil && moduleExports {
+			objectKeys(robj, src, exported)
+		}
+	})
+	_ = runQuery(exportEsQuery, root, lang, func(_ string, node *sitter.Node) {
+		exported[node.Content(src)] = true
+	})
+	if len(exported) == 0 {
+		return
+	}
+	for i := range fp.Defs {
+		if exported[fp.Defs[i].Name] {
+			fp.Defs[i].Exported = true
+		}
+	}
+}
+
+func objectKeys(obj *sitter.Node, src []byte, set map[string]bool) {
+	for i := 0; i < int(obj.NamedChildCount()); i++ {
+		ch := obj.NamedChild(i)
+		switch ch.Type() {
+		case "shorthand_property_identifier", "shorthand_property_identifier_pattern":
+			set[ch.Content(src)] = true
+		case "pair":
+			if k := ch.ChildByFieldName("key"); k != nil {
+				set[k.Content(src)] = true
+			}
+		}
+	}
+}
+
+func nodeText(node *sitter.Node, src []byte) string {
+	if node == nil {
+		return ""
+	}
+	return node.Content(src)
 }
 
 func fieldText(node *sitter.Node, field string, src []byte) string {

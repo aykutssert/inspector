@@ -43,7 +43,7 @@ type semgrepOut struct {
 }
 
 func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
-	args := []string{"--json", "--quiet", "--config", a.config}
+	args := []string{"--json", "--quiet", "--metrics=off", "--config", a.config}
 	if len(ctx.Files) > 0 {
 		args = append(args, ctx.Files...)
 	} else {

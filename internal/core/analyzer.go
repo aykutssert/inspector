@@ -5,6 +5,9 @@ type ProjectContext struct {
 	DiffOnly  bool
 	Files     []string
 	Languages []string
+	// FailClosed turns a missing tool or analyzer error into an error-level
+	// finding (non-zero exit) instead of a silent skip — for CI gating.
+	FailClosed bool
 }
 
 // add a new analyzer by implementing this; the orchestrator never changes

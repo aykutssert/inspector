@@ -1,12 +1,10 @@
-# ai-guard (Inspector)
+# ai-guard
 
-Deterministic, local code security/quality scanner for AI-generated code.
+A local, deterministic scanner for AI-generated code.
 
-We do **not** ship an LLM. The intelligence is the user's existing coding-agent
-subscription (Claude Code, Codex, OpenCode, ...). ai-guard produces small,
-relevant, deterministic findings; the agent's LLM reads them and fixes the code.
-
-See [project.md](project.md) for the full design, decisions, and roadmap.
+ai-guard does **not** ship an LLM. It produces small, precise findings; your
+coding agent (Claude Code, Codex, ...) reads them and fixes the code. Nothing
+leaves your machine except dependency lookups (CVE data).
 
 ## Build
 
@@ -17,29 +15,28 @@ go build -o ai-guard ./cmd/ai-guard
 ## Use
 
 ```bash
-./ai-guard scan              # full scan of current dir
-./ai-guard scan --diff       # only locally changed files (git)
-./ai-guard scan --json .     # JSON report (what an agent harness reads)
+./ai-guard scan              # scan current directory
+./ai-guard scan --diff       # only files changed in git
+./ai-guard scan --json .     # JSON report (for an agent to read)
+./ai-guard context <target>  # cross-file context for a symbol or file
 ```
 
-## Architecture
+`context` is the core feature: it gives an agent the definitions, callers, and
+imports it needs to change code without breaking the rest of the project.
+
+## How it works
 
 ```
-        [core: scan orchestrator]
-                    │
-     ┌──────┬───────┼────────┬──────────┐
-   semgrep  osv   tree-sitter git-log   <new>
-  (rules)  (CVE)   (AST)    (history)  (plugin)
+        core (scan orchestrator)
+                  |
+  semgrep   osv   tree-sitter   git-log
+  (rules)  (CVE)    (graph)    (history)
 ```
 
-- Analyzers implement `core.Analyzer` — add one, orchestrator untouched.
-- Languages implement `core.LanguageAdapter` — add one, core untouched.
-- Detection delegates to proven tools (`semgrep`, `osv-scanner`); we orchestrate.
+- Detection delegates to proven tools (`semgrep`, `osv-scanner`).
+- The context graph is built in-process from a tree-sitter parse.
+- Add an analyzer or a language without touching the core (plugin design).
 
-## External tools (optional, auto-skipped if missing)
+External tools are optional and auto-skipped if missing.
 
-- `semgrep` — static security/quality rules
-- `osv-scanner` — dependency CVE scanning
-- `git` — local history risk analysis (no GitHub connection needed)
-
-First target language: **JS/TS**. Multi-language by design.
+First language: **JS/TS**. More to come.

@@ -21,13 +21,41 @@ type CallLoc struct {
 }
 
 type Graph struct {
-	Root  string
-	Files map[string]*FileParse // keyed by relative path
+	Root        string
+	Files       map[string]*FileParse // keyed by relative path
+	Diagnostics []string              // parse failures / syntax errors
 
 	defsBySymbol  map[string][]DefLoc
 	callsBySymbol map[string][]CallLoc
 	imports       map[string][]string // file -> resolved relative files it imports
 	importers     map[string][]string // file -> files that import it
+	reachCache    map[string]map[string]bool
+}
+
+// reachableFiles returns the set of files transitively imported by `from`
+// (not including `from` itself). Used to attribute a call site to the
+// definition it can actually reach through the import graph.
+func (g *Graph) reachableFiles(from string) map[string]bool {
+	if g.reachCache == nil {
+		g.reachCache = map[string]map[string]bool{}
+	}
+	if r, ok := g.reachCache[from]; ok {
+		return r
+	}
+	seen := map[string]bool{}
+	queue := []string{from}
+	for len(queue) > 0 {
+		f := queue[0]
+		queue = queue[1:]
+		for _, t := range g.imports[f] {
+			if !seen[t] {
+				seen[t] = true
+				queue = append(queue, t)
+			}
+		}
+	}
+	g.reachCache[from] = seen
+	return seen
 }
 
 var resolveExts = []string{"", ".js", ".jsx", ".ts", ".tsx", ".mjs", ".cjs"}
@@ -44,9 +72,13 @@ func Build(root string, files []string) *Graph {
 	for _, rel := range files {
 		fp, err := ParseJS(filepath.Join(root, rel))
 		if err != nil {
+			g.Diagnostics = append(g.Diagnostics, "parse failed: "+rel+": "+err.Error())
 			continue
 		}
 		fp.Path = rel
+		if fp.HasError {
+			g.Diagnostics = append(g.Diagnostics, "syntax errors (partial AST): "+rel)
+		}
 		g.Files[rel] = fp
 	}
 	for rel, fp := range g.Files {
@@ -79,6 +111,9 @@ func (g *Graph) resolveImport(fromFile, spec string) string {
 	base := filepath.Join(filepath.Dir(fromFile), spec)
 	candidates := make([]string, 0, len(resolveExts)*2)
 	for _, ext := range resolveExts {
+		if ext == "" && (base == "." || strings.HasSuffix(spec, "/")) {
+			continue // a directory import resolves via index.<ext>, not the dir itself
+		}
 		candidates = append(candidates, base+ext)
 	}
 	for _, ext := range resolveExts[1:] {
@@ -86,10 +121,13 @@ func (g *Graph) resolveImport(fromFile, spec string) string {
 	}
 	for _, c := range candidates {
 		c = filepath.Clean(c)
+		if c == "." || c == "" {
+			continue
+		}
 		if _, ok := g.Files[c]; ok {
 			return c
 		}
-		if _, err := os.Stat(filepath.Join(g.Root, c)); err == nil {
+		if info, err := os.Stat(filepath.Join(g.Root, c)); err == nil && !info.IsDir() {
 			return c
 		}
 	}

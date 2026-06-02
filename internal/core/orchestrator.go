@@ -36,17 +36,31 @@ func (o *Orchestrator) Run(ctx ProjectContext) Report {
 	var report Report
 	for _, a := range o.analyzers {
 		if !a.Available() {
+			if ctx.FailClosed {
+				report.Findings = append(report.Findings, Finding{
+					Analyzer: a.Name(),
+					RuleID:   "analyzer-unavailable",
+					Severity: SeverityError,
+					Level:    SeverityError.String(),
+					Message:  a.Name() + " is not available (fail-closed)",
+				})
+				continue
+			}
 			report.Skipped = append(report.Skipped, a.Name())
 			continue
 		}
 		found, err := a.Scan(ctx)
 		if err != nil {
-			// one analyzer failing must not kill the scan
+			// fail-open: one analyzer failing must not kill the scan
+			sev := SeverityInfo
+			if ctx.FailClosed {
+				sev = SeverityError
+			}
 			report.Findings = append(report.Findings, Finding{
 				Analyzer: a.Name(),
 				RuleID:   "analyzer-error",
-				Severity: SeverityInfo,
-				Level:    SeverityInfo.String(),
+				Severity: sev,
+				Level:    sev.String(),
 				Message:  a.Name() + " failed: " + err.Error(),
 			})
 			continue
