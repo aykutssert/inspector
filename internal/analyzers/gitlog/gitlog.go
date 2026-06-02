@@ -48,9 +48,22 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 		counts[line]++
 	}
 
+	// honor scope: report only files in ctx.Files. In --diff with no changes
+	// Files is empty → report nothing (not the whole history).
+	var inScope map[string]bool
+	if ctx.DiffOnly || len(ctx.Files) > 0 {
+		inScope = make(map[string]bool, len(ctx.Files))
+		for _, f := range ctx.Files {
+			inScope[f] = true
+		}
+	}
+
 	var findings []core.Finding
 	for file, n := range counts {
 		if n < a.RiskThreshold {
+			continue
+		}
+		if inScope != nil && !inScope[file] {
 			continue
 		}
 		findings = append(findings, core.Finding{
