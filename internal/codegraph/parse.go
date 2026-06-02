@@ -38,12 +38,20 @@ type Call struct {
 	Line int    `json:"line"`
 }
 
+// Binding maps a local name introduced by an import/require to its module
+// specifier, e.g. `const db = require('./db')` -> {Local: "db", Source: "./db"}.
+type Binding struct {
+	Local  string `json:"local"`
+	Source string `json:"source"`
+}
+
 type FileParse struct {
-	Path     string   `json:"path"`
-	Imports  []Import `json:"imports,omitempty"`
-	Defs     []Def    `json:"defs,omitempty"`
-	Calls    []Call   `json:"calls,omitempty"`
-	HasError bool     `json:"has_error,omitempty"`
+	Path     string    `json:"path"`
+	Imports  []Import  `json:"imports,omitempty"`
+	Bindings []Binding `json:"bindings,omitempty"`
+	Defs     []Def     `json:"defs,omitempty"`
+	Calls    []Call    `json:"calls,omitempty"`
+	HasError bool      `json:"has_error,omitempty"`
 }
 
 // langForPath selects the tree-sitter grammar by file extension. The
@@ -86,7 +94,31 @@ const importsQuery = `
   arguments: (arguments (string) @arg))
 `
 
+const bindingsQuery = `
+(import_statement
+  (import_clause (identifier) @default)
+  source: (string) @src)
+(import_statement
+  (import_clause (named_imports (import_specifier !alias name: (identifier) @named)))
+  source: (string) @src)
+(import_statement
+  (import_clause (named_imports (import_specifier alias: (identifier) @alias)))
+  source: (string) @src)
+(import_statement
+  (import_clause (namespace_import (identifier) @ns))
+  source: (string) @src)
+(variable_declarator
+  name: (identifier) @rlocal
+  value: (call_expression function: (identifier) @rfn arguments: (arguments (string) @rsrc)))
+(variable_declarator
+  name: (object_pattern (shorthand_property_identifier_pattern) @rprop)
+  value: (call_expression function: (identifier) @rfn arguments: (arguments (string) @rsrc)))
+`
+
 func ParseJS(path string) (*FileParse, error) {
+	if info, err := os.Stat(path); err == nil && info.Size() > maxFileBytes {
+		return nil, fmt.Errorf("file too large: %d bytes (limit %d)", info.Size(), maxFileBytes)
+	}
 	src, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
@@ -109,7 +141,7 @@ func ParseJS(path string) (*FileParse, error) {
 
 	fp := &FileParse{Path: path, HasError: root.HasError()}
 	for _, collect := range []func(*FileParse, *sitter.Node, *sitter.Language, []byte) error{
-		collectDefs, collectCalls, collectImports,
+		collectDefs, collectCalls, collectImports, collectBindings,
 	} {
 		if err := collect(fp, root, lang, src); err != nil {
 			return nil, err
@@ -258,6 +290,10 @@ const exportAssignQuery = `
 (assignment_expression
   left: (member_expression object: (identifier) @lobj property: (property_identifier) @lprop)
   right: (object) @robj)
+(assignment_expression
+  left: (member_expression
+    object: (member_expression object: (identifier) @nobj property: (property_identifier) @nprop)
+    property: (property_identifier) @nleaf))
 `
 
 const exportEsQuery = `
@@ -271,6 +307,13 @@ const exportEsQuery = `
 func markExported(fp *FileParse, root *sitter.Node, lang *sitter.Language, src []byte) {
 	exported := map[string]bool{}
 	_ = runMatches(exportAssignQuery, root, lang, func(caps map[string]*sitter.Node) {
+		// module.exports.foo = fn  ->  mark "foo"
+		if leaf := caps["nleaf"]; leaf != nil {
+			if nodeText(caps["nobj"], src) == "module" && nodeText(caps["nprop"], src) == "exports" {
+				exported[leaf.Content(src)] = true
+			}
+			return
+		}
 		lobj := nodeText(caps["lobj"], src)
 		lprop := nodeText(caps["lprop"], src)
 		moduleExports := lobj == "module" && lprop == "exports"
@@ -285,7 +328,7 @@ func markExported(fp *FileParse, root *sitter.Node, lang *sitter.Language, src [
 			exported[lprop] = true
 		}
 		if robj := caps["robj"]; robj != nil && moduleExports {
-			objectKeys(robj, src, exported)
+			objectExportNames(robj, src, exported)
 		}
 	})
 	_ = runQuery(exportEsQuery, root, lang, func(_ string, node *sitter.Node) {
@@ -301,7 +344,10 @@ func markExported(fp *FileParse, root *sitter.Node, lang *sitter.Language, src [
 	}
 }
 
-func objectKeys(obj *sitter.Node, src []byte, set map[string]bool) {
+// objectExportNames marks names from `module.exports = { ... }`. For a pair
+// `publicName: internalFn` the value identifier (the real def) is what we flag;
+// the key is also marked in case a def carries that name.
+func objectExportNames(obj *sitter.Node, src []byte, set map[string]bool) {
 	for i := 0; i < int(obj.NamedChildCount()); i++ {
 		ch := obj.NamedChild(i)
 		switch ch.Type() {
@@ -310,6 +356,9 @@ func objectKeys(obj *sitter.Node, src []byte, set map[string]bool) {
 		case "pair":
 			if k := ch.ChildByFieldName("key"); k != nil {
 				set[k.Content(src)] = true
+			}
+			if v := ch.ChildByFieldName("value"); v != nil && v.Type() == "identifier" {
+				set[v.Content(src)] = true
 			}
 		}
 	}
@@ -320,6 +369,42 @@ func nodeText(node *sitter.Node, src []byte) string {
 		return ""
 	}
 	return node.Content(src)
+}
+
+func collectBindings(fp *FileParse, root *sitter.Node, lang *sitter.Language, src []byte) error {
+	return runMatches(bindingsQuery, root, lang, func(caps map[string]*sitter.Node) {
+		// ES import: one source plus a default / named / namespace local name.
+		if s := caps["src"]; s != nil {
+			source := trimQuotes(s.Content(src))
+			if a := caps["alias"]; a != nil {
+				fp.Bindings = append(fp.Bindings, Binding{Local: a.Content(src), Source: source})
+			} else if n := caps["named"]; n != nil {
+				fp.Bindings = append(fp.Bindings, Binding{Local: n.Content(src), Source: source})
+			}
+			if d := caps["default"]; d != nil {
+				fp.Bindings = append(fp.Bindings, Binding{Local: d.Content(src), Source: source})
+			}
+			if ns := caps["ns"]; ns != nil {
+				fp.Bindings = append(fp.Bindings, Binding{Local: ns.Content(src), Source: source})
+			}
+			return
+		}
+		// CommonJS: const x = require('...') or const { a, b } = require('...').
+		if fn := caps["rfn"]; fn == nil || fn.Content(src) != "require" {
+			return
+		}
+		rsrc := caps["rsrc"]
+		if rsrc == nil {
+			return
+		}
+		source := trimQuotes(rsrc.Content(src))
+		if l := caps["rlocal"]; l != nil {
+			fp.Bindings = append(fp.Bindings, Binding{Local: l.Content(src), Source: source})
+		}
+		if p := caps["rprop"]; p != nil {
+			fp.Bindings = append(fp.Bindings, Binding{Local: p.Content(src), Source: source})
+		}
+	})
 }
 
 func fieldText(node *sitter.Node, field string, src []byte) string {

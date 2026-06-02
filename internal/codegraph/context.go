@@ -79,10 +79,15 @@ func (g *Graph) symbolContext(target, sym, scopeFile string) Context {
 	return c
 }
 
-// callersOf attributes call sites of sym to a specific definition d using the
-// import graph: a call in d's own file counts (excluding d's own body), and a
-// call elsewhere counts only if that file can transitively reach d's file.
-// This disambiguates same-named symbols defined in unrelated files.
+// callersOf attributes call sites of sym to a specific definition d.
+//
+// Resolution is hybrid:
+//   - same file: a call outside d's own body is a caller (Resolved).
+//   - cross-file with an import binding: attribute only if the binding's target
+//     file is, or can reach, d's file — pinning the call to the right module and
+//     skipping same-named defs elsewhere (Resolved).
+//   - cross-file without a binding (dynamic receiver like res.x(), or a global):
+//     fall back to the looser reachability heuristic (not Resolved).
 func (g *Graph) callersOf(sym string, d DefLoc) []CallLoc {
 	var callers []CallLoc
 	for _, call := range g.Calls(sym) {
@@ -90,10 +95,19 @@ func (g *Graph) callersOf(sym string, d DefLoc) []CallLoc {
 			if call.Line >= d.Line && call.Line <= d.EndLine {
 				continue // inside the definition itself
 			}
+			call.Resolved = true
 			callers = append(callers, call)
 			continue
 		}
+		if target, ok := g.bindingTarget(call.File, call.Recv, sym); ok {
+			if target == d.File || g.reachableFiles(target)[d.File] {
+				call.Resolved = true
+				callers = append(callers, call)
+			}
+			continue // binding points to a definite module; don't heuristically attach
+		}
 		if g.reachableFiles(call.File)[d.File] {
+			call.Resolved = false
 			callers = append(callers, call)
 		}
 	}
@@ -114,7 +128,8 @@ func (g *Graph) fileContext(file string) Context {
 	return c
 }
 
-// calleesIn returns the distinct names called within a definition's line range.
+// calleesIn returns the distinct callees within a definition's line range,
+// qualified by receiver when present (e.g. "db.query", not just "query").
 func (g *Graph) calleesIn(d DefLoc) []string {
 	fp := g.Files[d.File]
 	if fp == nil {
@@ -126,11 +141,15 @@ func (g *Graph) calleesIn(d DefLoc) []string {
 		if call.Line < d.Line || call.Line > d.EndLine {
 			continue
 		}
-		if seen[call.Name] {
+		name := call.Name
+		if call.Recv != "" {
+			name = call.Recv + "." + call.Name
+		}
+		if seen[name] {
 			continue
 		}
-		seen[call.Name] = true
-		out = append(out, call.Name)
+		seen[name] = true
+		out = append(out, name)
 	}
 	return out
 }

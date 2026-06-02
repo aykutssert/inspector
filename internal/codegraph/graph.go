@@ -18,6 +18,11 @@ type DefLoc struct {
 type CallLoc struct {
 	File string `json:"file"`
 	Line int    `json:"line"`
+	Recv string `json:"recv,omitempty"`
+	// Resolved is true when the call was tied to this definition through an
+	// import binding (high confidence); false when attributed by the looser
+	// name + reachability heuristic (e.g. a dynamic receiver like res.x()).
+	Resolved bool `json:"resolved"`
 }
 
 type Graph struct {
@@ -27,9 +32,26 @@ type Graph struct {
 
 	defsBySymbol  map[string][]DefLoc
 	callsBySymbol map[string][]CallLoc
-	imports       map[string][]string // file -> resolved relative files it imports
-	importers     map[string][]string // file -> files that import it
+	imports       map[string][]string          // file -> resolved relative files it imports
+	importers     map[string][]string          // file -> files that import it
+	bindings      map[string]map[string]string // file -> local name -> resolved target file
 	reachCache    map[string]map[string]bool
+}
+
+// bindingTarget resolves the file a call's binding points to. For a method
+// call it keys on the receiver (db in db.query()); for a bare call on the
+// callee name. ok is false when no import binding introduced that name.
+func (g *Graph) bindingTarget(file, recv, name string) (string, bool) {
+	bm := g.bindings[file]
+	if bm == nil {
+		return "", false
+	}
+	key := name
+	if recv != "" {
+		key = recv
+	}
+	t, ok := bm[key]
+	return t, ok
 }
 
 // reachableFiles returns the set of files transitively imported by `from`
@@ -58,7 +80,7 @@ func (g *Graph) reachableFiles(from string) map[string]bool {
 	return seen
 }
 
-var resolveExts = []string{"", ".js", ".jsx", ".ts", ".tsx", ".mjs", ".cjs"}
+var resolveExts = []string{"", ".js", ".jsx", ".ts", ".tsx", ".mjs", ".cjs", ".mts", ".cts"}
 
 func Build(root string, files []string) *Graph {
 	g := &Graph{
@@ -68,6 +90,7 @@ func Build(root string, files []string) *Graph {
 		callsBySymbol: map[string][]CallLoc{},
 		imports:       map[string][]string{},
 		importers:     map[string][]string{},
+		bindings:      map[string]map[string]string{},
 	}
 	for _, rel := range files {
 		fp, err := ParseJS(filepath.Join(root, rel))
@@ -88,7 +111,7 @@ func Build(root string, files []string) *Graph {
 			})
 		}
 		for _, c := range fp.Calls {
-			g.callsBySymbol[c.Name] = append(g.callsBySymbol[c.Name], CallLoc{File: rel, Line: c.Line})
+			g.callsBySymbol[c.Name] = append(g.callsBySymbol[c.Name], CallLoc{File: rel, Line: c.Line, Recv: c.Recv})
 		}
 		for _, im := range fp.Imports {
 			target := g.resolveImport(rel, im.Source)
@@ -97,6 +120,16 @@ func Build(root string, files []string) *Graph {
 			}
 			g.imports[rel] = appendUnique(g.imports[rel], target)
 			g.importers[target] = appendUnique(g.importers[target], rel)
+		}
+		for _, b := range fp.Bindings {
+			target := g.resolveImport(rel, b.Source)
+			if target == "" {
+				continue
+			}
+			if g.bindings[rel] == nil {
+				g.bindings[rel] = map[string]string{}
+			}
+			g.bindings[rel][b.Local] = target
 		}
 	}
 	return g

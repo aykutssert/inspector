@@ -90,3 +90,58 @@ func TestCallerDisambiguationByImport(t *testing.T) {
 		}
 	}
 }
+
+// A caller that imports BOTH modules but binds handler from a.js must be
+// attributed only to a.js's handler — the binding pins it, even though b.js is
+// also reachable. Resolved must be true (binding-based, high confidence).
+func TestBindingPinsCallerToBoundModule(t *testing.T) {
+	root, files := writeProject(t, map[string]string{
+		"a.js":    `function handler() {}; module.exports = handler`,
+		"b.js":    `function handler() {}; module.exports = handler`,
+		"uses.js": `const handler = require('./a'); const other = require('./b'); function go() { handler() }`,
+	})
+	g := Build(root, files)
+
+	for _, d := range g.GetContext("handler").Definitions {
+		switch d.File {
+		case "a.js":
+			if len(d.Callers) != 1 || d.Callers[0].File != "uses.js" {
+				t.Errorf("a.js handler callers = %+v, want one from uses.js", d.Callers)
+			} else if !d.Callers[0].Resolved {
+				t.Errorf("a.js handler caller should be Resolved (binding-based)")
+			}
+		case "b.js":
+			if len(d.Callers) != 0 {
+				t.Errorf("b.js handler callers = %+v, want none (binding points to a.js)", d.Callers)
+			}
+		}
+	}
+}
+
+// A method call on a dynamic receiver (res.send) has no import binding, so it
+// falls back to the reachability heuristic and is reported unresolved.
+func TestDynamicReceiverHeuristic(t *testing.T) {
+	root, files := writeProject(t, map[string]string{
+		"send.js":  `function send() {}; module.exports = send`,
+		"route.js": `const send = require('./send'); function handle(res) { res.send() }`,
+	})
+	g := Build(root, files)
+
+	var found bool
+	for _, d := range g.GetContext("send").Definitions {
+		if d.File != "send.js" {
+			continue
+		}
+		for _, c := range d.Callers {
+			if c.File == "route.js" {
+				found = true
+				if c.Resolved {
+					t.Errorf("res.send() caller should be heuristic (unresolved), got Resolved=true")
+				}
+			}
+		}
+	}
+	if !found {
+		t.Errorf("expected route.js among send callers via heuristic")
+	}
+}

@@ -43,6 +43,10 @@ type semgrepOut struct {
 }
 
 func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
+	// diff mode with no changed files: nothing to scan (never fall back to root)
+	if ctx.DiffOnly && len(ctx.Files) == 0 {
+		return nil, nil
+	}
 	args := []string{"--json", "--quiet", "--metrics=off", "--config", a.config}
 	if len(ctx.Files) > 0 {
 		args = append(args, ctx.Files...)
@@ -52,11 +56,10 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 	cmd := exec.Command("semgrep", args...)
 	cmd.Dir = ctx.Root
 	out, err := cmd.Output()
+	// Without --error, semgrep exits 0 even when findings exist; a non-zero exit
+	// is a real failure (config error, crash, partial run). Surface it.
 	if err != nil {
-		// semgrep exits non-zero when findings exist; only empty output is a real failure
-		if len(out) == 0 {
-			return nil, err
-		}
+		return nil, err
 	}
 	var parsed semgrepOut
 	if err := json.Unmarshal(out, &parsed); err != nil {

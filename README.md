@@ -1,10 +1,12 @@
 # ai-guard
 
-A local, deterministic scanner for AI-generated code.
+A deterministic scanner for AI-generated code: security, bugs, performance, and
+cross-file context.
 
 ai-guard does **not** ship an LLM. It produces small, precise findings; your
-coding agent (Claude Code, Codex, ...) reads them and fixes the code. Nothing
-leaves your machine except dependency lookups (CVE data).
+coding agent (Claude Code, Codex, ...) reads them and fixes the code. Detection
+leans on proven tools, so it pulls rule packs and CVE data as needed — normal
+developer tooling, not your source code going to a cloud model.
 
 ## Build
 

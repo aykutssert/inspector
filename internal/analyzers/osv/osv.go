@@ -40,7 +40,7 @@ type osvOut struct {
 }
 
 func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
-	cmd := exec.Command("osv-scanner", "--format", "json", "-r", ctx.Root)
+	cmd := exec.Command("osv-scanner", "scan", "--format", "json", "-r", ctx.Root)
 	cmd.Dir = ctx.Root
 	out, err := cmd.Output()
 	if err != nil && len(out) == 0 {

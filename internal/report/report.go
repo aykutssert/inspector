@@ -17,6 +17,10 @@ func JSON(w io.Writer, r core.Report) error {
 func Terminal(w io.Writer, r core.Report) {
 	if len(r.Findings) == 0 {
 		fmt.Fprintln(w, "No findings.")
+		if len(r.Skipped) > 0 {
+			fmt.Fprintf(w, "warning: analyzers not run (not installed): %v\n", r.Skipped)
+			fmt.Fprintln(w, "coverage is partial — install them or use --fail-closed to gate.")
+		}
 		return
 	}
 	s := r.Summary

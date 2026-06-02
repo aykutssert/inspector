@@ -93,15 +93,18 @@ function go() {
 // #8: defs exposed via CommonJS and ES export variants are flagged exported.
 func TestParseExportVariants(t *testing.T) {
 	cases := map[string]string{
-		"cjs_assign.js": "function a() {}\nmodule.exports = a",
-		"cjs_object.js": "function b() {}\nmodule.exports = { b }",
-		"cjs_dot.js":    "function c() {}\nexports.c = c",
-		"es_clause.js":  "function d() {}\nexport { d }",
-		"es_default.js": "function e() {}\nexport default e",
+		"cjs_assign.js":  "function a() {}\nmodule.exports = a",
+		"cjs_object.js":  "function b() {}\nmodule.exports = { b }",
+		"cjs_dot.js":     "function c() {}\nexports.c = c",
+		"es_clause.js":   "function d() {}\nexport { d }",
+		"es_default.js":  "function e() {}\nexport default e",
+		"cjs_nested.js":  "function f() {}\nmodule.exports.f = f",
+		"cjs_pairval.js": "function internalG() {}\nmodule.exports = { publicG: internalG }",
 	}
 	want := map[string]string{
 		"cjs_assign.js": "a", "cjs_object.js": "b", "cjs_dot.js": "c",
 		"es_clause.js": "d", "es_default.js": "e",
+		"cjs_nested.js": "f", "cjs_pairval.js": "internalG",
 	}
 	for file, src := range cases {
 		fp := parseSnippet(t, file, src)

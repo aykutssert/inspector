@@ -20,7 +20,8 @@ var _ core.LanguageAdapter = (*Adapter)(nil)
 func (a *Adapter) Language() string { return "javascript" }
 
 var extensions = map[string]bool{
-	".js": true, ".jsx": true, ".ts": true, ".tsx": true, ".mjs": true, ".cjs": true,
+	".js": true, ".jsx": true, ".ts": true, ".tsx": true,
+	".mjs": true, ".cjs": true, ".mts": true, ".cts": true,
 }
 
 func (a *Adapter) Matches(path string) bool {
