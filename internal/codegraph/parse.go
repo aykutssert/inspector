@@ -40,9 +40,12 @@ type Call struct {
 
 // Binding maps a local name introduced by an import/require to its module
 // specifier, e.g. `const db = require('./db')` -> {Local: "db", Source: "./db"}.
+// Imported is the original exported symbol the local refers to; "" means the
+// module's default/namespace value (default import, `require()` whole module).
 type Binding struct {
-	Local  string `json:"local"`
-	Source string `json:"source"`
+	Local    string `json:"local"`
+	Source   string `json:"source"`
+	Imported string `json:"imported,omitempty"`
 }
 
 type FileParse struct {
@@ -51,7 +54,11 @@ type FileParse struct {
 	Bindings []Binding `json:"bindings,omitempty"`
 	Defs     []Def     `json:"defs,omitempty"`
 	Calls    []Call    `json:"calls,omitempty"`
-	HasError bool      `json:"has_error,omitempty"`
+	// DefaultExport is the name behind `module.exports = X` / `export default X`,
+	// used to resolve default imports (`const x = require('./m'); x()`) back to
+	// the real definition.
+	DefaultExport string `json:"default_export,omitempty"`
+	HasError      bool   `json:"has_error,omitempty"`
 }
 
 // langForPath selects the tree-sitter grammar by file extension. The
@@ -102,7 +109,7 @@ const bindingsQuery = `
   (import_clause (named_imports (import_specifier !alias name: (identifier) @named)))
   source: (string) @src)
 (import_statement
-  (import_clause (named_imports (import_specifier alias: (identifier) @alias)))
+  (import_clause (named_imports (import_specifier name: (identifier) @aliasname alias: (identifier) @alias)))
   source: (string) @src)
 (import_statement
   (import_clause (namespace_import (identifier) @ns))
@@ -298,7 +305,7 @@ const exportAssignQuery = `
 
 const exportEsQuery = `
 (export_specifier name: (identifier) @name)
-(export_statement (identifier) @name)
+(export_statement (identifier) @default)
 `
 
 // markExported flags defs reachable through CommonJS (module.exports / exports.x)
@@ -323,6 +330,9 @@ func markExported(fp *FileParse, root *sitter.Node, lang *sitter.Language, src [
 		}
 		if rhs := caps["rhs"]; rhs != nil {
 			exported[rhs.Content(src)] = true
+			if moduleExports {
+				fp.DefaultExport = rhs.Content(src) // module.exports = X
+			}
 		}
 		if exportsDot {
 			exported[lprop] = true
@@ -331,8 +341,11 @@ func markExported(fp *FileParse, root *sitter.Node, lang *sitter.Language, src [
 			objectExportNames(robj, src, exported)
 		}
 	})
-	_ = runQuery(exportEsQuery, root, lang, func(_ string, node *sitter.Node) {
+	_ = runQuery(exportEsQuery, root, lang, func(name string, node *sitter.Node) {
 		exported[node.Content(src)] = true
+		if name == "default" { // export default X
+			fp.DefaultExport = node.Content(src)
+		}
 	})
 	if len(exported) == 0 {
 		return
@@ -377,14 +390,19 @@ func collectBindings(fp *FileParse, root *sitter.Node, lang *sitter.Language, sr
 		if s := caps["src"]; s != nil {
 			source := trimQuotes(s.Content(src))
 			if a := caps["alias"]; a != nil {
-				fp.Bindings = append(fp.Bindings, Binding{Local: a.Content(src), Source: source})
+				// `import { orig as local }` -> Imported is the original name.
+				fp.Bindings = append(fp.Bindings, Binding{Local: a.Content(src), Source: source, Imported: nodeText(caps["aliasname"], src)})
 			} else if n := caps["named"]; n != nil {
-				fp.Bindings = append(fp.Bindings, Binding{Local: n.Content(src), Source: source})
+				// `import { name }` -> local and imported are the same.
+				name := n.Content(src)
+				fp.Bindings = append(fp.Bindings, Binding{Local: name, Source: source, Imported: name})
 			}
 			if d := caps["default"]; d != nil {
+				// `import x from` -> default export (Imported left "").
 				fp.Bindings = append(fp.Bindings, Binding{Local: d.Content(src), Source: source})
 			}
 			if ns := caps["ns"]; ns != nil {
+				// `import * as ns` -> namespace (Imported left "").
 				fp.Bindings = append(fp.Bindings, Binding{Local: ns.Content(src), Source: source})
 			}
 			return
@@ -399,10 +417,13 @@ func collectBindings(fp *FileParse, root *sitter.Node, lang *sitter.Language, sr
 		}
 		source := trimQuotes(rsrc.Content(src))
 		if l := caps["rlocal"]; l != nil {
+			// `const x = require(...)` -> whole module / default (Imported "").
 			fp.Bindings = append(fp.Bindings, Binding{Local: l.Content(src), Source: source})
 		}
 		if p := caps["rprop"]; p != nil {
-			fp.Bindings = append(fp.Bindings, Binding{Local: p.Content(src), Source: source})
+			// `const { a } = require(...)` -> destructured named export.
+			name := p.Content(src)
+			fp.Bindings = append(fp.Bindings, Binding{Local: name, Source: source, Imported: name})
 		}
 	})
 }

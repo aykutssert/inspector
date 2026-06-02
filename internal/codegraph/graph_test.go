@@ -134,6 +134,11 @@ func TestDynamicReceiverHeuristic(t *testing.T) {
 		}
 		for _, c := range d.Callers {
 			if c.File == "route.js" {
+				t.Errorf("res.send() should not be a resolved caller (no binding)")
+			}
+		}
+		for _, c := range d.UnresolvedCallers {
+			if c.File == "route.js" {
 				found = true
 				if c.Resolved {
 					t.Errorf("res.send() caller should be heuristic (unresolved), got Resolved=true")
@@ -142,6 +147,40 @@ func TestDynamicReceiverHeuristic(t *testing.T) {
 		}
 	}
 	if !found {
-		t.Errorf("expected route.js among send callers via heuristic")
+		t.Errorf("expected route.js among send unresolved callers via heuristic")
+	}
+}
+
+// Aliased imports record calls under the local name, not the symbol. The graph
+// must still attribute them to the definition via the binding's imported name
+// (ES alias) or the target's default export (CommonJS require).
+func TestAliasCallerResolution(t *testing.T) {
+	root, files := writeProject(t, map[string]string{
+		"a.js":       `export function handler() {}`,
+		"d.js":       `function handler() {}; module.exports = handler`,
+		"esAlias.js": `import { handler as h } from './a'; function go() { h() }`,
+		"cjsDef.js":  `const h = require('./d'); function go() { h() }`,
+	})
+	g := Build(root, files)
+
+	want := map[string]string{"esAlias.js": "a.js", "cjsDef.js": "d.js"}
+	got := map[string]bool{}
+	for _, d := range g.GetContext("handler").Definitions {
+		for _, c := range d.Callers {
+			if w, ok := want[c.File]; ok {
+				if d.File != w {
+					t.Errorf("%s aliased call attributed to %s, want %s", c.File, d.File, w)
+				}
+				if !c.Resolved {
+					t.Errorf("%s aliased caller should be Resolved (binding-based)", c.File)
+				}
+				got[c.File] = true
+			}
+		}
+	}
+	for caller := range want {
+		if !got[caller] {
+			t.Errorf("missing aliased caller %s for handler", caller)
+		}
 	}
 }

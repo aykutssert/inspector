@@ -5,9 +5,10 @@ type ProjectContext struct {
 	DiffOnly  bool
 	Files     []string
 	Languages []string
-	// FailClosed turns a missing tool or analyzer error into an error-level
-	// finding (non-zero exit) instead of a silent skip — for CI gating.
-	FailClosed bool
+	// Changed is the raw list of git-changed paths in diff mode (unfiltered by
+	// language), so analyzers like osv can decide whether a dependency manifest
+	// actually changed. Empty when not in diff mode.
+	Changed []string
 }
 
 // add a new analyzer by implementing this; the orchestrator never changes

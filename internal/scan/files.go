@@ -56,6 +56,12 @@ func walk(root string) ([]string, error) {
 	return files, err
 }
 
+// Changed returns the raw list of git-changed paths (unfiltered by language),
+// for analyzers that key off non-source files like dependency manifests.
+func Changed(root string) ([]string, error) {
+	return changedFiles(root)
+}
+
 func changedFiles(root string) ([]string, error) {
 	cmd := exec.Command("git", "status", "--porcelain")
 	cmd.Dir = root

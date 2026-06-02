@@ -32,10 +32,17 @@ type Graph struct {
 
 	defsBySymbol  map[string][]DefLoc
 	callsBySymbol map[string][]CallLoc
-	imports       map[string][]string          // file -> resolved relative files it imports
-	importers     map[string][]string          // file -> files that import it
-	bindings      map[string]map[string]string // file -> local name -> resolved target file
+	imports       map[string][]string                  // file -> resolved relative files it imports
+	importers     map[string][]string                  // file -> files that import it
+	bindings      map[string]map[string]resolvedBinding // file -> local name -> binding
 	reachCache    map[string]map[string]bool
+}
+
+// resolvedBinding ties a local name to the file it resolves to and the original
+// exported symbol it refers to ("" = default / namespace / whole module).
+type resolvedBinding struct {
+	target   string
+	imported string
 }
 
 // bindingTarget resolves the file a call's binding points to. For a method
@@ -50,8 +57,8 @@ func (g *Graph) bindingTarget(file, recv, name string) (string, bool) {
 	if recv != "" {
 		key = recv
 	}
-	t, ok := bm[key]
-	return t, ok
+	b, ok := bm[key]
+	return b.target, ok
 }
 
 // reachableFiles returns the set of files transitively imported by `from`
@@ -90,7 +97,7 @@ func Build(root string, files []string) *Graph {
 		callsBySymbol: map[string][]CallLoc{},
 		imports:       map[string][]string{},
 		importers:     map[string][]string{},
-		bindings:      map[string]map[string]string{},
+		bindings:      map[string]map[string]resolvedBinding{},
 	}
 	for _, rel := range files {
 		fp, err := ParseJS(filepath.Join(root, rel))
@@ -127,9 +134,9 @@ func Build(root string, files []string) *Graph {
 				continue
 			}
 			if g.bindings[rel] == nil {
-				g.bindings[rel] = map[string]string{}
+				g.bindings[rel] = map[string]resolvedBinding{}
 			}
-			g.bindings[rel][b.Local] = target
+			g.bindings[rel][b.Local] = resolvedBinding{target: target, imported: b.Imported}
 		}
 	}
 	return g

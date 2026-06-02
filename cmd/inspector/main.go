@@ -35,18 +35,16 @@ func main() {
 }
 
 func usage() {
-	fmt.Fprintln(os.Stderr, "ai-guard — deterministic code security/quality scanner")
+	fmt.Fprintln(os.Stderr, "inspector — deterministic code security/quality scanner")
 	fmt.Fprintln(os.Stderr, "usage:")
-	fmt.Fprintln(os.Stderr, "  ai-guard scan [--diff] [--json] [--fail-closed] [path]")
-	fmt.Fprintln(os.Stderr, "  ai-guard context [--root dir] <file | file:symbol | symbol>")
+	fmt.Fprintln(os.Stderr, "  inspector scan [--diff] [path]")
+	fmt.Fprintln(os.Stderr, "  inspector context [--root dir] <file | file:symbol | symbol>")
 }
 
 func runScan(args []string) {
 	fs := flag.NewFlagSet("scan", flag.ExitOnError)
 	diff := fs.Bool("diff", false, "scan only locally changed files")
-	asJSON := fs.Bool("json", false, "emit JSON report (for agent harnesses)")
 	rulesDir := fs.String("rules", "rules", "directory holding YAML rule packs")
-	failClosed := fs.Bool("fail-closed", false, "treat a missing tool or analyzer error as an error (non-zero exit)")
 	_ = fs.Parse(args)
 
 	root := "."
@@ -70,12 +68,20 @@ func runScan(args []string) {
 		os.Exit(1)
 	}
 
+	var changed []string
+	if *diff {
+		if changed, err = scan.Changed(absRoot); err != nil {
+			fmt.Fprintln(os.Stderr, "error listing changed files:", err)
+			os.Exit(1)
+		}
+	}
+
 	ctx := core.ProjectContext{
-		Root:       absRoot,
-		DiffOnly:   *diff,
-		Files:      files,
-		Languages:  registry.Detect(files),
-		FailClosed: *failClosed,
+		Root:      absRoot,
+		DiffOnly:  *diff,
+		Files:     files,
+		Languages: registry.Detect(files),
+		Changed:   changed,
 	}
 
 	// Analyzers — add new analyzers here, orchestrator stays untouched.
@@ -87,13 +93,13 @@ func runScan(args []string) {
 	)
 	r := orch.Run(ctx)
 
-	if *asJSON {
-		if err := report.JSON(os.Stdout, r); err != nil {
-			fmt.Fprintln(os.Stderr, "error:", err)
-			os.Exit(1)
-		}
-	} else {
+	// Format auto-selects: JSON when piped (an agent reads it), human text on a
+	// terminal. No flag needed.
+	if isTTY(os.Stdout) {
 		report.Terminal(os.Stdout, r)
+	} else if err := report.JSON(os.Stdout, r); err != nil {
+		fmt.Fprintln(os.Stderr, "error:", err)
+		os.Exit(1)
 	}
 
 	// non-zero exit on any error-level finding (CI / agents)
@@ -102,6 +108,15 @@ func runScan(args []string) {
 			os.Exit(1)
 		}
 	}
+}
+
+// isTTY reports whether w is an interactive terminal (vs a pipe/file).
+func isTTY(f *os.File) bool {
+	info, err := f.Stat()
+	if err != nil {
+		return false
+	}
+	return info.Mode()&os.ModeCharDevice != 0
 }
 
 func runContext(args []string) {

@@ -4,9 +4,28 @@ import (
 	"encoding/json"
 	"os/exec"
 	"path/filepath"
+	"strings"
 
 	"github.com/aykutssert/inspector/internal/core"
 )
+
+// dependencyManifests are the files whose change warrants a dependency rescan.
+var dependencyManifests = map[string]bool{
+	"package.json": true, "package-lock.json": true, "yarn.lock": true,
+	"pnpm-lock.yaml": true, "npm-shrinkwrap.json": true,
+	"go.mod": true, "go.sum": true,
+	"requirements.txt": true, "Pipfile.lock": true, "poetry.lock": true,
+	"Cargo.lock": true, "composer.lock": true, "Gemfile.lock": true,
+}
+
+func manifestChanged(changed []string) bool {
+	for _, f := range changed {
+		if dependencyManifests[filepath.Base(strings.TrimSpace(f))] {
+			return true
+		}
+	}
+	return false
+}
 
 type Analyzer struct{}
 
@@ -40,11 +59,23 @@ type osvOut struct {
 }
 
 func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
+	// Dependencies are project-global, so a diff scan only makes sense when a
+	// manifest actually changed; otherwise the lockfile CVEs are unchanged.
+	if ctx.DiffOnly && !manifestChanged(ctx.Changed) {
+		return nil, nil
+	}
 	cmd := exec.Command("osv-scanner", "scan", "--format", "json", "-r", ctx.Root)
 	cmd.Dir = ctx.Root
 	out, err := cmd.Output()
-	if err != nil && len(out) == 0 {
-		return nil, err
+	if err != nil {
+		// Exit 128 = no packages/lockfiles found: nothing to scan, not a failure.
+		// Exit 1 = vulnerabilities found, with JSON on stdout — parse it below.
+		if ee, ok := err.(*exec.ExitError); ok && ee.ExitCode() == 128 {
+			return nil, nil
+		}
+		if len(out) == 0 {
+			return nil, err
+		}
 	}
 	var parsed osvOut
 	if err := json.Unmarshal(out, &parsed); err != nil {

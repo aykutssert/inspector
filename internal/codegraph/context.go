@@ -8,9 +8,14 @@ import (
 
 type DefDetail struct {
 	DefLoc
-	Callees []string  `json:"callees,omitempty"`
-	Callers []CallLoc `json:"callers,omitempty"`
-	Source  string    `json:"source,omitempty"`
+	Callees []string `json:"callees,omitempty"`
+	// Callers are attributed through an import binding (high confidence).
+	// UnresolvedCallers are matched by the looser name + reachability heuristic
+	// (e.g. a dynamic receiver like res.x()); keep them separate so an agent
+	// does not mistake a guess for a definite edge.
+	Callers           []CallLoc `json:"callers,omitempty"`
+	UnresolvedCallers []CallLoc `json:"unresolved_callers,omitempty"`
+	Source            string    `json:"source,omitempty"`
 }
 
 type Context struct {
@@ -67,11 +72,22 @@ func (g *Graph) symbolContext(target, sym, scopeFile string) Context {
 		if scopeFile != "" && d.File != scopeFile {
 			continue
 		}
+		all := g.callersOf(sym, d)
+		all = append(all, g.aliasCallers(sym, d)...)
+		var resolved, unresolved []CallLoc
+		for _, ca := range all {
+			if ca.Resolved {
+				resolved = append(resolved, ca)
+			} else {
+				unresolved = append(unresolved, ca)
+			}
+		}
 		c.Definitions = append(c.Definitions, DefDetail{
-			DefLoc:  d,
-			Callees: g.calleesIn(d),
-			Callers: g.callersOf(sym, d),
-			Source:  g.readSource(d.File, d.Line, d.EndLine),
+			DefLoc:            d,
+			Callees:           g.calleesIn(d),
+			Callers:           resolved,
+			UnresolvedCallers: unresolved,
+			Source:            g.readSource(d.File, d.Line, d.EndLine),
 		})
 		c.Imports = appendAll(c.Imports, g.Imports(d.File))
 		c.ImportedBy = appendAll(c.ImportedBy, g.Importers(d.File))
@@ -109,6 +125,47 @@ func (g *Graph) callersOf(sym string, d DefLoc) []CallLoc {
 		if g.reachableFiles(call.File)[d.File] {
 			call.Resolved = false
 			callers = append(callers, call)
+		}
+	}
+	return callers
+}
+
+// aliasCallers finds callers that reach d through a *renamed* local binding —
+// `import { handler as h } from './a'; h()` or `const h = require('./a'); h()`.
+// These calls are recorded under the local name (h), not sym (handler), so the
+// sym-keyed scan in callersOf misses them. Here we walk bindings whose imported
+// symbol is sym (or whose default import resolves to a file whose default
+// export is sym) and attribute calls of the local name. All are binding-based,
+// so Resolved is true.
+func (g *Graph) aliasCallers(sym string, d DefLoc) []CallLoc {
+	var callers []CallLoc
+	for file, locals := range g.bindings {
+		fp := g.Files[file]
+		if fp == nil {
+			continue
+		}
+		for local, b := range locals {
+			if local == sym {
+				continue // same-named: already handled by callersOf
+			}
+			if b.target != d.File && !g.reachableFiles(b.target)[d.File] {
+				continue
+			}
+			match := b.imported == sym
+			if !match && b.imported == "" {
+				// default/namespace import: matches when sym is the target's default export
+				if tfp := g.Files[b.target]; tfp != nil && tfp.DefaultExport == sym {
+					match = true
+				}
+			}
+			if !match {
+				continue
+			}
+			for _, call := range fp.Calls {
+				if call.Name == local && call.Recv == "" {
+					callers = append(callers, CallLoc{File: file, Line: call.Line, Resolved: true})
+				}
+			}
 		}
 	}
 	return callers
