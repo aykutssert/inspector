@@ -45,4 +45,4 @@ imports it needs to change code without breaking the rest of the project.
 A missing external tool is reported as an error, not skipped: a clean scan
 means the scanners actually ran.
 
-First language: **JS/TS**. More to come.
+First language: **JS/TS (incl. JSX/React)**. More to come.

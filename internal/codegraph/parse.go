@@ -75,6 +75,17 @@ func langForPath(path string) *sitter.Language {
 	}
 }
 
+// jsxCapable reports whether the grammar for path understands JSX nodes. The
+// plain TypeScript grammar does not, so a JSX query would fail to compile there.
+func jsxCapable(path string) bool {
+	switch strings.ToLower(filepath.Ext(path)) {
+	case ".ts", ".mts", ".cts":
+		return false
+	default:
+		return true
+	}
+}
+
 const defsQuery = `
 (function_declaration) @func
 (class_declaration) @class
@@ -92,6 +103,16 @@ const defsQuery = `
 const callsQuery = `
 (call_expression function: (identifier) @id)
 (call_expression function: (member_expression) @member)
+`
+
+// jsxQuery captures component usage in JSX: <Foo/> and <Foo>...</Foo> (the
+// opening tag carries the name). Lowercase tags (<div>) are HTML, filtered out
+// in collectJSX. Only runs on JSX-capable grammars (js/jsx/tsx, not plain ts).
+const jsxQuery = `
+(jsx_opening_element name: (identifier) @comp)
+(jsx_self_closing_element name: (identifier) @comp)
+(jsx_opening_element name: (member_expression) @compmember)
+(jsx_self_closing_element name: (member_expression) @compmember)
 `
 
 const importsQuery = `
@@ -154,6 +175,11 @@ func ParseJS(path string) (*FileParse, error) {
 		collectDefs, collectCalls, collectImports, collectBindings,
 	} {
 		if err := collect(fp, root, lang, src); err != nil {
+			return nil, err
+		}
+	}
+	if jsxCapable(path) {
+		if err := collectJSX(fp, root, lang, src); err != nil {
 			return nil, err
 		}
 	}
@@ -268,6 +294,52 @@ func collectCalls(fp *FileParse, root *sitter.Node, lang *sitter.Language, src [
 		seen[key] = true
 		fp.Calls = append(fp.Calls, c)
 	})
+}
+
+// collectJSX records JSX component usage as calls so a component definition's
+// callers include its render sites. <Foo/> -> call "Foo"; <Foo.Bar/> -> call
+// "Bar" with receiver "Foo". Lowercase tags (<div>) are HTML and skipped.
+func collectJSX(fp *FileParse, root *sitter.Node, lang *sitter.Language, src []byte) error {
+	seen := map[string]bool{}
+	add := func(name, recv string, node *sitter.Node) {
+		if name == "" {
+			return
+		}
+		line := int(node.StartPoint().Row) + 1
+		key := name + ":" + recv + ":" + itoa(line)
+		if seen[key] {
+			return
+		}
+		seen[key] = true
+		fp.Calls = append(fp.Calls, Call{Name: name, Recv: recv, Line: line})
+	}
+	return runQuery(jsxQuery, root, lang, func(capture string, node *sitter.Node) {
+		switch capture {
+		case "comp":
+			name := node.Content(src)
+			if !isComponentName(name) { // lowercase => HTML element
+				return
+			}
+			add(name, "", node)
+		case "compmember":
+			// <Foo.Bar/> is always a component (HTML tags cannot contain a dot).
+			prop := node.ChildByFieldName("property")
+			if prop == nil {
+				return
+			}
+			recv := ""
+			if obj := node.ChildByFieldName("object"); obj != nil {
+				recv = obj.Content(src)
+			}
+			add(prop.Content(src), recv, node)
+		}
+	})
+}
+
+// isComponentName is the React convention: a capitalized first letter marks a
+// component; a lowercase tag is a host/HTML element.
+func isComponentName(s string) bool {
+	return s != "" && s[0] >= 'A' && s[0] <= 'Z'
 }
 
 func collectImports(fp *FileParse, root *sitter.Node, lang *sitter.Language, src []byte) error {

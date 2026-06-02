@@ -154,6 +154,38 @@ func TestDynamicReceiverHeuristic(t *testing.T) {
 // Aliased imports record calls under the local name, not the symbol. The graph
 // must still attribute them to the definition via the binding's imported name
 // (ES alias) or the target's default export (CommonJS require).
+// JSX component usage (<Foo/>) must register as a caller of the component
+// definition, resolved through the default import binding. HTML tags (<div>)
+// are not components and must not be recorded.
+func TestJSXComponentCallers(t *testing.T) {
+	root, files := writeProject(t, map[string]string{
+		"Foo.jsx": `export default function Foo() { return <span/> }`,
+		"App.jsx": `import Foo from './Foo'; export default function App() { return <div><Foo/></div> }`,
+	})
+	g := Build(root, files)
+
+	var found bool
+	for _, d := range g.GetContext("Foo").Definitions {
+		if d.File != "Foo.jsx" {
+			continue
+		}
+		for _, c := range d.Callers {
+			if c.File == "App.jsx" {
+				found = true
+				if !c.Resolved {
+					t.Errorf("JSX <Foo/> caller should be resolved via default import")
+				}
+			}
+		}
+	}
+	if !found {
+		t.Errorf("expected App.jsx among Foo callers via JSX usage")
+	}
+	if len(g.Calls("div")) != 0 || len(g.Calls("span")) != 0 {
+		t.Errorf("HTML tags must not be recorded as component calls")
+	}
+}
+
 func TestAliasCallerResolution(t *testing.T) {
 	root, files := writeProject(t, map[string]string{
 		"a.js":       `export function handler() {}`,
