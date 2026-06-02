@@ -30,4 +30,5 @@ type Finding struct {
 	Message  string   `json:"message"`
 	Fix      string   `json:"fix,omitempty"`
 	Context  string   `json:"context,omitempty"`
+	Snippet  string   `json:"snippet,omitempty"`
 }
