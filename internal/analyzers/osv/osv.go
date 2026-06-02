@@ -3,6 +3,7 @@ package osv
 import (
 	"encoding/json"
 	"os/exec"
+	"path/filepath"
 
 	"github.com/aykutssert/inspector/internal/core"
 )
@@ -51,6 +52,10 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 	}
 	var findings []core.Finding
 	for _, res := range parsed.Results {
+		file := res.Source.Path
+		if rel, err := filepath.Rel(ctx.Root, file); err == nil {
+			file = rel
+		}
 		for _, pkg := range res.Packages {
 			for _, v := range pkg.Vulnerabilities {
 				findings = append(findings, core.Finding{
@@ -58,7 +63,7 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 					RuleID:   v.ID,
 					Severity: core.SeverityError,
 					Level:    core.SeverityError.String(),
-					File:     res.Source.Path,
+					File:     file,
 					Message:  pkg.Package.Name + "@" + pkg.Package.Version + ": " + v.Summary,
 					Fix:      "Upgrade " + pkg.Package.Name + " to a version without " + v.ID,
 				})
