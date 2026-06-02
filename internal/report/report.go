@@ -35,7 +35,11 @@ func Terminal(w io.Writer, r core.Report) {
 		if f.Line > 0 {
 			loc = fmt.Sprintf("%s:%d", f.File, f.Line)
 		}
-		fmt.Fprintf(w, "[%s] %s  %s\n", f.Level, f.Analyzer, loc)
+		tag := f.Level
+		if f.Category != "" {
+			tag = f.Level + "/" + f.Category
+		}
+		fmt.Fprintf(w, "[%s] %s  %s\n", tag, f.Analyzer, loc)
 		fmt.Fprintf(w, "  %s\n", f.Message)
 		if f.Fix != "" {
 			fmt.Fprintf(w, "  fix: %s\n", f.Fix)

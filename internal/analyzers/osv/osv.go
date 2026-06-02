@@ -96,6 +96,7 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 					RuleID:   v.ID,
 					Severity: core.SeverityError,
 					Level:    core.SeverityError.String(),
+					Category: "security",
 					File:     file,
 					Message:  pkg.Package.Name + "@" + pkg.Package.Version + ": " + v.Summary,
 					Fix:      "Upgrade " + pkg.Package.Name + " to a version without " + v.ID,

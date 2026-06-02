@@ -73,6 +73,7 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 			RuleID:   "historically-risky-file",
 			Severity: core.SeverityInfo,
 			Level:    core.SeverityInfo.String(),
+			Category: "quality",
 			File:     file,
 			Message:  "This file had many past fix/bug/security commits — review changes here carefully.",
 			Context:  "fix-related commits touching this file: " + itoa(n),

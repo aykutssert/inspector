@@ -25,10 +25,13 @@ type Finding struct {
 	RuleID   string   `json:"rule_id"`
 	Severity Severity `json:"-"`
 	Level    string   `json:"severity"`
-	File     string   `json:"file,omitempty"`
-	Line     int      `json:"line,omitempty"`
-	Message  string   `json:"message"`
-	Fix      string   `json:"fix,omitempty"`
-	Context  string   `json:"context,omitempty"`
-	Snippet  string   `json:"snippet,omitempty"`
+	// Category classifies the kind of issue, independent of severity:
+	// "security", "bug", "performance", or "quality". Empty when unknown.
+	Category string `json:"category,omitempty"`
+	File     string `json:"file,omitempty"`
+	Line     int    `json:"line,omitempty"`
+	Message  string `json:"message"`
+	Fix      string `json:"fix,omitempty"`
+	Context  string `json:"context,omitempty"`
+	Snippet  string `json:"snippet,omitempty"`
 }

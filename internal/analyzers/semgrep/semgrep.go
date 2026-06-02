@@ -40,8 +40,19 @@ type semgrepOut struct {
 			Message  string `json:"message"`
 			Severity string `json:"severity"`
 			Fix      string `json:"fix"`
+			Metadata struct {
+				Category string          `json:"category"`
+				Cwe      json.RawMessage `json:"cwe"`
+				Owasp    json.RawMessage `json:"owasp"`
+			} `json:"metadata"`
 		} `json:"extra"`
 	} `json:"results"`
+}
+
+// present reports whether a JSON metadata field carries a real value (semgrep
+// emits cwe/owasp as a string or array, or omits them entirely).
+func present(raw json.RawMessage) bool {
+	return len(raw) > 0 && string(raw) != "null" && string(raw) != `""` && string(raw) != "[]"
 }
 
 func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
@@ -70,11 +81,13 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 	var findings []core.Finding
 	for _, r := range parsed.Results {
 		sev := mapSeverity(r.Extra.Severity)
+		cat := classify(r.Extra.Metadata.Category, present(r.Extra.Metadata.Cwe) || present(r.Extra.Metadata.Owasp))
 		findings = append(findings, core.Finding{
 			Analyzer: a.Name(),
 			RuleID:   r.CheckID,
 			Severity: sev,
 			Level:    sev.String(),
+			Category: cat,
 			File:     r.Path,
 			Line:     r.Start.Line,
 			Message:  r.Extra.Message,
@@ -82,6 +95,25 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 		})
 	}
 	return findings, nil
+}
+
+// classify maps semgrep rule metadata to our finding category. A CWE/OWASP tag
+// means security regardless of the declared category.
+func classify(metaCategory string, hasSecurityTag bool) string {
+	if hasSecurityTag {
+		return "security"
+	}
+	switch metaCategory {
+	case "security":
+		return "security"
+	case "performance":
+		return "performance"
+	case "correctness":
+		return "bug"
+	case "best-practice", "maintainability", "portability", "compatibility":
+		return "quality"
+	}
+	return ""
 }
 
 func mapSeverity(s string) core.Severity {
