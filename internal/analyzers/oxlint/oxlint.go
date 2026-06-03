@@ -2,8 +2,10 @@ package oxlint
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 
 	"github.com/aykutssert/inspector/internal/core"
@@ -33,9 +35,13 @@ func (a *Analyzer) Available() bool {
 //   - button-has-type ON: a <button> defaults to type="submit" and silently
 //     submits forms; a real bug the default config misses.
 //
+// The nextjs plugin is appended only for real Next.js projects (see isNextProject);
+// its rules (@next/no-img-element, no-html-link-for-pages) fire on any <img>/<a>
+// and would be noise in a plain React app.
+//
 // Written to a temp file per scan so the user's repo is never touched.
-const curatedConfig = `{
-  "plugins": ["react", "react-perf", "jsx-a11y"],
+const baseConfig = `{
+  "plugins": [%s],
   "categories": { "correctness": "warn", "suspicious": "warn", "perf": "warn" },
   "rules": {
     "react/react-in-jsx-scope": "off",
@@ -43,6 +49,43 @@ const curatedConfig = `{
     "react/button-has-type": "warn"
   }
 }`
+
+// buildConfig assembles the oxlint config, enabling the Next.js plugin only when
+// the scanned project is actually a Next.js app.
+func buildConfig(next bool) string {
+	plugins := `"react", "react-perf", "jsx-a11y"`
+	if next {
+		plugins += `, "nextjs"`
+	}
+	return fmt.Sprintf(baseConfig, plugins)
+}
+
+// isNextProject reports whether the scan target is a Next.js app: a next.config.*
+// among the scanned files, or a "next" entry in the root package.json deps.
+func isNextProject(ctx core.ProjectContext) bool {
+	for _, f := range ctx.Files {
+		base := filepath.Base(f)
+		if strings.HasPrefix(base, "next.config.") {
+			return true
+		}
+	}
+	data, err := os.ReadFile(filepath.Join(ctx.Root, "package.json"))
+	if err != nil {
+		return false
+	}
+	var pkg struct {
+		Dependencies    map[string]string `json:"dependencies"`
+		DevDependencies map[string]string `json:"devDependencies"`
+	}
+	if json.Unmarshal(data, &pkg) != nil {
+		return false
+	}
+	if _, ok := pkg.Dependencies["next"]; ok {
+		return true
+	}
+	_, ok := pkg.DevDependencies["next"]
+	return ok
+}
 
 type oxlintOut struct {
 	Diagnostics []struct {
@@ -69,7 +112,7 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 		return nil, err
 	}
 	defer os.Remove(cfg.Name())
-	if _, err := cfg.WriteString(curatedConfig); err != nil {
+	if _, err := cfg.WriteString(buildConfig(isNextProject(ctx))); err != nil {
 		cfg.Close()
 		return nil, err
 	}
@@ -138,6 +181,8 @@ func classify(plugin string) string {
 		return "quality"
 	case "react", "typescript", "oxc":
 		return "bug"
+	case "nextjs":
+		return "quality"
 	default:
 		return "quality"
 	}
