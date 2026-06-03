@@ -10,11 +10,65 @@ import (
 )
 
 func TestBuildConfigGatesNextjs(t *testing.T) {
-	if strings.Contains(buildConfig(false), "nextjs") {
-		t.Fatal("plain config must not enable the nextjs plugin")
+	if strings.Contains(buildConfig(true, false), "nextjs") {
+		t.Fatal("non-Next config must not enable the nextjs plugin")
 	}
-	if !strings.Contains(buildConfig(true), "nextjs") {
+	if !strings.Contains(buildConfig(true, true), "nextjs") {
 		t.Fatal("next config must enable the nextjs plugin")
+	}
+}
+
+func TestBuildConfigGatesReactPlugins(t *testing.T) {
+	nonReact := buildConfig(false, false)
+	for _, p := range []string{`"react"`, `"react-perf"`, `"jsx-a11y"`} {
+		if strings.Contains(nonReact, p) {
+			t.Fatalf("non-React config must not enable %s plugin", p)
+		}
+	}
+	// React-only rule overrides must not appear when the plugins are absent;
+	// oxlint would reject an override for an unloaded plugin's rule.
+	if strings.Contains(nonReact, "react/") || strings.Contains(nonReact, "react-perf/") {
+		t.Fatal("non-React config must not reference react-family rules")
+	}
+	react := buildConfig(true, false)
+	for _, p := range []string{`"react"`, `"react-perf"`, `"jsx-a11y"`} {
+		if !strings.Contains(react, p) {
+			t.Fatalf("React config must enable %s plugin", p)
+		}
+	}
+	if !strings.Contains(react, "react/button-has-type") {
+		t.Fatal("React config must carry the react rule overrides")
+	}
+}
+
+func TestIsReactProjectByDependency(t *testing.T) {
+	dir := t.TempDir()
+	pkg := `{"dependencies":{"react":"18.0.0","react-dom":"18.0.0"}}`
+	if err := os.WriteFile(filepath.Join(dir, "package.json"), []byte(pkg), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if !isReactProject(core.ProjectContext{Root: dir}) {
+		t.Fatal("react dependency should mark a React project")
+	}
+}
+
+func TestIsReactProjectByJSXFile(t *testing.T) {
+	dir := t.TempDir()
+	ctx := core.ProjectContext{Root: dir, Files: []string{filepath.Join(dir, "App.tsx")}}
+	if !isReactProject(ctx) {
+		t.Fatal(".tsx file should mark a React project")
+	}
+}
+
+func TestBackendNotReact(t *testing.T) {
+	dir := t.TempDir()
+	pkg := `{"dependencies":{"express":"4.18.0"}}`
+	if err := os.WriteFile(filepath.Join(dir, "package.json"), []byte(pkg), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	ctx := core.ProjectContext{Root: dir, Files: []string{filepath.Join(dir, "server.js")}}
+	if isReactProject(ctx) {
+		t.Fatal("a plain Express backend must not be detected as React")
 	}
 }
 

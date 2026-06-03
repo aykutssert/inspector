@@ -27,54 +27,57 @@ func (a *Analyzer) Available() bool {
 	return err == nil
 }
 
-// curatedConfig enables the React/correctness rule sets that catch real bugs
-// and codegen smells, while leaving out the stylistic/pedantic categories
-// (magic numbers, comment casing, filename case) that would drown the signal.
-// Two deliberate per-rule tweaks:
-//   - jsx-no-new-function-as-prop OFF: inline handlers are idiomatic React and
-//     this rule fires on nearly every component, so it buries the signal.
-//   - button-has-type ON: a <button> defaults to type="submit" and silently
-//     submits forms; a real bug the default config misses.
-//
-// The nextjs plugin is appended only for real Next.js projects (see isNextProject);
-// its rules (@next/no-img-element, no-html-link-for-pages) fire on any <img>/<a>
-// and would be noise in a plain React app.
+// baseConfig enables the correctness rule sets that catch real bugs and codegen
+// smells, while leaving out the stylistic/pedantic categories (magic numbers,
+// comment casing, filename case) that would drown the signal. The %s holes are
+// the plugin list and the rule-override block, both assembled by buildConfig so
+// React-only rules are referenced only when the React plugins are enabled.
 //
 // Written to a temp file per scan so the user's repo is never touched.
 const baseConfig = `{
   "plugins": [%s],
   "categories": { "correctness": "warn", "suspicious": "warn", "perf": "warn" },
-  "rules": {
+  "rules": {%s}
+}`
+
+// reactRules are the per-rule tweaks that only make sense with the React plugins
+// loaded:
+//   - react-in-jsx-scope OFF: noise under the modern JSX transform.
+//   - jsx-no-new-function-as-prop OFF: inline handlers are idiomatic React and
+//     this rule fires on nearly every component, so it buries the signal.
+//   - button-has-type ON: a <button> defaults to type="submit" and silently
+//     submits forms; a real bug the default config misses.
+const reactRules = `
     "react/react-in-jsx-scope": "off",
     "react-perf/jsx-no-new-function-as-prop": "off",
     "react/button-has-type": "warn"
-  }
-}`
+  `
 
-// buildConfig assembles the oxlint config, enabling the Next.js plugin only when
-// the scanned project is actually a Next.js app.
-func buildConfig(next bool) string {
-	plugins := `"react", "react-perf", "jsx-a11y"`
-	if next {
-		plugins += `, "nextjs"`
+// buildConfig assembles the oxlint config. The React-family plugins
+// (react, react-perf, jsx-a11y) are enabled only for actual React projects:
+// their rules (e.g. react/no-this-in-sfc) otherwise misfire on plain Node/Express
+// code, where any function using `this` is mistaken for a stateless component.
+// The Next.js plugin is appended only for real Next.js apps.
+func buildConfig(react, next bool) string {
+	var plugins []string
+	rules := ""
+	if react {
+		plugins = append(plugins, `"react"`, `"react-perf"`, `"jsx-a11y"`)
+		rules = reactRules
 	}
-	return fmt.Sprintf(baseConfig, plugins)
+	if next {
+		plugins = append(plugins, `"nextjs"`)
+	}
+	return fmt.Sprintf(baseConfig, strings.Join(plugins, ", "), rules)
 }
 
-// isNextProject reports whether the scan target is a Next.js app. It looks for a
-// next.config.* among the scanned files, or a "next" dependency in any relevant
-// package.json — the repo root plus the package.json walked up from each scanned
-// file's directory. The walk-up makes detection work in monorepos/workspaces
-// where the Next.js app lives in a sub-package (apps/web) rather than the root.
-func isNextProject(ctx core.ProjectContext) bool {
-	// package.json locations to inspect: repo root, plus every directory on the
-	// path from each scanned file up to the root.
+// relevantPkgDirs returns the package.json locations worth inspecting: the repo
+// root plus every directory on the path from each scanned file up to the root.
+// The walk-up makes dependency detection work in monorepos/workspaces where an
+// app lives in a sub-package (apps/web) rather than the root.
+func relevantPkgDirs(ctx core.ProjectContext) map[string]bool {
 	dirs := map[string]bool{ctx.Root: true}
 	for _, f := range ctx.Files {
-		base := filepath.Base(f)
-		if strings.HasPrefix(base, "next.config.") {
-			return true
-		}
 		dir := filepath.Dir(f)
 		if !filepath.IsAbs(dir) {
 			dir = filepath.Join(ctx.Root, dir)
@@ -91,17 +94,47 @@ func isNextProject(ctx core.ProjectContext) bool {
 			dir = parent
 		}
 	}
-	for dir := range dirs {
-		if pkgHasNext(filepath.Join(dir, "package.json")) {
+	return dirs
+}
+
+// isNextProject reports whether the scan target is a Next.js app: a next.config.*
+// among the scanned files, or a "next" dependency in any relevant package.json.
+func isNextProject(ctx core.ProjectContext) bool {
+	for _, f := range ctx.Files {
+		if strings.HasPrefix(filepath.Base(f), "next.config.") {
+			return true
+		}
+	}
+	for dir := range relevantPkgDirs(ctx) {
+		if pkgHasDep(filepath.Join(dir, "package.json"), "next") {
 			return true
 		}
 	}
 	return false
 }
 
-// pkgHasNext reports whether the package.json at path lists "next" among its
+// isReactProject reports whether the scan target is a React app: any scanned
+// .jsx/.tsx file, or a "react" dependency in any relevant package.json. Used to
+// gate the React-family oxlint plugins so their rules don't misfire on plain
+// Node/backend code.
+func isReactProject(ctx core.ProjectContext) bool {
+	for _, f := range ctx.Files {
+		switch strings.ToLower(filepath.Ext(f)) {
+		case ".jsx", ".tsx":
+			return true
+		}
+	}
+	for dir := range relevantPkgDirs(ctx) {
+		if pkgHasDep(filepath.Join(dir, "package.json"), "react") {
+			return true
+		}
+	}
+	return false
+}
+
+// pkgHasDep reports whether the package.json at path lists dep among its
 // dependencies or devDependencies.
-func pkgHasNext(path string) bool {
+func pkgHasDep(path, dep string) bool {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return false
@@ -113,10 +146,10 @@ func pkgHasNext(path string) bool {
 	if json.Unmarshal(data, &pkg) != nil {
 		return false
 	}
-	if _, ok := pkg.Dependencies["next"]; ok {
+	if _, ok := pkg.Dependencies[dep]; ok {
 		return true
 	}
-	_, ok := pkg.DevDependencies["next"]
+	_, ok := pkg.DevDependencies[dep]
 	return ok
 }
 
@@ -145,7 +178,10 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 		return nil, err
 	}
 	defer os.Remove(cfg.Name())
-	if _, err := cfg.WriteString(buildConfig(isNextProject(ctx))); err != nil {
+	next := isNextProject(ctx)
+	// Next.js implies React, so its presence also enables the React plugins.
+	react := next || isReactProject(ctx)
+	if _, err := cfg.WriteString(buildConfig(react, next)); err != nil {
 		cfg.Close()
 		return nil, err
 	}
