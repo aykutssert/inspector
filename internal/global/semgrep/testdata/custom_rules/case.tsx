@@ -124,3 +124,11 @@ export function navigateWithRouter(router: { push(url: string): void; replace(ur
 export function navigateWithRouterSingleton(Router: { push(url: string): void }, next: string) {
   Router.push(next);
 }
+
+export function readPublicEnv() {
+  const apiSecret = process.env.NEXT_PUBLIC_API_SECRET;
+  const authToken = process.env["NEXT_PUBLIC_AUTH_TOKEN"];
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  const serverSecret = process.env.STRIPE_SECRET_KEY;
+  return { apiSecret, authToken, siteUrl, serverSecret };
+}
