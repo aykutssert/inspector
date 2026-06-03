@@ -74,7 +74,6 @@ var detectors = []detector{
 // jsxDetectors need JSX grammar (text/elements) and only run on js/jsx/tsx.
 var jsxDetectors = []detector{
 	detectEmDashInJSX,
-	detectRedundantTailwindSize,
 }
 
 func scanFile(abs, rel string) ([]core.Finding, error) {
@@ -306,55 +305,6 @@ func detectEmDashInJSX(root *sitter.Node, lang *sitter.Language, src []byte, fil
 	return out
 }
 
-const classNameQuery = `(jsx_attribute (property_identifier) @attr (string) @val)`
-
-var (
-	twWidth  = regexp.MustCompile(`(?:^|\s)w-(\S+)`)
-	twHeight = regexp.MustCompile(`(?:^|\s)h-(\S+)`)
-)
-
-// detectRedundantTailwindSize flags a className with matching w-N and h-N
-// utilities (e.g. "w-4 h-4"), which Tailwind expresses more consistently as
-// size-N. A design-consistency hint.
-func detectRedundantTailwindSize(root *sitter.Node, lang *sitter.Language, src []byte, file string) []core.Finding {
-	var out []core.Finding
-	_ = runMatches(classNameQuery, root, lang, func(caps map[string]*sitter.Node) {
-		attr := nodeText(caps["attr"], src)
-		if attr != "className" && attr != "class" {
-			return
-		}
-		val := caps["val"]
-		if val == nil {
-			return
-		}
-		classes := trimQuotes(val.Content(src))
-		if sz, ok := redundantSizeAxis(classes); ok {
-			out = append(out, hint(
-				"redundant-tailwind-size-axes", "quality", core.SeverityInfo, file,
-				int(val.StartPoint().Row)+1,
-				"Tailwind classes set w-"+sz+" and h-"+sz+" together; size-"+sz+" is the consistent form.",
-				"Replace w-"+sz+" h-"+sz+" with size-"+sz+".",
-			))
-		}
-	})
-	return out
-}
-
-// redundantSizeAxis returns a width suffix that also appears as a height suffix,
-// meaning the two axes are equal and collapsible to size-N.
-func redundantSizeAxis(classes string) (string, bool) {
-	heights := map[string]bool{}
-	for _, m := range twHeight.FindAllStringSubmatch(classes, -1) {
-		heights[m[1]] = true
-	}
-	for _, m := range twWidth.FindAllStringSubmatch(classes, -1) {
-		if heights[m[1]] {
-			return m[1], true
-		}
-	}
-	return "", false
-}
-
 // callsSetter reports whether the subtree calls an identifier that looks like a
 // React state setter (setX). Used to gate the depsless-effect hint.
 func callsSetter(node *sitter.Node, lang *sitter.Language, src []byte) bool {
@@ -416,8 +366,4 @@ func nodeText(node *sitter.Node, src []byte) string {
 		return ""
 	}
 	return node.Content(src)
-}
-
-func trimQuotes(s string) string {
-	return strings.Trim(s, "'\"`")
 }

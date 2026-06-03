@@ -2,6 +2,7 @@ package packs
 
 import (
 	"github.com/aykutssert/inspector/internal/analyzers/oxlint"
+	"github.com/aykutssert/inspector/internal/analyzers/tailwindlint"
 	"github.com/aykutssert/inspector/internal/core"
 	"github.com/aykutssert/inspector/internal/lang/javascript"
 )
@@ -36,5 +37,5 @@ func (javascriptPack) ContextAdapters() []core.LanguageAdapter {
 }
 
 func (javascriptPack) Analyzers() []core.Analyzer {
-	return []core.Analyzer{oxlint.New()}
+	return []core.Analyzer{oxlint.New(), tailwindlint.New()}
 }

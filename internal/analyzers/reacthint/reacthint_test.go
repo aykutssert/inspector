@@ -139,20 +139,6 @@ func TestPlainHyphenNotFlagged(t *testing.T) {
 	}
 }
 
-func TestRedundantTailwindSize(t *testing.T) {
-	src := `function C() { return <div className="flex w-4 h-4 text-sm" />; }`
-	if ids := parseSrc(t, ".tsx", src); !has(ids, "redundant-tailwind-size-axes") {
-		t.Fatalf("expected redundant-tailwind-size-axes, got %v", ids)
-	}
-}
-
-func TestDifferentTailwindAxesNotFlagged(t *testing.T) {
-	src := `function C() { return <div className="w-4 h-2" />; }`
-	if ids := parseSrc(t, ".tsx", src); has(ids, "redundant-tailwind-size-axes") {
-		t.Fatalf("unequal w/h should not be flagged, got %v", ids)
-	}
-}
-
 // Plain .ts (no JSX grammar) must still run the non-JSX detectors without error.
 func TestPlainTSParses(t *testing.T) {
 	src := `export function useThing(props: { value: number }) {
