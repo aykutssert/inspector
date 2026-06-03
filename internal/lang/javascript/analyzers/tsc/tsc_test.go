@@ -1,6 +1,9 @@
 package tsc
 
 import (
+	"os"
+	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -63,5 +66,102 @@ func TestScanNoTSFiles(t *testing.T) {
 	}
 	if got != nil {
 		t.Fatalf("expected nil, got %v", got)
+	}
+}
+
+// A TS file with no governing tsconfig anywhere up to root → no-op (tsc needs
+// a config; we must not shell out).
+func TestScanNoTSConfig(t *testing.T) {
+	root := t.TempDir()
+	got, err := New().Scan(core.ProjectContext{Root: root, Files: []string{"src/a.ts"}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got != nil {
+		t.Fatalf("expected nil, got %v", got)
+	}
+}
+
+func TestNearestTSConfigDir(t *testing.T) {
+	root := t.TempDir()
+	writeTSConfig(t, root)                    // root tsconfig
+	web := filepath.Join(root, "apps", "web") // workspace with its own
+	writeTSConfig(t, web)
+	mkdir(t, filepath.Join(root, "lib")) // no tsconfig here
+
+	// File inside a workspace resolves to that workspace, not the root.
+	if got := nearestTSConfigDir(filepath.Join(web, "src"), root); got != web {
+		t.Fatalf("workspace file: want %q, got %q", web, got)
+	}
+	// File without a nearer tsconfig falls back to the root one.
+	if got := nearestTSConfigDir(filepath.Join(root, "lib"), root); got != root {
+		t.Fatalf("root fallback: want %q, got %q", root, got)
+	}
+}
+
+func TestNearestTSConfigDirNone(t *testing.T) {
+	root := t.TempDir() // no tsconfig anywhere
+	if got := nearestTSConfigDir(filepath.Join(root, "src"), root); got != "" {
+		t.Fatalf("want empty, got %q", got)
+	}
+}
+
+func TestTSProjectDirs(t *testing.T) {
+	root := t.TempDir()
+	web := filepath.Join(root, "apps", "web")
+	ui := filepath.Join(root, "packages", "ui")
+	writeTSConfig(t, web)
+	writeTSConfig(t, ui)
+
+	ctx := core.ProjectContext{
+		Root: root,
+		Files: []string{
+			filepath.Join("apps", "web", "page.tsx"),
+			filepath.Join("apps", "web", "util.ts"), // same project, de-duped
+			filepath.Join("packages", "ui", "button.tsx"),
+			filepath.Join("apps", "web", "style.css"), // non-TS, ignored
+		},
+	}
+	want := []string{web, ui}
+	sortStrings(want)
+	if got := tsProjectDirs(ctx); !reflect.DeepEqual(got, want) {
+		t.Fatalf("want %v, got %v", want, got)
+	}
+}
+
+func TestNormalizeFile(t *testing.T) {
+	root := "/repo"
+	web := "/repo/apps/web"
+	if got := normalizeFile(root, web, "src/a.ts"); got != filepath.Join("apps", "web", "src", "a.ts") {
+		t.Fatalf("workspace path: got %q", got)
+	}
+	if got := normalizeFile(root, root, "src/a.ts"); got != filepath.Join("src", "a.ts") {
+		t.Fatalf("root path: got %q", got)
+	}
+	if got := normalizeFile(root, web, ""); got != "" {
+		t.Fatalf("empty path should pass through, got %q", got)
+	}
+}
+
+func writeTSConfig(t *testing.T, dir string) {
+	t.Helper()
+	mkdir(t, dir)
+	if err := os.WriteFile(filepath.Join(dir, "tsconfig.json"), []byte("{}"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func mkdir(t *testing.T, dir string) {
+	t.Helper()
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func sortStrings(s []string) {
+	for i := 1; i < len(s); i++ {
+		for j := i; j > 0 && s[j-1] > s[j]; j-- {
+			s[j-1], s[j] = s[j], s[j-1]
+		}
 	}
 }

@@ -9,6 +9,30 @@ import (
 	"github.com/aykutssert/inspector/internal/core"
 )
 
+// A sub-package tsconfig (no root tsconfig) must still register the project, so
+// monorepos are no longer skipped wholesale.
+func TestTSConfigDirsMonorepo(t *testing.T) {
+	root := t.TempDir()
+	web := filepath.Join(root, "apps", "web")
+	if err := os.MkdirAll(web, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(web, "tsconfig.json"), []byte("{}"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	ctx := core.ProjectContext{
+		Root: root,
+		Files: []string{
+			filepath.Join("apps", "web", "page.tsx"),
+			filepath.Join("apps", "web", "x.js"), // non-TS, ignored
+		},
+	}
+	got := tsConfigDirs(ctx)
+	if len(got) != 1 || got[0] != web {
+		t.Fatalf("want [%s], got %v", web, got)
+	}
+}
+
 func TestMapSeverity(t *testing.T) {
 	if mapSeverity(2) != core.SeverityError || mapSeverity(1) != core.SeverityWarning || mapSeverity(0) != core.SeverityInfo {
 		t.Fatal("severity mapping wrong")
