@@ -11,5 +11,13 @@ export default [
       parser: svelteParser,
       parserOptions: { ecmaVersion: 'latest', sourceType: 'module' },
     },
+    rules: {
+      // no-navigation-without-resolve is a SvelteKit base-path convention, not a
+      // bug class. It fired 29x (all error) on a real app, drowning the actual
+      // security finding (no-at-html-tags, XSS) and inflating exit codes. Keep it
+      // visible as a warning but stop it from dominating. The real
+      // security/correctness rules (no-at-html-tags, require-each-key) stay error.
+      'svelte/no-navigation-without-resolve': 'warn',
+    },
   },
 ];
