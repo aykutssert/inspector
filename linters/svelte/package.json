@@ -1,0 +1,13 @@
+{
+  "name": "inspector-svelte-linter",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Managed Svelte lint toolchain wrapped by inspector (eslint + eslint-plugin-svelte).",
+  "type": "module",
+  "dependencies": {
+    "eslint": "^9.0.0",
+    "eslint-plugin-svelte": "^3.19.0",
+    "svelte": "^5.0.0",
+    "svelte-eslint-parser": "^1.7.1"
+  }
+}

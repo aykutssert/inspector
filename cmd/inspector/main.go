@@ -12,10 +12,12 @@ import (
 	"github.com/aykutssert/inspector/internal/analyzers/oxlint"
 	"github.com/aykutssert/inspector/internal/analyzers/reacthint"
 	"github.com/aykutssert/inspector/internal/analyzers/semgrep"
+	"github.com/aykutssert/inspector/internal/analyzers/sveltelint"
 	"github.com/aykutssert/inspector/internal/codegraph"
 	"github.com/aykutssert/inspector/internal/core"
 	"github.com/aykutssert/inspector/internal/lang"
 	"github.com/aykutssert/inspector/internal/lang/javascript"
+	"github.com/aykutssert/inspector/internal/lang/svelte"
 	"github.com/aykutssert/inspector/internal/report"
 	"github.com/aykutssert/inspector/internal/scan"
 )
@@ -61,7 +63,7 @@ func runScan(args []string) {
 
 	// add new languages here
 	jsAdapter := javascript.New(*rulesDir)
-	adapters := []core.LanguageAdapter{jsAdapter}
+	adapters := []core.LanguageAdapter{jsAdapter, svelte.New()}
 	registry := lang.NewRegistry(adapters...)
 
 	// Each adapter declares where its user-authored rule packs live; semgrep
@@ -105,6 +107,7 @@ func runScan(args []string) {
 		semgrep.New("", customRuleDirs...),
 		oxlint.New(),
 		reacthint.New(),
+		sveltelint.New(),
 		osv.New(),
 		gitlog.New(),
 	)

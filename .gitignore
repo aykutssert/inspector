@@ -8,6 +8,9 @@
 *.test
 *.out
 
+# managed linter toolchains: commit manifests, not installed deps
+linters/*/node_modules/
+
 # os / editor
 .DS_Store
 .idea/
