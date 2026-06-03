@@ -1,0 +1,30 @@
+rules:
+  - id: await-in-loop
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      An await sits directly inside a loop, so the iterations run strictly one
+      after another: each waits for the previous to finish. When the operations are
+      independent (e.g. fetching N urls), this is needlessly slow and should be
+      parallelized with Promise.all(items.map(...)). If each iteration genuinely
+      depends on the previous, or you are intentionally rate-limiting, the serial
+      form is correct.
+    metadata:
+      category: performance
+      # hint: serial awaits are sometimes required (ordered/dependent work or
+      # deliberate throttling), so the agent confirms the iterations are independent
+      # before parallelizing.
+      confidence: hint
+    pattern-either:
+      - pattern: |
+          for (...) {
+            ...
+            await ...;
+            ...
+          }
+      - pattern: |
+          while (...) {
+            ...
+            await ...;
+            ...
+          }

@@ -13,7 +13,7 @@ export function Example({ html, token, items }: Props) {
   console.log("debug", html);
   console.debug(token);
   try {
-    doRisky(html);
+    JSON.parse(html);
   } catch (err) {
   }
 
@@ -31,4 +31,10 @@ export function Example({ html, token, items }: Props) {
       ))}
     </>
   );
+}
+
+export async function loadAll(ids: string[]) {
+  for (const id of ids) {
+    await fetch(id);
+  }
 }

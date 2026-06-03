@@ -1,5 +1,14 @@
 [
   {
+    "rule_id": "await-in-loop",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 37,
+    "message": "An await sits directly inside a loop, so the iterations run strictly one after another: each waits for the previous to finish. When the operations are independent (e.g. fetching N urls), this is needlessly slow and should be parallelized with Promise.all(items.map(...)). If each iteration genuinely depends on the previous, or you are intentionally rate-limiting, the serial form is correct.\n"
+  },
+  {
     "rule_id": "dangerously-set-inner-html-variable",
     "severity": "warning",
     "category": "security",
