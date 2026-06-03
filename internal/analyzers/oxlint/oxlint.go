@@ -47,10 +47,18 @@ const baseConfig = `{
 //     this rule fires on nearly every component, so it buries the signal.
 //   - button-has-type ON: a <button> defaults to type="submit" and silently
 //     submits forms; a real bug the default config misses.
+//   - rules-of-hooks ON (error): conditional/loop hook calls break React's hook
+//     ordering — a real crash-class bug. Not enabled by the default categories,
+//     so it must be set explicitly.
+//   - exhaustive-deps ON (warn): a useEffect/useCallback with missing deps is
+//     the most common React bug source (stale closures); warn, since it has
+//     occasional false positives the agent should verify.
 const reactRules = `
     "react/react-in-jsx-scope": "off",
     "react-perf/jsx-no-new-function-as-prop": "off",
-    "react/button-has-type": "warn"
+    "react/button-has-type": "warn",
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn"
   `
 
 // buildConfig assembles the oxlint config. The React-family plugins
@@ -62,7 +70,7 @@ func buildConfig(react, next bool) string {
 	var plugins []string
 	rules := ""
 	if react {
-		plugins = append(plugins, `"react"`, `"react-perf"`, `"jsx-a11y"`)
+		plugins = append(plugins, `"react"`, `"react-perf"`, `"jsx-a11y"`, `"react-hooks"`)
 		rules = reactRules
 	}
 	if next {
@@ -248,7 +256,7 @@ func classify(plugin string) string {
 		return "performance"
 	case "jsx-a11y":
 		return "quality"
-	case "react", "typescript", "oxc":
+	case "react", "react-hooks", "typescript", "oxc":
 		return "bug"
 	case "nextjs":
 		return "quality"

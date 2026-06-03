@@ -31,13 +31,21 @@ func TestBuildConfigGatesReactPlugins(t *testing.T) {
 		t.Fatal("non-React config must not reference react-family rules")
 	}
 	react := buildConfig(true, false)
-	for _, p := range []string{`"react"`, `"react-perf"`, `"jsx-a11y"`} {
+	for _, p := range []string{`"react"`, `"react-perf"`, `"jsx-a11y"`, `"react-hooks"`} {
 		if !strings.Contains(react, p) {
 			t.Fatalf("React config must enable %s plugin", p)
 		}
 	}
 	if !strings.Contains(react, "react/button-has-type") {
 		t.Fatal("React config must carry the react rule overrides")
+	}
+	// rules-of-hooks is not enabled by the default categories, so it must be
+	// pinned explicitly or the most important hook bug rule silently goes dark.
+	if !strings.Contains(react, "react-hooks/rules-of-hooks") {
+		t.Fatal("React config must explicitly enable react-hooks/rules-of-hooks")
+	}
+	if !strings.Contains(react, "react-hooks/exhaustive-deps") {
+		t.Fatal("React config must enable react-hooks/exhaustive-deps")
 	}
 }
 
