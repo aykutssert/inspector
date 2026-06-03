@@ -1,0 +1,20 @@
+rules:
+  - id: random-value-as-react-key
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: >
+      A React key derived from Math.random()/Date.now() changes on every
+      render, so React remounts the element each time: local state is lost,
+      inputs lose focus, and reconciliation degrades. Use a stable id from
+      the data instead.
+    metadata:
+      category: correctness
+      # No confidence field -> deterministic (rule). This is always wrong,
+      # unlike the heuristic hints; author a rule the same way and add
+      # `confidence: hint` only when the finding needs human/agent judgment.
+    patterns:
+      - pattern-either:
+          - pattern: "<$EL ... key={Math.random()} ... />"
+          - pattern: "<$EL ... key={Math.random()} ...>...</$EL>"
+          - pattern: "<$EL ... key={Date.now()} ... />"
+          - pattern: "<$EL ... key={Date.now()} ...>...</$EL>"

@@ -45,22 +45,6 @@ type resolvedBinding struct {
 	imported string
 }
 
-// bindingTarget resolves the file a call's binding points to. For a method
-// call it keys on the receiver (db in db.query()); for a bare call on the
-// callee name. ok is false when no import binding introduced that name.
-func (g *Graph) bindingTarget(file, recv, name string) (string, bool) {
-	bm := g.bindings[file]
-	if bm == nil {
-		return "", false
-	}
-	key := name
-	if recv != "" {
-		key = recv
-	}
-	b, ok := bm[key]
-	return b.target, ok
-}
-
 // binding returns the full resolved binding introduced for a call's name. Keys
 // on the receiver for a method call (db in db.query()), else on the callee name.
 func (g *Graph) binding(file, recv, name string) (resolvedBinding, bool) {
