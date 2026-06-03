@@ -24,6 +24,10 @@ rules:
           - pattern: window.location.assign($URL)
           - pattern: location.replace($URL)
           - pattern: window.location.replace($URL)
+          - pattern: router.push($URL)
+          - pattern: router.replace($URL)
+          - pattern: Router.push($URL)
+          - pattern: Router.replace($URL)
       - metavariable-pattern:
           metavariable: $URL
           patterns:

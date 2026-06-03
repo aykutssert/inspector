@@ -135,6 +135,33 @@
     "message": "A redirect/navigation target is built from a dynamic value. If this value can be influenced by a user, the app may redirect to an attacker-controlled URL. Validate against an allowlist, resolve only internal paths, or build the destination from trusted route names.\n"
   },
   {
+    "rule_id": "open-redirect-dynamic-url",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 119,
+    "message": "A redirect/navigation target is built from a dynamic value. If this value can be influenced by a user, the app may redirect to an attacker-controlled URL. Validate against an allowlist, resolve only internal paths, or build the destination from trusted route names.\n"
+  },
+  {
+    "rule_id": "open-redirect-dynamic-url",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 121,
+    "message": "A redirect/navigation target is built from a dynamic value. If this value can be influenced by a user, the app may redirect to an attacker-controlled URL. Validate against an allowlist, resolve only internal paths, or build the destination from trusted route names.\n"
+  },
+  {
+    "rule_id": "open-redirect-dynamic-url",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 125,
+    "message": "A redirect/navigation target is built from a dynamic value. If this value can be influenced by a user, the app may redirect to an attacker-controlled URL. Validate against an allowlist, resolve only internal paths, or build the destination from trusted route names.\n"
+  },
+  {
     "rule_id": "placeholder-or-ai-slop-comment",
     "severity": "warning",
     "category": "quality",

@@ -27,6 +27,7 @@ func (a *Analyzer) Available() bool { return true }
 
 // tsc emits "path(line,col): error TS1234: message".
 var diagRe = regexp.MustCompile(`^(.+?)\((\d+),(\d+)\): (error|warning) (TS\d+): (.+)$`)
+var globalDiagRe = regexp.MustCompile(`^(error|warning) (TS\d+): (.+)$`)
 
 func hasTSFiles(files []string) bool {
 	for _, f := range files {
@@ -62,42 +63,82 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 
 	cmd := exec.Command(bin, "--noEmit", "--pretty", "false", "-p", "tsconfig.json")
 	cmd.Dir = ctx.Root
-	out, err := cmd.Output()
+	out, err := cmd.CombinedOutput()
 	if err != nil {
 		// tsc exits non-zero when it reports errors; that is expected. A genuine
-		// failure (bad config, crash) produces no diagnostics on stdout.
+		// failure (crash/missing executable) produces no parseable diagnostics.
 		if _, ok := err.(*exec.ExitError); !ok {
 			return nil, execx.Err(err)
 		}
-		if len(out) == 0 {
+		if len(strings.TrimSpace(string(out))) == 0 {
 			return nil, execx.Err(err)
 		}
 	}
 
+	findings := parseDiagnostics(a.Name(), string(out))
+	if len(findings) > 0 || err == nil {
+		return findings, nil
+	}
+	return []core.Finding{unparsedOutputNotice(a.Name(), string(out))}, nil
+}
+
+func parseDiagnostics(analyzer, output string) []core.Finding {
 	var findings []core.Finding
-	for _, line := range strings.Split(string(out), "\n") {
-		m := diagRe.FindStringSubmatch(strings.TrimRight(line, "\r"))
-		if m == nil {
+	for _, line := range strings.Split(output, "\n") {
+		line = strings.TrimRight(line, "\r")
+		if finding, ok := parseFileDiagnostic(analyzer, line); ok {
+			findings = append(findings, finding)
 			continue
 		}
-		ln, _ := strconv.Atoi(m[2])
-		sev := core.SeverityError
-		if m[4] == "warning" {
-			sev = core.SeverityWarning
+		if finding, ok := parseGlobalDiagnostic(analyzer, line); ok {
+			findings = append(findings, finding)
 		}
-		findings = append(findings, core.Finding{
-			Analyzer:   a.Name(),
-			RuleID:     m[5], // TS error code
-			Severity:   sev,
-			Level:      sev.String(),
-			Category:   "bug",
-			Confidence: core.ConfidenceRule,
-			File:       m[1],
-			Line:       ln,
-			Message:    m[6],
-		})
 	}
-	return findings, nil
+	return findings
+}
+
+func parseFileDiagnostic(analyzer, line string) (core.Finding, bool) {
+	m := diagRe.FindStringSubmatch(line)
+	if m == nil {
+		return core.Finding{}, false
+	}
+	ln, _ := strconv.Atoi(m[2])
+	sev := tscSeverity(m[4])
+	return core.Finding{
+		Analyzer:   analyzer,
+		RuleID:     m[5], // TS error code
+		Severity:   sev,
+		Level:      sev.String(),
+		Category:   "bug",
+		Confidence: core.ConfidenceRule,
+		File:       m[1],
+		Line:       ln,
+		Message:    m[6],
+	}, true
+}
+
+func parseGlobalDiagnostic(analyzer, line string) (core.Finding, bool) {
+	m := globalDiagRe.FindStringSubmatch(line)
+	if m == nil {
+		return core.Finding{}, false
+	}
+	sev := tscSeverity(m[1])
+	return core.Finding{
+		Analyzer:   analyzer,
+		RuleID:     m[2],
+		Severity:   sev,
+		Level:      sev.String(),
+		Category:   "bug",
+		Confidence: core.ConfidenceRule,
+		Message:    m[3],
+	}, true
+}
+
+func tscSeverity(raw string) core.Severity {
+	if raw == "warning" {
+		return core.SeverityWarning
+	}
+	return core.SeverityError
 }
 
 // resolveTSC prefers the repo's own tsc (matching the project's TS version) and
@@ -127,4 +168,28 @@ func skipNotice(analyzer, msg string) core.Finding {
 		Message:    msg,
 		Fix:        "run `npm install` in the project so types resolve",
 	}
+}
+
+func unparsedOutputNotice(analyzer, output string) core.Finding {
+	msg := strings.TrimSpace(output)
+	if msg == "" {
+		msg = "tsc exited non-zero but produced no diagnostics."
+	}
+	return core.Finding{
+		Analyzer:   analyzer,
+		RuleID:     "type-check-output-unparsed",
+		Severity:   core.SeverityWarning,
+		Level:      core.SeverityWarning.String(),
+		Category:   "quality",
+		Confidence: core.ConfidenceHint,
+		Message:    "TypeScript type checking produced output inspector could not parse: " + firstLine(msg),
+		Fix:        "Run `tsc --noEmit --pretty false -p tsconfig.json` and fix the reported config/parser problem.",
+	}
+}
+
+func firstLine(text string) string {
+	if i := strings.IndexByte(text, '\n'); i >= 0 {
+		return text[:i]
+	}
+	return text
 }

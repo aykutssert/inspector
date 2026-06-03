@@ -3,6 +3,7 @@ package tseslint
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/aykutssert/inspector/internal/core"
@@ -20,6 +21,39 @@ func TestClassify(t *testing.T) {
 	}
 	if classify(core.SeverityWarning) != "quality" {
 		t.Fatal("warning should be quality")
+	}
+}
+
+func TestParserNoticeBecomesFinding(t *testing.T) {
+	got := eslintFindings("ts-eslint", []eslintFile{{
+		FilePath: "src/a.ts",
+		Messages: []struct {
+			RuleID   string `json:"ruleId"`
+			Severity int    `json:"severity"`
+			Message  string `json:"message"`
+			Line     int    `json:"line"`
+		}{{
+			RuleID:   "",
+			Severity: 2,
+			Message:  "Parsing error: ESLint was configured to run on this file, but that TSConfig does not include it.",
+			Line:     1,
+		}},
+	}})
+	if len(got) != 1 {
+		t.Fatalf("expected one finding, got %#v", got)
+	}
+	if got[0].RuleID != "parser-error" || got[0].File != "src/a.ts" || got[0].Severity != core.SeverityError {
+		t.Fatalf("bad parser finding: %#v", got[0])
+	}
+}
+
+func TestESLintRunFailure(t *testing.T) {
+	got := eslintRunFailure("ts-eslint", "Oops! Something went wrong\nsecond line")
+	if got.RuleID != "type-aware-lint-failed" || !strings.Contains(got.Message, "Oops! Something went wrong") {
+		t.Fatalf("bad run failure: %#v", got)
+	}
+	if strings.Contains(got.Message, "second line") {
+		t.Fatalf("message should keep first line only: %q", got.Message)
 	}
 }
 

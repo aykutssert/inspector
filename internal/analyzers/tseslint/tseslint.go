@@ -59,43 +59,51 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 	cmd.Dir = ctx.Root
 	out, err := cmd.Output()
 	if err != nil {
-		if _, ok := err.(*exec.ExitError); !ok {
+		exit, ok := err.(*exec.ExitError)
+		if !ok {
 			return nil, execx.Err(err)
 		}
 		if len(out) == 0 {
-			return nil, execx.Err(err)
+			return []core.Finding{eslintRunFailure(a.Name(), string(exit.Stderr))}, nil
 		}
 	}
 
 	var parsed []eslintFile
 	if err := json.Unmarshal(out, &parsed); err != nil {
-		return nil, err
+		return []core.Finding{eslintRunFailure(a.Name(), string(out))}, nil
 	}
 
+	return eslintFindings(a.Name(), parsed), nil
+}
+
+func eslintFindings(analyzer string, parsed []eslintFile) []core.Finding {
 	var findings []core.Finding
 	for _, f := range parsed {
 		for _, m := range f.Messages {
-			if m.RuleID == "" {
-				continue // parser notices (e.g. file outside project), not rules
-			}
 			if isUnknownRuleNotice(m.Message) {
 				continue // project source disables a rule we don't load; not our finding
 			}
+			ruleID := strings.TrimPrefix(m.RuleID, "@typescript-eslint/")
+			confidence := core.ConfidenceRule
+			if ruleID == "" {
+				ruleID = "parser-error"
+				confidence = core.ConfidenceHint
+			}
 			sev := mapSeverity(m.Severity)
 			findings = append(findings, core.Finding{
-				Analyzer:   a.Name(),
-				RuleID:     strings.TrimPrefix(m.RuleID, "@typescript-eslint/"),
+				Analyzer:   analyzer,
+				RuleID:     ruleID,
 				Severity:   sev,
 				Level:      sev.String(),
 				Category:   classify(sev),
-				Confidence: core.ConfidenceRule,
+				Confidence: confidence,
 				File:       f.FilePath,
 				Line:       m.Line,
 				Message:    m.Message,
 			})
 		}
 	}
-	return findings, nil
+	return findings
 }
 
 type eslintFile struct {
@@ -147,4 +155,28 @@ func skipNotice(analyzer, msg string) core.Finding {
 		Message:    msg,
 		Fix:        "run `npm install` in the project so types resolve",
 	}
+}
+
+func eslintRunFailure(analyzer, output string) core.Finding {
+	msg := strings.TrimSpace(output)
+	if msg == "" {
+		msg = "eslint exited non-zero but produced no JSON output."
+	}
+	return core.Finding{
+		Analyzer:   analyzer,
+		RuleID:     "type-aware-lint-failed",
+		Severity:   core.SeverityWarning,
+		Level:      core.SeverityWarning.String(),
+		Category:   "quality",
+		Confidence: core.ConfidenceHint,
+		Message:    "Type-aware lint could not complete: " + firstLine(msg),
+		Fix:        "Run the project's type-aware ESLint command and fix the parser/config problem.",
+	}
+}
+
+func firstLine(text string) string {
+	if i := strings.IndexByte(text, '\n'); i >= 0 {
+		return text[:i]
+	}
+	return text
 }

@@ -69,11 +69,14 @@ var detectors = []detector{
 	detectDerivedState,
 	detectSetStateInEffectNoDeps,
 	detectPreferUseReducer,
+	detectGodComponent,
+	detectRepeatedLiteral,
 }
 
 // jsxDetectors need JSX grammar (text/elements) and only run on js/jsx/tsx.
 var jsxDetectors = []detector{
 	detectEmDashInJSX,
+	detectRenderTimeAllocation,
 }
 
 func scanFile(abs, rel string) ([]core.Finding, error) {
@@ -257,6 +260,53 @@ func detectPreferUseReducer(root *sitter.Node, lang *sitter.Language, src []byte
 	return out
 }
 
+const (
+	godComponentVeryLargeLines = 160
+	godComponentBusyLines      = 100
+	godComponentHookThreshold  = 8
+	godComponentPropThreshold  = 12
+	godComponentBusyHooks      = 5
+	godComponentBusyProps      = 8
+)
+
+// detectGodComponent flags React components whose size or public prop/hook
+// surface has crossed a maintainability threshold. This is intentionally a
+// hint: large components can be valid, but they are expensive context for an
+// agent and usually hide extractable UI or custom hooks.
+func detectGodComponent(root *sitter.Node, lang *sitter.Language, src []byte, file string) []core.Finding {
+	var out []core.Finding
+	_ = runMatches(componentQuery, root, lang, func(caps map[string]*sitter.Node) {
+		name := nodeText(caps["name"], src)
+		fn := caps["fn"]
+		if fn == nil || !isComponentName(name) {
+			return
+		}
+		lines := int(fn.EndPoint().Row-fn.StartPoint().Row) + 1
+		hooks := countReactHooks(fn, lang, src)
+		props := countComponentProps(fn, src)
+		if !isGodComponent(lines, hooks, props) {
+			return
+		}
+		out = append(out, hint(
+			"god-component", "quality", core.SeverityInfo, file,
+			int(fn.StartPoint().Row)+1,
+			name+" is large/complex ("+strconv.Itoa(lines)+" lines, "+strconv.Itoa(hooks)+" hooks, "+strconv.Itoa(props)+" props); this is hard to review and weak context for agents.",
+			"Split unrelated UI into child components and move stateful behavior into focused custom hooks.",
+		))
+	})
+	return out
+}
+
+func isGodComponent(lines, hooks, props int) bool {
+	if lines >= godComponentVeryLargeLines {
+		return true
+	}
+	if hooks >= godComponentHookThreshold || props >= godComponentPropThreshold {
+		return true
+	}
+	return lines >= godComponentBusyLines && (hooks >= godComponentBusyHooks || props >= godComponentBusyProps)
+}
+
 // isComponentOrHook matches React naming: a component is capitalized, a hook is
 // prefixed with "use". Avoids flagging plain helpers that happen to call hooks.
 func isComponentOrHook(name string) bool {
@@ -269,6 +319,10 @@ func isComponentOrHook(name string) bool {
 	return strings.HasPrefix(name, "use")
 }
 
+func isComponentName(name string) bool {
+	return name != "" && name[0] >= 'A' && name[0] <= 'Z'
+}
+
 func countUseState(node *sitter.Node, lang *sitter.Language, src []byte) int {
 	n := 0
 	_ = runQuery(setterCallQuery, node, lang, func(_ string, id *sitter.Node) {
@@ -277,6 +331,240 @@ func countUseState(node *sitter.Node, lang *sitter.Language, src []byte) int {
 		}
 	})
 	return n
+}
+
+func countReactHooks(node *sitter.Node, lang *sitter.Language, src []byte) int {
+	n := 0
+	_ = runQuery(setterCallQuery, node, lang, func(_ string, id *sitter.Node) {
+		if isHookName(id.Content(src)) {
+			n++
+		}
+	})
+	return n
+}
+
+func isHookName(name string) bool {
+	return len(name) > 3 && strings.HasPrefix(name, "use") && name[3] >= 'A' && name[3] <= 'Z'
+}
+
+func countComponentProps(node *sitter.Node, src []byte) int {
+	text := node.Content(src)
+	open := strings.Index(text, "{")
+	if open == -1 {
+		return 0
+	}
+	close := matchingBrace(text, open)
+	if close == -1 || !braceLooksLikeParamDestructure(text, close) {
+		return 0
+	}
+	return countTopLevelCommaItems(text[open+1 : close])
+}
+
+func matchingBrace(text string, open int) int {
+	depth := 0
+	for i := open; i < len(text); i++ {
+		switch text[i] {
+		case '{':
+			depth++
+		case '}':
+			depth--
+			if depth == 0 {
+				return i
+			}
+		}
+	}
+	return -1
+}
+
+func braceLooksLikeParamDestructure(text string, close int) bool {
+	rest := strings.TrimSpace(text[close+1:])
+	if strings.HasPrefix(rest, ")") || strings.HasPrefix(rest, "=>") || strings.HasPrefix(rest, ",") {
+		return true
+	}
+	if !strings.HasPrefix(rest, ":") {
+		return false
+	}
+	closeParen := strings.Index(rest, ")")
+	body := strings.Index(rest, "{")
+	return closeParen != -1 && (body == -1 || closeParen < body)
+}
+
+func countTopLevelCommaItems(text string) int {
+	count, depth, hasToken := 0, 0, false
+	for i := 0; i < len(text); i++ {
+		switch text[i] {
+		case '{', '[', '(':
+			depth++
+			hasToken = true
+		case '}', ']', ')':
+			if depth > 0 {
+				depth--
+			}
+			hasToken = true
+		case ',':
+			if depth == 0 {
+				if hasToken {
+					count++
+				}
+				hasToken = false
+				continue
+			}
+			hasToken = true
+		case ' ', '\n', '\r', '\t':
+		default:
+			hasToken = true
+		}
+	}
+	if hasToken {
+		count++
+	}
+	return count
+}
+
+const (
+	repeatedStringThreshold = 4
+	repeatedNumberThreshold = 3
+	maxRepeatedLiteralHints = 5
+)
+
+const literalQuery = `[(string) (number)] @lit`
+
+type literalStat struct {
+	kind      string
+	display   string
+	firstLine int
+	count     int
+}
+
+// detectRepeatedLiteral flags repeated magic strings/numbers in one file. The
+// signal is grouped per literal to avoid noisy output: a repeated value gets one
+// hint at its first occurrence, not one finding per use.
+func detectRepeatedLiteral(root *sitter.Node, lang *sitter.Language, src []byte, file string) []core.Finding {
+	stats := map[string]*literalStat{}
+	_ = runQuery(literalQuery, root, lang, func(_ string, node *sitter.Node) {
+		if isInsideNodeType(node, "import_statement") || isInsideNodeType(node, "export_statement") {
+			return
+		}
+		kind, value, ok := normalizedLiteral(node, src)
+		if !ok {
+			return
+		}
+		key := kind + ":" + value
+		stat := stats[key]
+		if stat == nil {
+			stat = &literalStat{
+				kind:      kind,
+				display:   value,
+				firstLine: int(node.StartPoint().Row) + 1,
+			}
+			stats[key] = stat
+		}
+		stat.count++
+	})
+
+	out := make([]core.Finding, 0, len(stats))
+	for _, stat := range stats {
+		if !isRepeatedLiteral(stat) {
+			continue
+		}
+		out = append(out, hint(
+			"repeated-magic-literal", "quality", core.SeverityInfo, file, stat.firstLine,
+			stat.kind+" literal "+stat.display+" is repeated "+strconv.Itoa(stat.count)+" times in this file; repeated domain values are easy to mistype and hard for agents to safely change.",
+			"Extract the value to a named constant, enum, route map, or shared configuration when the repetitions refer to the same concept.",
+		))
+	}
+	sortFindingsByLine(out)
+	if len(out) > maxRepeatedLiteralHints {
+		out = out[:maxRepeatedLiteralHints]
+	}
+	return out
+}
+
+func normalizedLiteral(node *sitter.Node, src []byte) (kind, value string, ok bool) {
+	text := strings.TrimSpace(node.Content(src))
+	switch node.Type() {
+	case "string":
+		value = normalizeStringLiteral(text)
+		if !isMagicStringCandidate(value) {
+			return "", "", false
+		}
+		return "string", strconv.Quote(value), true
+	case "number":
+		value = normalizeNumberLiteral(text)
+		if !isMagicNumberCandidate(value) {
+			return "", "", false
+		}
+		return "number", value, true
+	default:
+		return "", "", false
+	}
+}
+
+func normalizeStringLiteral(text string) string {
+	if len(text) < 2 {
+		return text
+	}
+	quote := text[0]
+	if (quote == '"' || quote == '\'') && text[len(text)-1] == quote {
+		if unquoted, err := strconv.Unquote(text); err == nil {
+			return unquoted
+		}
+		return text[1 : len(text)-1]
+	}
+	return text
+}
+
+func normalizeNumberLiteral(text string) string {
+	return strings.ReplaceAll(strings.ToLower(text), "_", "")
+}
+
+func isMagicStringCandidate(value string) bool {
+	if len(strings.TrimSpace(value)) < 4 {
+		return false
+	}
+	switch value {
+	case "true", "false", "null", "undefined", "use strict":
+		return false
+	default:
+		return true
+	}
+}
+
+func isMagicNumberCandidate(value string) bool {
+	switch value {
+	case "", "0", "1", "2", "-1":
+		return false
+	default:
+		return true
+	}
+}
+
+func isRepeatedLiteral(stat *literalStat) bool {
+	switch stat.kind {
+	case "string":
+		return stat.count >= repeatedStringThreshold
+	case "number":
+		return stat.count >= repeatedNumberThreshold
+	default:
+		return false
+	}
+}
+
+func isInsideNodeType(node *sitter.Node, typ string) bool {
+	for parent := node.Parent(); parent != nil; parent = parent.Parent() {
+		if parent.Type() == typ {
+			return true
+		}
+	}
+	return false
+}
+
+func sortFindingsByLine(findings []core.Finding) {
+	for i := 1; i < len(findings); i++ {
+		for j := i; j > 0 && findings[j].Line < findings[j-1].Line; j-- {
+			findings[j], findings[j-1] = findings[j-1], findings[j]
+		}
+	}
 }
 
 const jsxTextQuery = `(jsx_text) @t`
@@ -303,6 +591,51 @@ func detectEmDashInJSX(root *sitter.Node, lang *sitter.Language, src []byte, fil
 		))
 	})
 	return out
+}
+
+const jsxExpressionQuery = `(jsx_expression) @expr`
+
+// detectRenderTimeAllocation flags fresh allocations embedded directly in JSX
+// expressions: object literals, regex literals, and new Date(...). These are
+// recreated on every render and can defeat memoization or do avoidable work in
+// hot render paths. It stays JSX-scoped so ordinary function code is not flagged.
+func detectRenderTimeAllocation(root *sitter.Node, lang *sitter.Language, src []byte, file string) []core.Finding {
+	var out []core.Finding
+	seen := map[int]bool{}
+	_ = runQuery(jsxExpressionQuery, root, lang, func(_ string, node *sitter.Node) {
+		kind := renderAllocationKind(node, src)
+		if kind == "" {
+			return
+		}
+		line := int(node.StartPoint().Row) + 1
+		if seen[line] {
+			return
+		}
+		seen[line] = true
+		out = append(out, hint(
+			"render-time-allocation", "performance", core.SeverityInfo, file, line,
+			"JSX contains "+kind+" created during render; this work repeats on every render and can break memoization by changing identity.",
+			"Move stable values outside the component, or wrap render-dependent values in useMemo when identity matters.",
+		))
+	})
+	return out
+}
+
+func renderAllocationKind(node *sitter.Node, src []byte) string {
+	for i := 0; i < int(node.NamedChildCount()); i++ {
+		ch := node.NamedChild(i)
+		switch ch.Type() {
+		case "object":
+			return "an inline object"
+		case "regex":
+			return "a regex literal"
+		case "new_expression":
+			if strings.HasPrefix(strings.TrimSpace(ch.Content(src)), "new Date") {
+				return "new Date(...)"
+			}
+		}
+	}
+	return ""
 }
 
 // callsSetter reports whether the subtree calls an identifier that looks like a

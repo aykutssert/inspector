@@ -114,3 +114,13 @@ export function receiveMessages(allowedOrigins: string[]) {
 export async function loadAllInParallel(ids: string[]) {
   await Promise.all(ids.map((id) => fetch(id)));
 }
+
+export function navigateWithRouter(router: { push(url: string): void; replace(url: string): void }, next: string) {
+  router.push(next);
+  router.replace("/dashboard");
+  router.replace(next);
+}
+
+export function navigateWithRouterSingleton(Router: { push(url: string): void }, next: string) {
+  Router.push(next);
+}

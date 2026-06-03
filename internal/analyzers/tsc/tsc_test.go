@@ -1,6 +1,7 @@
 package tsc
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/aykutssert/inspector/internal/core"
@@ -22,6 +23,26 @@ func TestDiagReIgnoresNonDiag(t *testing.T) {
 		if diagRe.FindStringSubmatch(line) != nil {
 			t.Fatalf("should not match: %q", line)
 		}
+	}
+}
+
+func TestParseGlobalDiagnostic(t *testing.T) {
+	got := parseDiagnostics("tsc", "error TS18003: No inputs were found in config file.\n")
+	if len(got) != 1 {
+		t.Fatalf("expected one finding, got %#v", got)
+	}
+	if got[0].RuleID != "TS18003" || got[0].File != "" || got[0].Severity != core.SeverityError {
+		t.Fatalf("bad global diagnostic: %#v", got[0])
+	}
+}
+
+func TestUnparsedOutputNotice(t *testing.T) {
+	got := unparsedOutputNotice("tsc", "Unexpected compiler output\nsecond line")
+	if got.RuleID != "type-check-output-unparsed" || !strings.Contains(got.Message, "Unexpected compiler output") {
+		t.Fatalf("bad unparsed notice: %#v", got)
+	}
+	if strings.Contains(got.Message, "second line") {
+		t.Fatalf("message should keep first line only: %q", got.Message)
 	}
 }
 
