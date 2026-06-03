@@ -34,14 +34,23 @@ func has(ids []string, id string) bool {
 	return false
 }
 
-func TestStateFromProp(t *testing.T) {
+func TestDerivedStateFromProp(t *testing.T) {
 	src := `function C(props) {
   const [v, setV] = useState(props.value);
   return null;
 }`
-	ids := parseSrc(t, ".tsx", src)
-	if !has(ids, "state-initialized-from-prop") {
-		t.Fatalf("expected state-initialized-from-prop, got %v", ids)
+	if ids := parseSrc(t, ".tsx", src); !has(ids, "no-derived-state") {
+		t.Fatalf("expected no-derived-state, got %v", ids)
+	}
+}
+
+func TestDerivedStateFromCall(t *testing.T) {
+	src := `function C(props) {
+  const [v, setV] = useState(compute(props));
+  return null;
+}`
+	if ids := parseSrc(t, ".tsx", src); !has(ids, "no-derived-state") {
+		t.Fatalf("expected no-derived-state for computed init, got %v", ids)
 	}
 }
 
@@ -51,9 +60,18 @@ func TestStateFromLiteralNotFlagged(t *testing.T) {
   const [s, setS] = useState("");
   return null;
 }`
-	ids := parseSrc(t, ".tsx", src)
-	if has(ids, "state-initialized-from-prop") {
+	if ids := parseSrc(t, ".tsx", src); has(ids, "no-derived-state") {
 		t.Fatalf("literal initializer should not be flagged, got %v", ids)
+	}
+}
+
+func TestLazyInitNotFlagged(t *testing.T) {
+	src := `function C(props) {
+  const [v, setV] = useState(() => compute(props));
+  return null;
+}`
+	if ids := parseSrc(t, ".tsx", src); has(ids, "no-derived-state") {
+		t.Fatalf("lazy initializer should not be flagged, got %v", ids)
 	}
 }
 
@@ -65,8 +83,7 @@ func TestSetStateInEffectNoDeps(t *testing.T) {
   });
   return null;
 }`
-	ids := parseSrc(t, ".tsx", src)
-	if !has(ids, "setstate-in-effect-without-deps") {
+	if ids := parseSrc(t, ".tsx", src); !has(ids, "setstate-in-effect-without-deps") {
 		t.Fatalf("expected setstate-in-effect-without-deps, got %v", ids)
 	}
 }
@@ -79,33 +96,70 @@ func TestEffectWithDepsNotFlagged(t *testing.T) {
   }, []);
   return null;
 }`
-	ids := parseSrc(t, ".tsx", src)
-	if has(ids, "setstate-in-effect-without-deps") {
+	if ids := parseSrc(t, ".tsx", src); has(ids, "setstate-in-effect-without-deps") {
 		t.Fatalf("effect with dep array should not be flagged, got %v", ids)
 	}
 }
 
-func TestEffectNoDepsWithoutSetterNotFlagged(t *testing.T) {
-	src := `function C() {
-  useEffect(() => {
-    console.log("tick");
-  });
+func TestPreferUseReducer(t *testing.T) {
+	src := `function Form() {
+  const [a, setA] = useState(0);
+  const [b, setB] = useState(0);
+  const [c, setC] = useState(0);
+  const [d, setD] = useState(0);
   return null;
 }`
-	ids := parseSrc(t, ".tsx", src)
-	if has(ids, "setstate-in-effect-without-deps") {
-		t.Fatalf("effect without a setter should not be flagged, got %v", ids)
+	if ids := parseSrc(t, ".tsx", src); !has(ids, "prefer-use-reducer") {
+		t.Fatalf("expected prefer-use-reducer, got %v", ids)
 	}
 }
 
-// Plain .ts (no JSX grammar) must still parse hooks without error.
+func TestFewUseStateNotFlagged(t *testing.T) {
+	src := `function Form() {
+  const [a, setA] = useState(0);
+  const [b, setB] = useState(0);
+  return null;
+}`
+	if ids := parseSrc(t, ".tsx", src); has(ids, "prefer-use-reducer") {
+		t.Fatalf("two useState should not suggest useReducer, got %v", ids)
+	}
+}
+
+func TestEmDashInJSX(t *testing.T) {
+	src := "function C() { return <p>Fast — and secure</p>; }"
+	if ids := parseSrc(t, ".tsx", src); !has(ids, "em-dash-in-jsx-text") {
+		t.Fatalf("expected em-dash-in-jsx-text, got %v", ids)
+	}
+}
+
+func TestPlainHyphenNotFlagged(t *testing.T) {
+	src := "function C() { return <p>well-tested code</p>; }"
+	if ids := parseSrc(t, ".tsx", src); has(ids, "em-dash-in-jsx-text") {
+		t.Fatalf("regular hyphen should not be flagged, got %v", ids)
+	}
+}
+
+func TestRedundantTailwindSize(t *testing.T) {
+	src := `function C() { return <div className="flex w-4 h-4 text-sm" />; }`
+	if ids := parseSrc(t, ".tsx", src); !has(ids, "redundant-tailwind-size-axes") {
+		t.Fatalf("expected redundant-tailwind-size-axes, got %v", ids)
+	}
+}
+
+func TestDifferentTailwindAxesNotFlagged(t *testing.T) {
+	src := `function C() { return <div className="w-4 h-2" />; }`
+	if ids := parseSrc(t, ".tsx", src); has(ids, "redundant-tailwind-size-axes") {
+		t.Fatalf("unequal w/h should not be flagged, got %v", ids)
+	}
+}
+
+// Plain .ts (no JSX grammar) must still run the non-JSX detectors without error.
 func TestPlainTSParses(t *testing.T) {
 	src := `export function useThing(props: { value: number }) {
   const [v, setV] = useState(props.value);
   return v;
 }`
-	ids := parseSrc(t, ".ts", src)
-	if !has(ids, "state-initialized-from-prop") {
+	if ids := parseSrc(t, ".ts", src); !has(ids, "no-derived-state") {
 		t.Fatalf("expected hint in .ts, got %v", ids)
 	}
 }
