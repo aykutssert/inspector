@@ -128,18 +128,55 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 	if ctx.DiffOnly && len(ctx.Files) == 0 {
 		return nil, nil
 	}
-	args := []string{"--json", "--quiet", "--metrics=off"}
-	for _, c := range a.configs {
-		args = append(args, "--config", c)
-	}
 	// User-authored custom rule packs. Skip dirs that don't exist so a project
 	// without a rules/ dir scans cleanly instead of failing.
-	var loadedDirs []string
-	for _, dir := range a.customDirs {
-		if info, err := os.Stat(dir); err == nil && info.IsDir() {
-			args = append(args, "--config", dir)
-			loadedDirs = append(loadedDirs, dir)
+	loadedDirs := existingDirs(a.customDirs)
+
+	out, err := a.run(ctx, a.configs, loadedDirs)
+	// Without --error, semgrep exits 0 even when findings exist; a non-zero exit
+	// is a real failure (config error, crash, partial run).
+	if err == nil {
+		return parseFindings(a.Name(), out, loadedDirs)
+	}
+	exit, ok := err.(*exec.ExitError)
+	if !ok {
+		return nil, execx.Err(err)
+	}
+	// A non-zero exit caused by an unreachable registry is a transient
+	// infrastructure problem, not a code defect. Reporting a hard analyzer error
+	// reads as "your code is broken", so instead we degrade: rerun with only the
+	// local rules so our own deterministic checks still produce findings, and
+	// emit one notice that registry-backed coverage was reduced.
+	registry, local := splitRegistry(a.configs)
+	if len(registry) > 0 && isRegistryFailure(string(exit.Stderr)) {
+		if len(local)+len(loadedDirs) > 0 {
+			if out2, err2 := a.run(ctx, local, loadedDirs); err2 == nil {
+				findings, perr := parseFindings(a.Name(), out2, loadedDirs)
+				if perr != nil {
+					return nil, perr
+				}
+				return append([]core.Finding{registryNotice(a.Name(), true)}, findings...), nil
+			}
 		}
+		// No local rules to fall back on: report the degraded coverage honestly
+		// rather than a misleading code error.
+		return []core.Finding{registryNotice(a.Name(), false)}, nil
+	}
+	// A genuine failure (bad rule, crash, invalid config): surface it with the
+	// process stderr so the reason is visible.
+	return nil, execx.ErrWithOutput(err, out)
+}
+
+// run invokes semgrep with the given registry/local configs plus the loaded
+// custom-rule dirs, scanning the changed files (or the whole root). It returns
+// semgrep's raw JSON stdout; a non-zero exit comes back as the error.
+func (a *Analyzer) run(ctx core.ProjectContext, configs, dirs []string) ([]byte, error) {
+	args := []string{"--json", "--quiet", "--metrics=off"}
+	for _, c := range configs {
+		args = append(args, "--config", c)
+	}
+	for _, d := range dirs {
+		args = append(args, "--config", d)
 	}
 	if len(ctx.Files) > 0 {
 		args = append(args, ctx.Files...)
@@ -149,13 +186,22 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 	cmd := exec.Command("semgrep", args...)
 	cmd.Dir = ctx.Root
 	cmd.Env = semgrepEnv()
-	out, err := cmd.Output()
-	// Without --error, semgrep exits 0 even when findings exist; a non-zero exit
-	// is a real failure (config error, crash, partial run). Surface it with the
-	// process stderr so the reason (bad config, trust-store error) is visible.
-	if err != nil {
-		return nil, execx.ErrWithOutput(err, out)
+	return cmd.Output()
+}
+
+// existingDirs keeps only the custom-rule dirs that exist, so a project without
+// a rules/ dir scans cleanly instead of failing on a missing --config path.
+func existingDirs(dirs []string) []string {
+	var out []string
+	for _, dir := range dirs {
+		if info, err := os.Stat(dir); err == nil && info.IsDir() {
+			out = append(out, dir)
+		}
 	}
+	return out
+}
+
+func parseFindings(analyzer string, out []byte, loadedDirs []string) ([]core.Finding, error) {
 	var parsed semgrepOut
 	if err := json.Unmarshal(out, &parsed); err != nil {
 		return nil, err
@@ -166,7 +212,7 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 		sev := mapSeverity(r.Extra.Severity)
 		cat := classify(r.Extra.Metadata.Category, present(r.Extra.Metadata.Cwe) || present(r.Extra.Metadata.Owasp))
 		findings = append(findings, core.Finding{
-			Analyzer:   a.Name(),
+			Analyzer:   analyzer,
 			RuleID:     cleanRuleID(r.CheckID, prefixes),
 			Severity:   sev,
 			Level:      sev.String(),
@@ -200,7 +246,7 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 			continue
 		}
 		findings = append(findings, core.Finding{
-			Analyzer:   a.Name(),
+			Analyzer:   analyzer,
 			RuleID:     "syntax-or-parse-error",
 			Severity:   core.SeverityWarning,
 			Level:      core.SeverityWarning.String(),
@@ -213,6 +259,77 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 		})
 	}
 	return findings, nil
+}
+
+// splitRegistry separates Semgrep registry references (p/…, r/…, or a
+// semgrep.dev URL — all fetched over the network) from local rule files/dirs,
+// which load offline. The split lets us drop the registry half and rerun on the
+// local half when the registry is unreachable.
+func splitRegistry(configs []string) (registry, local []string) {
+	for _, c := range configs {
+		if strings.HasPrefix(c, "p/") || strings.HasPrefix(c, "r/") || strings.HasPrefix(c, "https://semgrep.dev") {
+			registry = append(registry, c)
+		} else {
+			local = append(local, c)
+		}
+	}
+	return registry, local
+}
+
+// registryFailureMarkers are substrings Semgrep (and its HTTP layer) prints to
+// stderr when it cannot fetch rules from the registry — DNS, connectivity, TLS,
+// or a registry 5xx. They distinguish a transient network problem from a real
+// rule/config error, so we only degrade coverage when one is present.
+var registryFailureMarkers = []string{
+	"failed to download",
+	"could not reach",
+	"registry",
+	"connection error",
+	"connection refused",
+	"max retries exceeded",
+	"temporary failure in name resolution",
+	"name or service not known",
+	"network is unreachable",
+	"timed out",
+	"read timed out",
+	"failed to establish a new connection",
+	"sslerror",
+	"certificate verify failed",
+	"502 server error",
+	"503 server error",
+	"504 server error",
+	"bad gateway",
+	"service unavailable",
+}
+
+func isRegistryFailure(stderr string) bool {
+	s := strings.ToLower(stderr)
+	for _, m := range registryFailureMarkers {
+		if strings.Contains(s, m) {
+			return true
+		}
+	}
+	return false
+}
+
+// registryNotice reports, without raising a false code-defect error, that the
+// registry packs could not be downloaded this run. ranLocal distinguishes "we
+// still ran our local rules" from "semgrep produced nothing".
+func registryNotice(analyzer string, ranLocal bool) core.Finding {
+	msg := "Semgrep's registry rule packs could not be downloaded (network or registry failure) and no local rules were configured, so semgrep contributed no findings this run."
+	if ranLocal {
+		msg = "Semgrep's registry rule packs could not be downloaded (network or registry failure); only local rules ran, so registry-backed security coverage was reduced this run."
+	}
+	return core.Finding{
+		Analyzer:   analyzer,
+		RuleID:     "semgrep-registry-unavailable",
+		Severity:   core.SeverityWarning,
+		Level:      core.SeverityWarning.String(),
+		Category:   "quality",
+		Confidence: core.ConfidenceHint,
+		Message:    msg,
+		Fix:        "Restore network access so semgrep can fetch its registry rule packs, then rescan.",
+	}
 }
 
 // classify maps semgrep rule metadata to our finding category. A CWE/OWASP tag
