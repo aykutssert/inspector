@@ -69,7 +69,7 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 	}
 	// "scan source" is the documented subcommand in osv-scanner v2; it scans a
 	// project's dependency manifests/lockfiles for known vulnerabilities.
-	cmd := exec.Command("osv-scanner", "scan", "source", "--format", "json", "-r", ctx.Root)
+	cmd := exec.Command("osv-scanner", osvScanArgs(ctx.Root)...)
 	cmd.Dir = ctx.Root
 	out, err := cmd.Output()
 	if err != nil {
@@ -109,4 +109,8 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 		}
 	}
 	return findings, nil
+}
+
+func osvScanArgs(root string) []string {
+	return []string{"scan", "source", "--format", "json", "-r", root}
 }
