@@ -15,6 +15,29 @@ import (
 // otherwise. Lookup order: $INSPECTOR_HOME, the running executable's directory,
 // then the current working directory (dev checkout).
 func Dir(name string) (string, bool) {
+	if bin, ok := Bin(name, "eslint"); ok {
+		// bin = <dir>/node_modules/.bin/eslint → climb back to <dir>.
+		return filepath.Dir(filepath.Dir(filepath.Dir(bin))), true
+	}
+	return "", false
+}
+
+// Bin returns the absolute path of an installed binary inside the managed
+// toolchain named name (e.g. Bin("knip", "knip") →
+// _toolchains/knip/node_modules/.bin/knip), and ok=false when it is not
+// installed. Lookup order matches Dir: $INSPECTOR_HOME, the running
+// executable's directory, then the current working directory.
+func Bin(name, bin string) (string, bool) {
+	for _, b := range bases() {
+		p := filepath.Join(b, "_toolchains", name, "node_modules", ".bin", bin)
+		if _, err := os.Stat(p); err == nil {
+			return p, true
+		}
+	}
+	return "", false
+}
+
+func bases() []string {
 	var bases []string
 	if home := os.Getenv("INSPECTOR_HOME"); home != "" {
 		bases = append(bases, home)
@@ -25,11 +48,5 @@ func Dir(name string) (string, bool) {
 	if wd, err := os.Getwd(); err == nil {
 		bases = append(bases, wd)
 	}
-	for _, b := range bases {
-		dir := filepath.Join(b, "_toolchains", name)
-		if _, err := os.Stat(filepath.Join(dir, "node_modules", ".bin", "eslint")); err == nil {
-			return dir, true
-		}
-	}
-	return "", false
+	return bases
 }

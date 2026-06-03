@@ -1,0 +1,9 @@
+{
+  "name": "inspector-knip-toolchain",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Managed dead-code toolchain wrapped by inspector (knip: unused files, exports, and dependencies).",
+  "dependencies": {
+    "knip": "^5.0.0"
+  }
+}
