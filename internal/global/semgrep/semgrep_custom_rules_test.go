@@ -28,7 +28,7 @@ func TestJavaScriptCustomRulesGolden(t *testing.T) {
 
 	repo := repoRoot(t)
 	ruleDir := filepath.Join(repo, "rules", "javascript")
-	root := filepath.Join(repo, "internal", "analyzers", "semgrep", "testdata", "custom_rules")
+	root := filepath.Join(repo, "internal", "global", "semgrep", "testdata", "custom_rules")
 
 	a := &Analyzer{customDirs: []string{ruleDir}}
 	got, err := a.Scan(core.ProjectContext{

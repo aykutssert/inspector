@@ -1,9 +1,10 @@
-package packs
+package registry
 
 import (
 	"testing"
 
 	"github.com/aykutssert/inspector/internal/core"
+	"github.com/aykutssert/inspector/internal/lang/javascript"
 )
 
 func TestDefaultRegistryProvidesScanSurface(t *testing.T) {
@@ -40,13 +41,13 @@ func TestAnalyzersGateOnDetection(t *testing.T) {
 }
 
 func TestTailwindIsSeparatePack(t *testing.T) {
-	if hasAnalyzer(JavaScript().Analyzers(), "tailwind-lint") {
+	if hasAnalyzer(javascript.JavaScript().Analyzers(), "tailwind-lint") {
 		t.Fatal("JavaScript pack should not own Tailwind analysis")
 	}
-	if !hasAnalyzer(Tailwind().Analyzers(), "tailwind-lint") {
+	if !hasAnalyzer(javascript.Tailwind().Analyzers(), "tailwind-lint") {
 		t.Fatal("Tailwind pack should own tailwind-lint")
 	}
-	if got := Tailwind().Toolchains(); len(got) != 1 || got[0].Name != "tailwind" {
+	if got := javascript.Tailwind().Toolchains(); len(got) != 1 || got[0].Name != "tailwind" {
 		t.Fatalf("Tailwind pack should declare the tailwind toolchain, got %#v", got)
 	}
 }

@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 
 	inspectctx "github.com/aykutssert/inspector/internal/context"
-	"github.com/aykutssert/inspector/internal/packs"
+	"github.com/aykutssert/inspector/internal/registry"
 	"github.com/aykutssert/inspector/internal/scan"
 )
 
@@ -14,9 +14,9 @@ type ContextOptions struct {
 	Target string
 }
 
-func Context(opts ContextOptions, registry *packs.Registry) (inspectctx.Context, error) {
-	if registry == nil {
-		registry = packs.Default()
+func Context(opts ContextOptions, reg *registry.Registry) (inspectctx.Context, error) {
+	if reg == nil {
+		reg = registry.Default()
 	}
 	root := opts.Root
 	if root == "" {
@@ -26,11 +26,11 @@ func Context(opts ContextOptions, registry *packs.Registry) (inspectctx.Context,
 	if err != nil {
 		return inspectctx.Context{}, err
 	}
-	files, err := scan.Discover(absRoot, false, registry.ContextAdapters())
+	files, err := scan.Discover(absRoot, false, reg.ContextAdapters())
 	if err != nil {
 		return inspectctx.Context{}, err
 	}
-	providers := registry.ContextProviders()
+	providers := reg.ContextProviders()
 	if len(providers) == 0 {
 		return inspectctx.Context{}, errors.New("no context providers registered")
 	}

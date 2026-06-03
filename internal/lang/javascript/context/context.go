@@ -1,4 +1,4 @@
-package javascript
+package jscontext
 
 import (
 	"os"

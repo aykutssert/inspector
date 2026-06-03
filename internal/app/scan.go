@@ -5,7 +5,7 @@ import (
 
 	"github.com/aykutssert/inspector/internal/core"
 	"github.com/aykutssert/inspector/internal/lang"
-	"github.com/aykutssert/inspector/internal/packs"
+	"github.com/aykutssert/inspector/internal/registry"
 	"github.com/aykutssert/inspector/internal/scan"
 )
 
@@ -15,9 +15,9 @@ type ScanOptions struct {
 	RulesDir string
 }
 
-func Scan(opts ScanOptions, registry *packs.Registry) (core.Report, error) {
-	if registry == nil {
-		registry = packs.Default()
+func Scan(opts ScanOptions, reg *registry.Registry) (core.Report, error) {
+	if reg == nil {
+		reg = registry.Default()
 	}
 	root := opts.Root
 	if root == "" {
@@ -32,7 +32,7 @@ func Scan(opts ScanOptions, registry *packs.Registry) (core.Report, error) {
 	if rulesDir == "" {
 		rulesDir = "rules"
 	}
-	adapters := registry.ScanAdapters(rulesDir)
+	adapters := reg.ScanAdapters(rulesDir)
 	files, err := scan.Discover(absRoot, opts.DiffOnly, adapters)
 	if err != nil {
 		return core.Report{}, err
@@ -54,7 +54,7 @@ func Scan(opts ScanOptions, registry *packs.Registry) (core.Report, error) {
 		Changed:   changed,
 	}
 
-	orch := core.New(registry.Analyzers(ctx, customRuleDirs(adapters))...)
+	orch := core.New(reg.Analyzers(ctx, customRuleDirs(adapters))...)
 	return orch.Run(ctx), nil
 }
 
