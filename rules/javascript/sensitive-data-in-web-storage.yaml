@@ -1,0 +1,30 @@
+rules:
+  - id: sensitive-data-in-web-storage
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      A token/secret/credential is written to localStorage or sessionStorage.
+      Web storage is readable by any script on the page, so any XSS can exfiltrate
+      it; unlike an httpOnly cookie it is not protected from JavaScript. Prefer an
+      httpOnly, Secure, SameSite cookie for auth material, or keep it in memory.
+    metadata:
+      category: security
+      cwe:
+        - "CWE-922: Insecure Storage of Sensitive Information"
+      owasp:
+        - "A04:2021 - Insecure Design"
+      # hint: some non-auth values are fine to store; the agent confirms the key
+      # really holds a credential before treating this as a defect.
+      confidence: hint
+    patterns:
+      - pattern-either:
+          - pattern: localStorage.setItem($K, ...)
+          - pattern: sessionStorage.setItem($K, ...)
+          - pattern: window.localStorage.setItem($K, ...)
+          - pattern: window.sessionStorage.setItem($K, ...)
+      # semgrep applies metavariable-regex with re.match (anchored at start), and
+      # $K binds to the quoted string literal, so the leading .* skips the opening
+      # quote and lets the keyword match anywhere in the key.
+      - metavariable-regex:
+          metavariable: $K
+          regex: (?i).*(token|jwt|secret|password|passwd|auth|credential|api[-_]?key|access[-_]?key|refresh)

@@ -28,6 +28,7 @@ var defaultConfigs = []string{
 	"p/typescript",
 	"p/react",
 	"p/security-audit",
+	"p/secrets",
 }
 
 func New(config string, customDirs ...string) *Analyzer {

@@ -1,0 +1,25 @@
+rules:
+  - id: dangerously-set-inner-html-variable
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      dangerouslySetInnerHTML is fed a dynamic value (not a string literal).
+      If that value contains any user-controlled data, this is a stored/reflected
+      XSS sink. Confirm the HTML is sanitized (e.g. DOMPurify) before it reaches
+      this prop, or render the value as text instead.
+    metadata:
+      category: security
+      cwe:
+        - "CWE-79: Improper Neutralization of Input During Web Page Generation (Cross-site Scripting)"
+      owasp:
+        - "A03:2021 - Injection"
+      # hint: a sanitized value (DOMPurify.sanitize(...)) is legitimate, so the
+      # agent must verify the source rather than treat this as a guaranteed bug.
+      confidence: hint
+    patterns:
+      - pattern: "{__html: $X}"
+      - metavariable-pattern:
+          metavariable: $X
+          patterns:
+            - pattern-not: '"..."'
+            - pattern-not: "`...`"
