@@ -1,7 +1,11 @@
-package sveltelint
+// Package tseslint wraps eslint + typescript-eslint type-aware rules. These
+// catch semantic bugs that need the type checker — unhandled/misused promises,
+// awaiting non-thenables — which oxlint (no type info) cannot detect.
+package tseslint
 
 import (
 	"encoding/json"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
@@ -10,60 +14,49 @@ import (
 	"github.com/aykutssert/inspector/internal/toolchain"
 )
 
-// Analyzer wraps eslint + eslint-plugin-svelte, the proven Svelte linter, run
-// from a managed toolchain that inspector ships under linters/svelte. We do not
-// author Svelte rules ourselves; we wrap the ecosystem's linter.
 type Analyzer struct{}
 
 func New() *Analyzer { return &Analyzer{} }
 
 var _ core.Analyzer = (*Analyzer)(nil)
 
-func (a *Analyzer) Name() string { return "svelte-lint" }
+func (a *Analyzer) Name() string { return "ts-eslint" }
 
-// Available is always true: this analyzer is conditional, not mandatory. Whether
-// it has work to do (Svelte files present) and whether its toolchain is
-// installed are decided in Scan, so a non-Svelte repo is never flagged as a
-// missing-scanner error by the fail-closed orchestrator.
 func (a *Analyzer) Available() bool { return true }
 
 func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 	var targets []string
 	for _, f := range ctx.Files {
-		if strings.EqualFold(filepath.Ext(f), ".svelte") {
+		switch strings.ToLower(filepath.Ext(f)) {
+		case ".ts", ".tsx", ".mts", ".cts":
 			targets = append(targets, f)
 		}
 	}
 	if len(targets) == 0 {
-		return nil, nil // no Svelte files in this scan
+		return nil, nil
 	}
-
-	dir, ok := toolchain.Dir("svelte")
+	if _, err := os.Stat(filepath.Join(ctx.Root, "tsconfig.json")); err != nil {
+		return nil, nil // type-aware rules need a project; nothing to do
+	}
+	// Type-aware linting resolves types via the repo's node_modules; without it
+	// the parser cannot build a program and would error on every file.
+	if _, err := os.Stat(filepath.Join(ctx.Root, "node_modules")); err != nil {
+		return []core.Finding{skipNotice(a.Name(),
+			"TypeScript project found but node_modules is missing; type-aware lint was skipped.")}, nil
+	}
+	dir, ok := toolchain.Dir("typescript")
 	if !ok {
-		// Svelte files exist but the toolchain is not installed: surface partial
-		// coverage honestly instead of silently passing.
-		return []core.Finding{{
-			Analyzer:   a.Name(),
-			RuleID:     "toolchain-not-installed",
-			Severity:   core.SeverityInfo,
-			Level:      core.SeverityInfo.String(),
-			Category:   "quality",
-			Confidence: core.ConfidenceHint,
-			Message:    "Svelte files found but the svelte-lint toolchain is not installed; these files were not linted.",
-			Fix:        "cd linters/svelte && npm install",
-		}}, nil
+		return []core.Finding{skipNotice(a.Name(),
+			"TypeScript files found but the type-aware toolchain is not installed; type-aware lint was skipped.")}, nil
 	}
 
 	bin := filepath.Join(dir, "node_modules", ".bin", "eslint")
 	cfg := filepath.Join(dir, "eslint.config.mjs")
-
 	args := []string{"--config", cfg, "--format", "json"}
 	args = append(args, targets...)
 	cmd := exec.Command(bin, args...)
-	cmd.Dir = ctx.Root // base path so eslint does not ignore the files
+	cmd.Dir = ctx.Root
 	out, err := cmd.Output()
-	// eslint exits non-zero when it reports problems; that is not a failure.
-	// A real failure produces no JSON on stdout.
 	if err != nil {
 		if _, ok := err.(*exec.ExitError); !ok {
 			return nil, err
@@ -82,15 +75,15 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 	for _, f := range parsed {
 		for _, m := range f.Messages {
 			if m.RuleID == "" {
-				continue // parser/ignore notices, not a rule violation
+				continue // parser notices (e.g. file outside project), not rules
 			}
 			sev := mapSeverity(m.Severity)
 			findings = append(findings, core.Finding{
 				Analyzer:   a.Name(),
-				RuleID:     m.RuleID,
+				RuleID:     strings.TrimPrefix(m.RuleID, "@typescript-eslint/"),
 				Severity:   sev,
 				Level:      sev.String(),
-				Category:   classify(m.RuleID, sev),
+				Category:   classify(sev),
 				Confidence: core.ConfidenceRule,
 				File:       f.FilePath,
 				Line:       m.Line,
@@ -122,14 +115,22 @@ func mapSeverity(s int) core.Severity {
 	}
 }
 
-// classify maps a Svelte rule id to a finding category. a11y rules are quality;
-// otherwise severity decides: errors are likely bugs, warnings quality.
-func classify(ruleID string, sev core.Severity) string {
-	if strings.Contains(ruleID, "a11y") {
-		return "quality"
-	}
+func classify(sev core.Severity) string {
 	if sev == core.SeverityError {
 		return "bug"
 	}
 	return "quality"
+}
+
+func skipNotice(analyzer, msg string) core.Finding {
+	return core.Finding{
+		Analyzer:   analyzer,
+		RuleID:     "type-aware-skipped",
+		Severity:   core.SeverityInfo,
+		Level:      core.SeverityInfo.String(),
+		Category:   "quality",
+		Confidence: core.ConfidenceHint,
+		Message:    msg,
+		Fix:        "run `npm install` in the project so types resolve",
+	}
 }

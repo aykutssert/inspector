@@ -13,6 +13,8 @@ import (
 	"github.com/aykutssert/inspector/internal/analyzers/reacthint"
 	"github.com/aykutssert/inspector/internal/analyzers/semgrep"
 	"github.com/aykutssert/inspector/internal/analyzers/sveltelint"
+	"github.com/aykutssert/inspector/internal/analyzers/tsc"
+	"github.com/aykutssert/inspector/internal/analyzers/tseslint"
 	"github.com/aykutssert/inspector/internal/codegraph"
 	"github.com/aykutssert/inspector/internal/core"
 	"github.com/aykutssert/inspector/internal/lang"
@@ -108,6 +110,8 @@ func runScan(args []string) {
 		oxlint.New(),
 		reacthint.New(),
 		sveltelint.New(),
+		tsc.New(),
+		tseslint.New(),
 		osv.New(),
 		gitlog.New(),
 	)

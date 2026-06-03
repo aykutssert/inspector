@@ -1,0 +1,12 @@
+{
+  "name": "inspector-typescript-linter",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Managed type-aware lint toolchain wrapped by inspector (eslint + typescript-eslint + tsc).",
+  "type": "module",
+  "dependencies": {
+    "eslint": "^9.0.0",
+    "typescript": "^5.5.0",
+    "typescript-eslint": "^8.0.0"
+  }
+}
