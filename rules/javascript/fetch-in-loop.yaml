@@ -1,0 +1,39 @@
+rules:
+  - id: fetch-in-loop
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      fetch() is called from inside a loop. This often creates an N+1 network
+      pattern or forces requests to run one by one when combined with await.
+      Prefer batching, a backend bulk endpoint, or Promise.all over a mapped
+      collection when the requests are independent.
+    metadata:
+      category: performance
+      # hint: looped fetch can be intentional for pagination, streaming, retry
+      # backoff, or rate limiting. The agent must inspect the control flow.
+      confidence: hint
+    pattern-either:
+      - pattern: |
+          for (...) {
+            ...
+            fetch(...);
+            ...
+          }
+      - pattern: |
+          while (...) {
+            ...
+            fetch(...);
+            ...
+          }
+      - pattern: |
+          for (...) {
+            ...
+            await fetch(...);
+            ...
+          }
+      - pattern: |
+          while (...) {
+            ...
+            await fetch(...);
+            ...
+          }

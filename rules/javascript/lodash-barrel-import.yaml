@@ -1,0 +1,21 @@
+rules:
+  - id: lodash-barrel-import
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Lodash is imported from the top-level package, which can pull a much larger
+      bundle than the one helper this file needs. Prefer a per-method import such
+      as lodash/debounce, or use lodash-es with a bundler that tree-shakes it
+      correctly.
+    metadata:
+      category: performance
+      # hint: some build pipelines rewrite lodash imports, so the agent should
+      # confirm the project's bundler/plugin setup before changing the import.
+      confidence: hint
+    pattern-either:
+      - pattern: import $NAME from "lodash"
+      - pattern: import * as $NAME from "lodash"
+      - pattern: const $NAME = require("lodash")
+      - pattern: import $NAME from 'lodash'
+      - pattern: import * as $NAME from 'lodash'
+      - pattern: const $NAME = require('lodash')

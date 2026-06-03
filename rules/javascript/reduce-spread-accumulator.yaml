@@ -1,0 +1,28 @@
+rules:
+  - id: reduce-spread-accumulator
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      This reduce callback rebuilds the accumulator with [...acc, ...] on every
+      iteration, which copies the growing array repeatedly and turns a linear
+      collection step into O(n²) work. Prefer map/filter, or mutate a local
+      accumulator inside the reduce callback when reduce is genuinely needed.
+    metadata:
+      category: performance
+      # hint: small arrays may not matter, but this pattern scales poorly and is
+      # often accidental in production list transformations.
+      confidence: hint
+    pattern-either:
+      - pattern: $ARR.reduce(($ACC, $ITEM) => [...$ACC, ...], ...)
+      - pattern: |
+          $ARR.reduce(($ACC, $ITEM) => {
+            ...
+            return [...$ACC, ...];
+            ...
+          }, ...)
+      - pattern: |
+          $ARR.reduce(function ($ACC, $ITEM) {
+            ...
+            return [...$ACC, ...];
+            ...
+          }, ...)

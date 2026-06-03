@@ -1,0 +1,25 @@
+rules:
+  - id: insecure-document-cookie
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      document.cookie is assigned without an obvious Secure attribute. Client-set
+      cookies are also readable from JavaScript, so auth material should normally
+      be set server-side with HttpOnly, Secure, and SameSite. If this is not auth
+      material, still confirm the cookie is intentionally accessible to scripts.
+    metadata:
+      category: security
+      cwe:
+        - "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
+        - "CWE-1004: Sensitive Cookie Without 'HttpOnly' Flag"
+      owasp:
+        - "A02:2021 - Cryptographic Failures"
+      # hint: JavaScript cannot set HttpOnly, and some non-sensitive preference
+      # cookies are intentionally script-visible. The agent must inspect purpose.
+      confidence: hint
+    patterns:
+      - pattern: document.cookie = $COOKIE
+      - metavariable-pattern:
+          metavariable: $COOKIE
+          patterns:
+            - pattern-not-regex: (?i).*secure.*

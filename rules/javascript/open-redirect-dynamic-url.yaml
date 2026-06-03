@@ -1,0 +1,32 @@
+rules:
+  - id: open-redirect-dynamic-url
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      A redirect/navigation target is built from a dynamic value. If this value
+      can be influenced by a user, the app may redirect to an attacker-controlled
+      URL. Validate against an allowlist, resolve only internal paths, or build
+      the destination from trusted route names.
+    metadata:
+      category: security
+      cwe:
+        - "CWE-601: URL Redirection to Untrusted Site ('Open Redirect')"
+      owasp:
+        - "A01:2021 - Broken Access Control"
+      # hint: dynamic internal routes are sometimes valid. The agent must inspect
+      # the source of the URL and whether external origins are allowed.
+      confidence: hint
+    patterns:
+      - pattern-either:
+          - pattern: location.href = $URL
+          - pattern: window.location.href = $URL
+          - pattern: location.assign($URL)
+          - pattern: window.location.assign($URL)
+          - pattern: location.replace($URL)
+          - pattern: window.location.replace($URL)
+      - metavariable-pattern:
+          metavariable: $URL
+          patterns:
+            - pattern-not: '"..."'
+            - pattern-not: "'...'"
+            - pattern-not: "`...`"

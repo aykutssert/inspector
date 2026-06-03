@@ -45,6 +45,24 @@
     "message": "This catch block is empty, so the error is silently swallowed: failures vanish with no log, no rethrow, and no recovery, which hides bugs and makes incidents undebuggable. Handle the error, log it, or rethrow. If ignoring is truly intentional, leave a comment explaining why.\n"
   },
   {
+    "rule_id": "fetch-in-loop",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 39,
+    "message": "fetch() is called from inside a loop. This often creates an N+1 network pattern or forces requests to run one by one when combined with await. Prefer batching, a backend bulk endpoint, or Promise.all over a mapped collection when the requests are independent.\n"
+  },
+  {
+    "rule_id": "insecure-document-cookie",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 89,
+    "message": "document.cookie is assigned without an obvious Secure attribute. Client-set cookies are also readable from JavaScript, so auth material should normally be set server-side with HttpOnly, Secure, and SameSite. If this is not auth material, still confirm the cookie is intentionally accessible to scripts.\n"
+  },
+  {
     "rule_id": "javascript-url",
     "severity": "error",
     "category": "security",
@@ -81,6 +99,42 @@
     "message": "A console.log/console.debug call was left in the source. These are typically debugging leftovers (a common artifact of AI-generated or rushed code) that leak data to the browser console and add noise in production. Remove it, or route it through an intentional logger. console.warn/console.error are not flagged, since those are usually deliberate.\n"
   },
   {
+    "rule_id": "lodash-barrel-import",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 72,
+    "message": "Lodash is imported from the top-level package, which can pull a much larger bundle than the one helper this file needs. Prefer a per-method import such as lodash/debounce, or use lodash-es with a bundler that tree-shakes it correctly.\n"
+  },
+  {
+    "rule_id": "math-random-security-token",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 82,
+    "message": "Math.random() is used to create a token, nonce, secret, session value, or other security-sensitive identifier. Math.random() is not cryptographically secure and can be predictable. Use crypto.getRandomValues(), crypto.randomUUID(), or a server-side CSPRNG instead.\n"
+  },
+  {
+    "rule_id": "message-event-missing-origin-check",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 101,
+    "message": "A message event handler does not appear to check event.origin. postMessage data can come from untrusted origins, so handlers should verify the sender against a strict allowlist before trusting event.data.\n"
+  },
+  {
+    "rule_id": "open-redirect-dynamic-url",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 95,
+    "message": "A redirect/navigation target is built from a dynamic value. If this value can be influenced by a user, the app may redirect to an attacker-controlled URL. Validate against an allowlist, resolve only internal paths, or build the destination from trusted route names.\n"
+  },
+  {
     "rule_id": "placeholder-or-ai-slop-comment",
     "severity": "warning",
     "category": "quality",
@@ -106,6 +160,15 @@
     "file": "case.tsx",
     "line": 28,
     "message": "A React key derived from Math.random()/Date.now() changes on every render, so React remounts the element each time: local state is lost, inputs lose focus, and reconciliation degrades. Use a stable id from the data instead.\n"
+  },
+  {
+    "rule_id": "reduce-spread-accumulator",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 61,
+    "message": "This reduce callback rebuilds the accumulator with [...acc, ...] on every iteration, which copies the growing array repeatedly and turns a linear collection step into O(n²) work. Prefer map/filter, or mutate a local accumulator inside the reduce callback when reduce is genuinely needed.\n"
   },
   {
     "rule_id": "sensitive-data-in-web-storage",

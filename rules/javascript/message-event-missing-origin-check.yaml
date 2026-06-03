@@ -1,0 +1,36 @@
+rules:
+  - id: message-event-missing-origin-check
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      A message event handler does not appear to check event.origin. postMessage
+      data can come from untrusted origins, so handlers should verify the sender
+      against a strict allowlist before trusting event.data.
+    metadata:
+      category: security
+      cwe:
+        - "CWE-346: Origin Validation Error"
+      owasp:
+        - "A01:2021 - Broken Access Control"
+      # hint: this checks for the absence of an origin read in the handler. The
+      # agent should confirm whether the listener receives only trusted messages.
+      confidence: hint
+    patterns:
+      - pattern-either:
+          - pattern: |
+              $TARGET.addEventListener("message", ($EVENT) => {
+                ...
+              }, ...)
+          - pattern: |
+              $TARGET.addEventListener("message", function ($EVENT) {
+                ...
+              }, ...)
+          - pattern: |
+              addEventListener("message", ($EVENT) => {
+                ...
+              }, ...)
+          - pattern: |
+              addEventListener("message", function ($EVENT) {
+                ...
+              }, ...)
+      - pattern-not-regex: (?s)\.origin

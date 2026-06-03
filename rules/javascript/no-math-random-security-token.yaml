@@ -1,0 +1,27 @@
+rules:
+  - id: math-random-security-token
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Math.random() is used to create a token, nonce, secret, session value, or
+      other security-sensitive identifier. Math.random() is not cryptographically
+      secure and can be predictable. Use crypto.getRandomValues(),
+      crypto.randomUUID(), or a server-side CSPRNG instead.
+    metadata:
+      category: security
+      cwe:
+        - "CWE-338: Use of Cryptographically Weak Pseudo-Random Number Generator"
+      owasp:
+        - "A02:2021 - Cryptographic Failures"
+      # hint: the variable name is the signal. The agent should confirm the value
+      # is actually security-sensitive before replacing it.
+      confidence: hint
+    patterns:
+      - pattern-either:
+          - pattern: const $NAME = Math.random()
+          - pattern: let $NAME = Math.random()
+          - pattern: var $NAME = Math.random()
+          - pattern: $OBJ.$NAME = Math.random()
+      - metavariable-regex:
+          metavariable: $NAME
+          regex: (?i).*(token|secret|session|nonce|credential|password|apikey|api_key|resetid|reset_id|sessionid|session_id).*

@@ -56,3 +56,61 @@ export function renderLegacy(node: HTMLElement, html: string) {
 export function cloneSlow<T>(value: T) {
   return JSON.parse(JSON.stringify(value));
 }
+
+export function collectSlow(items: Item[]) {
+  return items.reduce((acc, item) => [...acc, item.label], [] as string[]);
+}
+
+export function collectOk(items: Item[]) {
+  return items.reduce((acc, item) => {
+    acc.push(item.label);
+    return acc;
+  }, [] as string[]);
+}
+
+export function lodashSlow(values: string[]) {
+  const _ = require("lodash");
+  return _.chunk(values, 2);
+}
+
+export function lodashOk(values: string[]) {
+  const chunk = require("lodash/chunk");
+  return chunk(values, 2);
+}
+
+export function insecureRandoms() {
+  const resetToken = Math.random();
+  const randomSort = Math.random();
+  const sessionId = crypto.randomUUID();
+  return { resetToken, randomSort, sessionId };
+}
+
+export function setCookies(token: string) {
+  document.cookie = `session=${token}; path=/`;
+  document.cookie = "theme=dark; Secure; SameSite=Lax";
+  cookieStore.set("session", token);
+}
+
+export function redirectUser(next: string) {
+  location.href = next;
+  location.href = "/dashboard";
+  window.location.assign(`/users/${encodeURIComponent(next)}`);
+}
+
+export function receiveMessages(allowedOrigins: string[]) {
+  window.addEventListener("message", (event) => {
+    handleMessage(event.data);
+  });
+  window.addEventListener("message", (event) => {
+    if (!allowedOrigins.includes(event.origin)) return;
+    handleMessage(event.data);
+  });
+  addEventListener("message", function (event) {
+    if (event.origin !== "https://example.com") return;
+    handleMessage(event.data);
+  });
+}
+
+export async function loadAllInParallel(ids: string[]) {
+  await Promise.all(ids.map((id) => fetch(id)));
+}
