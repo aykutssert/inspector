@@ -92,14 +92,15 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 		for _, pkg := range res.Packages {
 			for _, v := range pkg.Vulnerabilities {
 				findings = append(findings, core.Finding{
-					Analyzer: a.Name(),
-					RuleID:   v.ID,
-					Severity: core.SeverityError,
-					Level:    core.SeverityError.String(),
-					Category: "security",
-					File:     file,
-					Message:  pkg.Package.Name + "@" + pkg.Package.Version + ": " + v.Summary,
-					Fix:      "Upgrade " + pkg.Package.Name + " to a version without " + v.ID,
+					Analyzer:   a.Name(),
+					RuleID:     v.ID,
+					Severity:   core.SeverityError,
+					Level:      core.SeverityError.String(),
+					Category:   "security",
+					Confidence: core.ConfidenceRule,
+					File:       file,
+					Message:    pkg.Package.Name + "@" + pkg.Package.Version + ": " + v.Summary,
+					Fix:        "Upgrade " + pkg.Package.Name + " to a version without " + v.ID,
 				})
 			}
 		}

@@ -59,6 +59,37 @@ type semgrepOut struct {
 			} `json:"metadata"`
 		} `json:"extra"`
 	} `json:"results"`
+	Errors []struct {
+		Level string `json:"level"`
+		// Type is ["KindString", [spans...]]; we read the kind from element 0.
+		Type    []json.RawMessage `json:"type"`
+		Message string            `json:"message"`
+		Path    string            `json:"path"`
+		Spans   []struct {
+			File  string `json:"file"`
+			Start struct {
+				Line int `json:"line"`
+			} `json:"start"`
+		} `json:"spans"`
+	} `json:"errors"`
+}
+
+// parseErrorKinds are the semgrep error kinds that mean source code did not
+// parse — a likely syntax error. Other error kinds (rule errors, timeouts) are
+// tool noise, not findings, so we ignore them.
+var parseErrorKinds = map[string]bool{
+	"PartialParsing": true,
+	"SyntaxError":    true,
+	"LexicalError":   true,
+}
+
+func errorKind(t []json.RawMessage) string {
+	if len(t) == 0 {
+		return ""
+	}
+	var kind string
+	_ = json.Unmarshal(t[0], &kind)
+	return kind
 }
 
 // present reports whether a JSON metadata field carries a real value (semgrep
@@ -98,15 +129,43 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 		sev := mapSeverity(r.Extra.Severity)
 		cat := classify(r.Extra.Metadata.Category, present(r.Extra.Metadata.Cwe) || present(r.Extra.Metadata.Owasp))
 		findings = append(findings, core.Finding{
-			Analyzer: a.Name(),
-			RuleID:   r.CheckID,
-			Severity: sev,
-			Level:    sev.String(),
-			Category: cat,
-			File:     r.Path,
-			Line:     r.Start.Line,
-			Message:  r.Extra.Message,
-			Fix:      r.Extra.Fix,
+			Analyzer:   a.Name(),
+			RuleID:     r.CheckID,
+			Severity:   sev,
+			Level:      sev.String(),
+			Category:   cat,
+			Confidence: core.ConfidenceRule,
+			File:       r.Path,
+			Line:       r.Start.Line,
+			Message:    r.Extra.Message,
+			Fix:        r.Extra.Fix,
+		})
+	}
+	// A failed parse means semgrep could not read the file — likely a syntax
+	// error, but possibly grammar it doesn't support. Surface it as a hint
+	// (verify, don't trust) rather than a hard rule, to stay low-noise.
+	for _, e := range parsed.Errors {
+		if !parseErrorKinds[errorKind(e.Type)] {
+			continue
+		}
+		file, line := e.Path, 0
+		if len(e.Spans) > 0 {
+			if file == "" {
+				file = e.Spans[0].File
+			}
+			line = e.Spans[0].Start.Line
+		}
+		findings = append(findings, core.Finding{
+			Analyzer:   a.Name(),
+			RuleID:     "syntax-or-parse-error",
+			Severity:   core.SeverityWarning,
+			Level:      core.SeverityWarning.String(),
+			Category:   "bug",
+			Confidence: core.ConfidenceHint,
+			File:       file,
+			Line:       line,
+			Message:    e.Message,
+			Fix:        "Confirm this file parses — semgrep could not fully parse it (likely a syntax error).",
 		})
 	}
 	return findings, nil

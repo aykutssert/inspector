@@ -39,6 +39,9 @@ func Terminal(w io.Writer, r core.Report) {
 		if f.Category != "" {
 			tag = f.Level + "/" + f.Category
 		}
+		if f.Confidence == core.ConfidenceHint {
+			tag += " hint"
+		}
 		fmt.Fprintf(w, "[%s] %s  %s\n", tag, f.Analyzer, loc)
 		fmt.Fprintf(w, "  %s\n", f.Message)
 		if f.Fix != "" {
