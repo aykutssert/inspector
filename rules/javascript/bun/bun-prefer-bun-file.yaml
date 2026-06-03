@@ -1,0 +1,20 @@
+rules:
+  - id: bun-prefer-bun-file
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      This code uses Node.js 'fs' APIs to read files. If you are running on the
+      Bun runtime, prefer using the faster, optimized native API 'Bun.file(path)'
+      which provides '.text()', '.json()', and stream interfaces directly.
+    metadata:
+      category: performance
+      confidence: hint
+    patterns:
+      - pattern-either:
+          - pattern: fs.readFileSync(...)
+          - pattern: fs.readFile(...)
+          - pattern: fs.promises.readFile(...)
+          - pattern: fsPromises.readFile(...)
+          - pattern: require('fs').readFileSync(...)
+          - pattern: require('fs/promises').readFile(...)
+          - pattern: require('fs').readFile(...)

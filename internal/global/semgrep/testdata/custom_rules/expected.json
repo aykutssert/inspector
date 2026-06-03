@@ -1,5 +1,76 @@
 [
   {
+    "rule_id": "bun.bun-prefer-bun-file",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 284,
+    "message": "This code uses Node.js 'fs' APIs to read files. If you are running on the Bun runtime, prefer using the faster, optimized native API 'Bun.file(path)' which provides '.text()', '.json()', and stream interfaces directly.\n"
+  },
+  {
+    "rule_id": "bun.bun-prefer-bun-file",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 10,
+    "message": "This code uses Node.js 'fs' APIs to read files. If you are running on the Bun runtime, prefer using the faster, optimized native API 'Bun.file(path)' which provides '.text()', '.json()', and stream interfaces directly.\n"
+  },
+  {
+    "rule_id": "bun.bun-prefer-bun-password",
+    "severity": "warning",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 288,
+    "message": "This code uses external hashing libraries (bcrypt, bcryptjs, argon2) or Node.js crypto.pbkdf2 for password hashing. If you are running on the Bun runtime, prefer using the optimized native APIs 'Bun.password.hash(...)' and 'Bun.password.verify(...)'.\n"
+  },
+  {
+    "rule_id": "bun.bun-prefer-bun-serve",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 291,
+    "message": "This code builds an HTTP server using Node's 'http.createServer'. If you are running on the Bun runtime, prefer using the optimized native API 'Bun.serve(...)' for significantly higher performance.\n"
+  },
+  {
+    "rule_id": "bun.bun-prefer-bun-write",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 285,
+    "message": "This code uses Node.js 'fs' APIs to write files. If you are running on the Bun runtime, prefer using the faster, optimized native API 'Bun.write(path, data)' for better performance.\n"
+  },
+  {
+    "rule_id": "express.express-async-error-handling",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 174,
+    "message": "An asynchronous Express route handler does not wrap its execution in a try/catch block or use an async error handler wrapper. Unhandled async rejections in Express can crash the Node.js process or cause requests to hang. Wrap the body in try/catch and pass the error to next(err).\n"
+  },
+  {
+    "rule_id": "express.express-async-error-handling",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 179,
+    "message": "An asynchronous Express route handler does not wrap its execution in a try/catch block or use an async error handler wrapper. Unhandled async rejections in Express can crash the Node.js process or cause requests to hang. Wrap the body in try/catch and pass the error to next(err).\n"
+  },
+  {
+    "rule_id": "express.express-async-error-handling",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "express.ts",
+    "line": 14,
+    "message": "An asynchronous Express route handler does not wrap its execution in a try/catch block or use an async error handler wrapper. Unhandled async rejections in Express can crash the Node.js process or cause requests to hang. Wrap the body in try/catch and pass the error to next(err).\n"
+  },
+  {
     "rule_id": "express.express-missing-helmet",
     "severity": "warning",
     "category": "security",
@@ -7,6 +78,51 @@
     "file": "case.tsx",
     "line": 172,
     "message": "The Express application is initialized but does not appear to use the 'helmet' middleware. Helmet sets critical security headers to protect the app from common web vulnerabilities (XSS, Clickjacking, MIME-sniffing, etc.). Add app.use(helmet()) to secure HTTP headers.\n"
+  },
+  {
+    "rule_id": "express.express-missing-helmet",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "express.ts",
+    "line": 7,
+    "message": "The Express application is initialized but does not appear to use the 'helmet' middleware. Helmet sets critical security headers to protect the app from common web vulnerabilities (XSS, Clickjacking, MIME-sniffing, etc.). Add app.use(helmet()) to secure HTTP headers.\n"
+  },
+  {
+    "rule_id": "express.express-missing-rate-limit",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 174,
+    "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
+  },
+  {
+    "rule_id": "express.express-missing-rate-limit",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 179,
+    "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
+  },
+  {
+    "rule_id": "express.express-missing-rate-limit",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "express.ts",
+    "line": 9,
+    "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
+  },
+  {
+    "rule_id": "express.express-missing-rate-limit",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "express.ts",
+    "line": 14,
+    "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
   },
   {
     "rule_id": "general.await-in-loop",
@@ -52,6 +168,24 @@
     "file": "case.tsx",
     "line": 40,
     "message": "fetch() is called from inside a loop. This often creates an N+1 network pattern or forces requests to run one by one when combined with await. Prefer batching, a backend bulk endpoint, or Promise.all over a mapped collection when the requests are independent.\n"
+  },
+  {
+    "rule_id": "general.hardcoded-api-url",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 315,
+    "message": "A hardcoded HTTP/HTTPS URL is used directly in a network request. To ensure flexibility across different environments (development, staging, production), avoid hardcoding base URLs. Load the base URL from an environment variable or use an API client with a configured baseURL.\n"
+  },
+  {
+    "rule_id": "general.hardcoded-api-url",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 316,
+    "message": "A hardcoded HTTP/HTTPS URL is used directly in a network request. To ensure flexibility across different environments (development, staging, production), avoid hardcoding base URLs. Load the base URL from an environment variable or use an API client with a configured baseURL.\n"
   },
   {
     "rule_id": "general.hardcoded-secret",
@@ -216,6 +350,60 @@
     "message": "A redirect/navigation target is built from a dynamic value. If this value can be influenced by a user, the app may redirect to an attacker-controlled URL. Validate against an allowlist, resolve only internal paths, or build the destination from trusted route names.\n"
   },
   {
+    "rule_id": "general.orm-unsafe-raw-query",
+    "severity": "error",
+    "category": "security",
+    "confidence": "rule",
+    "file": "case.tsx",
+    "line": 329,
+    "message": "Unsafe raw SQL query detected. Using string interpolation or concatenation inside Prisma ($queryRaw, $executeRaw, $queryRawUnsafe, $executeRawUnsafe) or TypeORM (query) bypasses parameterized query generation, risking SQL injection. Use safe tagged templates (e.g. prisma.$queryRaw`...`) or pass parameters as a separate argument/binding.\n"
+  },
+  {
+    "rule_id": "general.orm-unsafe-raw-query",
+    "severity": "error",
+    "category": "security",
+    "confidence": "rule",
+    "file": "case.tsx",
+    "line": 330,
+    "message": "Unsafe raw SQL query detected. Using string interpolation or concatenation inside Prisma ($queryRaw, $executeRaw, $queryRawUnsafe, $executeRawUnsafe) or TypeORM (query) bypasses parameterized query generation, risking SQL injection. Use safe tagged templates (e.g. prisma.$queryRaw`...`) or pass parameters as a separate argument/binding.\n"
+  },
+  {
+    "rule_id": "general.orm-unsafe-raw-query",
+    "severity": "error",
+    "category": "security",
+    "confidence": "rule",
+    "file": "case.tsx",
+    "line": 331,
+    "message": "Unsafe raw SQL query detected. Using string interpolation or concatenation inside Prisma ($queryRaw, $executeRaw, $queryRawUnsafe, $executeRawUnsafe) or TypeORM (query) bypasses parameterized query generation, risking SQL injection. Use safe tagged templates (e.g. prisma.$queryRaw`...`) or pass parameters as a separate argument/binding.\n"
+  },
+  {
+    "rule_id": "general.orm-unsafe-raw-query",
+    "severity": "error",
+    "category": "security",
+    "confidence": "rule",
+    "file": "case.tsx",
+    "line": 332,
+    "message": "Unsafe raw SQL query detected. Using string interpolation or concatenation inside Prisma ($queryRaw, $executeRaw, $queryRawUnsafe, $executeRawUnsafe) or TypeORM (query) bypasses parameterized query generation, risking SQL injection. Use safe tagged templates (e.g. prisma.$queryRaw`...`) or pass parameters as a separate argument/binding.\n"
+  },
+  {
+    "rule_id": "general.orm-unsafe-raw-query",
+    "severity": "error",
+    "category": "security",
+    "confidence": "rule",
+    "file": "case.tsx",
+    "line": 334,
+    "message": "Unsafe raw SQL query detected. Using string interpolation or concatenation inside Prisma ($queryRaw, $executeRaw, $queryRawUnsafe, $executeRawUnsafe) or TypeORM (query) bypasses parameterized query generation, risking SQL injection. Use safe tagged templates (e.g. prisma.$queryRaw`...`) or pass parameters as a separate argument/binding.\n"
+  },
+  {
+    "rule_id": "general.orm-unsafe-raw-query",
+    "severity": "error",
+    "category": "security",
+    "confidence": "rule",
+    "file": "case.tsx",
+    "line": 335,
+    "message": "Unsafe raw SQL query detected. Using string interpolation or concatenation inside Prisma ($queryRaw, $executeRaw, $queryRawUnsafe, $executeRawUnsafe) or TypeORM (query) bypasses parameterized query generation, risking SQL injection. Use safe tagged templates (e.g. prisma.$queryRaw`...`) or pass parameters as a separate argument/binding.\n"
+  },
+  {
     "rule_id": "general.placeholder-or-ai-slop-comment",
     "severity": "warning",
     "category": "quality",
@@ -232,6 +420,60 @@
     "file": "case.tsx",
     "line": 47,
     "message": "This comment looks like an unfinished placeholder or AI-generation artifact (e.g. \"your code here\", \"rest of the implementation\", \"TODO: implement\", \"as an AI ...\"). It usually means code was elided or never written, so the surrounding function may be incomplete or non-functional. Replace it with the real implementation, or remove the comment if the code is actually complete.\n"
+  },
+  {
+    "rule_id": "general.process-env-dispersed-access",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 130,
+    "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
+  },
+  {
+    "rule_id": "general.process-env-dispersed-access",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 131,
+    "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
+  },
+  {
+    "rule_id": "general.process-env-dispersed-access",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 132,
+    "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
+  },
+  {
+    "rule_id": "general.process-env-dispersed-access",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 133,
+    "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
+  },
+  {
+    "rule_id": "general.process-env-dispersed-access",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 312,
+    "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
+  },
+  {
+    "rule_id": "general.process-env-dispersed-access",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 313,
+    "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
   },
   {
     "rule_id": "general.reduce-spread-accumulator",
@@ -360,6 +602,15 @@
     "message": "A NEXT_PUBLIC_* environment variable named like a secret (secret, token, password, credential, private/api key) is read here. Next.js inlines every NEXT_PUBLIC_* value into the client JavaScript bundle, so this value is shipped to the browser and readable by anyone. If it is a real secret, drop the NEXT_PUBLIC_ prefix and read it only in server code (route handlers, server components, getServerSideProps). If the value is genuinely public (e.g. a publishable key), rename it so it no longer looks like a secret.\n"
   },
   {
+    "rule_id": "nextjs.next-server-action-missing-validation",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 347,
+    "message": "A Next.js Server Action accepts input but does not appear to validate it with a schema parser. Server Actions are callable from the client, so unvalidated parameters can become authorization, injection, or data integrity bugs. Validate the input with Zod, Valibot, or a similar schema before using it.\n"
+  },
+  {
     "rule_id": "nextjs.next-server-only-in-client",
     "severity": "error",
     "confidence": "rule",
@@ -404,6 +655,15 @@
     "message": "Server-side fetch() is called with a dynamic or unvalidated URL. If this URL is built from user-controlled input, it can lead to Server-Side Request Forgery (SSRF), allowing attackers to query internal services, bypass firewalls, or leak credentials. Validate the URL against a strict allowlist of allowed domains, or ensure the input is sanitized and mapped to safe endpoints.\n"
   },
   {
+    "rule_id": "nextjs.next-ssrf-prone-fetch",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 325,
+    "message": "Server-side fetch() is called with a dynamic or unvalidated URL. If this URL is built from user-controlled input, it can lead to Server-Side Request Forgery (SSRF), allowing attackers to query internal services, bypass firewalls, or leak credentials. Validate the URL against a strict allowlist of allowed domains, or ensure the input is sanitized and mapped to safe endpoints.\n"
+  },
+  {
     "rule_id": "nextjs.next-unsafe-redirect",
     "severity": "warning",
     "category": "security",
@@ -429,6 +689,22 @@
     "file": "case.tsx",
     "line": 26,
     "message": "dangerouslySetInnerHTML is fed a dynamic value (not a string literal). If that value contains any user-controlled data, this is a stored/reflected XSS sink. Confirm the HTML is sanitized (e.g. DOMPurify) before it reaches this prop, or render the value as text instead.\n"
+  },
+  {
+    "rule_id": "react.direct-dom-manipulation",
+    "severity": "warning",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 318,
+    "message": "Direct DOM manipulation call detected in React file. Accessing or modifying the DOM directly (using document.getElementById, querySelector, etc.) bypasses the Virtual DOM, causing state inconsistencies and rendering issues. Use React refs (useRef) or state binding instead.\n"
+  },
+  {
+    "rule_id": "react.direct-dom-manipulation",
+    "severity": "warning",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 319,
+    "message": "Direct DOM manipulation call detected in React file. Accessing or modifying the DOM directly (using document.getElementById, querySelector, etc.) bypasses the Virtual DOM, causing state inconsistencies and rendering issues. Use React refs (useRef) or state binding instead.\n"
   },
   {
     "rule_id": "react.random-value-as-react-key",

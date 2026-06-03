@@ -279,3 +279,84 @@ export class PipesController {
   }
 }
 
+export function bunDemoUnsafe() {
+  const fs = require("fs");
+  const data = fs.readFileSync("input.txt", "utf8"); // should trigger bun-prefer-bun-file
+  fs.writeFileSync("output.txt", data); // should trigger bun-prefer-bun-write
+
+  const bcrypt = require("bcrypt");
+  const hash = bcrypt.hashSync("password", 10); // should trigger bun-prefer-bun-password
+
+  const http = require("http");
+  const server = http.createServer((req, res) => { // should trigger bun-prefer-bun-serve
+    res.end("hello");
+  });
+}
+
+export function bunDemoSafe() {
+  const file = Bun.file("input.txt");
+  const text = file.text(); // should be ok
+  Bun.write("output.txt", text); // should be ok
+
+  const hash = Bun.password.hash("password"); // should be ok
+  Bun.password.verify("password", hash); // should be ok
+
+  Bun.serve({
+    fetch(req) {
+      return new Response("hello");
+    }
+  }); // should be ok
+}
+
+export function architecturalDemoUnsafe() {
+  const apiKey = process.env.API_KEY; // should trigger process-env-dispersed-access
+  const dbUrl = process.env["DATABASE_URL"]; // should trigger process-env-dispersed-access
+
+  fetch("https://api.myproject.com/v1/data"); // should trigger hardcoded-api-url
+  axios.get("http://localhost:8080/users"); // should trigger hardcoded-api-url
+
+  const element = document.getElementById("root"); // should trigger direct-dom-manipulation
+  const inputs = document.querySelectorAll("input"); // should trigger direct-dom-manipulation
+}
+
+export function architecturalDemoSafe() {
+  fetch("/api/v1/data"); // should be ok
+  const dynamicUrl = getUrl();
+  fetch(dynamicUrl); // should be ok
+}
+
+export async function ormDemoUnsafe(prisma: any, connection: any, input: string) {
+  await prisma.$queryRaw("SELECT * FROM User WHERE name = " + input); // should trigger orm-unsafe-raw-query
+  await prisma.$queryRaw(`SELECT * FROM User WHERE name = ${input}`); // should trigger orm-unsafe-raw-query
+  await prisma.$queryRawUnsafe("SELECT * FROM User WHERE name = " + input); // should trigger orm-unsafe-raw-query
+  await prisma.$queryRawUnsafe(`SELECT * FROM User WHERE name = ${input}`); // should trigger orm-unsafe-raw-query
+
+  await connection.query("SELECT * FROM User WHERE name = " + input); // should trigger orm-unsafe-raw-query
+  await connection.query(`SELECT * FROM User WHERE name = ${input}`); // should trigger orm-unsafe-raw-query
+}
+
+export async function ormDemoSafe(prisma: any, connection: any, input: string) {
+  await prisma.$queryRaw`SELECT * FROM User WHERE name = ${input}`; // should be ok
+  await prisma.$executeRaw`UPDATE User SET name = ${input}`; // should be ok
+
+  await connection.query("SELECT * FROM User WHERE name = $1", [input]); // should be ok
+}
+
+const serverActionSchema = z.object({ name: z.string() });
+
+export async function createUserActionUnsafe(input: unknown) {
+  "use server";
+  await saveUser(input);
+}
+
+export async function updateUserActionSafe(input: unknown) {
+  "use server";
+  const parsed = serverActionSchema.parse(input);
+  await saveUser(parsed);
+}
+
+export async function updateUserActionValibotSafe(input: unknown) {
+  "use server";
+  const parsed = v.parse(serverActionSchema, input);
+  await saveUser(parsed);
+}

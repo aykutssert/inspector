@@ -15,33 +15,21 @@ rules:
     patterns:
       - pattern-either:
           - pattern: |
-              $APP.$METHOD($PATH, async ($REQ, $RES, ...) => { $BODY })
+              $APP.$METHOD($PATH, async ($REQ, $RES, ...) => { ... await $EXPR; ... })
           - pattern: |
-              $APP.$METHOD($PATH, async function($REQ, $RES, ...) { $BODY })
+              $APP.$METHOD($PATH, async function($REQ, $RES, ...) { ... await $EXPR; ... })
       - metavariable-regex:
           metavariable: $METHOD
           regex: ^(get|post|put|delete|patch|use|all)$
       - pattern-not-inside: |
-          $APP.$METHOD($PATH, asyncHandler(async ($REQ, $RES, ...) => { ... }))
-      - pattern-not-inside: |
           $APP.$METHOD($PATH, $WRAPPER(async ($REQ, $RES, ...) => { ... }))
-      - pattern-not-inside: |
-          $APP.$METHOD($PATH, asyncHandler(async function($REQ, $RES, ...) { ... }))
       - pattern-not-inside: |
           $APP.$METHOD($PATH, $WRAPPER(async function($REQ, $RES, ...) { ... }))
       - pattern-not: |
           $APP.$METHOD($PATH, async ($REQ, $RES, ...) => {
-            try {
-              ...
-            } catch ($ERR) {
-              ...
-            }
+            try { ... } catch ($ERR) { ... }
           })
       - pattern-not: |
           $APP.$METHOD($PATH, async function($REQ, $RES, ...) {
-            try {
-              ...
-            } catch ($ERR) {
-              ...
-            }
+            try { ... } catch ($ERR) { ... }
           })

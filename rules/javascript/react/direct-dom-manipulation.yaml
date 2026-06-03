@@ -1,0 +1,23 @@
+rules:
+  - id: direct-dom-manipulation
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Direct DOM manipulation call detected in React file. Accessing or modifying
+      the DOM directly (using document.getElementById, querySelector, etc.)
+      bypasses the Virtual DOM, causing state inconsistencies and rendering issues.
+      Use React refs (useRef) or state binding instead.
+    metadata:
+      category: quality
+      confidence: hint
+    paths:
+      include:
+        - "*.jsx"
+        - "*.tsx"
+    patterns:
+      - pattern-either:
+          - pattern: document.getElementById(...)
+          - pattern: document.querySelector(...)
+          - pattern: document.querySelectorAll(...)
+          - pattern: document.getElementsByClassName(...)
+          - pattern: document.getElementsByTagName(...)

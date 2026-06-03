@@ -1,0 +1,24 @@
+rules:
+  - id: hardcoded-api-url
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      A hardcoded HTTP/HTTPS URL is used directly in a network request.
+      To ensure flexibility across different environments (development, staging, production),
+      avoid hardcoding base URLs. Load the base URL from an environment variable or
+      use an API client with a configured baseURL.
+    metadata:
+      category: maintainability
+      confidence: hint
+    patterns:
+      - pattern-either:
+          - pattern: fetch($URL, ...)
+          - pattern: axios.get($URL, ...)
+          - pattern: axios.post($URL, ...)
+          - pattern: axios.put($URL, ...)
+          - pattern: axios.patch($URL, ...)
+          - pattern: axios.delete($URL, ...)
+          - pattern: axios($URL, ...)
+      - metavariable-regex:
+          metavariable: $URL
+          regex: ^['"`]https?://.*['"`]$

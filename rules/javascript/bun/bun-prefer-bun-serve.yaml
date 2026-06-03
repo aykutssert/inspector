@@ -1,0 +1,15 @@
+rules:
+  - id: bun-prefer-bun-serve
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      This code builds an HTTP server using Node's 'http.createServer'.
+      If you are running on the Bun runtime, prefer using the optimized native API
+      'Bun.serve(...)' for significantly higher performance.
+    metadata:
+      category: performance
+      confidence: hint
+    patterns:
+      - pattern-either:
+          - pattern: http.createServer(...)
+          - pattern: require('http').createServer(...)

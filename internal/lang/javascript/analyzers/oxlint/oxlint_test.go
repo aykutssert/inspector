@@ -49,6 +49,34 @@ func TestBuildConfigGatesReactPlugins(t *testing.T) {
 	}
 }
 
+func TestBuildConfigDisablesCoreNoiseRules(t *testing.T) {
+	cfg := buildConfig(false, false)
+	for _, rule := range []string{"no-unused-vars", "no-shadow"} {
+		if !strings.Contains(cfg, `"`+rule+`": "off"`) {
+			t.Fatalf("%s should be disabled in oxlint config: %s", rule, cfg)
+		}
+	}
+}
+
+func TestCoreNoiseRuleFilter(t *testing.T) {
+	cases := []struct {
+		plugin string
+		rule   string
+		want   bool
+	}{
+		{"", "no-unused-vars", true},
+		{"eslint", "no-unused-vars", true},
+		{"oxc", "no-shadow", true},
+		{"react", "no-unused-vars", false},
+		{"react-hooks", "exhaustive-deps", false},
+	}
+	for _, tc := range cases {
+		if got := isCoreNoiseRule(tc.plugin, tc.rule); got != tc.want {
+			t.Fatalf("isCoreNoiseRule(%q, %q)=%v, want %v", tc.plugin, tc.rule, got, tc.want)
+		}
+	}
+}
+
 func TestIsReactProjectByDependency(t *testing.T) {
 	dir := t.TempDir()
 	pkg := `{"dependencies":{"react":"18.0.0","react-dom":"18.0.0"}}`

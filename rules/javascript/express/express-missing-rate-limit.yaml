@@ -1,0 +1,34 @@
+rules:
+  - id: express-missing-rate-limit
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      This Express route handler does not appear to be protected by a rate-limiter.
+      Without rate limiting, endpoints are vulnerable to brute-force and
+      denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar
+      middleware) to this router or globally via app.use(rateLimit({ ... })).
+    metadata:
+      category: security
+      cwe:
+        - "CWE-770: Allocation of Resources Without Limits or Throttling"
+      owasp:
+        - "A04:2021 - Insecure Design"
+      confidence: hint
+    patterns:
+      - pattern: |
+          $APP.$METHOD($PATH, $HANDLER)
+      - metavariable-regex:
+          metavariable: $METHOD
+          regex: ^(post|put|patch|delete|get)$
+      - pattern-not-inside: |
+          ...
+          $APP.use(rateLimit(...));
+          ...
+      - pattern-not-inside: |
+          ...
+          $APP.use($LIMITER);
+          ...
+      - pattern-not-inside: |
+          ...
+          $APP.$METHOD($PATH, rateLimit(...), ...)
+          ...

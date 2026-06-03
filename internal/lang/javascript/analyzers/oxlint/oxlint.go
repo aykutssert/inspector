@@ -61,6 +61,19 @@ const reactRules = `
     "react-hooks/exhaustive-deps": "warn"
   `
 
+// coreNoiseRules are low-signal style/churn checks that bury security and bug
+// findings in large JS repos. Dead-code signal is handled by the knip analyzer,
+// so oxlint should not also report every unused local or shadowed identifier.
+var coreNoiseRuleList = []string{
+	"no-unused-vars",
+	"no-shadow",
+}
+
+var coreNoiseRules = map[string]bool{
+	"no-unused-vars": true,
+	"no-shadow":      true,
+}
+
 // buildConfig assembles the oxlint config. The React-family plugins
 // (react, react-perf, jsx-a11y) are enabled only for actual React projects:
 // their rules (e.g. react/no-this-in-sfc) otherwise misfire on plain Node/Express
@@ -68,15 +81,23 @@ const reactRules = `
 // The Next.js plugin is appended only for real Next.js apps.
 func buildConfig(react, next bool) string {
 	var plugins []string
-	rules := ""
+	rules := coreRuleOverrides()
 	if react {
 		plugins = append(plugins, `"react"`, `"react-perf"`, `"jsx-a11y"`, `"react-hooks"`)
-		rules = reactRules
+		rules = rules + "," + reactRules
 	}
 	if next {
 		plugins = append(plugins, `"nextjs"`)
 	}
 	return fmt.Sprintf(baseConfig, strings.Join(plugins, ", "), rules)
+}
+
+func coreRuleOverrides() string {
+	var rules []string
+	for _, rule := range coreNoiseRuleList {
+		rules = append(rules, `"`+rule+`": "off"`)
+	}
+	return "\n    " + strings.Join(rules, ",\n    ") + "\n  "
 }
 
 // relevantPkgDirs returns the package.json locations worth inspecting: the repo
@@ -219,6 +240,9 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 	var findings []core.Finding
 	for _, d := range parsed.Diagnostics {
 		plugin, rule := splitCode(d.Code)
+		if isCoreNoiseRule(plugin, rule) {
+			continue
+		}
 		sev := mapSeverity(d.Severity)
 		line := 0
 		if len(d.Labels) > 0 {
@@ -238,6 +262,13 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 		})
 	}
 	return findings, nil
+}
+
+func isCoreNoiseRule(plugin, rule string) bool {
+	if plugin != "" && plugin != "eslint" && plugin != "oxc" {
+		return false
+	}
+	return coreNoiseRules[rule]
 }
 
 // splitCode turns oxlint's "plugin(rule-name)" into its parts. A bare code with

@@ -1,0 +1,21 @@
+rules:
+  - id: process-env-dispersed-access
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Direct access to 'process.env' detected outside of configuration files.
+      To prevent undefined runtime variables and ensure clean architecture,
+      centralize all environment variable access in a dedicated configuration file
+      (e.g., config.ts or config.js) and import the configuration instead.
+    metadata:
+      category: maintainability
+      confidence: hint
+    paths:
+      exclude:
+        - "*config*"
+        - "**/config/**"
+        - "**/configs/**"
+    patterns:
+      - pattern-either:
+          - pattern: process.env.$VAR
+          - pattern: process.env[$VAR]

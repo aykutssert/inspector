@@ -1,0 +1,99 @@
+rules:
+  - id: next-server-action-missing-validation
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      A Next.js Server Action accepts input but does not appear to validate it
+      with a schema parser. Server Actions are callable from the client, so
+      unvalidated parameters can become authorization, injection, or data
+      integrity bugs. Validate the input with Zod, Valibot, or a similar schema
+      before using it.
+    metadata:
+      category: security
+      cwe:
+        - "CWE-20: Improper Input Validation"
+      owasp:
+        - "A03:2021 - Injection"
+      confidence: hint
+    patterns:
+      - pattern-either:
+          - pattern: |
+              export async function $ACTION($INPUT, ...) {
+                "use server";
+                ...
+              }
+          - pattern: |
+              export async function $ACTION($INPUT, ...) {
+                'use server';
+                ...
+              }
+      - pattern-not: |
+          export async function $ACTION($INPUT, ...) {
+            "use server";
+            ...
+            $SCHEMA.parse($INPUT);
+            ...
+          }
+      - pattern-not: |
+          export async function $ACTION($INPUT, ...) {
+            'use server';
+            ...
+            $SCHEMA.parse($INPUT);
+            ...
+          }
+      - pattern-not: |
+          export async function $ACTION($INPUT, ...) {
+            "use server";
+            ...
+            $SCHEMA.safeParse($INPUT);
+            ...
+          }
+      - pattern-not: |
+          export async function $ACTION($INPUT, ...) {
+            'use server';
+            ...
+            $SCHEMA.safeParse($INPUT);
+            ...
+          }
+      - pattern-not: |
+          export async function $ACTION($INPUT, ...) {
+            "use server";
+            ...
+            $SCHEMA.parseAsync($INPUT);
+            ...
+          }
+      - pattern-not: |
+          export async function $ACTION($INPUT, ...) {
+            'use server';
+            ...
+            $SCHEMA.parseAsync($INPUT);
+            ...
+          }
+      - pattern-not: |
+          export async function $ACTION($INPUT, ...) {
+            "use server";
+            ...
+            $SCHEMA.safeParseAsync($INPUT);
+            ...
+          }
+      - pattern-not: |
+          export async function $ACTION($INPUT, ...) {
+            'use server';
+            ...
+            $SCHEMA.safeParseAsync($INPUT);
+            ...
+          }
+      - pattern-not: |
+          export async function $ACTION($INPUT, ...) {
+            "use server";
+            ...
+            $V.parse($SCHEMA, $INPUT);
+            ...
+          }
+      - pattern-not: |
+          export async function $ACTION($INPUT, ...) {
+            'use server';
+            ...
+            $V.parse($SCHEMA, $INPUT);
+            ...
+          }

@@ -1,0 +1,20 @@
+rules:
+  - id: bun-prefer-bun-write
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      This code uses Node.js 'fs' APIs to write files. If you are running on the
+      Bun runtime, prefer using the faster, optimized native API 'Bun.write(path, data)'
+      for better performance.
+    metadata:
+      category: performance
+      confidence: hint
+    patterns:
+      - pattern-either:
+          - pattern: fs.writeFileSync(...)
+          - pattern: fs.writeFile(...)
+          - pattern: fs.promises.writeFile(...)
+          - pattern: fsPromises.writeFile(...)
+          - pattern: require('fs').writeFileSync(...)
+          - pattern: require('fs/promises').writeFile(...)
+          - pattern: require('fs').writeFile(...)

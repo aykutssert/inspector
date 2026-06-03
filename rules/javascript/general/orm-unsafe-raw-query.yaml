@@ -1,0 +1,32 @@
+rules:
+  - id: orm-unsafe-raw-query
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: >
+      Unsafe raw SQL query detected. Using string interpolation or concatenation
+      inside Prisma ($queryRaw, $executeRaw, $queryRawUnsafe, $executeRawUnsafe) or TypeORM (query)
+      bypasses parameterized query generation, risking SQL injection. Use safe tagged templates (e.g. prisma.$queryRaw`...`)
+      or pass parameters as a separate argument/binding.
+    metadata:
+      category: security
+      cwe:
+        - "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+      owasp:
+        - "A03:2021 - Injection"
+      confidence: rule
+    pattern-either:
+      # Prisma raw queries with concatenation or template literals
+      - pattern: $PRISMA.$queryRaw($SQL + $X, ...)
+      - pattern: $PRISMA.$queryRaw(`...${$X}...`, ...)
+      - pattern: $PRISMA.$executeRaw($SQL + $X, ...)
+      - pattern: $PRISMA.$executeRaw(`...${$X}...`, ...)
+
+      # Prisma unsafe methods with concatenation or template literals
+      - pattern: $PRISMA.$queryRawUnsafe($SQL + $X, ...)
+      - pattern: $PRISMA.$queryRawUnsafe(`...${$X}...`, ...)
+      - pattern: $PRISMA.$executeRawUnsafe($SQL + $X, ...)
+      - pattern: $PRISMA.$executeRawUnsafe(`...${$X}...`, ...)
+
+      # TypeORM raw queries with concatenation or template literals
+      - pattern: $CONN.query($SQL + $X, ...)
+      - pattern: $CONN.query(`...${$X}...`, ...)
