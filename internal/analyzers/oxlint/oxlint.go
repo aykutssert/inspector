@@ -27,12 +27,20 @@ func (a *Analyzer) Available() bool {
 // curatedConfig enables the React/correctness rule sets that catch real bugs
 // and codegen smells, while leaving out the stylistic/pedantic categories
 // (magic numbers, comment casing, filename case) that would drown the signal.
+// Two deliberate per-rule tweaks:
+//   - jsx-no-new-function-as-prop OFF: inline handlers are idiomatic React and
+//     this rule fires on nearly every component, so it buries the signal.
+//   - button-has-type ON: a <button> defaults to type="submit" and silently
+//     submits forms; a real bug the default config misses.
+//
 // Written to a temp file per scan so the user's repo is never touched.
 const curatedConfig = `{
   "plugins": ["react", "react-perf", "jsx-a11y"],
   "categories": { "correctness": "warn", "suspicious": "warn", "perf": "warn" },
   "rules": {
-    "react/react-in-jsx-scope": "off"
+    "react/react-in-jsx-scope": "off",
+    "react-perf/jsx-no-new-function-as-prop": "off",
+    "react/button-has-type": "warn"
   }
 }`
 
