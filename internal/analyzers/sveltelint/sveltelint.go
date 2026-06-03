@@ -12,7 +12,7 @@ import (
 )
 
 // Analyzer wraps eslint + eslint-plugin-svelte, the proven Svelte linter, run
-// from a managed toolchain that inspector ships under _linters/svelte. We do not
+// from a managed toolchain that inspector ships under _toolchains/svelte. We do not
 // author Svelte rules ourselves; we wrap the ecosystem's linter.
 type Analyzer struct{}
 
@@ -51,7 +51,7 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 			Category:   "quality",
 			Confidence: core.ConfidenceHint,
 			Message:    "Svelte files found but the svelte-lint toolchain is not installed; these files were not linted.",
-			Fix:        "cd _linters/svelte && npm install",
+			Fix:        "cd _toolchains/svelte && npm install",
 		}}, nil
 	}
 

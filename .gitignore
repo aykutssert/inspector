@@ -9,7 +9,7 @@
 *.out
 
 # managed linter toolchains: commit manifests, not installed deps
-_linters/*/node_modules/
+_toolchains/*/node_modules/
 
 # os / editor
 .DS_Store
@@ -17,9 +17,9 @@ _linters/*/node_modules/
 .vscode/
 
 # local working/agent docs (do not push)
-memory.md
+changelog.md
 CLAUDE.md
 AGENT.md
-project.md
-report.md
-todo.md
+architecture.md
+review-report.md
+tasks.md

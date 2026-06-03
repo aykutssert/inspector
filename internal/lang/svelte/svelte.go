@@ -21,5 +21,5 @@ func (a *Adapter) Matches(path string) bool {
 
 // Rules returns no semgrep rule dir: semgrep has no Svelte language, so a YAML
 // pack would never match. Svelte rules are configured in the eslint flat config
-// the svelte-lint analyzer wraps (_linters/svelte/eslint.config.mjs).
+// the svelte-lint analyzer wraps (_toolchains/svelte/eslint.config.mjs).
 func (a *Adapter) Rules() []string { return nil }

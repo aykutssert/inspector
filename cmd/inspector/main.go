@@ -5,23 +5,10 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"path/filepath"
 
-	"github.com/aykutssert/inspector/internal/analyzers/gitlog"
-	"github.com/aykutssert/inspector/internal/analyzers/osv"
-	"github.com/aykutssert/inspector/internal/analyzers/oxlint"
-	"github.com/aykutssert/inspector/internal/analyzers/reacthint"
-	"github.com/aykutssert/inspector/internal/analyzers/semgrep"
-	"github.com/aykutssert/inspector/internal/analyzers/sveltelint"
-	"github.com/aykutssert/inspector/internal/analyzers/tsc"
-	"github.com/aykutssert/inspector/internal/analyzers/tseslint"
-	"github.com/aykutssert/inspector/internal/codegraph"
+	"github.com/aykutssert/inspector/internal/app"
 	"github.com/aykutssert/inspector/internal/core"
-	"github.com/aykutssert/inspector/internal/lang"
-	"github.com/aykutssert/inspector/internal/lang/javascript"
-	"github.com/aykutssert/inspector/internal/lang/svelte"
 	"github.com/aykutssert/inspector/internal/report"
-	"github.com/aykutssert/inspector/internal/scan"
 )
 
 func main() {
@@ -57,65 +44,16 @@ func runScan(args []string) {
 	if fs.NArg() > 0 {
 		root = fs.Arg(0)
 	}
-	absRoot, err := filepath.Abs(root)
+
+	r, err := app.Scan(app.ScanOptions{
+		Root:     root,
+		DiffOnly: *diff,
+		RulesDir: *rulesDir,
+	}, nil)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "error:", err)
 		os.Exit(1)
 	}
-
-	// add new languages here
-	jsAdapter := javascript.New(*rulesDir)
-	adapters := []core.LanguageAdapter{jsAdapter, svelte.New()}
-	registry := lang.NewRegistry(adapters...)
-
-	// Each adapter declares where its user-authored rule packs live; semgrep
-	// loads them on top of the registry packs. Resolve to absolute so semgrep
-	// (which runs with its cwd at the scan root) finds them. Missing dirs are
-	// ignored by the analyzer.
-	var customRuleDirs []string
-	for _, ad := range adapters {
-		for _, d := range ad.Rules() {
-			if abs, err := filepath.Abs(d); err == nil {
-				customRuleDirs = append(customRuleDirs, abs)
-			}
-		}
-	}
-
-	files, err := scan.Discover(absRoot, *diff, adapters)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "error discovering files:", err)
-		os.Exit(1)
-	}
-
-	var changed []string
-	if *diff {
-		if changed, err = scan.Changed(absRoot); err != nil {
-			fmt.Fprintln(os.Stderr, "error listing changed files:", err)
-			os.Exit(1)
-		}
-	}
-
-	ctx := core.ProjectContext{
-		Root:      absRoot,
-		DiffOnly:  *diff,
-		Files:     files,
-		Languages: registry.Detect(files),
-		Changed:   changed,
-	}
-
-	// Analyzers — add new analyzers here, orchestrator stays untouched.
-	// add new analyzers here
-	orch := core.New(
-		semgrep.New("", customRuleDirs...),
-		oxlint.New(),
-		reacthint.New(),
-		sveltelint.New(),
-		tsc.New(),
-		tseslint.New(),
-		osv.New(),
-		gitlog.New(),
-	)
-	r := orch.Run(ctx)
 
 	// Format auto-selects: JSON when piped (an agent reads it), human text on a
 	// terminal. No flag needed.
@@ -153,21 +91,14 @@ func runContext(args []string) {
 	}
 	target := fs.Arg(0)
 
-	absRoot, err := filepath.Abs(*rootFlag)
+	ctx, err := app.Context(app.ContextOptions{
+		Root:   *rootFlag,
+		Target: target,
+	}, nil)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "error:", err)
 		os.Exit(1)
 	}
-
-	adapters := []core.LanguageAdapter{javascript.New("")}
-	files, err := scan.Discover(absRoot, false, adapters)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "error discovering files:", err)
-		os.Exit(1)
-	}
-
-	g := codegraph.Build(absRoot, files)
-	ctx := g.GetContext(target)
 
 	enc := json.NewEncoder(os.Stdout)
 	enc.SetIndent("", "  ")

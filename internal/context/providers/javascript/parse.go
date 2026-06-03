@@ -1,4 +1,4 @@
-package codegraph
+package javascript
 
 import (
 	"context"

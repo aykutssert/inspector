@@ -1,13 +1,5 @@
 # inspector
 
-A deterministic scanner for AI-generated code: security, bugs, performance, and
-cross-file context.
-
-inspector does **not** ship an LLM. It produces small, precise findings; your
-coding agent (Claude Code, Codex, ...) reads them and fixes the code. Detection
-leans on proven tools, so it pulls rule packs and CVE data as needed — normal
-developer tooling, not your source code going to a cloud model.
-
 ## Build
 
 ```bash
@@ -37,12 +29,3 @@ imports it needs to change code without breaking the rest of the project.
   semgrep   osv   tree-sitter   git-log
   (rules)  (CVE)    (graph)    (history)
 ```
-
-- Detection delegates to proven tools (`semgrep`, `osv-scanner`).
-- The context graph is built in-process from a tree-sitter parse.
-- Add an analyzer or a language without touching the core (plugin design).
-
-A missing external tool is reported as an error, not skipped: a clean scan
-means the scanners actually ran.
-
-First language: **JS/TS (incl. JSX/React)**. More to come.
