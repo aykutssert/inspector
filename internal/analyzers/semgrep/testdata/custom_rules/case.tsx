@@ -45,3 +45,14 @@ export function stub() {
   // TODO: implement this handler
   // ... rest of the implementation
 }
+
+export function renderLegacy(node: HTMLElement, html: string) {
+  node.innerHTML = html;
+  node.innerHTML = "<p>static</p>";
+  node.innerHTML = DOMPurify.sanitize(html);
+  node.textContent = html;
+}
+
+export function cloneSlow<T>(value: T) {
+  return JSON.parse(JSON.stringify(value));
+}

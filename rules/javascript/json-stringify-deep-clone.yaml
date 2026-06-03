@@ -1,0 +1,17 @@
+rules:
+  - id: json-stringify-deep-clone
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      JSON.parse(JSON.stringify(...)) is used as a deep clone. This is slow on
+      large objects and silently changes values such as Date, Map, Set, undefined,
+      NaN, Infinity, RegExp, functions, and class instances. Prefer structuredClone
+      where available, or use a clone strategy that preserves the data shape you
+      actually need.
+    metadata:
+      category: performance
+      # hint: JSON cloning can be intentional for plain JSON-only data, so the
+      # agent should confirm the value shape before replacing it.
+      confidence: hint
+    patterns:
+      - pattern: JSON.parse(JSON.stringify(...))

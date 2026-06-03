@@ -1,9 +1,10 @@
 package app
 
 import (
+	"errors"
 	"path/filepath"
 
-	jscontext "github.com/aykutssert/inspector/internal/context/providers/javascript"
+	inspectctx "github.com/aykutssert/inspector/internal/context"
 	"github.com/aykutssert/inspector/internal/packs"
 	"github.com/aykutssert/inspector/internal/scan"
 )
@@ -13,7 +14,7 @@ type ContextOptions struct {
 	Target string
 }
 
-func Context(opts ContextOptions, registry *packs.Registry) (jscontext.Context, error) {
+func Context(opts ContextOptions, registry *packs.Registry) (inspectctx.Context, error) {
 	if registry == nil {
 		registry = packs.Default()
 	}
@@ -23,12 +24,15 @@ func Context(opts ContextOptions, registry *packs.Registry) (jscontext.Context, 
 	}
 	absRoot, err := filepath.Abs(root)
 	if err != nil {
-		return jscontext.Context{}, err
+		return inspectctx.Context{}, err
 	}
 	files, err := scan.Discover(absRoot, false, registry.ContextAdapters())
 	if err != nil {
-		return jscontext.Context{}, err
+		return inspectctx.Context{}, err
 	}
-	g := jscontext.Build(absRoot, files)
-	return g.GetContext(opts.Target), nil
+	providers := registry.ContextProviders()
+	if len(providers) == 0 {
+		return inspectctx.Context{}, errors.New("no context providers registered")
+	}
+	return providers[0].GetContext(absRoot, files, opts.Target)
 }

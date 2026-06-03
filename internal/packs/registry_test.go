@@ -18,6 +18,10 @@ func TestDefaultRegistryProvidesScanSurface(t *testing.T) {
 	if got := len(r.Analyzers(jsCtx, nil)); got < 3 {
 		t.Fatalf("JS scan should include global and JS pack analyzers, got %d", got)
 	}
+	providers := r.ContextProviders()
+	if len(providers) != 1 || providers[0].Name() != "javascript" {
+		t.Fatalf("default registry should expose the JavaScript context provider, got %#v", providers)
+	}
 }
 
 // A repo whose languages none of the packs match must still get the global
@@ -33,4 +37,25 @@ func TestAnalyzersGateOnDetection(t *testing.T) {
 	if globals != 3 { // semgrep + osv + gitlog
 		t.Fatalf("non-JS repo should run only the 3 global scanners, got %d", globals)
 	}
+}
+
+func TestTailwindIsSeparatePack(t *testing.T) {
+	if hasAnalyzer(JavaScript().Analyzers(), "tailwind-lint") {
+		t.Fatal("JavaScript pack should not own Tailwind analysis")
+	}
+	if !hasAnalyzer(Tailwind().Analyzers(), "tailwind-lint") {
+		t.Fatal("Tailwind pack should own tailwind-lint")
+	}
+	if got := Tailwind().Toolchains(); len(got) != 1 || got[0].Name != "tailwind" {
+		t.Fatalf("Tailwind pack should declare the tailwind toolchain, got %#v", got)
+	}
+}
+
+func hasAnalyzer(analyzers []core.Analyzer, name string) bool {
+	for _, a := range analyzers {
+		if a.Name() == name {
+			return true
+		}
+	}
+	return false
 }

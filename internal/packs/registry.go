@@ -4,6 +4,7 @@ import (
 	"github.com/aykutssert/inspector/internal/analyzers/gitlog"
 	"github.com/aykutssert/inspector/internal/analyzers/osv"
 	"github.com/aykutssert/inspector/internal/analyzers/semgrep"
+	inspectctx "github.com/aykutssert/inspector/internal/context"
 	"github.com/aykutssert/inspector/internal/core"
 )
 
@@ -16,6 +17,7 @@ type Pack interface {
 	Toolchains() []Toolchain
 	ScanAdapters(rulesDir string) []core.LanguageAdapter
 	ContextAdapters() []core.LanguageAdapter
+	ContextProviders() []inspectctx.Provider
 	Analyzers() []core.Analyzer
 }
 
@@ -49,6 +51,7 @@ func Default() *Registry {
 		React(),
 		Svelte(),
 		TypeScript(),
+		Tailwind(),
 	)
 }
 
@@ -64,6 +67,14 @@ func (r *Registry) ContextAdapters() []core.LanguageAdapter {
 	var out []core.LanguageAdapter
 	for _, p := range r.packs {
 		out = append(out, p.ContextAdapters()...)
+	}
+	return out
+}
+
+func (r *Registry) ContextProviders() []inspectctx.Provider {
+	var out []inspectctx.Provider
+	for _, p := range r.packs {
+		out = append(out, p.ContextProviders()...)
 	}
 	return out
 }

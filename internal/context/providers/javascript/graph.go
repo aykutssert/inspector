@@ -4,34 +4,17 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	inspectctx "github.com/aykutssert/inspector/internal/context"
 )
-
-type DefLoc struct {
-	Name     string `json:"name"`
-	File     string `json:"file"`
-	Line     int    `json:"line"`
-	EndLine  int    `json:"end_line"`
-	Kind     string `json:"kind"`
-	Exported bool   `json:"exported"`
-}
-
-type CallLoc struct {
-	File string `json:"file"`
-	Line int    `json:"line"`
-	Recv string `json:"recv,omitempty"`
-	// Resolved is true when the call was tied to this definition through an
-	// import binding (high confidence); false when attributed by the looser
-	// name + reachability heuristic (e.g. a dynamic receiver like res.x()).
-	Resolved bool `json:"resolved"`
-}
 
 type Graph struct {
 	Root        string
 	Files       map[string]*FileParse // keyed by relative path
 	Diagnostics []string              // parse failures / syntax errors
 
-	defsBySymbol  map[string][]DefLoc
-	callsBySymbol map[string][]CallLoc
+	defsBySymbol  map[string][]inspectctx.DefLoc
+	callsBySymbol map[string][]inspectctx.CallLoc
 	imports       map[string][]string                   // file -> resolved relative files it imports
 	importers     map[string][]string                   // file -> files that import it
 	bindings      map[string]map[string]resolvedBinding // file -> local name -> binding
@@ -113,8 +96,8 @@ func Build(root string, files []string) *Graph {
 	g := &Graph{
 		Root:          root,
 		Files:         map[string]*FileParse{},
-		defsBySymbol:  map[string][]DefLoc{},
-		callsBySymbol: map[string][]CallLoc{},
+		defsBySymbol:  map[string][]inspectctx.DefLoc{},
+		callsBySymbol: map[string][]inspectctx.CallLoc{},
 		imports:       map[string][]string{},
 		importers:     map[string][]string{},
 		bindings:      map[string]map[string]resolvedBinding{},
@@ -133,12 +116,12 @@ func Build(root string, files []string) *Graph {
 	}
 	for rel, fp := range g.Files {
 		for _, d := range fp.Defs {
-			g.defsBySymbol[d.Name] = append(g.defsBySymbol[d.Name], DefLoc{
+			g.defsBySymbol[d.Name] = append(g.defsBySymbol[d.Name], inspectctx.DefLoc{
 				Name: d.Name, File: rel, Line: d.Line, EndLine: d.EndLine, Kind: d.Kind, Exported: d.Exported,
 			})
 		}
 		for _, c := range fp.Calls {
-			g.callsBySymbol[c.Name] = append(g.callsBySymbol[c.Name], CallLoc{File: rel, Line: c.Line, Recv: c.Recv})
+			g.callsBySymbol[c.Name] = append(g.callsBySymbol[c.Name], inspectctx.CallLoc{File: rel, Line: c.Line, Recv: c.Recv})
 		}
 		for _, im := range fp.Imports {
 			target := g.resolveImport(rel, im.Source)
@@ -194,10 +177,10 @@ func (g *Graph) resolveImport(fromFile, spec string) string {
 	return ""
 }
 
-func (g *Graph) Defs(symbol string) []DefLoc    { return g.defsBySymbol[symbol] }
-func (g *Graph) Calls(symbol string) []CallLoc  { return g.callsBySymbol[symbol] }
-func (g *Graph) Imports(file string) []string   { return g.imports[file] }
-func (g *Graph) Importers(file string) []string { return g.importers[file] }
+func (g *Graph) Defs(symbol string) []inspectctx.DefLoc   { return g.defsBySymbol[symbol] }
+func (g *Graph) Calls(symbol string) []inspectctx.CallLoc { return g.callsBySymbol[symbol] }
+func (g *Graph) Imports(file string) []string             { return g.imports[file] }
+func (g *Graph) Importers(file string) []string           { return g.importers[file] }
 
 func appendUnique(s []string, v string) []string {
 	for _, x := range s {

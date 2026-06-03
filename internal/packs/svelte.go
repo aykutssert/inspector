@@ -2,6 +2,7 @@ package packs
 
 import (
 	"github.com/aykutssert/inspector/internal/analyzers/sveltelint"
+	inspectctx "github.com/aykutssert/inspector/internal/context"
 	"github.com/aykutssert/inspector/internal/core"
 	"github.com/aykutssert/inspector/internal/lang/svelte"
 )
@@ -32,6 +33,10 @@ func (sveltePack) ScanAdapters(string) []core.LanguageAdapter {
 }
 
 func (sveltePack) ContextAdapters() []core.LanguageAdapter {
+	return nil
+}
+
+func (sveltePack) ContextProviders() []inspectctx.Provider {
 	return nil
 }
 

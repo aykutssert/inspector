@@ -18,6 +18,15 @@
     "message": "dangerouslySetInnerHTML is fed a dynamic value (not a string literal). If that value contains any user-controlled data, this is a stored/reflected XSS sink. Confirm the HTML is sanitized (e.g. DOMPurify) before it reaches this prop, or render the value as text instead.\n"
   },
   {
+    "rule_id": "dom-innerhtml-variable",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 50,
+    "message": "innerHTML is assigned a dynamic value. If that value contains user-controlled data, this is a DOM XSS sink. Prefer textContent for plain text, or sanitize trusted HTML before assigning it.\n"
+  },
+  {
     "rule_id": "dynamic-code-execution",
     "severity": "error",
     "category": "security",
@@ -43,6 +52,15 @@
     "file": "case.tsx",
     "line": 24,
     "message": "A javascript: URL executes code when the link is activated. Use a real route, button handler, or safe URL instead.\n"
+  },
+  {
+    "rule_id": "json-stringify-deep-clone",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 57,
+    "message": "JSON.parse(JSON.stringify(...)) is used as a deep clone. This is slow on large objects and silently changes values such as Date, Map, Set, undefined, NaN, Infinity, RegExp, functions, and class instances. Prefer structuredClone where available, or use a clone strategy that preserves the data shape you actually need.\n"
   },
   {
     "rule_id": "leftover-console-statement",

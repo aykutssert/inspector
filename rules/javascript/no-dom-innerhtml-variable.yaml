@@ -1,0 +1,25 @@
+rules:
+  - id: dom-innerhtml-variable
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      innerHTML is assigned a dynamic value. If that value contains user-controlled
+      data, this is a DOM XSS sink. Prefer textContent for plain text, or sanitize
+      trusted HTML before assigning it.
+    metadata:
+      category: security
+      cwe:
+        - "CWE-79: Improper Neutralization of Input During Web Page Generation (Cross-site Scripting)"
+      owasp:
+        - "A03:2021 - Injection"
+      # hint: sanitized HTML can be valid; the agent must verify the data source
+      # and sanitizer before treating this as a definite vulnerability.
+      confidence: hint
+    patterns:
+      - pattern: $EL.innerHTML = $HTML
+      - metavariable-pattern:
+          metavariable: $HTML
+          patterns:
+            - pattern-not: '"..."'
+            - pattern-not: "`...`"
+            - pattern-not: DOMPurify.sanitize(...)

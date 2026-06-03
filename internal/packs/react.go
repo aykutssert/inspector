@@ -2,6 +2,7 @@ package packs
 
 import (
 	"github.com/aykutssert/inspector/internal/analyzers/reacthint"
+	inspectctx "github.com/aykutssert/inspector/internal/context"
 	"github.com/aykutssert/inspector/internal/core"
 )
 
@@ -31,6 +32,10 @@ func (reactPack) ScanAdapters(string) []core.LanguageAdapter {
 }
 
 func (reactPack) ContextAdapters() []core.LanguageAdapter {
+	return nil
+}
+
+func (reactPack) ContextProviders() []inspectctx.Provider {
 	return nil
 }
 

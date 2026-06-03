@@ -3,6 +3,7 @@ package packs
 import (
 	"github.com/aykutssert/inspector/internal/analyzers/tsc"
 	"github.com/aykutssert/inspector/internal/analyzers/tseslint"
+	inspectctx "github.com/aykutssert/inspector/internal/context"
 	"github.com/aykutssert/inspector/internal/core"
 )
 
@@ -32,6 +33,10 @@ func (typescriptPack) ScanAdapters(string) []core.LanguageAdapter {
 }
 
 func (typescriptPack) ContextAdapters() []core.LanguageAdapter {
+	return nil
+}
+
+func (typescriptPack) ContextProviders() []inspectctx.Provider {
 	return nil
 }
 

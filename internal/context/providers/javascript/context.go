@@ -4,28 +4,18 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	inspectctx "github.com/aykutssert/inspector/internal/context"
 )
 
-type DefDetail struct {
-	DefLoc
-	Callees []string `json:"callees,omitempty"`
-	// Callers are attributed through an import binding (high confidence).
-	// UnresolvedCallers are matched by the looser name + reachability heuristic
-	// (e.g. a dynamic receiver like res.x()); keep them separate so an agent
-	// does not mistake a guess for a definite edge.
-	Callers           []CallLoc `json:"callers,omitempty"`
-	UnresolvedCallers []CallLoc `json:"unresolved_callers,omitempty"`
-	Source            string    `json:"source,omitempty"`
-}
+type Provider struct{}
 
-type Context struct {
-	Target      string      `json:"target"`
-	Kind        string      `json:"kind"`
-	Definitions []DefDetail `json:"definitions,omitempty"`
-	Defs        []DefLoc    `json:"defs,omitempty"`
-	Imports     []string    `json:"imports,omitempty"`
-	ImportedBy  []string    `json:"imported_by,omitempty"`
-	Diagnostics []string    `json:"diagnostics,omitempty"`
+func NewProvider() Provider { return Provider{} }
+
+func (Provider) Name() string { return "javascript" }
+
+func (Provider) GetContext(root string, files []string, target string) (inspectctx.Context, error) {
+	return Build(root, files).GetContext(target), nil
 }
 
 const maxDiagnostics = 20
@@ -37,8 +27,8 @@ const maxSourceLines = 60
 //	"path/to/file.js"          -> file context (imports, importers, defs)
 //	"path/to/file.js:symbol"   -> symbol context scoped to that file
 //	"symbol"                   -> symbol context across the whole project
-func (g *Graph) GetContext(target string) Context {
-	var c Context
+func (g *Graph) GetContext(target string) inspectctx.Context {
+	var c inspectctx.Context
 	if file, sym, ok := g.splitFileSymbol(target); ok {
 		c = g.symbolContext(target, sym, file)
 	} else if g.Files[target] != nil {
@@ -66,15 +56,15 @@ func (g *Graph) splitFileSymbol(target string) (file, sym string, ok bool) {
 	return "", "", false
 }
 
-func (g *Graph) symbolContext(target, sym, scopeFile string) Context {
-	c := Context{Target: target, Kind: "symbol"}
+func (g *Graph) symbolContext(target, sym, scopeFile string) inspectctx.Context {
+	c := inspectctx.Context{Target: target, Kind: "symbol"}
 	for _, d := range g.Defs(sym) {
 		if scopeFile != "" && d.File != scopeFile {
 			continue
 		}
 		all := g.callersOf(sym, d)
 		all = append(all, g.aliasCallers(sym, d)...)
-		var resolved, unresolved []CallLoc
+		var resolved, unresolved []inspectctx.CallLoc
 		for _, ca := range all {
 			if ca.Resolved {
 				resolved = append(resolved, ca)
@@ -82,7 +72,7 @@ func (g *Graph) symbolContext(target, sym, scopeFile string) Context {
 				unresolved = append(unresolved, ca)
 			}
 		}
-		c.Definitions = append(c.Definitions, DefDetail{
+		c.Definitions = append(c.Definitions, inspectctx.DefDetail{
 			DefLoc:            d,
 			Callees:           g.calleesIn(d),
 			Callers:           resolved,
@@ -104,8 +94,8 @@ func (g *Graph) symbolContext(target, sym, scopeFile string) Context {
 //     skipping same-named defs elsewhere (Resolved).
 //   - cross-file without a binding (dynamic receiver like res.x(), or a global):
 //     fall back to the looser reachability heuristic (not Resolved).
-func (g *Graph) callersOf(sym string, d DefLoc) []CallLoc {
-	var callers []CallLoc
+func (g *Graph) callersOf(sym string, d inspectctx.DefLoc) []inspectctx.CallLoc {
+	var callers []inspectctx.CallLoc
 	for _, call := range g.Calls(sym) {
 		if call.File == d.File {
 			if call.Line >= d.Line && call.Line <= d.EndLine {
@@ -138,8 +128,8 @@ func (g *Graph) callersOf(sym string, d DefLoc) []CallLoc {
 // symbol is sym (or whose default import resolves to a file whose default
 // export is sym) and attribute calls of the local name. All are binding-based,
 // so Resolved is true.
-func (g *Graph) aliasCallers(sym string, d DefLoc) []CallLoc {
-	var callers []CallLoc
+func (g *Graph) aliasCallers(sym string, d inspectctx.DefLoc) []inspectctx.CallLoc {
+	var callers []inspectctx.CallLoc
 	for file, locals := range g.bindings {
 		fp := g.Files[file]
 		if fp == nil {
@@ -164,7 +154,7 @@ func (g *Graph) aliasCallers(sym string, d DefLoc) []CallLoc {
 			}
 			for _, call := range fp.Calls {
 				if call.Name == local && call.Recv == "" {
-					callers = append(callers, CallLoc{File: file, Line: call.Line, Resolved: true})
+					callers = append(callers, inspectctx.CallLoc{File: file, Line: call.Line, Resolved: true})
 				}
 			}
 		}
@@ -172,13 +162,13 @@ func (g *Graph) aliasCallers(sym string, d DefLoc) []CallLoc {
 	return callers
 }
 
-func (g *Graph) fileContext(file string) Context {
-	c := Context{Target: file, Kind: "file"}
+func (g *Graph) fileContext(file string) inspectctx.Context {
+	c := inspectctx.Context{Target: file, Kind: "file"}
 	c.Imports = g.Imports(file)
 	c.ImportedBy = g.Importers(file)
 	if fp := g.Files[file]; fp != nil {
 		for _, d := range fp.Defs {
-			c.Defs = append(c.Defs, DefLoc{
+			c.Defs = append(c.Defs, inspectctx.DefLoc{
 				Name: d.Name, File: file, Line: d.Line, EndLine: d.EndLine, Kind: d.Kind, Exported: d.Exported,
 			})
 		}
@@ -188,7 +178,7 @@ func (g *Graph) fileContext(file string) Context {
 
 // calleesIn returns the distinct callees within a definition's line range,
 // qualified by receiver when present (e.g. "db.query", not just "query").
-func (g *Graph) calleesIn(d DefLoc) []string {
+func (g *Graph) calleesIn(d inspectctx.DefLoc) []string {
 	fp := g.Files[d.File]
 	if fp == nil {
 		return nil
