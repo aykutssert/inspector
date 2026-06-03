@@ -1,0 +1,25 @@
+rules:
+  - id: nestjs-fat-controller
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      A NestJS controller directly performs database or ORM operations. NestJS
+      architecture mandates that controllers only handle HTTP routing and delegate
+      business logic and data access to services. Move this database operation
+      into a service class.
+    metadata:
+      category: maintainability
+      confidence: hint
+    patterns:
+      - pattern-inside: |
+          @Controller(...)
+          class $CLASS {
+            ...
+          }
+      - pattern-either:
+          - pattern: this.$DBVAR.query(...)
+          - pattern: this.$DBVAR.$METHOD(...)
+          - pattern: this.$DBVAR.$MODEL.$METHOD(...)
+      - metavariable-regex:
+          metavariable: $DBVAR
+          regex: (?i).*(db|database|repo|repository|prisma|mongoose|model).*

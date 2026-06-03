@@ -1,0 +1,32 @@
+rules:
+  - id: next-ssrf-prone-fetch
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Server-side fetch() is called with a dynamic or unvalidated URL. If this
+      URL is built from user-controlled input, it can lead to Server-Side
+      Request Forgery (SSRF), allowing attackers to query internal services,
+      bypass firewalls, or leak credentials. Validate the URL against a strict
+      allowlist of allowed domains, or ensure the input is sanitized and mapped
+      to safe endpoints.
+    metadata:
+      category: security
+      cwe:
+        - "CWE-918: Server-Side Request Forgery (SSRF)"
+      owasp:
+        - "A10:2021 - Server-Side Request Forgery (SSRF)"
+      confidence: hint
+    patterns:
+      - pattern-not-inside: |
+          "use client";
+          ...
+      - pattern-not-inside: |
+          'use client';
+          ...
+      - pattern: fetch($URL)
+      - pattern: fetch($URL, ...)
+      - metavariable-pattern:
+          metavariable: $URL
+          patterns:
+            - pattern-not: '"..."'
+            - pattern-not: "'...'"

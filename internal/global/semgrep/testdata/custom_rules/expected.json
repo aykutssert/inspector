@@ -1,33 +1,33 @@
 [
   {
-    "rule_id": "await-in-loop",
+    "rule_id": "express.express-missing-helmet",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 172,
+    "message": "The Express application is initialized but does not appear to use the 'helmet' middleware. Helmet sets critical security headers to protect the app from common web vulnerabilities (XSS, Clickjacking, MIME-sniffing, etc.). Add app.use(helmet()) to secure HTTP headers.\n"
+  },
+  {
+    "rule_id": "general.await-in-loop",
     "severity": "warning",
     "category": "performance",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 39,
+    "line": 40,
     "message": "An await sits directly inside a loop, so the iterations run strictly one after another: each waits for the previous to finish. When the operations are independent (e.g. fetching N urls), this is needlessly slow and should be parallelized with Promise.all(items.map(...)). If each iteration genuinely depends on the previous, or you are intentionally rate-limiting, the serial form is correct.\n"
   },
   {
-    "rule_id": "dangerously-set-inner-html-variable",
+    "rule_id": "general.dom-innerhtml-variable",
     "severity": "warning",
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 26,
-    "message": "dangerouslySetInnerHTML is fed a dynamic value (not a string literal). If that value contains any user-controlled data, this is a stored/reflected XSS sink. Confirm the HTML is sanitized (e.g. DOMPurify) before it reaches this prop, or render the value as text instead.\n"
-  },
-  {
-    "rule_id": "dom-innerhtml-variable",
-    "severity": "warning",
-    "category": "security",
-    "confidence": "hint",
-    "file": "case.tsx",
-    "line": 50,
+    "line": 51,
     "message": "innerHTML is assigned a dynamic value. If that value contains user-controlled data, this is a DOM XSS sink. Prefer textContent for plain text, or sanitize trusted HTML before assigning it.\n"
   },
   {
-    "rule_id": "dynamic-code-execution",
+    "rule_id": "general.dynamic-code-execution",
     "severity": "error",
     "category": "security",
     "confidence": "rule",
@@ -36,7 +36,7 @@
     "message": "Dynamic code execution through eval()/Function() can execute attacker-controlled input as JavaScript. Avoid interpreting strings as code; use explicit parsing or a constrained dispatch table instead.\n"
   },
   {
-    "rule_id": "empty-catch-block",
+    "rule_id": "general.empty-catch-block",
     "severity": "warning",
     "category": "bug",
     "confidence": "hint",
@@ -45,25 +45,16 @@
     "message": "This catch block is empty, so the error is silently swallowed: failures vanish with no log, no rethrow, and no recovery, which hides bugs and makes incidents undebuggable. Handle the error, log it, or rethrow. If ignoring is truly intentional, leave a comment explaining why.\n"
   },
   {
-    "rule_id": "fetch-in-loop",
+    "rule_id": "general.fetch-in-loop",
     "severity": "warning",
     "category": "performance",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 39,
+    "line": 40,
     "message": "fetch() is called from inside a loop. This often creates an N+1 network pattern or forces requests to run one by one when combined with await. Prefer batching, a backend bulk endpoint, or Promise.all over a mapped collection when the requests are independent.\n"
   },
   {
-    "rule_id": "hardcoded-secret",
-    "severity": "error",
-    "category": "security",
-    "confidence": "rule",
-    "file": "case.tsx",
-    "line": 137,
-    "message": "A hardcoded secret or credential appears in the source (an AWS access key, a GitHub/Slack/Stripe token, a Google API key, or a PEM private key). Committed secrets are exposed to everyone with repository access and stay in git history even after the line is deleted. Move the value to an environment variable or a secret manager, rotate the leaked credential immediately, and purge it from git history.\n"
-  },
-  {
-    "rule_id": "hardcoded-secret",
+    "rule_id": "general.hardcoded-secret",
     "severity": "error",
     "category": "security",
     "confidence": "rule",
@@ -72,7 +63,7 @@
     "message": "A hardcoded secret or credential appears in the source (an AWS access key, a GitHub/Slack/Stripe token, a Google API key, or a PEM private key). Committed secrets are exposed to everyone with repository access and stay in git history even after the line is deleted. Move the value to an environment variable or a secret manager, rotate the leaked credential immediately, and purge it from git history.\n"
   },
   {
-    "rule_id": "hardcoded-secret",
+    "rule_id": "general.hardcoded-secret",
     "severity": "error",
     "category": "security",
     "confidence": "rule",
@@ -81,7 +72,7 @@
     "message": "A hardcoded secret or credential appears in the source (an AWS access key, a GitHub/Slack/Stripe token, a Google API key, or a PEM private key). Committed secrets are exposed to everyone with repository access and stay in git history even after the line is deleted. Move the value to an environment variable or a secret manager, rotate the leaked credential immediately, and purge it from git history.\n"
   },
   {
-    "rule_id": "hardcoded-secret",
+    "rule_id": "general.hardcoded-secret",
     "severity": "error",
     "category": "security",
     "confidence": "rule",
@@ -90,7 +81,7 @@
     "message": "A hardcoded secret or credential appears in the source (an AWS access key, a GitHub/Slack/Stripe token, a Google API key, or a PEM private key). Committed secrets are exposed to everyone with repository access and stay in git history even after the line is deleted. Move the value to an environment variable or a secret manager, rotate the leaked credential immediately, and purge it from git history.\n"
   },
   {
-    "rule_id": "hardcoded-secret",
+    "rule_id": "general.hardcoded-secret",
     "severity": "error",
     "category": "security",
     "confidence": "rule",
@@ -99,7 +90,7 @@
     "message": "A hardcoded secret or credential appears in the source (an AWS access key, a GitHub/Slack/Stripe token, a Google API key, or a PEM private key). Committed secrets are exposed to everyone with repository access and stay in git history even after the line is deleted. Move the value to an environment variable or a secret manager, rotate the leaked credential immediately, and purge it from git history.\n"
   },
   {
-    "rule_id": "hardcoded-secret",
+    "rule_id": "general.hardcoded-secret",
     "severity": "error",
     "category": "security",
     "confidence": "rule",
@@ -108,16 +99,25 @@
     "message": "A hardcoded secret or credential appears in the source (an AWS access key, a GitHub/Slack/Stripe token, a Google API key, or a PEM private key). Committed secrets are exposed to everyone with repository access and stay in git history even after the line is deleted. Move the value to an environment variable or a secret manager, rotate the leaked credential immediately, and purge it from git history.\n"
   },
   {
-    "rule_id": "insecure-document-cookie",
+    "rule_id": "general.hardcoded-secret",
+    "severity": "error",
+    "category": "security",
+    "confidence": "rule",
+    "file": "case.tsx",
+    "line": 143,
+    "message": "A hardcoded secret or credential appears in the source (an AWS access key, a GitHub/Slack/Stripe token, a Google API key, or a PEM private key). Committed secrets are exposed to everyone with repository access and stay in git history even after the line is deleted. Move the value to an environment variable or a secret manager, rotate the leaked credential immediately, and purge it from git history.\n"
+  },
+  {
+    "rule_id": "general.insecure-document-cookie",
     "severity": "warning",
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 89,
+    "line": 90,
     "message": "document.cookie is assigned without an obvious Secure attribute. Client-set cookies are also readable from JavaScript, so auth material should normally be set server-side with HttpOnly, Secure, and SameSite. If this is not auth material, still confirm the cookie is intentionally accessible to scripts.\n"
   },
   {
-    "rule_id": "javascript-url",
+    "rule_id": "general.javascript-url",
     "severity": "error",
     "category": "security",
     "confidence": "rule",
@@ -126,16 +126,16 @@
     "message": "A javascript: URL executes code when the link is activated. Use a real route, button handler, or safe URL instead.\n"
   },
   {
-    "rule_id": "json-stringify-deep-clone",
+    "rule_id": "general.json-stringify-deep-clone",
     "severity": "warning",
     "category": "performance",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 57,
+    "line": 58,
     "message": "JSON.parse(JSON.stringify(...)) is used as a deep clone. This is slow on large objects and silently changes values such as Date, Map, Set, undefined, NaN, Infinity, RegExp, functions, and class instances. Prefer structuredClone where available, or use a clone strategy that preserves the data shape you actually need.\n"
   },
   {
-    "rule_id": "leftover-console-statement",
+    "rule_id": "general.leftover-console-statement",
     "severity": "warning",
     "category": "quality",
     "confidence": "hint",
@@ -144,7 +144,7 @@
     "message": "A console.log/console.debug call was left in the source. These are typically debugging leftovers (a common artifact of AI-generated or rushed code) that leak data to the browser console and add noise in production. Remove it, or route it through an intentional logger. console.warn/console.error are not flagged, since those are usually deliberate.\n"
   },
   {
-    "rule_id": "leftover-console-statement",
+    "rule_id": "general.leftover-console-statement",
     "severity": "warning",
     "category": "quality",
     "confidence": "hint",
@@ -153,97 +153,70 @@
     "message": "A console.log/console.debug call was left in the source. These are typically debugging leftovers (a common artifact of AI-generated or rushed code) that leak data to the browser console and add noise in production. Remove it, or route it through an intentional logger. console.warn/console.error are not flagged, since those are usually deliberate.\n"
   },
   {
-    "rule_id": "lodash-barrel-import",
+    "rule_id": "general.lodash-barrel-import",
     "severity": "warning",
     "category": "performance",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 72,
+    "line": 73,
     "message": "Lodash is imported from the top-level package, which can pull a much larger bundle than the one helper this file needs. Prefer a per-method import such as lodash/debounce, or use lodash-es with a bundler that tree-shakes it correctly.\n"
   },
   {
-    "rule_id": "math-random-security-token",
+    "rule_id": "general.math-random-security-token",
     "severity": "warning",
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 82,
+    "line": 83,
     "message": "Math.random() is used to create a token, nonce, secret, session value, or other security-sensitive identifier. Math.random() is not cryptographically secure and can be predictable. Use crypto.getRandomValues(), crypto.randomUUID(), or a server-side CSPRNG instead.\n"
   },
   {
-    "rule_id": "message-event-missing-origin-check",
+    "rule_id": "general.message-event-missing-origin-check",
     "severity": "warning",
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 101,
+    "line": 102,
     "message": "A message event handler does not appear to check event.origin. postMessage data can come from untrusted origins, so handlers should verify the sender against a strict allowlist before trusting event.data.\n"
   },
   {
-    "rule_id": "next-public-env-secret",
+    "rule_id": "general.open-redirect-dynamic-url",
     "severity": "warning",
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 129,
-    "message": "A NEXT_PUBLIC_* environment variable named like a secret (secret, token, password, credential, private/api key) is read here. Next.js inlines every NEXT_PUBLIC_* value into the client JavaScript bundle, so this value is shipped to the browser and readable by anyone. If it is a real secret, drop the NEXT_PUBLIC_ prefix and read it only in server code (route handlers, server components, getServerSideProps). If the value is genuinely public (e.g. a publishable key), rename it so it no longer looks like a secret.\n"
-  },
-  {
-    "rule_id": "next-public-env-secret",
-    "severity": "warning",
-    "category": "security",
-    "confidence": "hint",
-    "file": "case.tsx",
-    "line": 130,
-    "message": "A NEXT_PUBLIC_* environment variable named like a secret (secret, token, password, credential, private/api key) is read here. Next.js inlines every NEXT_PUBLIC_* value into the client JavaScript bundle, so this value is shipped to the browser and readable by anyone. If it is a real secret, drop the NEXT_PUBLIC_ prefix and read it only in server code (route handlers, server components, getServerSideProps). If the value is genuinely public (e.g. a publishable key), rename it so it no longer looks like a secret.\n"
-  },
-  {
-    "rule_id": "open-redirect-dynamic-url",
-    "severity": "warning",
-    "category": "security",
-    "confidence": "hint",
-    "file": "case.tsx",
-    "line": 95,
+    "line": 96,
     "message": "A redirect/navigation target is built from a dynamic value. If this value can be influenced by a user, the app may redirect to an attacker-controlled URL. Validate against an allowlist, resolve only internal paths, or build the destination from trusted route names.\n"
   },
   {
-    "rule_id": "open-redirect-dynamic-url",
+    "rule_id": "general.open-redirect-dynamic-url",
     "severity": "warning",
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 119,
+    "line": 120,
     "message": "A redirect/navigation target is built from a dynamic value. If this value can be influenced by a user, the app may redirect to an attacker-controlled URL. Validate against an allowlist, resolve only internal paths, or build the destination from trusted route names.\n"
   },
   {
-    "rule_id": "open-redirect-dynamic-url",
+    "rule_id": "general.open-redirect-dynamic-url",
     "severity": "warning",
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 121,
+    "line": 122,
     "message": "A redirect/navigation target is built from a dynamic value. If this value can be influenced by a user, the app may redirect to an attacker-controlled URL. Validate against an allowlist, resolve only internal paths, or build the destination from trusted route names.\n"
   },
   {
-    "rule_id": "open-redirect-dynamic-url",
+    "rule_id": "general.open-redirect-dynamic-url",
     "severity": "warning",
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 125,
+    "line": 126,
     "message": "A redirect/navigation target is built from a dynamic value. If this value can be influenced by a user, the app may redirect to an attacker-controlled URL. Validate against an allowlist, resolve only internal paths, or build the destination from trusted route names.\n"
   },
   {
-    "rule_id": "placeholder-or-ai-slop-comment",
-    "severity": "warning",
-    "category": "quality",
-    "confidence": "hint",
-    "file": "case.tsx",
-    "line": 45,
-    "message": "This comment looks like an unfinished placeholder or AI-generation artifact (e.g. \"your code here\", \"rest of the implementation\", \"TODO: implement\", \"as an AI ...\"). It usually means code was elided or never written, so the surrounding function may be incomplete or non-functional. Replace it with the real implementation, or remove the comment if the code is actually complete.\n"
-  },
-  {
-    "rule_id": "placeholder-or-ai-slop-comment",
+    "rule_id": "general.placeholder-or-ai-slop-comment",
     "severity": "warning",
     "category": "quality",
     "confidence": "hint",
@@ -252,30 +225,218 @@
     "message": "This comment looks like an unfinished placeholder or AI-generation artifact (e.g. \"your code here\", \"rest of the implementation\", \"TODO: implement\", \"as an AI ...\"). It usually means code was elided or never written, so the surrounding function may be incomplete or non-functional. Replace it with the real implementation, or remove the comment if the code is actually complete.\n"
   },
   {
-    "rule_id": "random-value-as-react-key",
-    "severity": "error",
-    "category": "bug",
-    "confidence": "rule",
+    "rule_id": "general.placeholder-or-ai-slop-comment",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
     "file": "case.tsx",
-    "line": 28,
-    "message": "A React key derived from Math.random()/Date.now() changes on every render, so React remounts the element each time: local state is lost, inputs lose focus, and reconciliation degrades. Use a stable id from the data instead.\n"
+    "line": 47,
+    "message": "This comment looks like an unfinished placeholder or AI-generation artifact (e.g. \"your code here\", \"rest of the implementation\", \"TODO: implement\", \"as an AI ...\"). It usually means code was elided or never written, so the surrounding function may be incomplete or non-functional. Replace it with the real implementation, or remove the comment if the code is actually complete.\n"
   },
   {
-    "rule_id": "reduce-spread-accumulator",
+    "rule_id": "general.reduce-spread-accumulator",
     "severity": "warning",
     "category": "performance",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 61,
+    "line": 62,
     "message": "This reduce callback rebuilds the accumulator with [...acc, ...] on every iteration, which copies the growing array repeatedly and turns a linear collection step into O(n²) work. Prefer map/filter, or mutate a local accumulator inside the reduce callback when reduce is genuinely needed.\n"
   },
   {
-    "rule_id": "sensitive-data-in-web-storage",
+    "rule_id": "general.sensitive-data-in-web-storage",
     "severity": "warning",
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
     "line": 12,
     "message": "A token/secret/credential is written to localStorage or sessionStorage. Web storage is readable by any script on the page, so any XSS can exfiltrate it; unlike an httpOnly cookie it is not protected from JavaScript. Prefer an httpOnly, Secure, SameSite cookie for auth material, or keep it in memory.\n"
+  },
+  {
+    "rule_id": "nestjs.nestjs-fat-controller",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 233,
+    "message": "A NestJS controller directly performs database or ORM operations. NestJS architecture mandates that controllers only handle HTTP routing and delegate business logic and data access to services. Move this database operation into a service class.\n"
+  },
+  {
+    "rule_id": "nestjs.nestjs-fat-controller",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 238,
+    "message": "A NestJS controller directly performs database or ORM operations. NestJS architecture mandates that controllers only handle HTTP routing and delegate business logic and data access to services. Move this database operation into a service class.\n"
+  },
+  {
+    "rule_id": "nestjs.nestjs-fat-controller",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 243,
+    "message": "A NestJS controller directly performs database or ORM operations. NestJS architecture mandates that controllers only handle HTTP routing and delegate business logic and data access to services. Move this database operation into a service class.\n"
+  },
+  {
+    "rule_id": "nestjs.nestjs-missing-validation-pipe",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 256,
+    "message": "A NestJS controller method accepts a request body via @Body(), but no @UsePipes(ValidationPipe) decorator is declared on the method or the class. Ensure input validation is active (either via local @UsePipes or a global ValidationPipe in main.ts) to prevent unvalidated payloads.\n"
+  },
+  {
+    "rule_id": "nextjs.next-insecure-cookie-setting",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 164,
+    "message": "A cookie is set via cookies().set() without explicitly enabling the secure flag. Sensitive cookies (like session tokens) should always be set with 'secure: true' in production to prevent them from being transmitted over unencrypted HTTP connections.\n"
+  },
+  {
+    "rule_id": "nextjs.next-insecure-cookie-setting",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 166,
+    "message": "A cookie is set via cookies().set() without explicitly enabling the secure flag. Sensitive cookies (like session tokens) should always be set with 'secure: true' in production to prevent them from being transmitted over unencrypted HTTP connections.\n"
+  },
+  {
+    "rule_id": "nextjs.next-prefer-image-component",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 213,
+    "message": "A standard HTML \u003cimg\u003e tag is used. In Next.js, using \u003cimg\u003e bypasses automatic image optimization (lazy loading, responsive sizing, and modern format conversion). Use the '\u003cImage\u003e' component from 'next/image' instead.\n"
+  },
+  {
+    "rule_id": "nextjs.next-prefer-link-component",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 25,
+    "message": "A standard HTML \u003ca\u003e tag is used with an internal route. In Next.js, using \u003ca\u003e for internal navigation causes a full page reload, losing client-side routing benefits. Use the '\u003cLink\u003e' component from 'next/link' instead.\n"
+  },
+  {
+    "rule_id": "nextjs.next-prefer-link-component",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 207,
+    "message": "A standard HTML \u003ca\u003e tag is used with an internal route. In Next.js, using \u003ca\u003e for internal navigation causes a full page reload, losing client-side routing benefits. Use the '\u003cLink\u003e' component from 'next/link' instead.\n"
+  },
+  {
+    "rule_id": "nextjs.next-prefer-link-component",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 208,
+    "message": "A standard HTML \u003ca\u003e tag is used with an internal route. In Next.js, using \u003ca\u003e for internal navigation causes a full page reload, losing client-side routing benefits. Use the '\u003cLink\u003e' component from 'next/link' instead.\n"
+  },
+  {
+    "rule_id": "nextjs.next-public-env-secret",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 130,
+    "message": "A NEXT_PUBLIC_* environment variable named like a secret (secret, token, password, credential, private/api key) is read here. Next.js inlines every NEXT_PUBLIC_* value into the client JavaScript bundle, so this value is shipped to the browser and readable by anyone. If it is a real secret, drop the NEXT_PUBLIC_ prefix and read it only in server code (route handlers, server components, getServerSideProps). If the value is genuinely public (e.g. a publishable key), rename it so it no longer looks like a secret.\n"
+  },
+  {
+    "rule_id": "nextjs.next-public-env-secret",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 131,
+    "message": "A NEXT_PUBLIC_* environment variable named like a secret (secret, token, password, credential, private/api key) is read here. Next.js inlines every NEXT_PUBLIC_* value into the client JavaScript bundle, so this value is shipped to the browser and readable by anyone. If it is a real secret, drop the NEXT_PUBLIC_ prefix and read it only in server code (route handlers, server components, getServerSideProps). If the value is genuinely public (e.g. a publishable key), rename it so it no longer looks like a secret.\n"
+  },
+  {
+    "rule_id": "nextjs.next-server-only-in-client",
+    "severity": "error",
+    "confidence": "rule",
+    "file": "client.tsx",
+    "line": 5,
+    "message": "A client component (using \"use client\") imports a server-only package or Node.js core module. This will fail to run or bundle in the browser. Ensure this import is only used in server components, or mock/stub the functionality on the client.\n"
+  },
+  {
+    "rule_id": "nextjs.next-ssrf-prone-fetch",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 41,
+    "message": "Server-side fetch() is called with a dynamic or unvalidated URL. If this URL is built from user-controlled input, it can lead to Server-Side Request Forgery (SSRF), allowing attackers to query internal services, bypass firewalls, or leak credentials. Validate the URL against a strict allowlist of allowed domains, or ensure the input is sanitized and mapped to safe endpoints.\n"
+  },
+  {
+    "rule_id": "nextjs.next-ssrf-prone-fetch",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 116,
+    "message": "Server-side fetch() is called with a dynamic or unvalidated URL. If this URL is built from user-controlled input, it can lead to Server-Side Request Forgery (SSRF), allowing attackers to query internal services, bypass firewalls, or leak credentials. Validate the URL against a strict allowlist of allowed domains, or ensure the input is sanitized and mapped to safe endpoints.\n"
+  },
+  {
+    "rule_id": "nextjs.next-ssrf-prone-fetch",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 158,
+    "message": "Server-side fetch() is called with a dynamic or unvalidated URL. If this URL is built from user-controlled input, it can lead to Server-Side Request Forgery (SSRF), allowing attackers to query internal services, bypass firewalls, or leak credentials. Validate the URL against a strict allowlist of allowed domains, or ensure the input is sanitized and mapped to safe endpoints.\n"
+  },
+  {
+    "rule_id": "nextjs.next-ssrf-prone-fetch",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 160,
+    "message": "Server-side fetch() is called with a dynamic or unvalidated URL. If this URL is built from user-controlled input, it can lead to Server-Side Request Forgery (SSRF), allowing attackers to query internal services, bypass firewalls, or leak credentials. Validate the URL against a strict allowlist of allowed domains, or ensure the input is sanitized and mapped to safe endpoints.\n"
+  },
+  {
+    "rule_id": "nextjs.next-unsafe-redirect",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 151,
+    "message": "A Next.js redirect target is built from a dynamic value. If this value can be influenced by a user, the app may redirect to an attacker-controlled URL. Validate against an allowlist, resolve only internal paths, or build the destination from trusted route names.\n"
+  },
+  {
+    "rule_id": "nextjs.next-unsafe-redirect",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 153,
+    "message": "A Next.js redirect target is built from a dynamic value. If this value can be influenced by a user, the app may redirect to an attacker-controlled URL. Validate against an allowlist, resolve only internal paths, or build the destination from trusted route names.\n"
+  },
+  {
+    "rule_id": "react.dangerously-set-inner-html-variable",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 26,
+    "message": "dangerouslySetInnerHTML is fed a dynamic value (not a string literal). If that value contains any user-controlled data, this is a stored/reflected XSS sink. Confirm the HTML is sanitized (e.g. DOMPurify) before it reaches this prop, or render the value as text instead.\n"
+  },
+  {
+    "rule_id": "react.random-value-as-react-key",
+    "severity": "error",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "case.tsx",
+    "line": 29,
+    "message": "A React key derived from Math.random()/Date.now() changes on every render, so React remounts the element each time: local state is lost, inputs lose focus, and reconciliation degrades. Use a stable id from the data instead.\n"
   }
 ]

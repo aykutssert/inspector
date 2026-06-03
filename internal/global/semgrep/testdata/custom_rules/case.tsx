@@ -25,6 +25,7 @@ export function Example({ html, token, items }: Props) {
       <a href="/safe">safe</a>
       <div dangerouslySetInnerHTML={{ __html: html }} />
       <div dangerouslySetInnerHTML={{ __html: "<p>static</p>" }} />
+      <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(html) }} />
       {items.map((item) => (
         <span key={Math.random()}>{item.label}</span>
       ))}
@@ -145,3 +146,136 @@ export function hardcodedSecrets() {
   const testKey = "sk_test_0123456789abcdef";
   return { awsKey, githubToken, stripeKey, slackToken, googleKey, pemHeader, publishable, notAws, testKey };
 }
+
+export function nextRedirects(next: string) {
+  redirect(next);
+  redirect("/dashboard");
+  permanentRedirect(next);
+  permanentRedirect("/safe");
+}
+
+export async function nextServerFetch(next: string) {
+  await fetch(next);
+  await fetch("/api/users");
+  await fetch(`https://api.github.com/users/${next}`);
+}
+
+export function nextCookies(token: string) {
+  cookies().set("session", token);
+  cookies().set("session", token, { secure: true });
+  cookies().set({ name: "session", value: token });
+  cookies().set({ name: "session", value: token, secure: true });
+}
+
+export function expressDemoUnsafe() {
+  const express = require("express");
+  const app = express(); // should trigger express-missing-helmet
+
+  app.get("/unsafe-async", async (req, res) => {
+    const data = await db.query(); // should trigger express-async-error-handling
+    res.json(data);
+  });
+  
+  app.post("/unsafe-fn", async function(req, res) {
+    await db.save(); // should trigger express-async-error-handling
+    res.send("ok");
+  });
+}
+
+export function expressDemoSafe() {
+  const express = require("express");
+  const helmet = require("helmet");
+  const app = express();
+  app.use(helmet()); // should prevent express-missing-helmet
+
+  app.get("/safe-async", async (req, res) => {
+    try {
+      const data = await db.query();
+      res.json(data);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  app.post("/safe-wrapped", asyncHandler(async (req, res) => {
+    await db.save();
+    res.send("ok");
+  }));
+}
+
+export function nextOptimizations() {
+  const internalLink = <a href="/about">About</a>; // should trigger next-prefer-link-component
+  const relativeLink = <a href="./team">Team</a>; // should trigger next-prefer-link-component
+  const externalLink = <a href="https://google.com">Google</a>; // should be ok
+  const mailLink = <a href="mailto:info@example.com">Email</a>; // should be ok
+  const nextLink = <Link href="/about">About</Link>; // should be ok
+  
+  const standardImg = <img src="/logo.png" alt="Logo" />; // should trigger next-prefer-image-component
+  const nextImage = <Image src="/logo.png" alt="Logo" width={100} height={100} />; // should be ok
+}
+
+@Controller("users")
+export class UsersController {
+  constructor(
+    private readonly usersService: any,
+    private readonly userRepository: any,
+    private readonly prisma: any,
+    private readonly db: any
+  ) {}
+
+  @Get()
+  async getAll() {
+    return this.usersService.findAll(); // should be ok
+  }
+
+  @Post("unsafe-repo")
+  async createUnsafeRepo(dto: any) {
+    return this.userRepository.save(dto); // should trigger nestjs-fat-controller
+  }
+
+  @Post("unsafe-prisma")
+  async createUnsafePrisma(dto: any) {
+    return this.prisma.user.create({ data: dto }); // should trigger nestjs-fat-controller
+  }
+
+  @Get("unsafe-db")
+  async getRawDb() {
+    return this.db.query("SELECT * FROM users"); // should trigger nestjs-fat-controller
+  }
+}
+
+export class StandardService {
+  constructor(private readonly repo: any) {}
+  async doStuff() {
+    return this.repo.save({}); // should be ok
+  }
+}
+
+@Controller("pipeless")
+export class PipelessController {
+  @Post()
+  async create(@Body() body: any) {
+    return body; // should trigger nestjs-missing-validation-pipe
+  }
+
+  @Get()
+  async getOne() {
+    return "ok"; // should be ok
+  }
+
+  @Post("safe-local")
+  @UsePipes(ValidationPipe)
+  async createLocal(@Body() body: any) {
+    return body; // should be ok
+  }
+}
+
+@Controller("pipes")
+@UsePipes(ValidationPipe)
+export class PipesController {
+  @Post()
+  async create(@Body() body: any) {
+    return body; // should be ok
+  }
+}
+

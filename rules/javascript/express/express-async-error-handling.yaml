@@ -1,0 +1,47 @@
+rules:
+  - id: express-async-error-handling
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      An asynchronous Express route handler does not wrap its execution in a
+      try/catch block or use an async error handler wrapper. Unhandled async
+      rejections in Express can crash the Node.js process or cause requests
+      to hang. Wrap the body in try/catch and pass the error to next(err).
+    metadata:
+      category: correctness
+      cwe:
+        - "CWE-391: Unchecked Error Condition"
+      confidence: hint
+    patterns:
+      - pattern-either:
+          - pattern: |
+              $APP.$METHOD($PATH, async ($REQ, $RES, ...) => { $BODY })
+          - pattern: |
+              $APP.$METHOD($PATH, async function($REQ, $RES, ...) { $BODY })
+      - metavariable-regex:
+          metavariable: $METHOD
+          regex: ^(get|post|put|delete|patch|use|all)$
+      - pattern-not-inside: |
+          $APP.$METHOD($PATH, asyncHandler(async ($REQ, $RES, ...) => { ... }))
+      - pattern-not-inside: |
+          $APP.$METHOD($PATH, $WRAPPER(async ($REQ, $RES, ...) => { ... }))
+      - pattern-not-inside: |
+          $APP.$METHOD($PATH, asyncHandler(async function($REQ, $RES, ...) { ... }))
+      - pattern-not-inside: |
+          $APP.$METHOD($PATH, $WRAPPER(async function($REQ, $RES, ...) { ... }))
+      - pattern-not: |
+          $APP.$METHOD($PATH, async ($REQ, $RES, ...) => {
+            try {
+              ...
+            } catch ($ERR) {
+              ...
+            }
+          })
+      - pattern-not: |
+          $APP.$METHOD($PATH, async function($REQ, $RES, ...) {
+            try {
+              ...
+            } catch ($ERR) {
+              ...
+            }
+          })

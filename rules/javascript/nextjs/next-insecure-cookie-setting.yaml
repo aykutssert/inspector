@@ -1,0 +1,23 @@
+rules:
+  - id: next-insecure-cookie-setting
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      A cookie is set via cookies().set() without explicitly enabling the
+      secure flag. Sensitive cookies (like session tokens) should always
+      be set with 'secure: true' in production to prevent them from being
+      transmitted over unencrypted HTTP connections.
+    metadata:
+      category: security
+      cwe:
+        - "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
+      owasp:
+        - "A02:2021 - Cryptographic Failures"
+      confidence: hint
+    patterns:
+      - pattern-either:
+          - pattern: cookies().set($NAME, $VALUE)
+          - pattern: cookies().set($NAME, $VALUE, $OPTIONS)
+          - pattern: cookies().set($OBJ)
+      - pattern-not: "cookies().set($NAME, $VALUE, {..., secure: true, ...})"
+      - pattern-not: "cookies().set({..., secure: true, ...})"

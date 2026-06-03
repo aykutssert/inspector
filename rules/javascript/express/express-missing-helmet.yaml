@@ -1,0 +1,33 @@
+rules:
+  - id: express-missing-helmet
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      The Express application is initialized but does not appear to use the
+      'helmet' middleware. Helmet sets critical security headers to protect
+      the app from common web vulnerabilities (XSS, Clickjacking, MIME-sniffing, etc.).
+      Add app.use(helmet()) to secure HTTP headers.
+    metadata:
+      category: security
+      cwe:
+        - "CWE-693: Protection Mechanism Failure"
+      owasp:
+        - "A05:2021 - Security Misconfiguration"
+      confidence: hint
+    patterns:
+      - pattern-either:
+          - pattern-inside: |
+              import express from 'express';
+              ...
+              $APP = express();
+              ...
+          - pattern-inside: |
+              const express = require('express');
+              ...
+              $APP = express();
+              ...
+      - pattern-not-inside: |
+          ...
+          $APP.use(helmet(...));
+          ...
+      - pattern: $APP = express()
