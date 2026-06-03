@@ -10,6 +10,7 @@ import (
 	"github.com/aykutssert/inspector/internal/analyzers/gitlog"
 	"github.com/aykutssert/inspector/internal/analyzers/osv"
 	"github.com/aykutssert/inspector/internal/analyzers/oxlint"
+	"github.com/aykutssert/inspector/internal/analyzers/reacthint"
 	"github.com/aykutssert/inspector/internal/analyzers/semgrep"
 	"github.com/aykutssert/inspector/internal/codegraph"
 	"github.com/aykutssert/inspector/internal/core"
@@ -103,6 +104,7 @@ func runScan(args []string) {
 	orch := core.New(
 		semgrep.New("", customRuleDirs...),
 		oxlint.New(),
+		reacthint.New(),
 		osv.New(),
 		gitlog.New(),
 	)
