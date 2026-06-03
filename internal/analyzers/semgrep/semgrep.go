@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 
 	"github.com/aykutssert/inspector/internal/core"
@@ -137,12 +138,13 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 	}
 	cmd := exec.Command("semgrep", args...)
 	cmd.Dir = ctx.Root
+	cmd.Env = semgrepEnv()
 	out, err := cmd.Output()
 	// Without --error, semgrep exits 0 even when findings exist; a non-zero exit
 	// is a real failure (config error, crash, partial run). Surface it with the
 	// process stderr so the reason (bad config, trust-store error) is visible.
 	if err != nil {
-		return nil, execx.Err(err)
+		return nil, execx.ErrWithOutput(err, out)
 	}
 	var parsed semgrepOut
 	if err := json.Unmarshal(out, &parsed); err != nil {
@@ -255,4 +257,32 @@ func mapSeverity(s string) core.Severity {
 	default:
 		return core.SeverityInfo
 	}
+}
+
+func semgrepEnv() []string {
+	env := os.Environ()
+	if os.Getenv("SEMGREP_VERSION_CHECK_TIMEOUT") == "" {
+		env = append(env, "SEMGREP_VERSION_CHECK_TIMEOUT=0")
+	}
+	if os.Getenv("SSL_CERT_FILE") == "" {
+		if cert := homebrewCertFile(); cert != "" {
+			env = append(env, "SSL_CERT_FILE="+cert)
+			if os.Getenv("REQUESTS_CA_BUNDLE") == "" {
+				env = append(env, "REQUESTS_CA_BUNDLE="+cert)
+			}
+		}
+	}
+	return env
+}
+
+func homebrewCertFile() string {
+	for _, p := range []string{
+		"/opt/homebrew/etc/ca-certificates/cert.pem",
+		"/usr/local/etc/ca-certificates/cert.pem",
+	} {
+		if _, err := os.Stat(filepath.Clean(p)); err == nil {
+			return p
+		}
+	}
+	return ""
 }

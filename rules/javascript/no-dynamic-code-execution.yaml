@@ -1,0 +1,18 @@
+rules:
+  - id: dynamic-code-execution
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: >
+      Dynamic code execution through eval()/Function() can execute attacker-controlled
+      input as JavaScript. Avoid interpreting strings as code; use explicit parsing
+      or a constrained dispatch table instead.
+    metadata:
+      category: security
+      cwe:
+        - "CWE-95: Improper Neutralization of Directives in Dynamically Evaluated Code"
+      owasp:
+        - "A03:2021 - Injection"
+    pattern-either:
+      - pattern: eval(...)
+      - pattern: Function(...)
+      - pattern: new Function(...)

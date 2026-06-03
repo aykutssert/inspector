@@ -1,0 +1,18 @@
+rules:
+  - id: javascript-url
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: >
+      A javascript: URL executes code when the link is activated. Use a real route,
+      button handler, or safe URL instead.
+    metadata:
+      category: security
+      cwe:
+        - "CWE-79: Improper Neutralization of Input During Web Page Generation (Cross-site Scripting)"
+      owasp:
+        - "A03:2021 - Injection"
+    patterns:
+      - pattern: <$EL ... href=$HREF ... />
+      - metavariable-regex:
+          metavariable: $HREF
+          regex: '(?i)^["'']javascript:'
