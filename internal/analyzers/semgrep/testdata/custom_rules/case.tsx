@@ -10,6 +10,12 @@ export function Example({ html, token, items }: Props) {
   localStorage.setItem("authToken", token);
   sessionStorage.setItem("theme", "dark");
   eval(html);
+  console.log("debug", html);
+  console.debug(token);
+  try {
+    doRisky(html);
+  } catch (err) {
+  }
 
   return (
     <>

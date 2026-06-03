@@ -5,7 +5,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 18,
+    "line": 24,
     "message": "dangerouslySetInnerHTML is fed a dynamic value (not a string literal). If that value contains any user-controlled data, this is a stored/reflected XSS sink. Confirm the HTML is sanitized (e.g. DOMPurify) before it reaches this prop, or render the value as text instead.\n"
   },
   {
@@ -18,13 +18,40 @@
     "message": "Dynamic code execution through eval()/Function() can execute attacker-controlled input as JavaScript. Avoid interpreting strings as code; use explicit parsing or a constrained dispatch table instead.\n"
   },
   {
+    "rule_id": "empty-catch-block",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 15,
+    "message": "This catch block is empty, so the error is silently swallowed: failures vanish with no log, no rethrow, and no recovery, which hides bugs and makes incidents undebuggable. Handle the error, log it, or rethrow. If ignoring is truly intentional, leave a comment explaining why.\n"
+  },
+  {
     "rule_id": "javascript-url",
     "severity": "error",
     "category": "security",
     "confidence": "rule",
     "file": "case.tsx",
-    "line": 16,
+    "line": 22,
     "message": "A javascript: URL executes code when the link is activated. Use a real route, button handler, or safe URL instead.\n"
+  },
+  {
+    "rule_id": "leftover-console-statement",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 13,
+    "message": "A console.log/console.debug call was left in the source. These are typically debugging leftovers (a common artifact of AI-generated or rushed code) that leak data to the browser console and add noise in production. Remove it, or route it through an intentional logger. console.warn/console.error are not flagged, since those are usually deliberate.\n"
+  },
+  {
+    "rule_id": "leftover-console-statement",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 14,
+    "message": "A console.log/console.debug call was left in the source. These are typically debugging leftovers (a common artifact of AI-generated or rushed code) that leak data to the browser console and add noise in production. Remove it, or route it through an intentional logger. console.warn/console.error are not flagged, since those are usually deliberate.\n"
   },
   {
     "rule_id": "random-value-as-react-key",
@@ -32,7 +59,7 @@
     "category": "bug",
     "confidence": "rule",
     "file": "case.tsx",
-    "line": 20,
+    "line": 26,
     "message": "A React key derived from Math.random()/Date.now() changes on every render, so React remounts the element each time: local state is lost, inputs lose focus, and reconciliation degrades. Use a stable id from the data instead.\n"
   },
   {

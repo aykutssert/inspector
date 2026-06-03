@@ -1,0 +1,17 @@
+rules:
+  - id: empty-catch-block
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      This catch block is empty, so the error is silently swallowed: failures
+      vanish with no log, no rethrow, and no recovery, which hides bugs and makes
+      incidents undebuggable. Handle the error, log it, or rethrow. If ignoring is
+      truly intentional, leave a comment explaining why.
+    metadata:
+      category: correctness
+      # hint: occasionally an empty catch is a deliberate best-effort cleanup, so
+      # the agent confirms the error is safe to drop before treating it as a defect.
+      confidence: hint
+    pattern-either:
+      - pattern: "try { ... } catch ($E) { }"
+      - pattern: "try { ... } catch { }"

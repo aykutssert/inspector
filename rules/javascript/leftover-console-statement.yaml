@@ -1,0 +1,19 @@
+rules:
+  - id: leftover-console-statement
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      A console.log/console.debug call was left in the source. These are typically
+      debugging leftovers (a common artifact of AI-generated or rushed code) that
+      leak data to the browser console and add noise in production. Remove it, or
+      route it through an intentional logger. console.warn/console.error are not
+      flagged, since those are usually deliberate.
+    metadata:
+      category: best-practice
+      # hint: some console.log calls are intentional (CLIs, dev tooling, backend
+      # logging), so the agent confirms this is a leftover before treating it as a
+      # defect.
+      confidence: hint
+    pattern-either:
+      - pattern: console.log(...)
+      - pattern: console.debug(...)
