@@ -2,13 +2,19 @@ package semgrep
 
 import (
 	"encoding/json"
+	"os"
 	"os/exec"
+	"strings"
 
 	"github.com/aykutssert/inspector/internal/core"
 )
 
 type Analyzer struct {
 	configs []string
+	// customDirs hold user-authored YAML rule packs (one per language adapter).
+	// Rules there surface as hints unless the rule's metadata sets confidence
+	// explicitly. Non-existent dirs are skipped at scan time.
+	customDirs []string
 }
 
 // defaultConfigs are registry rule packs covering JS/TS/React plus a general
@@ -23,11 +29,14 @@ var defaultConfigs = []string{
 	"p/security-audit",
 }
 
-func New(config string) *Analyzer {
+func New(config string, customDirs ...string) *Analyzer {
+	a := &Analyzer{customDirs: customDirs}
 	if config == "" {
-		return &Analyzer{configs: defaultConfigs}
+		a.configs = defaultConfigs
+	} else {
+		a.configs = []string{config}
 	}
-	return &Analyzer{configs: []string{config}}
+	return a
 }
 
 var _ core.Analyzer = (*Analyzer)(nil)
@@ -56,6 +65,9 @@ type semgrepOut struct {
 				Category string          `json:"category"`
 				Cwe      json.RawMessage `json:"cwe"`
 				Owasp    json.RawMessage `json:"owasp"`
+				// Confidence lets a custom rule opt into "hint" so the agent
+				// verifies it rather than trusting it as a deterministic defect.
+				Confidence string `json:"confidence"`
 			} `json:"metadata"`
 		} `json:"extra"`
 	} `json:"results"`
@@ -107,6 +119,15 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 	for _, c := range a.configs {
 		args = append(args, "--config", c)
 	}
+	// User-authored custom rule packs. Skip dirs that don't exist so a project
+	// without a rules/ dir scans cleanly instead of failing.
+	var loadedDirs []string
+	for _, dir := range a.customDirs {
+		if info, err := os.Stat(dir); err == nil && info.IsDir() {
+			args = append(args, "--config", dir)
+			loadedDirs = append(loadedDirs, dir)
+		}
+	}
 	if len(ctx.Files) > 0 {
 		args = append(args, ctx.Files...)
 	} else {
@@ -124,17 +145,18 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 	if err := json.Unmarshal(out, &parsed); err != nil {
 		return nil, err
 	}
+	prefixes := configPrefixes(loadedDirs)
 	var findings []core.Finding
 	for _, r := range parsed.Results {
 		sev := mapSeverity(r.Extra.Severity)
 		cat := classify(r.Extra.Metadata.Category, present(r.Extra.Metadata.Cwe) || present(r.Extra.Metadata.Owasp))
 		findings = append(findings, core.Finding{
 			Analyzer:   a.Name(),
-			RuleID:     r.CheckID,
+			RuleID:     cleanRuleID(r.CheckID, prefixes),
 			Severity:   sev,
 			Level:      sev.String(),
 			Category:   cat,
-			Confidence: core.ConfidenceRule,
+			Confidence: mapConfidence(r.Extra.Metadata.Confidence),
 			File:       r.Path,
 			Line:       r.Start.Line,
 			Message:    r.Extra.Message,
@@ -188,6 +210,37 @@ func classify(metaCategory string, hasSecurityTag bool) string {
 		return "quality"
 	}
 	return ""
+}
+
+// configPrefixes turns each loaded custom-rule dir into the dotted namespace
+// semgrep prepends to a rule's id when it loads rules from that path (it drops
+// the leading slash and replaces "/" with "."). We strip these so a custom
+// finding reads "direct-web-storage-access", not the machine's full path.
+func configPrefixes(dirs []string) []string {
+	prefixes := make([]string, 0, len(dirs))
+	for _, d := range dirs {
+		p := strings.ReplaceAll(strings.TrimPrefix(d, "/"), "/", ".")
+		prefixes = append(prefixes, p+".")
+	}
+	return prefixes
+}
+
+func cleanRuleID(id string, prefixes []string) string {
+	for _, p := range prefixes {
+		if strings.HasPrefix(id, p) {
+			return strings.TrimPrefix(id, p)
+		}
+	}
+	return id
+}
+
+// mapConfidence honors a rule's explicit metadata.confidence ("hint"), and
+// defaults to rule confidence for registry packs that don't set it.
+func mapConfidence(c string) string {
+	if c == core.ConfidenceHint {
+		return core.ConfidenceHint
+	}
+	return core.ConfidenceRule
 }
 
 func mapSeverity(s string) core.Severity {

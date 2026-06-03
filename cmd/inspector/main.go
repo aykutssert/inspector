@@ -63,6 +63,19 @@ func runScan(args []string) {
 	adapters := []core.LanguageAdapter{jsAdapter}
 	registry := lang.NewRegistry(adapters...)
 
+	// Each adapter declares where its user-authored rule packs live; semgrep
+	// loads them on top of the registry packs. Resolve to absolute so semgrep
+	// (which runs with its cwd at the scan root) finds them. Missing dirs are
+	// ignored by the analyzer.
+	var customRuleDirs []string
+	for _, ad := range adapters {
+		for _, d := range ad.Rules() {
+			if abs, err := filepath.Abs(d); err == nil {
+				customRuleDirs = append(customRuleDirs, abs)
+			}
+		}
+	}
+
 	files, err := scan.Discover(absRoot, *diff, adapters)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "error discovering files:", err)
@@ -88,7 +101,7 @@ func runScan(args []string) {
 	// Analyzers — add new analyzers here, orchestrator stays untouched.
 	// add new analyzers here
 	orch := core.New(
-		semgrep.New(""),
+		semgrep.New("", customRuleDirs...),
 		oxlint.New(),
 		osv.New(),
 		gitlog.New(),

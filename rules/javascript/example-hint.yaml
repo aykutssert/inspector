@@ -1,0 +1,18 @@
+rules:
+  - id: direct-web-storage-access
+    languages: [javascript, typescript]
+    severity: INFO
+    message: >
+      Direct localStorage/sessionStorage access. Prefer a small wrapper
+      hook/util so reads/writes are testable, SSR-safe, and JSON handling
+      stays in one place.
+    metadata:
+      category: best-practice
+      # confidence: hint marks this as a heuristic the agent should verify
+      # against context, not a deterministic defect. Author your own rules
+      # the same way; omit this line for deterministic (rule) findings.
+      confidence: hint
+    patterns:
+      - pattern-either:
+          - pattern: localStorage.$METHOD(...)
+          - pattern: sessionStorage.$METHOD(...)
