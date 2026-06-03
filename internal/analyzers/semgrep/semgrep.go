@@ -8,14 +8,26 @@ import (
 )
 
 type Analyzer struct {
-	config string
+	configs []string
+}
+
+// defaultConfigs are registry rule packs covering JS/TS/React plus a general
+// security audit. We avoid "auto" because it requires metrics to be enabled
+// (semgrep: "Cannot create auto config when metrics are off"), and we always
+// run with --metrics=off for privacy.
+var defaultConfigs = []string{
+	"p/default",
+	"p/javascript",
+	"p/typescript",
+	"p/react",
+	"p/security-audit",
 }
 
 func New(config string) *Analyzer {
 	if config == "" {
-		config = "auto"
+		return &Analyzer{configs: defaultConfigs}
 	}
-	return &Analyzer{config: config}
+	return &Analyzer{configs: []string{config}}
 }
 
 var _ core.Analyzer = (*Analyzer)(nil)
@@ -60,7 +72,10 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 	if ctx.DiffOnly && len(ctx.Files) == 0 {
 		return nil, nil
 	}
-	args := []string{"--json", "--quiet", "--metrics=off", "--config", a.config}
+	args := []string{"--json", "--quiet", "--metrics=off"}
+	for _, c := range a.configs {
+		args = append(args, "--config", c)
+	}
 	if len(ctx.Files) > 0 {
 		args = append(args, ctx.Files...)
 	} else {

@@ -87,7 +87,7 @@ func runScan(args []string) {
 	// Analyzers — add new analyzers here, orchestrator stays untouched.
 	// add new analyzers here
 	orch := core.New(
-		semgrep.New("auto"),
+		semgrep.New(""),
 		osv.New(),
 		gitlog.New(),
 	)
