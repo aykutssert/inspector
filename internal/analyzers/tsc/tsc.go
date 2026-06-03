@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/aykutssert/inspector/internal/core"
+	"github.com/aykutssert/inspector/internal/execx"
 	"github.com/aykutssert/inspector/internal/toolchain"
 )
 
@@ -66,10 +67,10 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 		// tsc exits non-zero when it reports errors; that is expected. A genuine
 		// failure (bad config, crash) produces no diagnostics on stdout.
 		if _, ok := err.(*exec.ExitError); !ok {
-			return nil, err
+			return nil, execx.Err(err)
 		}
 		if len(out) == 0 {
-			return nil, err
+			return nil, execx.Err(err)
 		}
 	}
 

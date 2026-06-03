@@ -1,5 +1,7 @@
 // Package toolchain locates managed Node lint toolchains that inspector ships
-// under linters/<name>. Each toolchain is a directory with its own package.json
+// under _linters/<name> (the leading underscore keeps the bundled node_modules
+// out of Go's `./...` package walk). Each toolchain is a directory with its own
+// package.json
 // and an installed node_modules; inspector wraps the proven linter inside it.
 package toolchain
 
@@ -24,7 +26,7 @@ func Dir(name string) (string, bool) {
 		bases = append(bases, wd)
 	}
 	for _, b := range bases {
-		dir := filepath.Join(b, "linters", name)
+		dir := filepath.Join(b, "_linters", name)
 		if _, err := os.Stat(filepath.Join(dir, "node_modules", ".bin", "eslint")); err == nil {
 			return dir, true
 		}

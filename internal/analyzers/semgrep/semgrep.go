@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/aykutssert/inspector/internal/core"
+	"github.com/aykutssert/inspector/internal/execx"
 )
 
 type Analyzer struct {
@@ -137,9 +138,10 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 	cmd.Dir = ctx.Root
 	out, err := cmd.Output()
 	// Without --error, semgrep exits 0 even when findings exist; a non-zero exit
-	// is a real failure (config error, crash, partial run). Surface it.
+	// is a real failure (config error, crash, partial run). Surface it with the
+	// process stderr so the reason (bad config, trust-store error) is visible.
 	if err != nil {
-		return nil, err
+		return nil, execx.Err(err)
 	}
 	var parsed semgrepOut
 	if err := json.Unmarshal(out, &parsed); err != nil {

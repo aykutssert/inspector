@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/aykutssert/inspector/internal/core"
+	"github.com/aykutssert/inspector/internal/execx"
 )
 
 // dependencyManifests are the files whose change warrants a dependency rescan.
@@ -66,7 +67,9 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 	if ctx.DiffOnly && !manifestChanged(ctx.Changed) {
 		return nil, nil
 	}
-	cmd := exec.Command("osv-scanner", "scan", "--format", "json", "-r", ctx.Root)
+	// "scan source" is the documented subcommand in osv-scanner v2; it scans a
+	// project's dependency manifests/lockfiles for known vulnerabilities.
+	cmd := exec.Command("osv-scanner", "scan", "source", "--format", "json", "-r", ctx.Root)
 	cmd.Dir = ctx.Root
 	out, err := cmd.Output()
 	if err != nil {
@@ -76,7 +79,7 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 			return nil, nil
 		}
 		if len(out) == 0 {
-			return nil, err
+			return nil, execx.Err(err)
 		}
 	}
 	var parsed osvOut

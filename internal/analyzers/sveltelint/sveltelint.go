@@ -7,11 +7,12 @@ import (
 	"strings"
 
 	"github.com/aykutssert/inspector/internal/core"
+	"github.com/aykutssert/inspector/internal/execx"
 	"github.com/aykutssert/inspector/internal/toolchain"
 )
 
 // Analyzer wraps eslint + eslint-plugin-svelte, the proven Svelte linter, run
-// from a managed toolchain that inspector ships under linters/svelte. We do not
+// from a managed toolchain that inspector ships under _linters/svelte. We do not
 // author Svelte rules ourselves; we wrap the ecosystem's linter.
 type Analyzer struct{}
 
@@ -50,7 +51,7 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 			Category:   "quality",
 			Confidence: core.ConfidenceHint,
 			Message:    "Svelte files found but the svelte-lint toolchain is not installed; these files were not linted.",
-			Fix:        "cd linters/svelte && npm install",
+			Fix:        "cd _linters/svelte && npm install",
 		}}, nil
 	}
 
@@ -66,10 +67,10 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 	// A real failure produces no JSON on stdout.
 	if err != nil {
 		if _, ok := err.(*exec.ExitError); !ok {
-			return nil, err
+			return nil, execx.Err(err)
 		}
 		if len(out) == 0 {
-			return nil, err
+			return nil, execx.Err(err)
 		}
 	}
 
@@ -122,9 +123,14 @@ func mapSeverity(s int) core.Severity {
 	}
 }
 
-// classify maps a Svelte rule id to a finding category. a11y rules are quality;
-// otherwise severity decides: errors are likely bugs, warnings quality.
+// classify maps a Svelte rule id to a finding category. no-at-html-tags flags
+// {@html ...}, an XSS sink, so it is security regardless of severity. a11y rules
+// are quality; otherwise severity decides: errors are likely bugs, warnings
+// quality.
 func classify(ruleID string, sev core.Severity) string {
+	if strings.Contains(ruleID, "no-at-html-tags") {
+		return "security"
+	}
 	if strings.Contains(ruleID, "a11y") {
 		return "quality"
 	}

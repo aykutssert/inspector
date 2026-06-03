@@ -9,7 +9,7 @@
 *.out
 
 # managed linter toolchains: commit manifests, not installed deps
-linters/*/node_modules/
+_linters/*/node_modules/
 
 # os / editor
 .DS_Store
@@ -22,3 +22,4 @@ CLAUDE.md
 AGENT.md
 project.md
 report.md
+todo.md

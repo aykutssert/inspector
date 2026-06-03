@@ -26,7 +26,7 @@ func TestClassify(t *testing.T) {
 		want string
 	}{
 		{"svelte/require-each-key", core.SeverityError, "bug"},
-		{"svelte/no-at-html-tags", core.SeverityError, "bug"},
+		{"svelte/no-at-html-tags", core.SeverityError, "security"},
 		{"svelte/a11y-missing-attribute", core.SeverityWarning, "quality"},
 		{"svelte/a11y-no-static-element-interactions", core.SeverityError, "quality"},
 		{"svelte/no-unused-svelte-ignore", core.SeverityWarning, "quality"},

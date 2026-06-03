@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/aykutssert/inspector/internal/core"
+	"github.com/aykutssert/inspector/internal/execx"
 	"github.com/aykutssert/inspector/internal/toolchain"
 )
 
@@ -59,10 +60,10 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 	out, err := cmd.Output()
 	if err != nil {
 		if _, ok := err.(*exec.ExitError); !ok {
-			return nil, err
+			return nil, execx.Err(err)
 		}
 		if len(out) == 0 {
-			return nil, err
+			return nil, execx.Err(err)
 		}
 	}
 

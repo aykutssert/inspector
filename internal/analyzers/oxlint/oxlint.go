@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/aykutssert/inspector/internal/core"
+	"github.com/aykutssert/inspector/internal/execx"
 )
 
 type Analyzer struct{}
@@ -60,16 +61,48 @@ func buildConfig(next bool) string {
 	return fmt.Sprintf(baseConfig, plugins)
 }
 
-// isNextProject reports whether the scan target is a Next.js app: a next.config.*
-// among the scanned files, or a "next" entry in the root package.json deps.
+// isNextProject reports whether the scan target is a Next.js app. It looks for a
+// next.config.* among the scanned files, or a "next" dependency in any relevant
+// package.json — the repo root plus the package.json walked up from each scanned
+// file's directory. The walk-up makes detection work in monorepos/workspaces
+// where the Next.js app lives in a sub-package (apps/web) rather than the root.
 func isNextProject(ctx core.ProjectContext) bool {
+	// package.json locations to inspect: repo root, plus every directory on the
+	// path from each scanned file up to the root.
+	dirs := map[string]bool{ctx.Root: true}
 	for _, f := range ctx.Files {
 		base := filepath.Base(f)
 		if strings.HasPrefix(base, "next.config.") {
 			return true
 		}
+		dir := filepath.Dir(f)
+		if !filepath.IsAbs(dir) {
+			dir = filepath.Join(ctx.Root, dir)
+		}
+		for {
+			dirs[dir] = true
+			if dir == ctx.Root || !strings.HasPrefix(dir, ctx.Root) {
+				break
+			}
+			parent := filepath.Dir(dir)
+			if parent == dir {
+				break
+			}
+			dir = parent
+		}
 	}
-	data, err := os.ReadFile(filepath.Join(ctx.Root, "package.json"))
+	for dir := range dirs {
+		if pkgHasNext(filepath.Join(dir, "package.json")) {
+			return true
+		}
+	}
+	return false
+}
+
+// pkgHasNext reports whether the package.json at path lists "next" among its
+// dependencies or devDependencies.
+func pkgHasNext(path string) bool {
+	data, err := os.ReadFile(path)
 	if err != nil {
 		return false
 	}
@@ -127,10 +160,10 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 	// A real failure produces no JSON on stdout.
 	if err != nil {
 		if _, ok := err.(*exec.ExitError); !ok {
-			return nil, err
+			return nil, execx.Err(err)
 		}
 		if len(out) == 0 {
-			return nil, err
+			return nil, execx.Err(err)
 		}
 	}
 
