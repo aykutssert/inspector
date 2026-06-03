@@ -56,13 +56,21 @@ func walk(root string) ([]string, error) {
 	return files, err
 }
 
-// Changed returns the raw list of git-changed paths (unfiltered by language),
-// for analyzers that key off non-source files like dependency manifests.
+// Changed returns the raw list of git-changed paths (unfiltered by language and
+// including deletions), for analyzers that key off non-source files like
+// dependency manifests — e.g. a deleted package-lock.json must still trigger a
+// dependency scan.
 func Changed(root string) ([]string, error) {
-	return changedFiles(root)
+	return parseChanged(root, true)
 }
 
+// changedFiles returns paths suitable as scanner input: deletions are dropped
+// because the path no longer exists and handing it to a file scanner errors.
 func changedFiles(root string) ([]string, error) {
+	return parseChanged(root, false)
+}
+
+func parseChanged(root string, includeDeletions bool) ([]string, error) {
 	cmd := exec.Command("git", "status", "--porcelain")
 	cmd.Dir = root
 	out, err := cmd.Output()
@@ -74,9 +82,8 @@ func changedFiles(root string) ([]string, error) {
 		if len(line) < 4 {
 			continue
 		}
-		// porcelain status is "XY path": X=staged, Y=worktree. Skip deletions —
-		// the path no longer exists, so handing it to a scanner would error.
-		if line[0] == 'D' || line[1] == 'D' {
+		// porcelain status is "XY path": X=staged, Y=worktree.
+		if (line[0] == 'D' || line[1] == 'D') && !includeDeletions {
 			continue
 		}
 		// "XY path" or "XY old -> new" (rename); keep the new path.

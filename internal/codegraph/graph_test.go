@@ -186,6 +186,47 @@ func TestJSXComponentCallers(t *testing.T) {
 	}
 }
 
+// A module exports a named Foo AND a different default (Bar). A default import
+// `import Foo from './mod'` binds the local name Foo to the DEFAULT export, so
+// Foo() must attribute to Bar (the default), never to the same-named named
+// export Foo.
+func TestDefaultImportNotAttributedToSameNamedExport(t *testing.T) {
+	root, files := writeProject(t, map[string]string{
+		"mod.js": `export function Foo() {}; export default function Bar() {}`,
+		"app.js": `import Foo from './mod'; function go() { Foo() }`,
+	})
+	g := Build(root, files)
+
+	for _, d := range g.GetContext("Foo").Definitions {
+		if d.File != "mod.js" {
+			continue
+		}
+		for _, c := range d.Callers {
+			if c.File == "app.js" {
+				t.Errorf("named export Foo must not get app.js caller (default import points to Bar)")
+			}
+		}
+	}
+
+	var found bool
+	for _, d := range g.GetContext("Bar").Definitions {
+		if d.File != "mod.js" {
+			continue
+		}
+		for _, c := range d.Callers {
+			if c.File == "app.js" {
+				found = true
+				if !c.Resolved {
+					t.Errorf("Bar caller from app.js should be Resolved (default import binding)")
+				}
+			}
+		}
+	}
+	if !found {
+		t.Errorf("expected app.js as resolved caller of default export Bar")
+	}
+}
+
 func TestAliasCallerResolution(t *testing.T) {
 	root, files := writeProject(t, map[string]string{
 		"a.js":       `export function handler() {}`,

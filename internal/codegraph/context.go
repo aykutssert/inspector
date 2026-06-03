@@ -115,8 +115,9 @@ func (g *Graph) callersOf(sym string, d DefLoc) []CallLoc {
 			callers = append(callers, call)
 			continue
 		}
-		if target, ok := g.bindingTarget(call.File, call.Recv, sym); ok {
-			if target == d.File || g.reachableFiles(target)[d.File] {
+		if b, ok := g.binding(call.File, call.Recv, sym); ok {
+			if g.bindingRefersTo(b, sym, call.Recv != "") &&
+				(b.target == d.File || g.reachableFiles(b.target)[d.File]) {
 				call.Resolved = true
 				callers = append(callers, call)
 			}

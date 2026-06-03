@@ -381,6 +381,8 @@ const exportAssignQuery = `
 const exportEsQuery = `
 (export_specifier name: (identifier) @name)
 (export_statement (identifier) @default)
+(export_statement "default" (function_declaration name: (identifier) @default))
+(export_statement "default" (class_declaration name: (identifier) @default))
 `
 
 // markExported flags defs reachable through CommonJS (module.exports / exports.x)

@@ -61,6 +61,42 @@ func (g *Graph) bindingTarget(file, recv, name string) (string, bool) {
 	return b.target, ok
 }
 
+// binding returns the full resolved binding introduced for a call's name. Keys
+// on the receiver for a method call (db in db.query()), else on the callee name.
+func (g *Graph) binding(file, recv, name string) (resolvedBinding, bool) {
+	bm := g.bindings[file]
+	if bm == nil {
+		return resolvedBinding{}, false
+	}
+	key := name
+	if recv != "" {
+		key = recv
+	}
+	b, ok := bm[key]
+	return b, ok
+}
+
+// bindingRefersTo reports whether a binding actually refers to sym. For a member
+// access (member=true, e.g. api.foo) the member name is the symbol regardless of
+// how the namespace/object was imported. For a bare call the local name equals
+// sym, so the binding must import sym by name, or be a default/whole-module
+// import whose target's default export is sym — this stops a default import
+// (import Foo from './m') from being attributed to a same-named *named* export.
+func (g *Graph) bindingRefersTo(b resolvedBinding, sym string, member bool) bool {
+	if member {
+		return true
+	}
+	if b.imported == sym {
+		return true
+	}
+	if b.imported == "" {
+		if tfp := g.Files[b.target]; tfp != nil && tfp.DefaultExport == sym {
+			return true
+		}
+	}
+	return false
+}
+
 // reachableFiles returns the set of files transitively imported by `from`
 // (not including `from` itself). Used to attribute a call site to the
 // definition it can actually reach through the import graph.
