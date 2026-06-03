@@ -132,3 +132,16 @@ export function readPublicEnv() {
   const serverSecret = process.env.STRIPE_SECRET_KEY;
   return { apiSecret, authToken, siteUrl, serverSecret };
 }
+
+export function hardcodedSecrets() {
+  const awsKey = "AKIAIOSFODNN7EXAMPLE";
+  const githubToken = "ghp_abcdefghijklmnopqrstuvwxyz0123456789";
+  const stripeKey = "sk_live_0123456789abcdefABCDEF";
+  const slackToken = "xoxb-EXAMPLE-NOT-A-REAL-TOKEN-000";
+  const googleKey = "AIzaSyA0123456789abcdefghijklmnopqrstuv";
+  const pemHeader = "-----BEGIN PRIVATE KEY-----";
+  const publishable = "pk_live_0123456789abcdef";
+  const notAws = "akiaiosfodnn7example";
+  const testKey = "sk_test_0123456789abcdef";
+  return { awsKey, githubToken, stripeKey, slackToken, googleKey, pemHeader, publishable, notAws, testKey };
+}
