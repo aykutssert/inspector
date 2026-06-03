@@ -54,7 +54,7 @@ func Scan(opts ScanOptions, registry *packs.Registry) (core.Report, error) {
 		Changed:   changed,
 	}
 
-	orch := core.New(registry.Analyzers(customRuleDirs(adapters))...)
+	orch := core.New(registry.Analyzers(ctx, customRuleDirs(adapters))...)
 	return orch.Run(ctx), nil
 }
 

@@ -68,10 +68,19 @@ func (r *Registry) ContextAdapters() []core.LanguageAdapter {
 	return out
 }
 
-func (r *Registry) Analyzers(customRuleDirs []string) []core.Analyzer {
+// Analyzers returns the analyzers to run for the scanned project. The global
+// scanners (semgrep, osv, gitlog) always run: semgrep is a language-agnostic
+// SAST, osv reads dependency manifests, gitlog inspects history. A pack's
+// analyzers are included only when the pack detects its language in ctx — so a
+// repo that lacks a pack's language never demands that pack's toolchain.
+// Without this gate the fail-closed orchestrator would flag a missing JS linter
+// on a pure Go/Python repo, blocking a scan that has nothing to do with JS.
+func (r *Registry) Analyzers(ctx core.ProjectContext, customRuleDirs []string) []core.Analyzer {
 	out := []core.Analyzer{semgrep.New("", customRuleDirs...)}
 	for _, p := range r.packs {
-		out = append(out, p.Analyzers()...)
+		if p.Detect(ctx).Matched {
+			out = append(out, p.Analyzers()...)
+		}
 	}
 	return append(out, osv.New(), gitlog.New())
 }
