@@ -1,0 +1,20 @@
+rules:
+  - id: placeholder-or-ai-slop-comment
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      This comment looks like an unfinished placeholder or AI-generation artifact
+      (e.g. "your code here", "rest of the implementation", "TODO: implement",
+      "as an AI ..."). It usually means code was elided or never written, so the
+      surrounding function may be incomplete or non-functional. Replace it with the
+      real implementation, or remove the comment if the code is actually complete.
+    metadata:
+      category: maintainability
+      # hint: the phrase may appear in a legitimate note, so the agent confirms the
+      # code is actually missing before treating this as a defect. Plain "TODO" /
+      # "FIXME" without an "implement" verb is intentionally not matched (too noisy).
+      confidence: hint
+    # Anchored to a comment marker (// or /*), with (?<!:) so a "://" inside a URL
+    # literal is not mistaken for a line comment. Runs on raw source, so it catches
+    # phrases semgrep's AST patterns drop (comments are not in the AST).
+    pattern-regex: (?i)((?<!:)//|/\*)\s*.*?(as an ai\b|as a language model|your code here|implementation goes here|rest of (the |your )?(code|implementation|logic)|\.\.\.\s*(unchanged|existing code)|(todo|fixme)s?\s*:?\s*implement)

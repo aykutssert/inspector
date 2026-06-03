@@ -63,6 +63,24 @@
     "message": "A console.log/console.debug call was left in the source. These are typically debugging leftovers (a common artifact of AI-generated or rushed code) that leak data to the browser console and add noise in production. Remove it, or route it through an intentional logger. console.warn/console.error are not flagged, since those are usually deliberate.\n"
   },
   {
+    "rule_id": "placeholder-or-ai-slop-comment",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 45,
+    "message": "This comment looks like an unfinished placeholder or AI-generation artifact (e.g. \"your code here\", \"rest of the implementation\", \"TODO: implement\", \"as an AI ...\"). It usually means code was elided or never written, so the surrounding function may be incomplete or non-functional. Replace it with the real implementation, or remove the comment if the code is actually complete.\n"
+  },
+  {
+    "rule_id": "placeholder-or-ai-slop-comment",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 46,
+    "message": "This comment looks like an unfinished placeholder or AI-generation artifact (e.g. \"your code here\", \"rest of the implementation\", \"TODO: implement\", \"as an AI ...\"). It usually means code was elided or never written, so the surrounding function may be incomplete or non-functional. Replace it with the real implementation, or remove the comment if the code is actually complete.\n"
+  },
+  {
     "rule_id": "random-value-as-react-key",
     "severity": "error",
     "category": "bug",

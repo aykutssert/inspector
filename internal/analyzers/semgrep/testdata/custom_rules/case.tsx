@@ -40,3 +40,8 @@ export async function loadAll(ids: string[]) {
     await fetch(id);
   }
 }
+
+export function stub() {
+  // TODO: implement this handler
+  // ... rest of the implementation
+}
