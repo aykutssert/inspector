@@ -85,6 +85,9 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 			if m.RuleID == "" {
 				continue // parser/ignore notices, not a rule violation
 			}
+			if isUnknownRuleNotice(m.Message) {
+				continue // project source disables a rule we don't load; not our finding
+			}
 			sev := mapSeverity(m.Severity)
 			findings = append(findings, core.Finding{
 				Analyzer:   a.Name(),
@@ -110,6 +113,15 @@ type eslintFile struct {
 		Message  string `json:"message"`
 		Line     int    `json:"line"`
 	} `json:"messages"`
+}
+
+// isUnknownRuleNotice reports whether an eslint message is the core
+// "Definition for rule '<id>' was not found." notice. eslint emits this when
+// project source carries an inline `eslint-disable` directive for a rule that
+// inspector's curated config doesn't load. It is the project's lint setup
+// leaking, not a defect we detected, so we drop it to stay deterministic.
+func isUnknownRuleNotice(msg string) bool {
+	return strings.HasPrefix(msg, "Definition for rule ") && strings.HasSuffix(msg, "was not found.")
 }
 
 func mapSeverity(s int) core.Severity {
