@@ -5,7 +5,7 @@
     "category": "performance",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 37,
+    "line": 39,
     "message": "An await sits directly inside a loop, so the iterations run strictly one after another: each waits for the previous to finish. When the operations are independent (e.g. fetching N urls), this is needlessly slow and should be parallelized with Promise.all(items.map(...)). If each iteration genuinely depends on the previous, or you are intentionally rate-limiting, the serial form is correct.\n"
   },
   {
@@ -14,7 +14,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 24,
+    "line": 26,
     "message": "dangerouslySetInnerHTML is fed a dynamic value (not a string literal). If that value contains any user-controlled data, this is a stored/reflected XSS sink. Confirm the HTML is sanitized (e.g. DOMPurify) before it reaches this prop, or render the value as text instead.\n"
   },
   {
@@ -23,7 +23,7 @@
     "category": "security",
     "confidence": "rule",
     "file": "case.tsx",
-    "line": 12,
+    "line": 14,
     "message": "Dynamic code execution through eval()/Function() can execute attacker-controlled input as JavaScript. Avoid interpreting strings as code; use explicit parsing or a constrained dispatch table instead.\n"
   },
   {
@@ -32,7 +32,7 @@
     "category": "bug",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 15,
+    "line": 17,
     "message": "This catch block is empty, so the error is silently swallowed: failures vanish with no log, no rethrow, and no recovery, which hides bugs and makes incidents undebuggable. Handle the error, log it, or rethrow. If ignoring is truly intentional, leave a comment explaining why.\n"
   },
   {
@@ -41,7 +41,7 @@
     "category": "security",
     "confidence": "rule",
     "file": "case.tsx",
-    "line": 22,
+    "line": 24,
     "message": "A javascript: URL executes code when the link is activated. Use a real route, button handler, or safe URL instead.\n"
   },
   {
@@ -50,7 +50,7 @@
     "category": "quality",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 13,
+    "line": 15,
     "message": "A console.log/console.debug call was left in the source. These are typically debugging leftovers (a common artifact of AI-generated or rushed code) that leak data to the browser console and add noise in production. Remove it, or route it through an intentional logger. console.warn/console.error are not flagged, since those are usually deliberate.\n"
   },
   {
@@ -59,7 +59,7 @@
     "category": "quality",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 14,
+    "line": 16,
     "message": "A console.log/console.debug call was left in the source. These are typically debugging leftovers (a common artifact of AI-generated or rushed code) that leak data to the browser console and add noise in production. Remove it, or route it through an intentional logger. console.warn/console.error are not flagged, since those are usually deliberate.\n"
   },
   {
@@ -68,7 +68,7 @@
     "category": "bug",
     "confidence": "rule",
     "file": "case.tsx",
-    "line": 26,
+    "line": 28,
     "message": "A React key derived from Math.random()/Date.now() changes on every render, so React remounts the element each time: local state is lost, inputs lose focus, and reconciliation degrades. Use a stable id from the data instead.\n"
   },
   {
@@ -77,7 +77,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 10,
+    "line": 12,
     "message": "A token/secret/credential is written to localStorage or sessionStorage. Web storage is readable by any script on the page, so any XSS can exfiltrate it; unlike an httpOnly cookie it is not protected from JavaScript. Prefer an httpOnly, Secure, SameSite cookie for auth material, or keep it in memory.\n"
   }
 ]

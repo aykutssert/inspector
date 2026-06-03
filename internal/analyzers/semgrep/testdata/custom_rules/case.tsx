@@ -1,3 +1,5 @@
+// @ts-nocheck — semgrep golden fixture; React/JSX types are not installed in
+// this repo, so type-checking is intentionally disabled. semgrep ignores this.
 type Item = { id: string; label: string };
 
 type Props = {
