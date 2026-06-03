@@ -98,6 +98,16 @@ var parseErrorKinds = map[string]bool{
 	"LexicalError":   true,
 }
 
+// isTypeScriptFile reports whether path is a TypeScript source file, where tsc
+// (not semgrep) is the parse authority for advanced syntax.
+func isTypeScriptFile(path string) bool {
+	switch strings.ToLower(filepath.Ext(path)) {
+	case ".ts", ".tsx", ".mts", ".cts":
+		return true
+	}
+	return false
+}
+
 func errorKind(t []json.RawMessage) string {
 	if len(t) == 0 {
 		return ""
@@ -181,6 +191,13 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 				file = e.Spans[0].File
 			}
 			line = e.Spans[0].Start.Line
+		}
+		// On TypeScript files, tsc is the parse authority. semgrep's TS grammar
+		// chokes on valid advanced generics (e.g. Mutate<StoreApi<T>, Mos>) and
+		// reports them as syntax errors — a false positive on code that compiles.
+		// Drop semgrep parse errors for .ts/.tsx/.mts/.cts and let tsc speak.
+		if isTypeScriptFile(file) {
+			continue
 		}
 		findings = append(findings, core.Finding{
 			Analyzer:   a.Name(),
