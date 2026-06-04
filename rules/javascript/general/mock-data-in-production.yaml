@@ -1,0 +1,31 @@
+rules:
+  - id: mock-data-in-production
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      The faker mock-data library is imported in non-test code, so fake/random
+      data can be shipped into a production path instead of real data. Move
+      faker behind tests/fixtures/seed scripts, or replace it with a real data
+      source.
+    metadata:
+      category: correctness
+      # hint: a seed/demo script may import faker on purpose, so the agent
+      # confirms this file actually serves production traffic. Test, spec,
+      # story, mock and fixture paths are excluded below to keep the signal tight.
+      confidence: hint
+    paths:
+      exclude:
+        - "*.test.*"
+        - "*.spec.*"
+        - "*.stories.*"
+        - "*_test.*"
+        - "test/**"
+        - "tests/**"
+        - "__tests__/**"
+        - "__mocks__/**"
+        - "**/mocks/**"
+        - "**/fixtures/**"
+        - "**/seed/**"
+        - "**/seeds/**"
+        - "**/scripts/**"
+    pattern-regex: (?i)(import\s+[^;]*from\s+['"]@faker-js/faker['"]|require\(\s*['"]@faker-js/faker['"]\s*\)|from\s+['"]faker['"])

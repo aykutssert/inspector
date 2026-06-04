@@ -242,6 +242,33 @@
     "message": "A hardcoded secret or credential appears in the source (an AWS access key, a GitHub/Slack/Stripe token, a Google API key, or a PEM private key). Committed secrets are exposed to everyone with repository access and stay in git history even after the line is deleted. Move the value to an environment variable or a secret manager, rotate the leaked credential immediately, and purge it from git history.\n"
   },
   {
+    "rule_id": "general.incomplete-not-implemented",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "incomplete.ts",
+    "line": 5,
+    "message": "This throws a \"not implemented\" placeholder, so the function is an unfinished stub left in the codebase: if a real caller reaches it, it fails at runtime. Implement the function, or remove it if it is dead code. A genuine \"subclasses must override\" placeholder belongs on an abstract method, not a shipped concrete path.\n"
+  },
+  {
+    "rule_id": "general.incomplete-not-implemented",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "incomplete.ts",
+    "line": 9,
+    "message": "This throws a \"not implemented\" placeholder, so the function is an unfinished stub left in the codebase: if a real caller reaches it, it fails at runtime. Implement the function, or remove it if it is dead code. A genuine \"subclasses must override\" placeholder belongs on an abstract method, not a shipped concrete path.\n"
+  },
+  {
+    "rule_id": "general.incomplete-not-implemented",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "incomplete.ts",
+    "line": 13,
+    "message": "This throws a \"not implemented\" placeholder, so the function is an unfinished stub left in the codebase: if a real caller reaches it, it fails at runtime. Implement the function, or remove it if it is dead code. A genuine \"subclasses must override\" placeholder belongs on an abstract method, not a shipped concrete path.\n"
+  },
+  {
     "rule_id": "general.insecure-document-cookie",
     "severity": "warning",
     "category": "security",
@@ -312,6 +339,15 @@
     "file": "case.tsx",
     "line": 102,
     "message": "A message event handler does not appear to check event.origin. postMessage data can come from untrusted origins, so handlers should verify the sender against a strict allowlist before trusting event.data.\n"
+  },
+  {
+    "rule_id": "general.mock-data-in-production",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "incomplete.ts",
+    "line": 2,
+    "message": "The faker mock-data library is imported in non-test code, so fake/random data can be shipped into a production path instead of real data. Move faker behind tests/fixtures/seed scripts, or replace it with a real data source.\n"
   },
   {
     "rule_id": "general.open-redirect-dynamic-url",

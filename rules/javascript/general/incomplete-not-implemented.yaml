@@ -1,0 +1,26 @@
+rules:
+  - id: incomplete-not-implemented
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      This throws a "not implemented" placeholder, so the function is an
+      unfinished stub left in the codebase: if a real caller reaches it, it
+      fails at runtime. Implement the function, or remove it if it is dead
+      code. A genuine "subclasses must override" placeholder belongs on an
+      abstract method, not a shipped concrete path.
+    metadata:
+      category: correctness
+      # rule (not hint): the explicit "not implemented" phrase is a deliberate
+      # incompleteness marker, so false positives are rare. The agent still makes
+      # the final call on whether the stub is reachable.
+      confidence: rule
+    pattern-either:
+      - patterns:
+          - pattern: throw new $E($MSG)
+          - metavariable-regex:
+              metavariable: $MSG
+              # semgrep applies metavariable-regex with re.match (start-anchored)
+              # and the bound text keeps the surrounding quotes, so lead with .*
+              # to reach the phrase anywhere inside the string literal.
+              regex: (?i).*(not[ _-]?implemented|unimplemented|implement\s+me|method\s+not\s+implemented|coming\s+soon)
+      - pattern-regex: \bthrow\s+new\s+NotImplementedError\b
