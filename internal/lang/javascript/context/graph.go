@@ -177,6 +177,10 @@ func (g *Graph) resolveImport(fromFile, spec string) string {
 	return ""
 }
 
+func (g *Graph) ResolveImport(fromFile, spec string) string {
+	return g.resolveImport(fromFile, spec)
+}
+
 func (g *Graph) Defs(symbol string) []inspectctx.DefLoc   { return g.defsBySymbol[symbol] }
 func (g *Graph) Calls(symbol string) []inspectctx.CallLoc { return g.callsBySymbol[symbol] }
 func (g *Graph) Imports(file string) []string             { return g.imports[file] }

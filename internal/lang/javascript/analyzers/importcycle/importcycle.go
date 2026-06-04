@@ -48,6 +48,7 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 	for _, c := range cycles {
 		findings = append(findings, cycleFinding(a.Name(), c))
 	}
+	findings = append(findings, internalBarrelImportFindings(a.Name(), g)...)
 	return findings, nil
 }
 
@@ -209,5 +210,57 @@ func cycleFinding(analyzer string, cycle []string) core.Finding {
 		File:       cycle[0],
 		Message:    "Circular import dependency: " + chain + ". Cyclic modules can initialize out of order and throw runtime 'undefined'/'is not a function' errors, and the coupling makes them hard to test or reuse in isolation.",
 		Fix:        "Break the cycle: extract the shared code both files need into a third module, or invert one of the dependencies.",
+	}
+}
+
+func internalBarrelImportFindings(analyzer string, g *jscontext.Graph) []core.Finding {
+	files := make([]string, 0, len(g.Files))
+	for f := range g.Files {
+		files = append(files, f)
+	}
+	sort.Strings(files)
+
+	var out []core.Finding
+	for _, file := range files {
+		if isIndexFile(file) {
+			continue
+		}
+		fp := g.Files[file]
+		for _, im := range fp.Imports {
+			target := g.ResolveImport(file, im.Source)
+			if !isSameDirectoryIndex(file, target) {
+				continue
+			}
+			out = append(out, core.Finding{
+				Analyzer:   analyzer,
+				RuleID:     "internal-barrel-import",
+				Severity:   core.SeverityWarning,
+				Level:      core.SeverityWarning.String(),
+				Category:   "quality",
+				Confidence: core.ConfidenceRule,
+				File:       file,
+				Line:       im.Line,
+				Message:    file + " imports its own directory barrel (" + target + "). Internal files importing their local index barrel commonly create circular dependencies and hide the real module edge.",
+				Fix:        "Import the sibling module directly instead of going through this directory's index barrel.",
+			})
+		}
+	}
+	return out
+}
+
+func isSameDirectoryIndex(file, target string) bool {
+	if target == "" || !isIndexFile(target) {
+		return false
+	}
+	return filepath.Dir(file) == filepath.Dir(target)
+}
+
+func isIndexFile(file string) bool {
+	base := strings.ToLower(filepath.Base(file))
+	switch base {
+	case "index.js", "index.jsx", "index.ts", "index.tsx", "index.mjs", "index.cjs", "index.mts", "index.cts":
+		return true
+	default:
+		return false
 	}
 }
