@@ -3,6 +3,7 @@ package sveltehint
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/aykutssert/inspector/internal/core"
@@ -182,4 +183,45 @@ func scanSource(t *testing.T, name, src string) []core.Finding {
 		t.Fatal(err)
 	}
 	return got
+}
+
+func TestSvelteComponentSplitting(t *testing.T) {
+	src := `<script>
+export function LargeSubComponent() {
+` + strings.Repeat("  const x = 1;\n", 160) + `}
+</script>
+
+<main>
+` + strings.Repeat("<p>Large Svelte File</p>\n", 150) + `
+</main>
+`
+	findings := scanSource(t, "LargeComponent.svelte", src)
+	found := false
+	for _, f := range findings {
+		if f.RuleID == "svelte.component-splitting" {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Fatalf("expected svelte.component-splitting, got findings %#v", findings)
+	}
+}
+
+func TestSvelteComponentSplittingNotFlaggedIfSmall(t *testing.T) {
+	src := `<script>
+export function LargeSubComponent() {
+` + strings.Repeat("  const x = 1;\n", 160) + `}
+</script>
+
+<main>
+  <p>Small Svelte File</p>
+</main>
+`
+	findings := scanSource(t, "SmallComponent.svelte", src)
+	for _, f := range findings {
+		if f.RuleID == "svelte.component-splitting" {
+			t.Fatalf("unexpected svelte.component-splitting for small file, got findings %#v", findings)
+		}
+	}
 }

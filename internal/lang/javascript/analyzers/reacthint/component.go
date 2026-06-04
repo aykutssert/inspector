@@ -6,6 +6,8 @@ import (
 
 	sitter "github.com/smacker/go-tree-sitter"
 
+	"github.com/aykutssert/inspector/internal/architecture/complexity"
+	"github.com/aykutssert/inspector/internal/architecture/splitting"
 	"github.com/aykutssert/inspector/internal/core"
 )
 
@@ -23,7 +25,14 @@ const (
 // hint: large components can be valid, but they are expensive context for an
 // agent and usually hide extractable UI or custom hooks.
 func detectGodComponent(root *sitter.Node, lang *sitter.Language, src []byte, file string) []core.Finding {
-	var out []core.Finding
+	var entities []complexity.Entity
+	type details struct {
+		lines int
+		hooks int
+		props int
+	}
+	entDetails := make(map[string]details)
+
 	_ = runMatches(componentQuery, root, lang, func(caps map[string]*sitter.Node) {
 		name := nodeText(caps["name"], src)
 		fn := caps["fn"]
@@ -33,27 +42,54 @@ func detectGodComponent(root *sitter.Node, lang *sitter.Language, src []byte, fi
 		lines := int(fn.EndPoint().Row-fn.StartPoint().Row) + 1
 		hooks := countReactHooks(fn, lang, src)
 		props := countComponentProps(fn, src)
-		if !isGodComponent(lines, hooks, props) {
-			return
+
+		entities = append(entities, complexity.Entity{
+			Name:      name,
+			Type:      "component",
+			LineCount: lines,
+			Inputs:    props,
+			Deps:      hooks,
+			StartLine: int(fn.StartPoint().Row) + 1,
+		})
+		entDetails[name] = details{lines: lines, hooks: hooks, props: props}
+	})
+
+	if len(entities) == 0 {
+		return nil
+	}
+
+	rule := complexity.Rule{
+		ID:        "god-component",
+		Type:      "component",
+		MaxLines:  godComponentVeryLargeLines,
+		MaxInputs: godComponentPropThreshold,
+		MaxDeps:   godComponentHookThreshold,
+	}
+
+	violations := complexity.Analyze(file, entities, []complexity.Rule{rule})
+
+	var out []core.Finding
+	for _, v := range violations {
+		// Recover details for nice messaging
+		d := entDetails[v.RuleID] // Wait, v.RuleID is the Rule.ID ("god-component"), we need the entity name. Let's find it.
+		// Let's iterate entities to find the name matching v.Line
+		var name string
+		for _, ent := range entities {
+			if ent.StartLine == v.Line {
+				name = ent.Name
+				d = entDetails[name]
+				break
+			}
 		}
+
 		out = append(out, hint(
 			"god-component", "quality", core.SeverityInfo, file,
-			int(fn.StartPoint().Row)+1,
-			name+" is large/complex ("+strconv.Itoa(lines)+" lines, "+strconv.Itoa(hooks)+" hooks, "+strconv.Itoa(props)+" props); this is hard to review and weak context for agents.",
+			v.Line,
+			name+" is large/complex ("+strconv.Itoa(d.lines)+" lines, "+strconv.Itoa(d.hooks)+" hooks, "+strconv.Itoa(d.props)+" props); this is hard to review and weak context for agents.",
 			"Split unrelated UI into child components and move stateful behavior into focused custom hooks.",
 		))
-	})
+	}
 	return out
-}
-
-func isGodComponent(lines, hooks, props int) bool {
-	if lines >= godComponentVeryLargeLines {
-		return true
-	}
-	if hooks >= godComponentHookThreshold || props >= godComponentPropThreshold {
-		return true
-	}
-	return lines >= godComponentBusyLines && (hooks >= godComponentBusyHooks || props >= godComponentBusyProps)
 }
 
 // isComponentOrHook matches React naming: a component is capitalized, a hook is
@@ -165,6 +201,112 @@ func countTopLevelCommaItems(text string) int {
 		}
 	}
 	if hasToken {
+		count++
+	}
+	return count
+}
+
+func detectComponentSplitting(root *sitter.Node, lang *sitter.Language, src []byte, file string) []core.Finding {
+	var comps []splitting.Component
+	exportedNames := collectExportedNames(root, lang, src)
+
+	_ = runMatches(componentQuery, root, lang, func(caps map[string]*sitter.Node) {
+		name := nodeText(caps["name"], src)
+		fn := caps["fn"]
+		if fn == nil || !isComponentName(name) {
+			return
+		}
+
+		lineCount := countNodeCodeLines(fn, src)
+
+		isExported := exportedNames[name]
+		if !isExported {
+			for curr := fn; curr != nil; curr = curr.Parent() {
+				if curr.Type() == "export_statement" {
+					isExported = true
+					break
+				}
+			}
+		}
+
+		comps = append(comps, splitting.Component{
+			Name:       name,
+			LineCount:  lineCount,
+			IsExported: isExported,
+			StartLine:  int(fn.StartPoint().Row) + 1,
+		})
+	})
+
+	if len(comps) == 0 {
+		return nil
+	}
+
+	rule := splitting.Rule{
+		ID:                    "component-splitting",
+		MaxFileLines:          300,
+		MaxComponentLines:     150,
+		MaxExportedLargeComps: 1,
+		Message:               "File contains multiple large exported components; split them into individual files to reduce agent context size and improve maintainability.",
+	}
+
+	fileMetrics := splitting.FileMetrics{
+		FilePath:   file,
+		TotalLines: countFileCodeLines(src),
+		Components: comps,
+	}
+
+	violations := splitting.Analyze([]splitting.FileMetrics{fileMetrics}, []splitting.Rule{rule})
+
+	var out []core.Finding
+	for _, v := range violations {
+		out = append(out, hint(
+			v.RuleID, "quality", core.SeverityInfo, v.File, v.Line,
+			v.Message,
+			"Split large exported components into separate files.",
+		))
+	}
+
+	return out
+}
+
+func collectExportedNames(root *sitter.Node, lang *sitter.Language, src []byte) map[string]bool {
+	exported := make(map[string]bool)
+	q := `
+	(export_specifier name: (identifier) @name)
+	(export_statement value: (identifier) @name)
+	(export_statement (identifier) @name)
+	`
+	_ = runQuery(q, root, lang, func(name string, node *sitter.Node) {
+		if node != nil {
+			exported[node.Content(src)] = true
+		}
+	})
+	return exported
+}
+
+func countNodeCodeLines(node *sitter.Node, src []byte) int {
+	startRow := int(node.StartPoint().Row)
+	endRow := int(node.EndPoint().Row)
+	allLines := strings.Split(string(src), "\n")
+	count := 0
+	for i := startRow; i <= endRow && i < len(allLines); i++ {
+		line := strings.TrimSpace(allLines[i])
+		if line == "" || strings.HasPrefix(line, "//") || strings.HasPrefix(line, "/*") || strings.HasPrefix(line, "*") {
+			continue
+		}
+		count++
+	}
+	return count
+}
+
+func countFileCodeLines(src []byte) int {
+	allLines := strings.Split(string(src), "\n")
+	count := 0
+	for _, l := range allLines {
+		line := strings.TrimSpace(l)
+		if line == "" || strings.HasPrefix(line, "//") || strings.HasPrefix(line, "/*") || strings.HasPrefix(line, "*") {
+			continue
+		}
 		count++
 	}
 	return count

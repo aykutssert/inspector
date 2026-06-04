@@ -52,6 +52,7 @@ var detectors = []detector{
 	detectSetStateInEffectNoDeps,
 	detectPreferUseReducer,
 	detectGodComponent,
+	detectComponentSplitting,
 }
 
 // jsxDetectors need JSX grammar (text/elements) and only run on js/jsx/tsx.

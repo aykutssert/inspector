@@ -568,3 +568,33 @@ func TestNonCallbackPropRenderedNotFlagged(t *testing.T) {
 		t.Fatalf("non-callback prop should not be flagged, got %v", ids)
 	}
 }
+
+func TestComponentSplitting(t *testing.T) {
+	src := `export function CompA() {
+` + strings.Repeat("  const x = 1;\n", 160) + `  return <div>{x}</div>;
+}
+
+export function CompB() {
+` + strings.Repeat("  const y = 2;\n", 160) + `  return <div>{y}</div>;
+}`
+
+	ids := parseSrc(t, ".tsx", src)
+	if !has(ids, "component-splitting") {
+		t.Fatalf("expected component-splitting hint, got %v", ids)
+	}
+}
+
+func TestComponentSplittingNotFlaggedIfOneLarge(t *testing.T) {
+	src := `export function CompA() {
+` + strings.Repeat("  const x = 1;\n", 160) + `  return <div>{x}</div>;
+}
+
+export function CompB() {
+  return <div>small</div>;
+}`
+
+	ids := parseSrc(t, ".tsx", src)
+	if has(ids, "component-splitting") {
+		t.Fatalf("should not suggest component-splitting if only one large, got %v", ids)
+	}
+}
