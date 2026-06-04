@@ -40,10 +40,9 @@ func Analyze(filePath string, entities []Entity, rules []Rule) []Violation {
 
 			violation := false
 
-			// 1. Direct threshold check
-			if rule.MaxLines > 0 && ent.LineCount >= rule.MaxLines {
-				violation = true
-			}
+			// Structural fan-in/out is a standalone smell: too many inputs
+			// (params/props/fields) or too many dependencies (calls/hooks/
+			// injections) is hard to maintain regardless of length.
 			if rule.MaxInputs > 0 && ent.Inputs >= rule.MaxInputs {
 				violation = true
 			}
@@ -51,7 +50,10 @@ func Analyze(filePath string, entities []Entity, rules []Rule) []Violation {
 				violation = true
 			}
 
-			// 2. Combined threshold check: moderately large AND busy (60% threshold)
+			// Size alone is NOT a violation. A long but simple entity (a big
+			// switch, a config aggregator, generated code) is usually justified,
+			// and flagging it is low-actionable noise. Length only counts when it
+			// is corroborated by moderate busyness (60% of the input/dep budget).
 			if !violation && rule.MaxLines > 0 && (rule.MaxInputs > 0 || rule.MaxDeps > 0) {
 				busyLines := int(float64(rule.MaxLines) * 0.6)
 				busyInputs := int(float64(rule.MaxInputs) * 0.6)

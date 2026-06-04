@@ -53,14 +53,29 @@ func TestAnalyze(t *testing.T) {
 			wantCount: 0,
 		},
 		{
-			name:     "class lines exceeded",
-			filePath: "long-class.ts",
+			name:     "large but simple class is not flagged (size alone)",
+			filePath: "long-simple-class.ts",
 			entities: []Entity{
 				{
-					Name:      "LongClass",
+					Name:      "LongSimpleClass",
 					Type:      "class",
 					LineCount: 250,
 					Inputs:    2,
+					Deps:      2,
+					StartLine: 5,
+				},
+			},
+			wantCount: 0,
+		},
+		{
+			name:     "large and busy class is flagged",
+			filePath: "god-class.ts",
+			entities: []Entity{
+				{
+					Name:      "GodClass",
+					Type:      "class",
+					LineCount: 250,
+					Inputs:    6, // >= 10 * 0.6
 					Deps:      2,
 					StartLine: 5,
 				},
