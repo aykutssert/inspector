@@ -3,6 +3,8 @@ package jsquality
 import (
 	"os"
 	"path/filepath"
+	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/aykutssert/inspector/internal/core"
@@ -87,5 +89,43 @@ func TestNonJSFilesSkipped(t *testing.T) {
 	}
 	if len(findings) != 0 {
 		t.Fatalf("non-JS file must yield no findings, got %#v", findings)
+	}
+}
+
+func TestGodClassComplexity(t *testing.T) {
+	methods := ""
+	for i := 0; i < 12; i++ {
+		methods += "  method" + strconv.Itoa(i) + "() {}\n"
+	}
+	src := `class ComplexController {
+  constructor(
+    private a: any,
+    private b: any,
+    private c: any,
+    private d: any,
+    private e: any,
+    private f: any,
+    private g: any,
+    private h: any,
+    private i: any
+  ) {}
+` + methods + strings.Repeat("  let x = 1;\n", 200) + `}`
+	
+	findings := scanSrc(t, "controller.ts", src)
+	if !hasRule(findings, "god-class") {
+		t.Fatalf("expected god-class violation, got %#v", findings)
+	}
+}
+
+func TestLargeFunctionComplexity(t *testing.T) {
+	calls := ""
+	for i := 0; i < 7; i++ {
+		calls += "  call" + strconv.Itoa(i) + "();\n"
+	}
+	src := `function complexFunc(a, b, c, d, e, f) {
+` + calls + strings.Repeat("  let x = 1;\n", 120) + `}`
+	findings := scanSrc(t, "func.js", src)
+	if !hasRule(findings, "large-function") {
+		t.Fatalf("expected large-function violation, got %#v", findings)
 	}
 }

@@ -85,7 +85,10 @@ func scanFile(abs, rel string) ([]core.Finding, error) {
 		return nil, err
 	}
 	defer tree.Close()
-	return detectRepeatedLiteral(tree.RootNode(), lang, src, rel), nil
+	var findings []core.Finding
+	findings = append(findings, detectRepeatedLiteral(tree.RootNode(), lang, src, rel)...)
+	findings = append(findings, detectComplexity(tree.RootNode(), lang, src, rel)...)
+	return findings, nil
 }
 
 // langForPath selects the grammar by extension. The JS grammar cannot parse TS
