@@ -5,12 +5,15 @@
 package registry
 
 import (
+	"strings"
+
 	inspectctx "github.com/aykutssert/inspector/internal/context"
 	"github.com/aykutssert/inspector/internal/core"
 	"github.com/aykutssert/inspector/internal/global/gitlog"
 	"github.com/aykutssert/inspector/internal/global/osv"
 	"github.com/aykutssert/inspector/internal/global/semgrep"
 	"github.com/aykutssert/inspector/internal/lang/javascript"
+	"github.com/aykutssert/inspector/internal/lang/javascript/jsproject"
 	"github.com/aykutssert/inspector/internal/lang/svelte"
 )
 
@@ -64,13 +67,29 @@ func (r *Registry) ContextProviders() []inspectctx.Provider {
 // Without this gate the fail-closed orchestrator would flag a missing JS linter
 // on a pure Go/Python repo, blocking a scan that has nothing to do with JS.
 func (r *Registry) Analyzers(ctx core.ProjectContext, customRuleDirs []string) []core.Analyzer {
-	out := []core.Analyzer{semgrep.New("", customRuleDirs...)}
+	out := []core.Analyzer{semgrep.New("", customRuleDirs...).WithDrop(dropInapplicableRules(ctx))}
 	for _, p := range r.packs {
 		if p.Detect(ctx).Matched {
 			out = append(out, p.Analyzers()...)
 		}
 	}
 	return append(out, osv.New(), gitlog.New())
+}
+
+// dropInapplicableRules suppresses custom semgrep rules that fire on the wrong
+// project shape. semgrep loads every rule in the custom dirs, so framework-gated
+// rules (e.g. Bun.* APIs) otherwise fire on plain Node code. Gating here keeps
+// jsproject the single source of truth for the signal. Returns nil when nothing
+// needs dropping, so the common path adds no overhead.
+func dropInapplicableRules(ctx core.ProjectContext) func(core.Finding) bool {
+	if jsproject.IsBun(ctx) {
+		return nil
+	}
+	// Not a Bun project: the bun.* rules (Bun.password, Bun.file, Bun.serve,
+	// Bun.write) are false positives — those are Bun globals, absent in Node.
+	return func(f core.Finding) bool {
+		return strings.HasPrefix(f.RuleID, "bun.")
+	}
 }
 
 func (r *Registry) Toolchains() []core.Toolchain {

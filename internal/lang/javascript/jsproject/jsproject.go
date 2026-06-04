@@ -48,6 +48,52 @@ func IsNext(ctx core.ProjectContext) bool {
 	return false
 }
 
+// IsBun reports whether the scan target is a Bun project: a bun.lockb among the
+// scanned files, or a "bun" / "bun-types" dependency, or an "@types/bun" dep in
+// any relevant package.json. Used to gate Bun-specific rules (Bun.password,
+// Bun.file, Bun.serve, Bun.write) so they do not fire on plain Node projects.
+func IsBun(ctx core.ProjectContext) bool {
+	for _, f := range ctx.Files {
+		base := strings.ToLower(filepath.Base(f))
+		if base == "bun.lockb" || base == "bunfig.toml" {
+			return true
+		}
+	}
+	for dir := range RelevantPkgDirs(ctx) {
+		pkg := filepath.Join(dir, "package.json")
+		if PkgHasDep(pkg, "bun") || PkgHasDep(pkg, "bun-types") || PkgHasDep(pkg, "@types/bun") {
+			return true
+		}
+	}
+	return false
+}
+
+// IsTestOrExampleFile reports whether a path is test, example, fixture, or story
+// code. Quality/design smell analyzers (repeated literals, god-class, large
+// function, component splitting) skip these: repeated literals and long bodies
+// are idiomatic in test fixtures and example snippets, so flagging them is noise.
+func IsTestOrExampleFile(path string) bool {
+	p := strings.ToLower(filepath.ToSlash(path))
+	base := filepath.Base(p)
+	for _, marker := range []string{".test.", ".spec.", ".bench.", ".stories.", ".story.", ".e2e.", ".cy."} {
+		if strings.Contains(base, marker) {
+			return true
+		}
+	}
+	segs := strings.Split(p, "/")
+	if len(segs) > 0 {
+		segs = segs[:len(segs)-1] // directory segments only
+	}
+	for _, s := range segs {
+		switch s {
+		case "__tests__", "__mocks__", "__fixtures__", "test", "tests", "spec",
+			"e2e", "examples", "example", "fixtures", "stories", ".storybook", "cypress":
+			return true
+		}
+	}
+	return false
+}
+
 // PkgHasDep reports whether the package.json at path lists dep among its
 // dependencies or devDependencies.
 func PkgHasDep(path, dep string) bool {

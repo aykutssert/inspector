@@ -23,6 +23,7 @@ import (
 
 	"github.com/aykutssert/inspector/internal/architecture/duplication"
 	"github.com/aykutssert/inspector/internal/core"
+	"github.com/aykutssert/inspector/internal/lang/javascript/jsproject"
 )
 
 const (
@@ -51,6 +52,12 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 	var findings []core.Finding
 	for _, rel := range ctx.Files {
 		if !jsExt[strings.ToLower(filepath.Ext(rel))] {
+			continue
+		}
+		// Quality/design smells (repeated literals, god-class, large function) are
+		// noise in test/example/fixture code: repeated values and long bodies are
+		// idiomatic there. Skip these files to keep the actionable rate high.
+		if jsproject.IsTestOrExampleFile(rel) {
 			continue
 		}
 		// A parse failure here is not an analyzer failure — other tools already

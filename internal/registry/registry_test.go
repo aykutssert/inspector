@@ -1,6 +1,8 @@
 package registry
 
 import (
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/aykutssert/inspector/internal/core"
@@ -49,6 +51,33 @@ func TestTailwindIsSeparatePack(t *testing.T) {
 	}
 	if got := javascript.Tailwind().Toolchains(); len(got) != 1 || got[0].Name != "tailwind" {
 		t.Fatalf("Tailwind pack should declare the tailwind toolchain, got %#v", got)
+	}
+}
+
+// bun.* rules must be suppressed on a plain Node repo (they reference Bun
+// globals absent in Node) but kept on a Bun repo. dropInapplicableRules is the
+// single gate; assert both directions.
+func TestDropInapplicableRulesGatesBun(t *testing.T) {
+	bunFinding := core.Finding{RuleID: "bun.bun-prefer-bun-password"}
+	other := core.Finding{RuleID: "general.process-env-dispersed-access"}
+
+	node := core.ProjectContext{Root: t.TempDir(), Files: []string{"index.ts"}}
+	drop := dropInapplicableRules(node)
+	if drop == nil || !drop(bunFinding) {
+		t.Fatal("plain Node repo should drop bun.* findings")
+	}
+	if drop(other) {
+		t.Fatal("non-bun rules must not be dropped")
+	}
+
+	bunDir := t.TempDir()
+	if err := os.WriteFile(filepath.Join(bunDir, "package.json"),
+		[]byte(`{"dependencies":{"bun-types":"^1.0.0"}}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	bunCtx := core.ProjectContext{Root: bunDir, Files: []string{"index.ts"}}
+	if dropInapplicableRules(bunCtx) != nil {
+		t.Fatal("Bun repo should keep bun.* findings (no drop predicate)")
 	}
 }
 

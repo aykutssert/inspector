@@ -17,6 +17,11 @@ type Analyzer struct {
 	// Rules there surface as hints unless the rule's metadata sets confidence
 	// explicitly. Non-existent dirs are skipped at scan time.
 	customDirs []string
+	// drop, when set, removes a finding before it is reported. semgrep loads every
+	// rule in customDirs regardless of project shape; this lets a language pack
+	// suppress rules that don't apply to this project (e.g. Bun-only rules on a
+	// plain Node repo) without splitting the rule dirs per project.
+	drop func(core.Finding) bool
 }
 
 // defaultConfigs are registry rule packs covering JS/TS/React plus a general
@@ -39,6 +44,13 @@ func New(config string, customDirs ...string) *Analyzer {
 	} else {
 		a.configs = []string{config}
 	}
+	return a
+}
+
+// WithDrop sets a predicate that suppresses a finding before it is reported.
+// Returns the analyzer for chaining. A nil predicate is a no-op.
+func (a *Analyzer) WithDrop(fn func(core.Finding) bool) *Analyzer {
+	a.drop = fn
 	return a
 }
 
@@ -123,7 +135,15 @@ func present(raw json.RawMessage) bool {
 	return len(raw) > 0 && string(raw) != "null" && string(raw) != `""` && string(raw) != "[]"
 }
 
-func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
+func (a *Analyzer) Scan(ctx core.ProjectContext) (findings []core.Finding, err error) {
+	// Apply the suppression predicate to whatever the scan body returns, on every
+	// success path (degraded reruns included). Skip on error: a nil slice plus an
+	// error must stay an error, not be silently filtered.
+	defer func() {
+		if err == nil && a.drop != nil {
+			findings = filterFindings(findings, a.drop)
+		}
+	}()
 	// diff mode with no changed files: nothing to scan (never fall back to root)
 	if ctx.DiffOnly && len(ctx.Files) == 0 {
 		return nil, nil
@@ -196,6 +216,17 @@ func existingDirs(dirs []string) []string {
 	for _, dir := range dirs {
 		if info, err := os.Stat(dir); err == nil && info.IsDir() {
 			out = append(out, dir)
+		}
+	}
+	return out
+}
+
+// filterFindings drops findings the predicate rejects, preserving order.
+func filterFindings(in []core.Finding, drop func(core.Finding) bool) []core.Finding {
+	out := in[:0]
+	for _, f := range in {
+		if !drop(f) {
+			out = append(out, f)
 		}
 	}
 	return out

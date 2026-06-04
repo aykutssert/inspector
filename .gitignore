@@ -11,6 +11,9 @@
 # managed linter toolchains: commit manifests, not installed deps
 _toolchains/*/node_modules/
 
+# multi-repo test corpus (cloned externally, never committed)
+_corpus/
+
 # os / editor
 .DS_Store
 .idea/

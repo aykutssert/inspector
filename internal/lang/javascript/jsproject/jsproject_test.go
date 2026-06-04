@@ -15,6 +15,48 @@ func writePkg(t *testing.T, dir, body string) {
 	}
 }
 
+func TestIsTestOrExampleFile(t *testing.T) {
+	positives := []string{
+		"src/foo.test.ts", "src/foo.spec.tsx", "src/bar.bench.ts",
+		"src/Button.stories.tsx", "packages/x/src/__tests__/a.ts",
+		"test/util.js", "tests/util.js", "e2e/flow.ts", "cypress/run.ts",
+		"examples/demo/app.tsx", "example/app.tsx", "src/__mocks__/db.ts",
+		"src/__fixtures__/data.ts", ".storybook/main.ts",
+	}
+	for _, p := range positives {
+		if !IsTestOrExampleFile(p) {
+			t.Errorf("expected %q to be test/example", p)
+		}
+	}
+	negatives := []string{
+		"src/index.ts", "src/queryClient.ts", "packages/x/src/useQuery.tsx",
+		"lib/contest.ts", "src/latest.ts", // substrings 'test'/'est' must not trigger
+		"src/protester.ts",
+	}
+	for _, p := range negatives {
+		if IsTestOrExampleFile(p) {
+			t.Errorf("expected %q to NOT be test/example", p)
+		}
+	}
+}
+
+func TestIsBun(t *testing.T) {
+	dir := t.TempDir()
+	writePkg(t, dir, `{"dependencies":{"bun-types":"^1.0.0"}}`)
+	if !IsBun(core.ProjectContext{Root: dir, Files: []string{"index.ts"}}) {
+		t.Error("expected bun project by bun-types dep")
+	}
+	dir2 := t.TempDir()
+	if IsBun(core.ProjectContext{Root: dir2, Files: []string{"bun.lockb"}}) != true {
+		t.Error("expected bun project by bun.lockb")
+	}
+	dir3 := t.TempDir()
+	writePkg(t, dir3, `{"dependencies":{"express":"^4.0.0"}}`)
+	if IsBun(core.ProjectContext{Root: dir3, Files: []string{"index.ts"}}) {
+		t.Error("expected non-bun project")
+	}
+}
+
 func TestIsReactByFileExtension(t *testing.T) {
 	ctx := core.ProjectContext{Root: t.TempDir(), Files: []string{"src/App.tsx"}}
 	if !IsReact(ctx) {
