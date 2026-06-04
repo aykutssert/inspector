@@ -14,7 +14,7 @@
     "category": "performance",
     "confidence": "hint",
     "file": "client.tsx",
-    "line": 10,
+    "line": 12,
     "message": "This code uses Node.js 'fs' APIs to read files. If you are running on the Bun runtime, prefer using the faster, optimized native API 'Bun.file(path)' which provides '.text()', '.json()', and stream interfaces directly.\n"
   },
   {
@@ -23,6 +23,30 @@
     "confidence": "hint",
     "file": "case.tsx",
     "line": 288,
+    "message": "This code uses external hashing libraries (bcrypt, bcryptjs, argon2) or Node.js crypto.pbkdf2 for password hashing. If you are running on the Bun runtime, prefer using the optimized native APIs 'Bun.password.hash(...)' and 'Bun.password.verify(...)'.\n"
+  },
+  {
+    "rule_id": "bun.bun-prefer-bun-password",
+    "severity": "warning",
+    "confidence": "hint",
+    "file": "express.ts",
+    "line": 80,
+    "message": "This code uses external hashing libraries (bcrypt, bcryptjs, argon2) or Node.js crypto.pbkdf2 for password hashing. If you are running on the Bun runtime, prefer using the optimized native APIs 'Bun.password.hash(...)' and 'Bun.password.verify(...)'.\n"
+  },
+  {
+    "rule_id": "bun.bun-prefer-bun-password",
+    "severity": "warning",
+    "confidence": "hint",
+    "file": "express.ts",
+    "line": 85,
+    "message": "This code uses external hashing libraries (bcrypt, bcryptjs, argon2) or Node.js crypto.pbkdf2 for password hashing. If you are running on the Bun runtime, prefer using the optimized native APIs 'Bun.password.hash(...)' and 'Bun.password.verify(...)'.\n"
+  },
+  {
+    "rule_id": "bun.bun-prefer-bun-password",
+    "severity": "warning",
+    "confidence": "hint",
+    "file": "route.ts",
+    "line": 16,
     "message": "This code uses external hashing libraries (bcrypt, bcryptjs, argon2) or Node.js crypto.pbkdf2 for password hashing. If you are running on the Bun runtime, prefer using the optimized native APIs 'Bun.password.hash(...)' and 'Bun.password.verify(...)'.\n"
   },
   {
@@ -107,12 +131,21 @@
     "message": "An asynchronous Express route handler does not wrap its execution in a try/catch block or use an async error handler wrapper. Unhandled async rejections in Express can crash the Node.js process or cause requests to hang. Wrap the body in try/catch and pass the error to next(err).\n"
   },
   {
+    "rule_id": "express.express-async-error-handling",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "express.ts",
+    "line": 84,
+    "message": "An asynchronous Express route handler does not wrap its execution in a try/catch block or use an async error handler wrapper. Unhandled async rejections in Express can crash the Node.js process or cause requests to hang. Wrap the body in try/catch and pass the error to next(err).\n"
+  },
+  {
     "rule_id": "express.express-body-limit-missing",
     "severity": "warning",
     "category": "security",
     "confidence": "hint",
     "file": "express.ts",
-    "line": 98,
+    "line": 109,
     "message": "Express body parsing middleware is configured without an explicit payload limit. Large JSON or form bodies can consume memory and CPU before route handlers run, creating a simple denial-of-service path. Set a small application-specific limit such as express.json({ limit: \"1mb\" }).\n"
   },
   {
@@ -121,7 +154,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "express.ts",
-    "line": 99,
+    "line": 110,
     "message": "Express body parsing middleware is configured without an explicit payload limit. Large JSON or form bodies can consume memory and CPU before route handlers run, creating a simple denial-of-service path. Set a small application-specific limit such as express.json({ limit: \"1mb\" }).\n"
   },
   {
@@ -148,7 +181,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "express.ts",
-    "line": 103,
+    "line": 114,
     "message": "express-session config weakens the session cookie security flags. Session cookies should normally be httpOnly so JavaScript cannot read them, and secure in production so they are not sent over plain HTTP. Keep httpOnly enabled and set secure true behind HTTPS.\n"
   },
   {
@@ -157,7 +190,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "express.ts",
-    "line": 104,
+    "line": 115,
     "message": "express-session config weakens the session cookie security flags. Session cookies should normally be httpOnly so JavaScript cannot read them, and secure in production so they are not sent over plain HTTP. Keep httpOnly enabled and set secure true behind HTTPS.\n"
   },
   {
@@ -219,6 +252,60 @@
     "severity": "warning",
     "category": "security",
     "confidence": "hint",
+    "file": "client.tsx",
+    "line": 23,
+    "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
+  },
+  {
+    "rule_id": "express.express-missing-rate-limit",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 27,
+    "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
+  },
+  {
+    "rule_id": "express.express-missing-rate-limit",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 34,
+    "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
+  },
+  {
+    "rule_id": "express.express-missing-rate-limit",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 42,
+    "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
+  },
+  {
+    "rule_id": "express.express-missing-rate-limit",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 49,
+    "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
+  },
+  {
+    "rule_id": "express.express-missing-rate-limit",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 54,
+    "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
+  },
+  {
+    "rule_id": "express.express-missing-rate-limit",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
     "file": "express.ts",
     "line": 11,
     "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
@@ -239,6 +326,15 @@
     "confidence": "hint",
     "file": "express.ts",
     "line": 21,
+    "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
+  },
+  {
+    "rule_id": "express.express-missing-rate-limit",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "express.ts",
+    "line": 79,
     "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
   },
   {
@@ -285,6 +381,24 @@
     "file": "incomplete.ts",
     "line": 31,
     "message": "bcrypt is configured with a cost factor below 10. Low bcrypt rounds make offline password cracking materially cheaper if password hashes leak. Use a cost of at least 10, then tune upward based on your production latency budget.\n"
+  },
+  {
+    "rule_id": "general.crypto-sync-in-request-path",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "rule",
+    "file": "express.ts",
+    "line": 80,
+    "message": "Synchronous cryptographic operations (e.g. pbkdf2Sync, scryptSync, bcrypt.hashSync, compareSync) run inside a request handler. CPU-intensive sync crypto blocks the single-threaded Node.js event loop, preventing all other concurrent requests from being processed and creating a simple denial-of-service (DoS) vulnerability. Use asynchronous alternatives like bcrypt.hash or crypto.pbkdf2.\n"
+  },
+  {
+    "rule_id": "general.crypto-sync-in-request-path",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "rule",
+    "file": "route.ts",
+    "line": 16,
+    "message": "Synchronous cryptographic operations (e.g. pbkdf2Sync, scryptSync, bcrypt.hashSync, compareSync) run inside a request handler. CPU-intensive sync crypto blocks the single-threaded Node.js event loop, preventing all other concurrent requests from being processed and creating a simple denial-of-service (DoS) vulnerability. Use asynchronous alternatives like bcrypt.hash or crypto.pbkdf2.\n"
   },
   {
     "rule_id": "general.dom-innerhtml-variable",
@@ -530,6 +644,24 @@
     "message": "A console.log/console.debug call was left in the source. These are typically debugging leftovers (a common artifact of AI-generated or rushed code) that leak data to the browser console and add noise in production. Remove it, or route it through an intentional logger. console.warn/console.error are not flagged, since those are usually deliberate.\n"
   },
   {
+    "rule_id": "general.leftover-console-statement",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 29,
+    "message": "A console.log/console.debug call was left in the source. These are typically debugging leftovers (a common artifact of AI-generated or rushed code) that leak data to the browser console and add noise in production. Remove it, or route it through an intentional logger. console.warn/console.error are not flagged, since those are usually deliberate.\n"
+  },
+  {
+    "rule_id": "general.leftover-console-statement",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 36,
+    "message": "A console.log/console.debug call was left in the source. These are typically debugging leftovers (a common artifact of AI-generated or rushed code) that leak data to the browser console and add noise in production. Remove it, or route it through an intentional logger. console.warn/console.error are not flagged, since those are usually deliberate.\n"
+  },
+  {
     "rule_id": "general.lodash-barrel-import",
     "severity": "warning",
     "category": "performance",
@@ -688,7 +820,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "express.ts",
-    "line": 80,
+    "line": 91,
     "message": "Request-controlled input is joined into a filesystem path without an obvious basename/normalize/allowlist step. Attackers can use ../ segments or absolute paths to escape the intended directory. Resolve against a fixed base directory and reject paths that leave it, or map user input to known filenames.\n"
   },
   {
@@ -761,6 +893,24 @@
     "confidence": "hint",
     "file": "case.tsx",
     "line": 313,
+    "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
+  },
+  {
+    "rule_id": "general.process-env-dispersed-access",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 13,
+    "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
+  },
+  {
+    "rule_id": "general.process-env-dispersed-access",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 14,
     "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
   },
   {
@@ -1007,6 +1157,24 @@
     "message": "@ts-ignore suppresses the TypeScript checker without documenting why. This can hide real type regressions permanently. Prefer @ts-expect-error with a short reason, or add an explicit reason if the suppression is unavoidable.\n"
   },
   {
+    "rule_id": "nestjs.nestjs-dto-without-validators",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "rule",
+    "file": "incomplete.ts",
+    "line": 69,
+    "message": "DTO class property is defined without any decorators. In NestJS, properties inside DTO classes (e.g. classes ending in Dto) must have at least one validation decorator (such as @IsString(), @IsNumber(), etc.) for the global ValidationPipe to validate them. Properties without decorators are ignored by validation, allowing unchecked payload fields.\n"
+  },
+  {
+    "rule_id": "nestjs.nestjs-dto-without-validators",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "rule",
+    "file": "incomplete.ts",
+    "line": 72,
+    "message": "DTO class property is defined without any decorators. In NestJS, properties inside DTO classes (e.g. classes ending in Dto) must have at least one validation decorator (such as @IsString(), @IsNumber(), etc.) for the global ValidationPipe to validate them. Properties without decorators are ignored by validation, allowing unchecked payload fields.\n"
+  },
+  {
     "rule_id": "nestjs.nestjs-fat-controller",
     "severity": "warning",
     "category": "quality",
@@ -1147,7 +1315,7 @@
     "category": "performance",
     "confidence": "hint",
     "file": "route.ts",
-    "line": 25,
+    "line": 27,
     "message": "A Next.js request API is called at module scope. cookies(), headers(), and similar request-bound APIs force the route or component to be dynamic and can disable static optimization for the whole file. Move the call inside the handler/component that actually needs request data.\n"
   },
   {
@@ -1156,7 +1324,7 @@
     "category": "performance",
     "confidence": "hint",
     "file": "route.ts",
-    "line": 26,
+    "line": 28,
     "message": "A Next.js request API is called at module scope. cookies(), headers(), and similar request-bound APIs force the route or component to be dynamic and can disable static optimization for the whole file. Move the call inside the handler/component that actually needs request data.\n"
   },
   {
@@ -1461,6 +1629,33 @@
     "message": "ScrollView renders every child eagerly while this code maps over a dynamic collection. Large or growing lists can cause memory pressure and jank on native devices. Use FlatList or SectionList so React Native can virtualize rows.\n"
   },
   {
+    "rule_id": "tanstack.tanstack-mutation-without-invalidation",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "rule",
+    "file": "client.tsx",
+    "line": 22,
+    "message": "useMutation is called without cache invalidation or update. When performing a mutation, you should invalidate relevant query caches using queryClient.invalidateQueries() or update query data using queryClient.setQueryData() in onSuccess or onSettled callbacks. Otherwise, the user interface will remain stale and won't reflect the server-side changes.\n"
+  },
+  {
+    "rule_id": "tanstack.tanstack-mutation-without-invalidation",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "rule",
+    "file": "client.tsx",
+    "line": 26,
+    "message": "useMutation is called without cache invalidation or update. When performing a mutation, you should invalidate relevant query caches using queryClient.invalidateQueries() or update query data using queryClient.setQueryData() in onSuccess or onSettled callbacks. Otherwise, the user interface will remain stale and won't reflect the server-side changes.\n"
+  },
+  {
+    "rule_id": "tanstack.tanstack-mutation-without-invalidation",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "rule",
+    "file": "client.tsx",
+    "line": 33,
+    "message": "useMutation is called without cache invalidation or update. When performing a mutation, you should invalidate relevant query caches using queryClient.invalidateQueries() or update query data using queryClient.setQueryData() in onSuccess or onSettled callbacks. Otherwise, the user interface will remain stale and won't reflect the server-side changes.\n"
+  },
+  {
     "rule_id": "tanstack.tanstack-nonserializable-query-key",
     "severity": "warning",
     "category": "bug",
@@ -1497,6 +1692,24 @@
     "message": "TanStack Query key uses an inline string literal. Repeating raw strings across useQuery, setQueryData, and invalidateQueries makes cache updates easy to mistype or drift. Prefer a query-key factory or shared constant so reads and invalidations use the same key shape.\n"
   },
   {
+    "rule_id": "tanstack.tanstack-query-key-string",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 44,
+    "message": "TanStack Query key uses an inline string literal. Repeating raw strings across useQuery, setQueryData, and invalidateQueries makes cache updates easy to mistype or drift. Prefer a query-key factory or shared constant so reads and invalidations use the same key shape.\n"
+  },
+  {
+    "rule_id": "tanstack.tanstack-query-key-string",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 50,
+    "message": "TanStack Query key uses an inline string literal. Repeating raw strings across useQuery, setQueryData, and invalidateQueries makes cache updates easy to mistype or drift. Prefer a query-key factory or shared constant so reads and invalidations use the same key shape.\n"
+  },
+  {
     "rule_id": "vite.vite-insecure-config",
     "severity": "warning",
     "category": "security",
@@ -1504,6 +1717,51 @@
     "file": "case.tsx",
     "line": 495,
     "message": "Vite dev server is configured to listen on all interfaces. This can expose local development services to the LAN or container network. Bind to localhost unless remote device testing is intentional, and document the reason when host: true is required.\n"
+  },
+  {
+    "rule_id": "vite.vite-process-env-usage",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "case.tsx",
+    "line": 130,
+    "message": "process.env should not be used in a Vite project. Vite does not inject process.env by default, which can cause runtime ReferenceErrors (process is not defined) in the browser. Use import.meta.env instead.\n"
+  },
+  {
+    "rule_id": "vite.vite-process-env-usage",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "case.tsx",
+    "line": 132,
+    "message": "process.env should not be used in a Vite project. Vite does not inject process.env by default, which can cause runtime ReferenceErrors (process is not defined) in the browser. Use import.meta.env instead.\n"
+  },
+  {
+    "rule_id": "vite.vite-process-env-usage",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "case.tsx",
+    "line": 133,
+    "message": "process.env should not be used in a Vite project. Vite does not inject process.env by default, which can cause runtime ReferenceErrors (process is not defined) in the browser. Use import.meta.env instead.\n"
+  },
+  {
+    "rule_id": "vite.vite-process-env-usage",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "case.tsx",
+    "line": 312,
+    "message": "process.env should not be used in a Vite project. Vite does not inject process.env by default, which can cause runtime ReferenceErrors (process is not defined) in the browser. Use import.meta.env instead.\n"
+  },
+  {
+    "rule_id": "vite.vite-process-env-usage",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "client.tsx",
+    "line": 13,
+    "message": "process.env should not be used in a Vite project. Vite does not inject process.env by default, which can cause runtime ReferenceErrors (process is not defined) in the browser. Use import.meta.env instead.\n"
   },
   {
     "rule_id": "vite.vite-public-secret-prefix",

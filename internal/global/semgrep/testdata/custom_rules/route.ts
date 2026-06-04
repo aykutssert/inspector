@@ -13,8 +13,10 @@ export const PURGE = async () => {
 };
 
 export async function GET(request: Request) {
+  const salt = crypto.pbkdf2Sync('secret', 'salt', 100000, 64, 'sha512'); // triggers crypto-sync-in-request-path
   return Response.json({ ok: true });
 }
+
 
 export const POST = async (request: Request) => {
   return Response.json({ ok: true });

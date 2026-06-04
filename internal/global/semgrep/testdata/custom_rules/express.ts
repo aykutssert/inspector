@@ -76,6 +76,17 @@ appSafe.post('/parse-local-json', (req, res) => {
   res.json(profile);
 });
 
+appUnsafe.post('/hash-password', (req, res) => {
+  const hash = bcrypt.hashSync(req.body.password, 10); // triggers crypto-sync-in-request-path
+  res.json({ hash });
+});
+
+appSafe.post('/hash-password-safe', async (req, res) => {
+  const hash = await bcrypt.hash(req.body.password, 10); // ok
+  res.json({ hash });
+});
+
+
 appSafe.get('/download', (req, res) => {
   const filePath = path.join('/srv/files', req.query.file); // triggers path-traversal-unchecked-join
   res.sendFile(filePath);

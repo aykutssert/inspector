@@ -48,6 +48,22 @@ func IsNext(ctx core.ProjectContext) bool {
 	return false
 }
 
+// IsVite reports whether the scan target is a Vite project: a vite.config.* among
+// the scanned files, or a "vite" dependency in any relevant package.json.
+func IsVite(ctx core.ProjectContext) bool {
+	for _, f := range ctx.Files {
+		if strings.HasPrefix(filepath.Base(f), "vite.config.") {
+			return true
+		}
+	}
+	for dir := range RelevantPkgDirs(ctx) {
+		if PkgHasDep(filepath.Join(dir, "package.json"), "vite") {
+			return true
+		}
+	}
+	return false
+}
+
 // IsBun reports whether the scan target is a Bun project: a bun.lockb among the
 // scanned files, or a "bun" / "bun-types" dependency, or an "@types/bun" dep in
 // any relevant package.json. Used to gate Bun-specific rules (Bun.password,

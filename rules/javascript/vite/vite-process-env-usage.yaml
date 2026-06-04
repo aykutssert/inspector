@@ -1,0 +1,14 @@
+rules:
+  - id: vite-process-env-usage
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      process.env should not be used in a Vite project. Vite does not inject
+      process.env by default, which can cause runtime ReferenceErrors (process is not defined)
+      in the browser. Use import.meta.env instead.
+    metadata:
+      category: correctness
+      confidence: rule
+    patterns:
+      - pattern: process.env.$VAR
+      - pattern-not: process.env.NODE_ENV

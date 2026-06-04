@@ -1,0 +1,75 @@
+rules:
+  - id: crypto-sync-in-request-path
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Synchronous cryptographic operations (e.g. pbkdf2Sync, scryptSync, bcrypt.hashSync, compareSync) run inside a request handler.
+      CPU-intensive sync crypto blocks the single-threaded Node.js event loop, preventing all other concurrent requests from being processed
+      and creating a simple denial-of-service (DoS) vulnerability. Use asynchronous alternatives like bcrypt.hash or crypto.pbkdf2.
+    metadata:
+      category: security
+      cwe:
+        - "CWE-400: Uncontrolled Resource Consumption"
+      owasp:
+        - "A04:2021 - Insecure Design"
+      confidence: rule
+    patterns:
+      - pattern-either:
+          # Express handlers
+          - patterns:
+              - pattern-either:
+                  - pattern-inside: |
+                      $APP.$METHOD($PATH, ($REQ, $RES) => { ... })
+                  - pattern-inside: |
+                      $APP.$METHOD($PATH, ($REQ, $RES, $NEXT) => { ... })
+                  - pattern-inside: |
+                      $APP.$METHOD($PATH, async ($REQ, $RES) => { ... })
+                  - pattern-inside: |
+                      $APP.$METHOD($PATH, async ($REQ, $RES, $NEXT) => { ... })
+                  - pattern-inside: |
+                      $APP.$METHOD($PATH, function ($REQ, $RES) { ... })
+                  - pattern-inside: |
+                      $APP.$METHOD($PATH, function ($REQ, $RES, $NEXT) { ... })
+                  - pattern-inside: |
+                      $APP.$METHOD($PATH, async function ($REQ, $RES) { ... })
+                  - pattern-inside: |
+                      $APP.$METHOD($PATH, async function ($REQ, $RES, $NEXT) { ... })
+              - metavariable-regex:
+                  metavariable: $METHOD
+                  regex: ^(get|post|put|patch|delete|all)$
+          # Next.js App Router handlers
+          - patterns:
+              - pattern-either:
+                  - pattern-inside: |
+                      export async function $HTTPMETHOD($REQ) { ... }
+                  - pattern-inside: |
+                      export function $HTTPMETHOD($REQ) { ... }
+              - metavariable-regex:
+                  metavariable: $HTTPMETHOD
+                  regex: ^(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)$
+          # NestJS Controller methods
+          - patterns:
+              - pattern-inside: |
+                  @Controller(...)
+                  class $CLASS {
+                    ...
+                    @$DECORATOR(...)
+                    $METHOD(...) {
+                      ...
+                    }
+                  }
+              - metavariable-regex:
+                  metavariable: $DECORATOR
+                  regex: ^(Get|Post|Put|Delete|Patch|All)$
+      - pattern-either:
+          - pattern: $CRYPTO.pbkdf2Sync(...)
+          - pattern: $CRYPTO.scryptSync(...)
+          - pattern: $BCRYPT.hashSync(...)
+          - pattern: $BCRYPT.compareSync(...)
+          - pattern: $ARGON.hashSync(...)
+          - pattern: $ARGON.verifySync(...)
+          - pattern: pbkdf2Sync(...)
+          - pattern: scryptSync(...)
+          - pattern: hashSync(...)
+          - pattern: compareSync(...)
+          - pattern: verifySync(...)

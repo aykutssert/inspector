@@ -57,3 +57,18 @@ export function mixedModuleSystems() {
   const path = require("path"); // should trigger mixed-esm-cjs
   return path.join("a", "b");
 }
+
+export class CreateUserDto {
+  @IsString()
+  @IsNotEmpty()
+  username: string; // ok
+
+  @IsInt()
+  age?: number; // ok
+
+  email: string; // triggers nestjs-dto-without-validators
+  
+  @ApiProperty()
+  bio: string; // triggers nestjs-dto-without-validators
+}
+

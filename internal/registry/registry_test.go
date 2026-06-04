@@ -59,15 +59,16 @@ func TestTailwindIsSeparatePack(t *testing.T) {
 // single gate; assert both directions.
 func TestDropInapplicableRulesGatesBun(t *testing.T) {
 	bunFinding := core.Finding{RuleID: "bun.bun-prefer-bun-password"}
+	viteFinding := core.Finding{RuleID: "vite.vite-process-env-usage"}
 	other := core.Finding{RuleID: "general.process-env-dispersed-access"}
 
 	node := core.ProjectContext{Root: t.TempDir(), Files: []string{"index.ts"}}
-	drop := dropInapplicableRules(node)
-	if drop == nil || !drop(bunFinding) {
-		t.Fatal("plain Node repo should drop bun.* findings")
+	dropNode := dropInapplicableRules(node)
+	if dropNode == nil || !dropNode(bunFinding) || !dropNode(viteFinding) {
+		t.Fatal("plain Node repo should drop bun.* and vite.* findings")
 	}
-	if drop(other) {
-		t.Fatal("non-bun rules must not be dropped")
+	if dropNode(other) {
+		t.Fatal("non-framework rules must not be dropped")
 	}
 
 	bunDir := t.TempDir()
@@ -76,8 +77,33 @@ func TestDropInapplicableRulesGatesBun(t *testing.T) {
 		t.Fatal(err)
 	}
 	bunCtx := core.ProjectContext{Root: bunDir, Files: []string{"index.ts"}}
-	if dropInapplicableRules(bunCtx) != nil {
-		t.Fatal("Bun repo should keep bun.* findings (no drop predicate)")
+	dropBun := dropInapplicableRules(bunCtx)
+	if dropBun == nil || dropBun(bunFinding) || !dropBun(viteFinding) {
+		t.Fatal("Bun repo should keep bun.* but drop vite.* findings")
+	}
+
+	viteDir := t.TempDir()
+	if err := os.WriteFile(filepath.Join(viteDir, "package.json"),
+		[]byte(`{"dependencies":{"vite":"^1.0.0"}}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	viteCtx := core.ProjectContext{Root: viteDir, Files: []string{"index.ts"}}
+	dropVite := dropInapplicableRules(viteCtx)
+	if dropVite == nil || !dropVite(bunFinding) || dropVite(viteFinding) {
+		t.Fatal("Vite repo should keep vite.* but drop bun.* findings")
+	}
+
+	bothDir := t.TempDir()
+	if err := os.WriteFile(filepath.Join(bothDir, "package.json"),
+		[]byte(`{"dependencies":{"bun-types":"^1.0.0", "vite":"^1.0.0"}}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	bothCtx := core.ProjectContext{Root: bothDir, Files: []string{"index.ts"}}
+	dropBoth := dropInapplicableRules(bothCtx)
+	if dropBoth != nil {
+		if dropBoth(bunFinding) || dropBoth(viteFinding) {
+			t.Fatal("Bun+Vite repo should keep both findings")
+		}
 	}
 }
 

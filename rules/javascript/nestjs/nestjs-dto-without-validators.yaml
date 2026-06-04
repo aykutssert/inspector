@@ -1,0 +1,47 @@
+rules:
+  - id: nestjs-dto-without-validators
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      DTO class property is defined without any decorators.
+      In NestJS, properties inside DTO classes (e.g. classes ending in Dto) must have at least one validation decorator
+      (such as @IsString(), @IsNumber(), etc.) for the global ValidationPipe to validate them.
+      Properties without decorators are ignored by validation, allowing unchecked payload fields.
+    metadata:
+      category: security
+      cwe:
+        - "CWE-20: Improper Input Validation"
+      owasp:
+        - "A03:2021 - Injection"
+      confidence: rule
+    patterns:
+      - pattern: |
+          class $DTO {
+            ...
+            $PROP: $TYPE;
+            ...
+          }
+      - metavariable-regex:
+          metavariable: $DTO
+          regex: (?i).*dto$
+      - focus-metavariable: $PROP
+      - pattern-not:
+          patterns:
+            - pattern-either:
+                - pattern: |
+                    class $DTO {
+                      ...
+                      @$DEC(...)
+                      $PROP: $TYPE;
+                      ...
+                    }
+                - pattern: |
+                    class $DTO {
+                      ...
+                      @$DEC
+                      $PROP: $TYPE;
+                      ...
+                    }
+            - metavariable-regex:
+                metavariable: $DEC
+                regex: ^(Is[A-Z].*|Min.*|Max.*|Length|Matches|Contains|Validate.*|Allow|Array[A-Z].*|Equals|NotEquals)$

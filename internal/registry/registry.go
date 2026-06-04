@@ -82,13 +82,19 @@ func (r *Registry) Analyzers(ctx core.ProjectContext, customRuleDirs []string) [
 // jsproject the single source of truth for the signal. Returns nil when nothing
 // needs dropping, so the common path adds no overhead.
 func dropInapplicableRules(ctx core.ProjectContext) func(core.Finding) bool {
-	if jsproject.IsBun(ctx) {
+	bun := jsproject.IsBun(ctx)
+	vite := jsproject.IsVite(ctx)
+	if bun && vite {
 		return nil
 	}
-	// Not a Bun project: the bun.* rules (Bun.password, Bun.file, Bun.serve,
-	// Bun.write) are false positives — those are Bun globals, absent in Node.
 	return func(f core.Finding) bool {
-		return strings.HasPrefix(f.RuleID, "bun.")
+		if !bun && strings.HasPrefix(f.RuleID, "bun.") {
+			return true
+		}
+		if !vite && strings.HasPrefix(f.RuleID, "vite.") {
+			return true
+		}
+		return false
 	}
 }
 

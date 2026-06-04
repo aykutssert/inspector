@@ -1,0 +1,233 @@
+rules:
+  - id: tanstack-mutation-without-invalidation
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      useMutation is called without cache invalidation or update.
+      When performing a mutation, you should invalidate relevant query caches using queryClient.invalidateQueries()
+      or update query data using queryClient.setQueryData() in onSuccess or onSettled callbacks.
+      Otherwise, the user interface will remain stale and won't reflect the server-side changes.
+    metadata:
+      category: maintainability
+      confidence: rule
+    patterns:
+      - pattern: useMutation($ARGS)
+      - pattern-not:
+          patterns:
+            - pattern-either:
+                # onSuccess arrow functions with receiver
+                - pattern: |
+                    useMutation({
+                      ...,
+                      onSuccess: (...) => {
+                        ...
+                        $CLIENT.invalidateQueries(...);
+                        ...
+                      },
+                      ...
+                    })
+                - pattern: |
+                    useMutation({
+                      ...,
+                      onSuccess: (...) => {
+                        ...
+                        $CLIENT.setQueryData(...);
+                        ...
+                      },
+                      ...
+                    })
+                - pattern: |
+                    useMutation({
+                      ...,
+                      onSuccess: (...) => $CLIENT.invalidateQueries(...),
+                      ...
+                    })
+                - pattern: |
+                    useMutation({
+                      ...,
+                      onSuccess: (...) => $CLIENT.setQueryData(...),
+                      ...
+                    })
+                # onSuccess standard functions with receiver
+                - pattern: |
+                    useMutation({
+                      ...,
+                      onSuccess: function(...) {
+                        ...
+                        $CLIENT.invalidateQueries(...);
+                        ...
+                      },
+                      ...
+                    })
+                - pattern: |
+                    useMutation({
+                      ...,
+                      onSuccess: function(...) {
+                        ...
+                        $CLIENT.setQueryData(...);
+                        ...
+                      },
+                      ...
+                    })
+                # onSuccess arrow functions without receiver
+                - pattern: |
+                    useMutation({
+                      ...,
+                      onSuccess: (...) => {
+                        ...
+                        invalidateQueries(...);
+                        ...
+                      },
+                      ...
+                    })
+                - pattern: |
+                    useMutation({
+                      ...,
+                      onSuccess: (...) => {
+                        ...
+                        setQueryData(...);
+                        ...
+                      },
+                      ...
+                    })
+                - pattern: |
+                    useMutation({
+                      ...,
+                      onSuccess: (...) => invalidateQueries(...),
+                      ...
+                    })
+                - pattern: |
+                    useMutation({
+                      ...,
+                      onSuccess: (...) => setQueryData(...),
+                      ...
+                    })
+                # onSuccess standard functions without receiver
+                - pattern: |
+                    useMutation({
+                      ...,
+                      onSuccess: function(...) {
+                        ...
+                        invalidateQueries(...);
+                        ...
+                      },
+                      ...
+                    })
+                - pattern: |
+                    useMutation({
+                      ...,
+                      onSuccess: function(...) {
+                        ...
+                        setQueryData(...);
+                        ...
+                      },
+                      ...
+                    })
+                # onSettled arrow functions with receiver
+                - pattern: |
+                    useMutation({
+                      ...,
+                      onSettled: (...) => {
+                        ...
+                        $CLIENT.invalidateQueries(...);
+                        ...
+                      },
+                      ...
+                    })
+                - pattern: |
+                    useMutation({
+                      ...,
+                      onSettled: (...) => {
+                        ...
+                        $CLIENT.setQueryData(...);
+                        ...
+                      },
+                      ...
+                    })
+                - pattern: |
+                    useMutation({
+                      ...,
+                      onSettled: (...) => $CLIENT.invalidateQueries(...),
+                      ...
+                    })
+                - pattern: |
+                    useMutation({
+                      ...,
+                      onSettled: (...) => $CLIENT.setQueryData(...),
+                      ...
+                    })
+                # onSettled standard functions with receiver
+                - pattern: |
+                    useMutation({
+                      ...,
+                      onSettled: function(...) {
+                        ...
+                        $CLIENT.invalidateQueries(...);
+                        ...
+                      },
+                      ...
+                    })
+                - pattern: |
+                    useMutation({
+                      ...,
+                      onSettled: function(...) {
+                        ...
+                        $CLIENT.setQueryData(...);
+                        ...
+                      },
+                      ...
+                    })
+                # onSettled arrow functions without receiver
+                - pattern: |
+                    useMutation({
+                      ...,
+                      onSettled: (...) => {
+                        ...
+                        invalidateQueries(...);
+                        ...
+                      },
+                      ...
+                    })
+                - pattern: |
+                    useMutation({
+                      ...,
+                      onSettled: (...) => {
+                        ...
+                        setQueryData(...);
+                        ...
+                      },
+                      ...
+                    })
+                - pattern: |
+                    useMutation({
+                      ...,
+                      onSettled: (...) => invalidateQueries(...),
+                      ...
+                    })
+                - pattern: |
+                    useMutation({
+                      ...,
+                      onSettled: (...) => setQueryData(...),
+                      ...
+                    })
+                # onSettled standard functions without receiver
+                - pattern: |
+                    useMutation({
+                      ...,
+                      onSettled: function(...) {
+                        ...
+                        invalidateQueries(...);
+                        ...
+                      },
+                      ...
+                    })
+                - pattern: |
+                    useMutation({
+                      ...,
+                      onSettled: function(...) {
+                        ...
+                        setQueryData(...);
+                        ...
+                      },
+                      ...
+                    })
