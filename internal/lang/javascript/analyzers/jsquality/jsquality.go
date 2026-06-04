@@ -1,0 +1,283 @@
+// Package jsquality holds language-level (framework-agnostic) JS/TS hints.
+//
+// It exists to separate signals that apply to ANY JavaScript/TypeScript code
+// from the React-shaped smells in the reacthint pack. reacthint only runs when
+// a React/Next signal is present (see reactPack.Detect); putting a universal
+// smell like repeated magic literals there would silently mute it on plain
+// Node/backend code. This analyzer is wired into the JavaScript pack, so it
+// runs on every JS/TS project regardless of framework.
+package jsquality
+
+import (
+	"context"
+	"os"
+	"path/filepath"
+	"strconv"
+	"strings"
+	"time"
+
+	sitter "github.com/smacker/go-tree-sitter"
+	"github.com/smacker/go-tree-sitter/javascript"
+	"github.com/smacker/go-tree-sitter/typescript/tsx"
+	"github.com/smacker/go-tree-sitter/typescript/typescript"
+
+	"github.com/aykutssert/inspector/internal/core"
+)
+
+const (
+	maxFileBytes = 1 << 20 // 1 MiB; skip larger files instead of parsing
+	parseTimeout = 5 * time.Second
+)
+
+var jsExt = map[string]bool{
+	".js": true, ".jsx": true, ".ts": true, ".tsx": true,
+	".mjs": true, ".cjs": true, ".mts": true, ".cts": true,
+}
+
+// Analyzer reports framework-agnostic JS/TS quality hints. It is pure Go
+// (tree-sitter) with no external binary, so it is always available.
+type Analyzer struct{}
+
+func New() *Analyzer { return &Analyzer{} }
+
+var _ core.Analyzer = (*Analyzer)(nil)
+
+func (a *Analyzer) Name() string { return "js-quality" }
+
+func (a *Analyzer) Available() bool { return true }
+
+func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
+	var findings []core.Finding
+	for _, rel := range ctx.Files {
+		if !jsExt[strings.ToLower(filepath.Ext(rel))] {
+			continue
+		}
+		// A parse failure here is not an analyzer failure — other tools already
+		// surface syntax errors. Skip the file and keep scanning.
+		fs, err := scanFile(filepath.Join(ctx.Root, rel), rel)
+		if err != nil {
+			continue
+		}
+		findings = append(findings, fs...)
+	}
+	return findings, nil
+}
+
+func scanFile(abs, rel string) ([]core.Finding, error) {
+	if info, err := os.Stat(abs); err == nil && info.Size() > maxFileBytes {
+		return nil, nil
+	}
+	src, err := os.ReadFile(abs)
+	if err != nil {
+		return nil, err
+	}
+	if len(src) > maxFileBytes {
+		return nil, nil
+	}
+	lang := langForPath(abs)
+	parser := sitter.NewParser()
+	defer parser.Close()
+	parser.SetLanguage(lang)
+	pctx, cancel := context.WithTimeout(context.Background(), parseTimeout)
+	defer cancel()
+	tree, err := parser.ParseCtx(pctx, nil, src)
+	if err != nil {
+		return nil, err
+	}
+	defer tree.Close()
+	return detectRepeatedLiteral(tree.RootNode(), lang, src, rel), nil
+}
+
+// langForPath selects the grammar by extension. The JS grammar cannot parse TS
+// type syntax, so .ts/.tsx route to their own grammars.
+func langForPath(path string) *sitter.Language {
+	switch strings.ToLower(filepath.Ext(path)) {
+	case ".ts", ".mts", ".cts":
+		return typescript.GetLanguage()
+	case ".tsx":
+		return tsx.GetLanguage()
+	default:
+		return javascript.GetLanguage()
+	}
+}
+
+func runQuery(q string, root *sitter.Node, lang *sitter.Language, fn func(node *sitter.Node)) {
+	query, err := sitter.NewQuery([]byte(q), lang)
+	if err != nil {
+		return
+	}
+	defer query.Close()
+	qc := sitter.NewQueryCursor()
+	defer qc.Close()
+	qc.Exec(query, root)
+	for {
+		m, ok := qc.NextMatch()
+		if !ok {
+			break
+		}
+		for _, c := range m.Captures {
+			fn(c.Node)
+		}
+	}
+}
+
+const (
+	repeatedStringThreshold = 4
+	repeatedNumberThreshold = 3
+	maxRepeatedLiteralHints = 5
+)
+
+const literalQuery = `[(string) (number)] @lit`
+
+type literalStat struct {
+	kind      string
+	display   string
+	firstLine int
+	count     int
+}
+
+// detectRepeatedLiteral flags repeated magic strings/numbers in one file. The
+// signal is grouped per literal to avoid noisy output: a repeated value gets one
+// hint at its first occurrence, not one finding per use.
+func detectRepeatedLiteral(root *sitter.Node, lang *sitter.Language, src []byte, file string) []core.Finding {
+	stats := map[string]*literalStat{}
+	runQuery(literalQuery, root, lang, func(node *sitter.Node) {
+		if isInsideNodeType(node, "import_statement") || isInsideNodeType(node, "export_statement") {
+			return
+		}
+		kind, value, ok := normalizedLiteral(node, src)
+		if !ok {
+			return
+		}
+		key := kind + ":" + value
+		stat := stats[key]
+		if stat == nil {
+			stat = &literalStat{
+				kind:      kind,
+				display:   value,
+				firstLine: int(node.StartPoint().Row) + 1,
+			}
+			stats[key] = stat
+		}
+		stat.count++
+	})
+
+	out := make([]core.Finding, 0, len(stats))
+	for _, stat := range stats {
+		if !isRepeatedLiteral(stat) {
+			continue
+		}
+		out = append(out, hint(
+			"repeated-magic-literal", "quality", core.SeverityInfo, file, stat.firstLine,
+			stat.kind+" literal "+stat.display+" is repeated "+strconv.Itoa(stat.count)+" times in this file; repeated domain values are easy to mistype and hard for agents to safely change.",
+			"Extract the value to a named constant, enum, route map, or shared configuration when the repetitions refer to the same concept.",
+		))
+	}
+	sortFindingsByLine(out)
+	if len(out) > maxRepeatedLiteralHints {
+		out = out[:maxRepeatedLiteralHints]
+	}
+	return out
+}
+
+func normalizedLiteral(node *sitter.Node, src []byte) (kind, value string, ok bool) {
+	text := strings.TrimSpace(node.Content(src))
+	switch node.Type() {
+	case "string":
+		value = normalizeStringLiteral(text)
+		if !isMagicStringCandidate(value) {
+			return "", "", false
+		}
+		return "string", strconv.Quote(value), true
+	case "number":
+		value = normalizeNumberLiteral(text)
+		if !isMagicNumberCandidate(value) {
+			return "", "", false
+		}
+		return "number", value, true
+	default:
+		return "", "", false
+	}
+}
+
+func normalizeStringLiteral(text string) string {
+	if len(text) < 2 {
+		return text
+	}
+	quote := text[0]
+	if (quote == '"' || quote == '\'') && text[len(text)-1] == quote {
+		if unquoted, err := strconv.Unquote(text); err == nil {
+			return unquoted
+		}
+		return text[1 : len(text)-1]
+	}
+	return text
+}
+
+func normalizeNumberLiteral(text string) string {
+	return strings.ReplaceAll(strings.ToLower(text), "_", "")
+}
+
+func isMagicStringCandidate(value string) bool {
+	if len(strings.TrimSpace(value)) < 4 {
+		return false
+	}
+	switch value {
+	case "true", "false", "null", "undefined", "use strict":
+		return false
+	default:
+		return true
+	}
+}
+
+func isMagicNumberCandidate(value string) bool {
+	switch value {
+	case "", "0", "1", "2", "-1":
+		return false
+	default:
+		return true
+	}
+}
+
+func isRepeatedLiteral(stat *literalStat) bool {
+	switch stat.kind {
+	case "string":
+		return stat.count >= repeatedStringThreshold
+	case "number":
+		return stat.count >= repeatedNumberThreshold
+	default:
+		return false
+	}
+}
+
+func isInsideNodeType(node *sitter.Node, typ string) bool {
+	for parent := node.Parent(); parent != nil; parent = parent.Parent() {
+		if parent.Type() == typ {
+			return true
+		}
+	}
+	return false
+}
+
+func sortFindingsByLine(findings []core.Finding) {
+	for i := 1; i < len(findings); i++ {
+		for j := i; j > 0 && findings[j].Line < findings[j-1].Line; j-- {
+			findings[j], findings[j-1] = findings[j-1], findings[j]
+		}
+	}
+}
+
+func hint(rule, cat string, sev core.Severity, file string, line int, msg, fix string) core.Finding {
+	return core.Finding{
+		Analyzer:   "js-quality",
+		RuleID:     rule,
+		Severity:   sev,
+		Level:      sev.String(),
+		Category:   cat,
+		Confidence: core.ConfidenceHint,
+		File:       file,
+		Line:       line,
+		Message:    msg,
+		Fix:        fix,
+	}
+}

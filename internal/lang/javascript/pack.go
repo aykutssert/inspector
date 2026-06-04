@@ -4,6 +4,7 @@ import (
 	inspectctx "github.com/aykutssert/inspector/internal/context"
 	"github.com/aykutssert/inspector/internal/core"
 	"github.com/aykutssert/inspector/internal/lang/javascript/analyzers/importcycle"
+	"github.com/aykutssert/inspector/internal/lang/javascript/analyzers/jsquality"
 	"github.com/aykutssert/inspector/internal/lang/javascript/analyzers/knip"
 	"github.com/aykutssert/inspector/internal/lang/javascript/analyzers/nesthint"
 	"github.com/aykutssert/inspector/internal/lang/javascript/analyzers/oxlint"
@@ -44,5 +45,5 @@ func (javascriptPack) ContextProviders() []inspectctx.Provider {
 }
 
 func (javascriptPack) Analyzers() []core.Analyzer {
-	return []core.Analyzer{oxlint.New(), importcycle.New(), knip.New(), nesthint.New()}
+	return []core.Analyzer{oxlint.New(), importcycle.New(), knip.New(), nesthint.New(), jsquality.New()}
 }

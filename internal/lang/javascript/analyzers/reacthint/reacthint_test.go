@@ -3,12 +3,25 @@ package reacthint
 import (
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"testing"
+
+	"github.com/aykutssert/inspector/internal/core"
 )
 
 // parseSrc writes src to a temp file with ext and runs the detectors.
 func parseSrc(t *testing.T, ext, src string) []string {
+	t.Helper()
+	fs := parseFindings(t, ext, src)
+	var ids []string
+	for _, f := range fs {
+		ids = append(ids, f.RuleID)
+	}
+	return ids
+}
+
+func parseFindings(t *testing.T, ext, src string) []core.Finding {
 	t.Helper()
 	dir := t.TempDir()
 	abs := filepath.Join(dir, "f"+ext)
@@ -19,11 +32,7 @@ func parseSrc(t *testing.T, ext, src string) []string {
 	if err != nil {
 		t.Fatalf("scanFile: %v", err)
 	}
-	var ids []string
-	for _, f := range fs {
-		ids = append(ids, f.RuleID)
-	}
-	return ids
+	return fs
 }
 
 func has(ids []string, id string) bool {
@@ -33,6 +42,16 @@ func has(ids []string, id string) bool {
 		}
 	}
 	return false
+}
+
+func countID(ids []string, id string) int {
+	n := 0
+	for _, x := range ids {
+		if x == id {
+			n++
+		}
+	}
+	return n
 }
 
 func TestDerivedStateFromProp(t *testing.T) {
@@ -174,38 +193,6 @@ func TestSmallComponentNotGodComponent(t *testing.T) {
 	}
 }
 
-func TestRepeatedMagicLiteral(t *testing.T) {
-	src := `const statusA = "pending-review";
-const statusB = "pending-review";
-const statusC = "pending-review";
-const statusD = "pending-review";
-const retryA = 30;
-const retryB = 30;
-const retryC = 30;`
-	if ids := parseSrc(t, ".ts", src); !has(ids, "repeated-magic-literal") {
-		t.Fatalf("expected repeated-magic-literal, got %v", ids)
-	}
-}
-
-func TestCommonLiteralsNotFlagged(t *testing.T) {
-	src := `import React from "react";
-import { useMemo } from "react";
-const a = "";
-const b = "";
-const c = "";
-const d = "";
-const x = 1;
-const y = 1;
-const z = 1;
-const label = "ok";
-const label2 = "ok";
-const label3 = "ok";
-const label4 = "ok";`
-	if ids := parseSrc(t, ".tsx", src); has(ids, "repeated-magic-literal") {
-		t.Fatalf("common literals should not be flagged, got %v", ids)
-	}
-}
-
 func TestEmDashInJSX(t *testing.T) {
 	src := "function C() { return <p>Fast — and secure</p>; }"
 	if ids := parseSrc(t, ".tsx", src); !has(ids, "em-dash-in-jsx-text") {
@@ -240,6 +227,187 @@ function Card({ title, today }) {
 	}
 }
 
+func TestMemoizedChildUnstableInlineProps(t *testing.T) {
+	src := `import React from "react";
+
+const Child = React.memo(function Child() {
+  return null;
+});
+
+function Parent() {
+  return <Child onSave={() => save()} options={{ dense: true }} items={[1, 2]} cb={handler.bind(null)} value={new Date()} />;
+}`
+	ids := parseSrc(t, ".tsx", src)
+	if !has(ids, "memoized-child-unstable-prop") {
+		t.Fatalf("expected memoized-child-unstable-prop, got %v", ids)
+	}
+	if has(ids, "render-time-allocation") {
+		t.Fatalf("memoized child unstable props should not also emit render-time-allocation, got %v", ids)
+	}
+}
+
+func TestMemoizedChildLocalUnstableIdentifierProps(t *testing.T) {
+	src := `import { memo } from "react";
+
+const Child = memo(function Child() {
+  return null;
+});
+
+function Parent() {
+  const options = { dense: true };
+  const onSave = () => save();
+  return <Child options={options} onSave={onSave} />;
+}`
+	if ids := parseSrc(t, ".tsx", src); !has(ids, "memoized-child-unstable-prop") {
+		t.Fatalf("expected local unstable prop to be flagged, got %v", ids)
+	}
+}
+
+func TestMemoizedChildStableHookPropsNotFlagged(t *testing.T) {
+	src := `import { memo, useCallback, useMemo, useRef } from "react";
+
+const Child = memo(function Child() {
+  return null;
+});
+
+function Parent() {
+  const options = useMemo(() => ({ dense: true }), []);
+  const onSave = useCallback(() => save(), []);
+  const rootRef = useRef(null);
+  return <Child options={options} onSave={onSave} rootRef={rootRef} count={1} label="ok" />;
+}`
+	if ids := parseSrc(t, ".tsx", src); has(ids, "memoized-child-unstable-prop") {
+		t.Fatalf("stable memo/useCallback/useRef props should not be flagged, got %v", ids)
+	}
+}
+
+func TestNonMemoizedChildStillGetsGenericRenderAllocation(t *testing.T) {
+	src := `function Child() {
+  return null;
+}
+
+function Parent() {
+  return <Child options={{ dense: true }} />;
+}`
+	ids := parseSrc(t, ".tsx", src)
+	if has(ids, "memoized-child-unstable-prop") {
+		t.Fatalf("non-memoized child should not get memo-specific finding, got %v", ids)
+	}
+	if !has(ids, "render-time-allocation") {
+		t.Fatalf("non-memoized inline object should still get generic render allocation, got %v", ids)
+	}
+}
+
+func TestImportedMemoizedChildUnstableProp(t *testing.T) {
+	root := writeReactProject(t, map[string]string{
+		"Child.tsx": `import { memo } from "react";
+
+export const Child = memo(function Child() {
+  return null;
+});
+`,
+		"Parent.tsx": `import { Child } from "./Child";
+
+export function Parent() {
+  return <Child onSave={() => save()} />;
+}
+`,
+	})
+	findings := scanReactProject(t, root)
+	var ids []string
+	for _, f := range findings {
+		ids = append(ids, f.RuleID)
+	}
+	if countID(ids, "memoized-child-unstable-prop") != 1 {
+		t.Fatalf("expected one imported memoized child finding, got ids=%v findings=%#v", ids, findings)
+	}
+}
+
+func TestBarrelMemoizedChildUnstableProp(t *testing.T) {
+	root := writeReactProject(t, map[string]string{
+		"components/Child.tsx": `import { memo } from "react";
+
+export const Child = memo(function Child() {
+  return null;
+});
+`,
+		"components/index.ts": `export { Child } from "./Child";`,
+		"Parent.tsx": `import { Child } from "./components";
+
+export function Parent() {
+  return <Child options={{ dense: true }} />;
+}
+`,
+	})
+	findings := scanReactProject(t, root)
+	var ids []string
+	for _, f := range findings {
+		ids = append(ids, f.RuleID)
+	}
+	if countID(ids, "memoized-child-unstable-prop") != 1 {
+		t.Fatalf("expected one barrel memoized child finding, got ids=%v findings=%#v", ids, findings)
+	}
+}
+
+func TestDefaultExportMemoizedChildUnstableProp(t *testing.T) {
+	root := writeReactProject(t, map[string]string{
+		"Child.tsx": `import { memo } from "react";
+
+export default memo(function Child() {
+  return null;
+});
+`,
+		"Parent.tsx": `import Child from "./Child";
+
+export function Parent() {
+  return <Child onSave={() => save()} />;
+}
+`,
+	})
+	findings := scanReactProject(t, root)
+	var ids []string
+	for _, f := range findings {
+		ids = append(ids, f.RuleID)
+	}
+	if countID(ids, "memoized-child-unstable-prop") != 1 {
+		t.Fatalf("expected one default memoized child finding, got ids=%v findings=%#v", ids, findings)
+	}
+}
+
+func TestPathAliasMemoizedChildUnstableProp(t *testing.T) {
+	root := writeReactProject(t, map[string]string{
+		"tsconfig.json": `{
+  // React projects commonly import components through aliases.
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@ui/*": ["src/components/*"],
+    },
+  },
+}`,
+		"src/components/Child.tsx": `import { memo } from "react";
+
+export const Child = memo(function Child() {
+  return null;
+});
+`,
+		"src/Parent.tsx": `import { Child } from "@ui/Child";
+
+export function Parent() {
+  return <Child options={{ dense: true }} />;
+}
+`,
+	})
+	findings := scanReactProject(t, root)
+	var ids []string
+	for _, f := range findings {
+		ids = append(ids, f.RuleID)
+	}
+	if countID(ids, "memoized-child-unstable-prop") != 1 {
+		t.Fatalf("expected one alias memoized child finding, got ids=%v findings=%#v", ids, findings)
+	}
+}
+
 // Plain .ts (no JSX grammar) must still run the non-JSX detectors without error.
 func TestPlainTSParses(t *testing.T) {
 	src := `export function useThing(props: { value: number }) {
@@ -249,4 +417,46 @@ func TestPlainTSParses(t *testing.T) {
 	if ids := parseSrc(t, ".ts", src); !has(ids, "no-derived-state") {
 		t.Fatalf("expected hint in .ts, got %v", ids)
 	}
+}
+
+func writeReactProject(t *testing.T, files map[string]string) string {
+	t.Helper()
+	root := t.TempDir()
+	for rel, body := range files {
+		path := filepath.Join(root, rel)
+		if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(path, []byte(body), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	return root
+}
+
+func scanReactProject(t *testing.T, root string) []core.Finding {
+	t.Helper()
+	var files []string
+	if err := filepath.WalkDir(root, func(path string, d os.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if d.IsDir() {
+			return nil
+		}
+		rel, err := filepath.Rel(root, path)
+		if err != nil {
+			return err
+		}
+		files = append(files, filepath.ToSlash(rel))
+		return nil
+	}); err != nil {
+		t.Fatal(err)
+	}
+	sort.Strings(files)
+	got, err := New().Scan(core.ProjectContext{Root: root, Files: files, Languages: []string{"javascript"}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	return got
 }
