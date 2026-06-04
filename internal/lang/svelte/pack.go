@@ -3,6 +3,7 @@ package svelte
 import (
 	inspectctx "github.com/aykutssert/inspector/internal/context"
 	"github.com/aykutssert/inspector/internal/core"
+	"github.com/aykutssert/inspector/internal/lang/svelte/analyzers/sveltehint"
 	"github.com/aykutssert/inspector/internal/lang/svelte/analyzers/sveltelint"
 )
 
@@ -20,7 +21,7 @@ func (sveltePack) Detect(ctx core.ProjectContext) core.Detection {
 }
 
 func (sveltePack) Coverage() core.Coverage {
-	return core.Coverage{Security: true, Hints: false, Context: false}
+	return core.Coverage{Security: true, Hints: true, Context: false}
 }
 
 func (sveltePack) Toolchains() []core.Toolchain {
@@ -40,5 +41,5 @@ func (sveltePack) ContextProviders() []inspectctx.Provider {
 }
 
 func (sveltePack) Analyzers() []core.Analyzer {
-	return []core.Analyzer{sveltelint.New()}
+	return []core.Analyzer{sveltelint.New(), sveltehint.New()}
 }
