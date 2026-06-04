@@ -1,0 +1,49 @@
+rules:
+  - id: tainted-ssrf-request
+    mode: taint
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      User-controlled request data reaches an outbound HTTP request URL. This
+      can lead to Server-Side Request Forgery (SSRF), where attackers make the
+      server call internal services or attacker-controlled hosts. Resolve the
+      destination from trusted route names or validate it against a strict
+      allowlist before making the request.
+    metadata:
+      category: security
+      cwe:
+        - "CWE-918: Server-Side Request Forgery (SSRF)"
+      owasp:
+        - "A10:2021 - Server-Side Request Forgery (SSRF)"
+      confidence: hint
+    patterns:
+      - pattern-not-inside: |
+          "use client";
+          ...
+      - pattern-not-inside: |
+          'use client';
+          ...
+    pattern-sources:
+      - pattern: $REQ.query.$FIELD
+      - pattern: $REQ.body.$FIELD
+      - pattern: $REQ.params.$FIELD
+      - pattern: $REQ.query[$FIELD]
+      - pattern: $REQ.body[$FIELD]
+      - pattern: $REQ.params[$FIELD]
+      - pattern: $REQ.nextUrl.searchParams.get(...)
+    pattern-sanitizers:
+      - pattern: assertAllowedUrl(...)
+      - pattern: validateAllowedUrl(...)
+      - pattern: allowedUrl(...)
+      - pattern: trustedServiceUrl(...)
+    pattern-sinks:
+      - pattern: fetch($URL, ...)
+      - pattern: axios($URL, ...)
+      - pattern: axios.get($URL, ...)
+      - pattern: axios.post($URL, ...)
+      - pattern: axios.put($URL, ...)
+      - pattern: axios.patch($URL, ...)
+      - pattern: axios.delete($URL, ...)
+      - pattern: got($URL, ...)
+      - pattern: got.get($URL, ...)
+      - pattern: request($URL, ...)

@@ -360,3 +360,36 @@ export async function updateUserActionValibotSafe(input: unknown) {
   const parsed = v.parse(serverActionSchema, input);
   await saveUser(parsed);
 }
+
+export async function taintedSqlDemoUnsafe(req: any, connection: any, prisma: any) {
+  const userName = req.query.name;
+  const sql = "SELECT * FROM users WHERE name = '" + userName + "'";
+  await connection.query(sql); // should trigger tainted-sql-query
+
+  const userId = req.body.userId;
+  const rawQuery = `SELECT * FROM users WHERE id = ${userId}`;
+  await prisma.$queryRawUnsafe(rawQuery); // should trigger tainted-sql-query
+}
+
+export async function taintedSqlDemoSafe(req: any, connection: any, schema: any) {
+  const parsedName = schema.parse(req.query.name);
+  await connection.query("SELECT * FROM users WHERE name = $1", [parsedName]); // should be ok
+}
+
+export async function taintedSsrfDemoUnsafe(req: any, axios: any, got: any) {
+  const target = req.query.url;
+  await fetch(target); // should trigger tainted-ssrf-request
+
+  await axios.get(req.body.callbackUrl); // should trigger tainted-ssrf-request
+
+  const nextTarget = req.nextUrl.searchParams.get("target");
+  await got(nextTarget); // should trigger tainted-ssrf-request
+}
+
+export async function taintedSsrfDemoSafe(req: any) {
+  const target = assertAllowedUrl(req.query.url);
+  await fetch(target); // should be ok
+
+  const serviceUrl = trustedServiceUrl(req.params.service);
+  await fetch(serviceUrl); // should be ok
+}

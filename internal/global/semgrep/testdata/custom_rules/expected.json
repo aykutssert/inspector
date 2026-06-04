@@ -494,6 +494,51 @@
     "message": "A token/secret/credential is written to localStorage or sessionStorage. Web storage is readable by any script on the page, so any XSS can exfiltrate it; unlike an httpOnly cookie it is not protected from JavaScript. Prefer an httpOnly, Secure, SameSite cookie for auth material, or keep it in memory.\n"
   },
   {
+    "rule_id": "general.tainted-sql-query",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 367,
+    "message": "User-controlled request data reaches a raw SQL query sink. Build SQL with parameterized placeholders or trusted query-builder APIs instead of concatenating request data into the SQL text.\n"
+  },
+  {
+    "rule_id": "general.tainted-sql-query",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 371,
+    "message": "User-controlled request data reaches a raw SQL query sink. Build SQL with parameterized placeholders or trusted query-builder APIs instead of concatenating request data into the SQL text.\n"
+  },
+  {
+    "rule_id": "general.tainted-ssrf-request",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 381,
+    "message": "User-controlled request data reaches an outbound HTTP request URL. This can lead to Server-Side Request Forgery (SSRF), where attackers make the server call internal services or attacker-controlled hosts. Resolve the destination from trusted route names or validate it against a strict allowlist before making the request.\n"
+  },
+  {
+    "rule_id": "general.tainted-ssrf-request",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 383,
+    "message": "User-controlled request data reaches an outbound HTTP request URL. This can lead to Server-Side Request Forgery (SSRF), where attackers make the server call internal services or attacker-controlled hosts. Resolve the destination from trusted route names or validate it against a strict allowlist before making the request.\n"
+  },
+  {
+    "rule_id": "general.tainted-ssrf-request",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 386,
+    "message": "User-controlled request data reaches an outbound HTTP request URL. This can lead to Server-Side Request Forgery (SSRF), where attackers make the server call internal services or attacker-controlled hosts. Resolve the destination from trusted route names or validate it against a strict allowlist before making the request.\n"
+  },
+  {
     "rule_id": "nestjs.nestjs-fat-controller",
     "severity": "warning",
     "category": "quality",
@@ -661,6 +706,33 @@
     "confidence": "hint",
     "file": "case.tsx",
     "line": 325,
+    "message": "Server-side fetch() is called with a dynamic or unvalidated URL. If this URL is built from user-controlled input, it can lead to Server-Side Request Forgery (SSRF), allowing attackers to query internal services, bypass firewalls, or leak credentials. Validate the URL against a strict allowlist of allowed domains, or ensure the input is sanitized and mapped to safe endpoints.\n"
+  },
+  {
+    "rule_id": "nextjs.next-ssrf-prone-fetch",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 381,
+    "message": "Server-side fetch() is called with a dynamic or unvalidated URL. If this URL is built from user-controlled input, it can lead to Server-Side Request Forgery (SSRF), allowing attackers to query internal services, bypass firewalls, or leak credentials. Validate the URL against a strict allowlist of allowed domains, or ensure the input is sanitized and mapped to safe endpoints.\n"
+  },
+  {
+    "rule_id": "nextjs.next-ssrf-prone-fetch",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 391,
+    "message": "Server-side fetch() is called with a dynamic or unvalidated URL. If this URL is built from user-controlled input, it can lead to Server-Side Request Forgery (SSRF), allowing attackers to query internal services, bypass firewalls, or leak credentials. Validate the URL against a strict allowlist of allowed domains, or ensure the input is sanitized and mapped to safe endpoints.\n"
+  },
+  {
+    "rule_id": "nextjs.next-ssrf-prone-fetch",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 394,
     "message": "Server-side fetch() is called with a dynamic or unvalidated URL. If this URL is built from user-controlled input, it can lead to Server-Side Request Forgery (SSRF), allowing attackers to query internal services, bypass firewalls, or leak credentials. Validate the URL against a strict allowlist of allowed domains, or ensure the input is sanitized and mapped to safe endpoints.\n"
   },
   {

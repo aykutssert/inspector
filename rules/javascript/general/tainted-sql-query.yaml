@@ -1,0 +1,36 @@
+rules:
+  - id: tainted-sql-query
+    mode: taint
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      User-controlled request data reaches a raw SQL query sink. Build SQL with
+      parameterized placeholders or trusted query-builder APIs instead of
+      concatenating request data into the SQL text.
+    metadata:
+      category: security
+      cwe:
+        - "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+      owasp:
+        - "A03:2021 - Injection"
+      confidence: hint
+    pattern-sources:
+      - pattern: $REQ.query.$FIELD
+      - pattern: $REQ.body.$FIELD
+      - pattern: $REQ.params.$FIELD
+      - pattern: $REQ.query[$FIELD]
+      - pattern: $REQ.body[$FIELD]
+      - pattern: $REQ.params[$FIELD]
+    pattern-sanitizers:
+      - pattern: $SCHEMA.parse(...)
+      - pattern: $SCHEMA.parseAsync(...)
+      - pattern: $SCHEMA.safeParse(...)
+      - pattern: $SCHEMA.safeParseAsync(...)
+      - pattern: $VALIDATOR.parse(...)
+      - pattern: $VALIDATOR.safeParse(...)
+    pattern-sinks:
+      - pattern: $DB.query($QUERY, ...)
+      - pattern: $CONNECTION.query($QUERY, ...)
+      - pattern: $POOL.query($QUERY, ...)
+      - pattern: $PRISMA.$queryRawUnsafe($QUERY, ...)
+      - pattern: $PRISMA.$executeRawUnsafe($QUERY, ...)
