@@ -216,6 +216,18 @@ func TestRenderTimeAllocationInJSX(t *testing.T) {
 	}
 }
 
+// The {{ __html }} wrapper on dangerouslySetInnerHTML is required by the React
+// API, not an avoidable render allocation. The real risk is XSS (reported by the
+// security layer), so the allocation hint must stay silent here and not bury it.
+func TestDangerouslySetInnerHTMLNotRenderAllocation(t *testing.T) {
+	src := `function View({ html }) {
+  return <div dangerouslySetInnerHTML={{ __html: html }} />;
+}`
+	if ids := parseSrc(t, ".tsx", src); has(ids, "render-time-allocation") {
+		t.Fatalf("dangerouslySetInnerHTML wrapper must not be flagged as render-time-allocation, got %v", ids)
+	}
+}
+
 func TestStableJSXValuesNotFlagged(t *testing.T) {
 	src := `const options = { compact: true };
 const matcher = /admin/;

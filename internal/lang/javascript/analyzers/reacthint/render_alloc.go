@@ -23,6 +23,13 @@ func detectRenderTimeAllocation(root *sitter.Node, lang *sitter.Language, src []
 		if kind == "" {
 			return
 		}
+		// dangerouslySetInnerHTML={{ __html: ... }} requires that object wrapper
+		// by the React API — it is not an avoidable allocation. The real concern
+		// on this prop is XSS, which the security layer (semgrep) reports. Flagging
+		// it here is a wrong-level signal that buries the security finding.
+		if isDangerouslySetInnerHTMLValue(node, src) {
+			return
+		}
 		if isMemoizedChildPropExpression(node, memoized, src) {
 			return
 		}
@@ -38,6 +45,18 @@ func detectRenderTimeAllocation(root *sitter.Node, lang *sitter.Language, src []
 		))
 	})
 	return out
+}
+
+// isDangerouslySetInnerHTMLValue reports whether the jsx_expression is the value
+// of a dangerouslySetInnerHTML attribute (jsx_attribute > property_identifier +
+// jsx_expression).
+func isDangerouslySetInnerHTMLValue(node *sitter.Node, src []byte) bool {
+	parent := node.Parent()
+	if parent == nil || parent.Type() != "jsx_attribute" {
+		return false
+	}
+	name := parent.NamedChild(0)
+	return name != nil && name.Content(src) == "dangerouslySetInnerHTML"
 }
 
 func renderAllocationKind(node *sitter.Node, src []byte) string {
