@@ -58,7 +58,8 @@ const reactRules = `
     "react-perf/jsx-no-new-function-as-prop": "off",
     "react/button-has-type": "warn",
     "react-hooks/rules-of-hooks": "error",
-    "react-hooks/exhaustive-deps": "warn"
+    "react-hooks/exhaustive-deps": "warn",
+    "react/no-array-index-key": "warn"
   `
 
 // coreNoiseRules are low-signal style/churn checks that bury security and bug
