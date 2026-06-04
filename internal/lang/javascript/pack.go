@@ -3,6 +3,7 @@ package javascript
 import (
 	inspectctx "github.com/aykutssert/inspector/internal/context"
 	"github.com/aykutssert/inspector/internal/core"
+	"github.com/aykutssert/inspector/internal/lang/javascript/analyzers/archhint"
 	"github.com/aykutssert/inspector/internal/lang/javascript/analyzers/importcycle"
 	"github.com/aykutssert/inspector/internal/lang/javascript/analyzers/jsquality"
 	"github.com/aykutssert/inspector/internal/lang/javascript/analyzers/knip"
@@ -45,5 +46,5 @@ func (javascriptPack) ContextProviders() []inspectctx.Provider {
 }
 
 func (javascriptPack) Analyzers() []core.Analyzer {
-	return []core.Analyzer{oxlint.New(), importcycle.New(), knip.New(), nesthint.New(), jsquality.New()}
+	return []core.Analyzer{oxlint.New(), importcycle.New(), knip.New(), nesthint.New(), archhint.New(), jsquality.New()}
 }
