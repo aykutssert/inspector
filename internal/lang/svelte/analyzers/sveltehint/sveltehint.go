@@ -92,6 +92,7 @@ func scanFile(abs, rel string) ([]core.Finding, error) {
 			findings = append(findings, f)
 		}
 	}
+	findings = append(findings, detectEachIndexAsKey(src, rel)...)
 	return findings, nil
 }
 

@@ -111,6 +111,65 @@ func TestScanNoSvelteFiles(t *testing.T) {
 	}
 }
 
+func TestEachIndexAsKeyIsReported(t *testing.T) {
+	src := `<ul>
+  {#each items as item, i (i)}
+    <li>{item.name}</li>
+  {/each}
+</ul>
+`
+	findings := scanSource(t, "EachKey.svelte", src)
+	if len(findings) != 1 {
+		t.Fatalf("findings len = %d, want 1: %#v", len(findings), findings)
+	}
+	f := findings[0]
+	if f.RuleID != "svelte.each-index-as-key" {
+		t.Fatalf("rule id = %q", f.RuleID)
+	}
+	if f.Severity != core.SeverityWarning || f.Category != "quality" || f.Confidence != core.ConfidenceHint {
+		t.Fatalf("bad finding shape: %#v", f)
+	}
+	if f.Line != 2 {
+		t.Fatalf("line = %d, want 2", f.Line)
+	}
+}
+
+func TestEachKeyedByStableIdIsNotReported(t *testing.T) {
+	src := `<ul>
+  {#each items as item (item.id)}
+    <li>{item.name}</li>
+  {/each}
+</ul>
+`
+	if findings := scanSource(t, "StableKey.svelte", src); len(findings) != 0 {
+		t.Fatalf("expected no findings, got %#v", findings)
+	}
+}
+
+func TestEachWithIndexButStableKeyIsNotReported(t *testing.T) {
+	src := `<ul>
+  {#each items as item, i (item.id)}
+    <li>{i}: {item.name}</li>
+  {/each}
+</ul>
+`
+	if findings := scanSource(t, "IndexStableKey.svelte", src); len(findings) != 0 {
+		t.Fatalf("expected no findings, got %#v", findings)
+	}
+}
+
+func TestKeylessEachIsNotReported(t *testing.T) {
+	src := `<ul>
+  {#each items as item, i}
+    <li>{i}: {item.name}</li>
+  {/each}
+</ul>
+`
+	if findings := scanSource(t, "Keyless.svelte", src); len(findings) != 0 {
+		t.Fatalf("expected no findings, got %#v", findings)
+	}
+}
+
 func scanSource(t *testing.T, name, src string) []core.Finding {
 	t.Helper()
 	root := t.TempDir()
