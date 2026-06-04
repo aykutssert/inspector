@@ -51,7 +51,7 @@ func TestBuildConfigGatesReactPlugins(t *testing.T) {
 
 func TestBuildConfigDisablesCoreNoiseRules(t *testing.T) {
 	cfg := buildConfig(false, false)
-	for _, rule := range []string{"no-unused-vars", "no-shadow"} {
+	for _, rule := range []string{"no-unused-vars", "no-shadow", "no-underscore-dangle"} {
 		if !strings.Contains(cfg, `"`+rule+`": "off"`) {
 			t.Fatalf("%s should be disabled in oxlint config: %s", rule, cfg)
 		}
@@ -67,6 +67,7 @@ func TestCoreNoiseRuleFilter(t *testing.T) {
 		{"", "no-unused-vars", true},
 		{"eslint", "no-unused-vars", true},
 		{"oxc", "no-shadow", true},
+		{"eslint", "no-underscore-dangle", true},
 		{"react", "no-unused-vars", false},
 		{"react-hooks", "exhaustive-deps", false},
 	}

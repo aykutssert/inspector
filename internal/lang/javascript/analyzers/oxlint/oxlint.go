@@ -65,14 +65,20 @@ const reactRules = `
 // coreNoiseRules are low-signal style/churn checks that bury security and bug
 // findings in large JS repos. Dead-code signal is handled by the knip analyzer,
 // so oxlint should not also report every unused local or shadowed identifier.
+//
+//   - no-underscore-dangle: pure style. Across the multi-repo corpus it fired
+//     116 times in 5 repos, ~all on idiomatic `_id`/`__typename` (Mongo/Mongoose,
+//     GraphQL) and `_`-prefixed privates — near-zero true positives, high churn.
 var coreNoiseRuleList = []string{
 	"no-unused-vars",
 	"no-shadow",
+	"no-underscore-dangle",
 }
 
 var coreNoiseRules = map[string]bool{
-	"no-unused-vars": true,
-	"no-shadow":      true,
+	"no-unused-vars":       true,
+	"no-shadow":            true,
+	"no-underscore-dangle": true,
 }
 
 // buildConfig assembles the oxlint config. The React-family plugins
