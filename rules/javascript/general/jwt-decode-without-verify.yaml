@@ -1,0 +1,25 @@
+rules:
+  - id: jwt-decode-without-verify
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      A JWT is read with jwt.decode(), which only base64-decodes the token and
+      does NOT check the signature. Any value derived from a decoded-but-unverified
+      token (user id, role, expiry) is attacker-controlled: a forged token passes.
+      Use jwt.verify(token, secret) before trusting the payload. decode() is only
+      safe for reading the header to pick a key, never for authorization decisions.
+    metadata:
+      category: security
+      cwe:
+        - "CWE-347: Improper Verification of Cryptographic Signature"
+      owasp:
+        - "A07:2021 - Identification and Authentication Failures"
+      # hint: decode() has a legitimate use (inspecting the header before verify),
+      # so the agent should confirm the decoded payload drives an auth/trust
+      # decision before flagging it as a real bug.
+      confidence: hint
+    patterns:
+      - pattern: $JWT.decode(...)
+      - metavariable-regex:
+          metavariable: $JWT
+          regex: ^(jwt|jsonwebtoken|jwtLib|JWT)$

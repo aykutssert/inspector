@@ -1,7 +1,9 @@
 // @ts-nocheck — semgrep express golden fixture
-// Tests express-missing-helmet, express-missing-rate-limit, and express-async-error-handling.
+// Tests express-missing-helmet, express-missing-rate-limit, express-async-error-handling,
+// and jwt-decode-without-verify.
 
 import express from 'express';
+import jwt from 'jsonwebtoken';
 
 // ---- UNSAFE section ----
 const appUnsafe = express(); // triggers express-missing-helmet
@@ -14,6 +16,12 @@ appUnsafe.post('/login', (req, res) => { // triggers express-missing-rate-limit
 appUnsafe.get('/data', async (req, res) => { // triggers express-async-error-handling
   const data = await fetchData();
   res.json(data);
+});
+
+appUnsafe.get('/me', (req, res) => {
+  // triggers jwt-decode-without-verify: trusts an unverified token payload
+  const claims = jwt.decode(req.headers.authorization);
+  res.json({ userId: claims.sub });
 });
 
 // ---- SAFE section ----

@@ -67,7 +67,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "express.ts",
-    "line": 14,
+    "line": 16,
     "message": "An asynchronous Express route handler does not wrap its execution in a try/catch block or use an async error handler wrapper. Unhandled async rejections in Express can crash the Node.js process or cause requests to hang. Wrap the body in try/catch and pass the error to next(err).\n"
   },
   {
@@ -85,7 +85,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "express.ts",
-    "line": 7,
+    "line": 9,
     "message": "The Express application is initialized but does not appear to use the 'helmet' middleware. Helmet sets critical security headers to protect the app from common web vulnerabilities (XSS, Clickjacking, MIME-sniffing, etc.). Add app.use(helmet()) to secure HTTP headers.\n"
   },
   {
@@ -112,7 +112,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "express.ts",
-    "line": 9,
+    "line": 11,
     "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
   },
   {
@@ -121,7 +121,16 @@
     "category": "security",
     "confidence": "hint",
     "file": "express.ts",
-    "line": 14,
+    "line": 16,
+    "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
+  },
+  {
+    "rule_id": "express.express-missing-rate-limit",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "express.ts",
+    "line": 21,
     "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
   },
   {
@@ -339,6 +348,15 @@
     "file": "case.tsx",
     "line": 58,
     "message": "JSON.parse(JSON.stringify(...)) is used as a deep clone. This is slow on large objects and silently changes values such as Date, Map, Set, undefined, NaN, Infinity, RegExp, functions, and class instances. Prefer structuredClone where available, or use a clone strategy that preserves the data shape you actually need.\n"
+  },
+  {
+    "rule_id": "general.jwt-decode-without-verify",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "express.ts",
+    "line": 23,
+    "message": "A JWT is read with jwt.decode(), which only base64-decodes the token and does NOT check the signature. Any value derived from a decoded-but-unverified token (user id, role, expiry) is attacker-controlled: a forged token passes. Use jwt.verify(token, secret) before trusting the payload. decode() is only safe for reading the header to pick a key, never for authorization decisions.\n"
   },
   {
     "rule_id": "general.leftover-console-statement",
