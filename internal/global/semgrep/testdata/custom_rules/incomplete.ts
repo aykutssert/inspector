@@ -52,3 +52,8 @@ export function expectedTypeErrorWithReason(value: unknown) {
   // @ts-expect-error: fixture intentionally accesses an unknown property
   return value.missing;
 }
+
+export function mixedModuleSystems() {
+  const path = require("path"); // should trigger mixed-esm-cjs
+  return path.join("a", "b");
+}

@@ -486,3 +486,32 @@ export function taintedSecretsDemo() {
   initializeStripe(devKey); // should be ok
 }
 
+export function vitePublicEnvSecret() {
+  const leaked = import.meta.env.VITE_SECRET_TOKEN; // should trigger vite-public-secret-prefix
+  const publicUrl = import.meta.env.VITE_PUBLIC_URL; // should be ok
+  return { leaked, publicUrl };
+}
+
+export const unsafeViteConfig = defineConfig({
+  server: {
+    host: true, // should trigger vite-insecure-config
+  },
+});
+
+export const safeViteConfig = defineConfig({
+  server: {
+    host: "localhost",
+  },
+});
+
+const userKeys = {
+  detail: (id: string) => ["users", id] as const,
+};
+
+export function tanstackQueryKeys(userId: string) {
+  useQuery({ queryKey: ["users"], queryFn: fetchUsers }); // should trigger tanstack-query-key-string
+  queryClient.invalidateQueries({ queryKey: ["users"] }); // should trigger tanstack-query-key-string
+  useQuery({ queryKey: userKeys.detail(userId), queryFn: fetchUser });
+  useQuery({ queryKey: ["users", new Date()], queryFn: fetchUsers }); // should trigger tanstack-nonserializable-query-key
+  useQuery({ queryKey: ["users", () => userId], queryFn: fetchUsers }); // should trigger tanstack-nonserializable-query-key
+}

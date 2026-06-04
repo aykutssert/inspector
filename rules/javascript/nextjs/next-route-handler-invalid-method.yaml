@@ -1,0 +1,35 @@
+rules:
+  - id: next-route-handler-invalid-method
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: >
+      A Next.js App Router route handler exports a function whose name is not a
+      valid HTTP method. Next.js only recognizes GET, POST, PUT, PATCH, DELETE,
+      HEAD, and OPTIONS in route files; other exported handler names are ignored
+      and the endpoint will not respond as intended.
+    metadata:
+      category: correctness
+      confidence: rule
+    paths:
+      include:
+        - "route.ts"
+        - "route.tsx"
+        - "route.js"
+        - "route.jsx"
+        - "**/route.ts"
+        - "**/route.tsx"
+        - "**/route.js"
+        - "**/route.jsx"
+    patterns:
+      - pattern-either:
+          - pattern: |
+              export async function $METHOD(...) { ... }
+          - pattern: |
+              export function $METHOD(...) { ... }
+          - pattern: |
+              export const $METHOD = async (...) => { ... }
+          - pattern: |
+              export const $METHOD = (...) => { ... }
+      - metavariable-regex:
+          metavariable: $METHOD
+          regex: "^(?!GET$|POST$|PUT$|PATCH$|DELETE$|HEAD$|OPTIONS$)[A-Z][A-Z0-9_]*$"

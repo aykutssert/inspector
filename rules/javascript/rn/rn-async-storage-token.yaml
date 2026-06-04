@@ -1,0 +1,25 @@
+rules:
+  - id: rn-async-storage-token
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      React Native AsyncStorage is used to persist a token, secret, credential,
+      or auth value. AsyncStorage is not encrypted storage, so sensitive values
+      can be recovered from device backups, rooted devices, or local compromise.
+      Store auth material in SecureStore, Keychain, Keystore, or another
+      platform-backed secure storage API.
+    metadata:
+      category: security
+      cwe:
+        - "CWE-922: Insecure Storage of Sensitive Information"
+      owasp:
+        - "A04:2021 - Insecure Design"
+      confidence: hint
+    patterns:
+      - pattern-inside: |
+          import $ASYNC_STORAGE from "@react-native-async-storage/async-storage";
+          ...
+      - pattern: $ASYNC_STORAGE.setItem($KEY, ...)
+      - metavariable-regex:
+          metavariable: $KEY
+          regex: "^['\"`][^'\"`]*(token|secret|password|credential|jwt|auth|session)[^'\"`]*['\"`]$"

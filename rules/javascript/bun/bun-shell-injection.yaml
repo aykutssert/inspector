@@ -1,0 +1,22 @@
+rules:
+  - id: bun-shell-injection
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Bun shell command is built from a dynamic value. If the value is
+      user-controlled, shell metacharacters can change the command that runs. Use
+      a fixed command with an argument array, validate against an allowlist, or
+      avoid invoking a shell.
+    metadata:
+      category: security
+      cwe:
+        - "CWE-78: Improper Neutralization of Special Elements used in an OS Command"
+      owasp:
+        - "A03:2021 - Injection"
+      confidence: hint
+    patterns:
+      - pattern-either:
+          - pattern: Bun.$`...${...}...`
+          - pattern: Bun.spawn($CMD + $ARG, ...)
+          - pattern: Bun.spawn([$CMD + $ARG, ...], ...)
+          - pattern: Bun.spawn([...,$CMD + $ARG,...], ...)

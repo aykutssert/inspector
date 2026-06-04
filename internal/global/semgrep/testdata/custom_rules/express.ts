@@ -94,3 +94,12 @@ appSafe.get('/download-static', (req, res) => {
 function preloadConfigAtStartup(nodeFs: any) {
   return nodeFs.readFileSync('/etc/service/config.json', 'utf8');
 }
+
+appSafe.use(express.json()); // triggers express-body-limit-missing
+appSafe.use(express.urlencoded({ extended: true })); // triggers express-body-limit-missing
+appSafe.use(express.json({ limit: "1mb" }));
+appSafe.use(express.urlencoded({ extended: true, limit: "500kb" }));
+
+appSafe.use(session({ secret: "test", cookie: { httpOnly: false, secure: true } })); // triggers express-insecure-session-cookie
+appSafe.use(session({ secret: "test", cookie: { httpOnly: true, secure: false } })); // triggers express-insecure-session-cookie
+appSafe.use(session({ secret: "test", cookie: { httpOnly: true, secure: true } }));

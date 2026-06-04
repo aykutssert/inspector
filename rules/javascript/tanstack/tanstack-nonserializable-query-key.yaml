@@ -1,0 +1,32 @@
+rules:
+  - id: tanstack-nonserializable-query-key
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      TanStack Query key contains a non-serializable value. Functions, Date, Map,
+      Set, or class instances can make cache identity unstable or hard to
+      invalidate consistently. Use primitive values or plain serializable objects
+      in query keys.
+    metadata:
+      category: correctness
+      confidence: hint
+    patterns:
+      - pattern-either:
+          - pattern: |
+              useQuery({ ..., queryKey: [..., () => ..., ...], ... })
+          - pattern: |
+              useQuery({ ..., queryKey: [..., function (...) { ... }, ...], ... })
+          - pattern: |
+              useQuery({ ..., queryKey: [..., new Date(...), ...], ... })
+          - pattern: |
+              useQuery({ ..., queryKey: [..., new Map(...), ...], ... })
+          - pattern: |
+              useQuery({ ..., queryKey: [..., new Set(...), ...], ... })
+          - pattern: |
+              useInfiniteQuery({ ..., queryKey: [..., () => ..., ...], ... })
+          - pattern: |
+              useInfiniteQuery({ ..., queryKey: [..., new Date(...), ...], ... })
+          - pattern: |
+              $CLIENT.invalidateQueries({ ..., queryKey: [..., () => ..., ...], ... })
+          - pattern: |
+              $CLIENT.invalidateQueries({ ..., queryKey: [..., new Date(...), ...], ... })

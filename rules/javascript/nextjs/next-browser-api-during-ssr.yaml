@@ -1,0 +1,52 @@
+rules:
+  - id: next-browser-api-during-ssr
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: >
+      A Next.js Server Component or route file uses a browser-only API without a
+      "use client" directive. window, document, localStorage, sessionStorage,
+      navigator, and similar APIs are not available during server rendering and
+      can crash with ReferenceError. Move this code to a Client Component or
+      guard it so it only runs in the browser.
+    metadata:
+      category: correctness
+      confidence: rule
+    paths:
+      include:
+        - "page.ts"
+        - "page.tsx"
+        - "layout.ts"
+        - "layout.tsx"
+        - "route.ts"
+        - "route.tsx"
+        - "page.js"
+        - "page.jsx"
+        - "layout.js"
+        - "layout.jsx"
+        - "route.js"
+        - "route.jsx"
+        - "**/page.ts"
+        - "**/page.tsx"
+        - "**/layout.ts"
+        - "**/layout.tsx"
+        - "**/route.ts"
+        - "**/route.tsx"
+        - "**/page.js"
+        - "**/page.jsx"
+        - "**/layout.js"
+        - "**/layout.jsx"
+        - "**/route.js"
+        - "**/route.jsx"
+    patterns:
+      - pattern-not-inside: |
+          "use client";
+          ...
+      - pattern-not-inside: |
+          'use client';
+          ...
+      - pattern-either:
+          - pattern: window.$PROP
+          - pattern: document.$PROP
+          - pattern: localStorage.$METHOD(...)
+          - pattern: sessionStorage.$METHOD(...)
+          - pattern: navigator.$PROP

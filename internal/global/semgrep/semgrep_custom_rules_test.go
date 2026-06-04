@@ -35,7 +35,7 @@ func TestJavaScriptCustomRulesGolden(t *testing.T) {
 	a := &Analyzer{customDirs: []string{ruleDir}}
 	got, err := a.Scan(core.ProjectContext{
 		Root:  root,
-		Files: []string{"case.tsx", "client.tsx", "express.ts", "incomplete.ts", "rn.tsx"},
+		Files: []string{"bun.ts", "case.tsx", "client.tsx", "express.ts", "incomplete.ts", "page.tsx", "rn.tsx", "route.ts"},
 	})
 	if err != nil {
 		t.Fatal(err)

@@ -44,6 +44,42 @@
     "message": "This code uses Node.js 'fs' APIs to write files. If you are running on the Bun runtime, prefer using the faster, optimized native API 'Bun.write(path, data)' for better performance.\n"
   },
   {
+    "rule_id": "bun.bun-shell-injection",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "bun.ts",
+    "line": 12,
+    "message": "Bun shell command is built from a dynamic value. If the value is user-controlled, shell metacharacters can change the command that runs. Use a fixed command with an argument array, validate against an allowlist, or avoid invoking a shell.\n"
+  },
+  {
+    "rule_id": "bun.bun-shell-injection",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "bun.ts",
+    "line": 13,
+    "message": "Bun shell command is built from a dynamic value. If the value is user-controlled, shell metacharacters can change the command that runs. Use a fixed command with an argument array, validate against an allowlist, or avoid invoking a shell.\n"
+  },
+  {
+    "rule_id": "bun.bun-sqlite-injection",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "bun.ts",
+    "line": 6,
+    "message": "bun:sqlite query is built with string concatenation or interpolation. If any part of the value is user-controlled, this can become SQL injection. Use prepared statements with placeholders and bind values separately.\n"
+  },
+  {
+    "rule_id": "bun.bun-sqlite-injection",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "bun.ts",
+    "line": 7,
+    "message": "bun:sqlite query is built with string concatenation or interpolation. If any part of the value is user-controlled, this can become SQL injection. Use prepared statements with placeholders and bind values separately.\n"
+  },
+  {
     "rule_id": "express.express-async-error-handling",
     "severity": "warning",
     "category": "security",
@@ -71,6 +107,24 @@
     "message": "An asynchronous Express route handler does not wrap its execution in a try/catch block or use an async error handler wrapper. Unhandled async rejections in Express can crash the Node.js process or cause requests to hang. Wrap the body in try/catch and pass the error to next(err).\n"
   },
   {
+    "rule_id": "express.express-body-limit-missing",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "express.ts",
+    "line": 98,
+    "message": "Express body parsing middleware is configured without an explicit payload limit. Large JSON or form bodies can consume memory and CPU before route handlers run, creating a simple denial-of-service path. Set a small application-specific limit such as express.json({ limit: \"1mb\" }).\n"
+  },
+  {
+    "rule_id": "express.express-body-limit-missing",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "express.ts",
+    "line": 99,
+    "message": "Express body parsing middleware is configured without an explicit payload limit. Large JSON or form bodies can consume memory and CPU before route handlers run, creating a simple denial-of-service path. Set a small application-specific limit such as express.json({ limit: \"1mb\" }).\n"
+  },
+  {
     "rule_id": "express.express-cors-wildcard-with-credentials",
     "severity": "warning",
     "category": "security",
@@ -87,6 +141,24 @@
     "file": "express.ts",
     "line": 46,
     "message": "CORS is configured with origin '*' and credentials enabled. Browsers reject this combination, and relaxing it later often turns into credential leakage. Use an explicit allowlist of trusted origins when cookies or authorization headers are allowed.\n"
+  },
+  {
+    "rule_id": "express.express-insecure-session-cookie",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "express.ts",
+    "line": 103,
+    "message": "express-session config weakens the session cookie security flags. Session cookies should normally be httpOnly so JavaScript cannot read them, and secure in production so they are not sent over plain HTTP. Keep httpOnly enabled and set secure true behind HTTPS.\n"
+  },
+  {
+    "rule_id": "express.express-insecure-session-cookie",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "express.ts",
+    "line": 104,
+    "message": "express-session config weakens the session cookie security flags. Session cookies should normally be httpOnly so JavaScript cannot read them, and secure in production so they are not sent over plain HTTP. Keep httpOnly enabled and set secure true behind HTTPS.\n"
   },
   {
     "rule_id": "express.express-missing-helmet",
@@ -483,6 +555,15 @@
     "file": "case.tsx",
     "line": 102,
     "message": "A message event handler does not appear to check event.origin. postMessage data can come from untrusted origins, so handlers should verify the sender against a strict allowlist before trusting event.data.\n"
+  },
+  {
+    "rule_id": "general.mixed-esm-cjs",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "incomplete.ts",
+    "line": 57,
+    "message": "This file mixes ESM imports with CommonJS require(). Mixed module systems often behave differently across Node, bundlers, and test runners, especially under \"type\": \"module\". Use one module system consistently in a file, or isolate interop behind a small adapter.\n"
   },
   {
     "rule_id": "general.mock-data-in-production",
@@ -962,6 +1043,33 @@
     "message": "A NestJS controller directly performs database or ORM operations. NestJS architecture mandates that controllers only handle HTTP routing and delegate business logic and data access to services. Move this database operation into a service class.\n"
   },
   {
+    "rule_id": "nextjs.next-browser-api-during-ssr",
+    "severity": "error",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "page.tsx",
+    "line": 4,
+    "message": "A Next.js Server Component or route file uses a browser-only API without a \"use client\" directive. window, document, localStorage, sessionStorage, navigator, and similar APIs are not available during server rendering and can crash with ReferenceError. Move this code to a Client Component or guard it so it only runs in the browser.\n"
+  },
+  {
+    "rule_id": "nextjs.next-browser-api-during-ssr",
+    "severity": "error",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "page.tsx",
+    "line": 5,
+    "message": "A Next.js Server Component or route file uses a browser-only API without a \"use client\" directive. window, document, localStorage, sessionStorage, navigator, and similar APIs are not available during server rendering and can crash with ReferenceError. Move this code to a Client Component or guard it so it only runs in the browser.\n"
+  },
+  {
+    "rule_id": "nextjs.next-browser-api-during-ssr",
+    "severity": "error",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "page.tsx",
+    "line": 6,
+    "message": "A Next.js Server Component or route file uses a browser-only API without a \"use client\" directive. window, document, localStorage, sessionStorage, navigator, and similar APIs are not available during server rendering and can crash with ReferenceError. Move this code to a Client Component or guard it so it only runs in the browser.\n"
+  },
+  {
     "rule_id": "nextjs.next-insecure-cookie-setting",
     "severity": "warning",
     "category": "security",
@@ -1032,6 +1140,51 @@
     "file": "case.tsx",
     "line": 131,
     "message": "A NEXT_PUBLIC_* environment variable named like a secret (secret, token, password, credential, private/api key) is read here. Next.js inlines every NEXT_PUBLIC_* value into the client JavaScript bundle, so this value is shipped to the browser and readable by anyone. If it is a real secret, drop the NEXT_PUBLIC_ prefix and read it only in server code (route handlers, server components, getServerSideProps). If the value is genuinely public (e.g. a publishable key), rename it so it no longer looks like a secret.\n"
+  },
+  {
+    "rule_id": "nextjs.next-root-level-request-apis",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "route.ts",
+    "line": 25,
+    "message": "A Next.js request API is called at module scope. cookies(), headers(), and similar request-bound APIs force the route or component to be dynamic and can disable static optimization for the whole file. Move the call inside the handler/component that actually needs request data.\n"
+  },
+  {
+    "rule_id": "nextjs.next-root-level-request-apis",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "route.ts",
+    "line": 26,
+    "message": "A Next.js request API is called at module scope. cookies(), headers(), and similar request-bound APIs force the route or component to be dynamic and can disable static optimization for the whole file. Move the call inside the handler/component that actually needs request data.\n"
+  },
+  {
+    "rule_id": "nextjs.next-route-handler-invalid-method",
+    "severity": "error",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "route.ts",
+    "line": 3,
+    "message": "A Next.js App Router route handler exports a function whose name is not a valid HTTP method. Next.js only recognizes GET, POST, PUT, PATCH, DELETE, HEAD, and OPTIONS in route files; other exported handler names are ignored and the endpoint will not respond as intended.\n"
+  },
+  {
+    "rule_id": "nextjs.next-route-handler-invalid-method",
+    "severity": "error",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "route.ts",
+    "line": 7,
+    "message": "A Next.js App Router route handler exports a function whose name is not a valid HTTP method. Next.js only recognizes GET, POST, PUT, PATCH, DELETE, HEAD, and OPTIONS in route files; other exported handler names are ignored and the endpoint will not respond as intended.\n"
+  },
+  {
+    "rule_id": "nextjs.next-route-handler-invalid-method",
+    "severity": "error",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "route.ts",
+    "line": 11,
+    "message": "A Next.js App Router route handler exports a function whose name is not a valid HTTP method. Next.js only recognizes GET, POST, PUT, PATCH, DELETE, HEAD, and OPTIONS in route files; other exported handler names are ignored and the endpoint will not respond as intended.\n"
   },
   {
     "rule_id": "nextjs.next-server-action-missing-validation",
@@ -1250,7 +1403,7 @@
     "category": "performance",
     "confidence": "hint",
     "file": "rn.tsx",
-    "line": 24,
+    "line": 25,
     "message": "FlatList renderItem receives an inline function. This creates a new function on every render, which can defeat list item memoization and add avoidable work on large lists. Move renderItem to a stable function or wrap it in useCallback with correct dependencies.\n"
   },
   {
@@ -1259,17 +1412,26 @@
     "category": "performance",
     "confidence": "hint",
     "file": "rn.tsx",
-    "line": 25,
+    "line": 26,
     "message": "FlatList renderItem receives an inline function. This creates a new function on every render, which can defeat list item memoization and add avoidable work on large lists. Move renderItem to a stable function or wrap it in useCallback with correct dependencies.\n"
   },
   {
-    "rule_id": "rn.rn-dom-element-in-native",
-    "severity": "error",
-    "category": "bug",
-    "confidence": "rule",
+    "rule_id": "rn.rn-async-storage-token",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
     "file": "rn.tsx",
-    "line": 8,
-    "message": "A DOM element is rendered inside a React Native component. React Native does not support HTML tags such as div, span, p, button, or input; this crashes or fails to render on native platforms. Use View, Text, Pressable, TextInput, or another React Native component instead.\n"
+    "line": 52,
+    "message": "React Native AsyncStorage is used to persist a token, secret, credential, or auth value. AsyncStorage is not encrypted storage, so sensitive values can be recovered from device backups, rooted devices, or local compromise. Store auth material in SecureStore, Keychain, Keystore, or another platform-backed secure storage API.\n"
+  },
+  {
+    "rule_id": "rn.rn-async-storage-token",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 53,
+    "message": "React Native AsyncStorage is used to persist a token, secret, credential, or auth value. AsyncStorage is not encrypted storage, so sensitive values can be recovered from device backups, rooted devices, or local compromise. Store auth material in SecureStore, Keychain, Keystore, or another platform-backed secure storage API.\n"
   },
   {
     "rule_id": "rn.rn-dom-element-in-native",
@@ -1281,12 +1443,75 @@
     "message": "A DOM element is rendered inside a React Native component. React Native does not support HTML tags such as div, span, p, button, or input; this crashes or fails to render on native platforms. Use View, Text, Pressable, TextInput, or another React Native component instead.\n"
   },
   {
+    "rule_id": "rn.rn-dom-element-in-native",
+    "severity": "error",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "rn.tsx",
+    "line": 10,
+    "message": "A DOM element is rendered inside a React Native component. React Native does not support HTML tags such as div, span, p, button, or input; this crashes or fails to render on native platforms. Use View, Text, Pressable, TextInput, or another React Native component instead.\n"
+  },
+  {
     "rule_id": "rn.rn-scrollview-over-flatlist",
     "severity": "warning",
     "category": "performance",
     "confidence": "hint",
     "file": "rn.tsx",
-    "line": 32,
+    "line": 33,
     "message": "ScrollView renders every child eagerly while this code maps over a dynamic collection. Large or growing lists can cause memory pressure and jank on native devices. Use FlatList or SectionList so React Native can virtualize rows.\n"
+  },
+  {
+    "rule_id": "tanstack.tanstack-nonserializable-query-key",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 515,
+    "message": "TanStack Query key contains a non-serializable value. Functions, Date, Map, Set, or class instances can make cache identity unstable or hard to invalidate consistently. Use primitive values or plain serializable objects in query keys.\n"
+  },
+  {
+    "rule_id": "tanstack.tanstack-nonserializable-query-key",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 516,
+    "message": "TanStack Query key contains a non-serializable value. Functions, Date, Map, Set, or class instances can make cache identity unstable or hard to invalidate consistently. Use primitive values or plain serializable objects in query keys.\n"
+  },
+  {
+    "rule_id": "tanstack.tanstack-query-key-string",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 512,
+    "message": "TanStack Query key uses an inline string literal. Repeating raw strings across useQuery, setQueryData, and invalidateQueries makes cache updates easy to mistype or drift. Prefer a query-key factory or shared constant so reads and invalidations use the same key shape.\n"
+  },
+  {
+    "rule_id": "tanstack.tanstack-query-key-string",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 513,
+    "message": "TanStack Query key uses an inline string literal. Repeating raw strings across useQuery, setQueryData, and invalidateQueries makes cache updates easy to mistype or drift. Prefer a query-key factory or shared constant so reads and invalidations use the same key shape.\n"
+  },
+  {
+    "rule_id": "vite.vite-insecure-config",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 495,
+    "message": "Vite dev server is configured to listen on all interfaces. This can expose local development services to the LAN or container network. Bind to localhost unless remote device testing is intentional, and document the reason when host: true is required.\n"
+  },
+  {
+    "rule_id": "vite.vite-public-secret-prefix",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 490,
+    "message": "A VITE_* environment variable is named like a secret. Vite exposes every VITE_* value to client-side code, so tokens, passwords, private keys, and credentials with this prefix are shipped to the browser. Rename real secrets without the VITE_ prefix and read them only on the server.\n"
   }
 ]

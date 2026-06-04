@@ -1,0 +1,30 @@
+rules:
+  - id: tanstack-query-key-string
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      TanStack Query key uses an inline string literal. Repeating raw strings
+      across useQuery, setQueryData, and invalidateQueries makes cache updates
+      easy to mistype or drift. Prefer a query-key factory or shared constant so
+      reads and invalidations use the same key shape.
+    metadata:
+      category: maintainability
+      confidence: hint
+    patterns:
+      - pattern-either:
+          - pattern: |
+              useQuery({ ..., queryKey: ["..."], ... })
+          - pattern: |
+              useQuery({ ..., queryKey: ['...'], ... })
+          - pattern: |
+              useInfiniteQuery({ ..., queryKey: ["..."], ... })
+          - pattern: |
+              useInfiniteQuery({ ..., queryKey: ['...'], ... })
+          - pattern: |
+              $CLIENT.invalidateQueries({ ..., queryKey: ["..."], ... })
+          - pattern: |
+              $CLIENT.invalidateQueries({ ..., queryKey: ['...'], ... })
+          - pattern: |
+              $CLIENT.setQueryData(["..."], ...)
+          - pattern: |
+              $CLIENT.setQueryData(['...'], ...)

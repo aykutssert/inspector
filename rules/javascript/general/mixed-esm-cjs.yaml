@@ -1,0 +1,24 @@
+rules:
+  - id: mixed-esm-cjs
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      This file mixes ESM imports with CommonJS require(). Mixed module systems
+      often behave differently across Node, bundlers, and test runners,
+      especially under "type": "module". Use one module system consistently in a
+      file, or isolate interop behind a small adapter.
+    metadata:
+      category: compatibility
+      confidence: hint
+    patterns:
+      - pattern-either:
+          - pattern-inside: |
+              import $DEFAULT from $MOD;
+              ...
+          - pattern-inside: |
+              import { $IMPORTS } from $MOD;
+              ...
+          - pattern-inside: |
+              import * as $NS from $MOD;
+              ...
+      - pattern: require(...)

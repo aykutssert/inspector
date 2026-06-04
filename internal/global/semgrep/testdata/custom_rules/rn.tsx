@@ -1,6 +1,7 @@
 // @ts-nocheck — semgrep React Native golden fixture
 import React from "react";
 import { FlatList, Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export function NativeDomElements() {
   return (
@@ -45,4 +46,10 @@ export function NativeStaticScrollView() {
       <Text>Static details</Text>
     </ScrollView>
   );
+}
+
+export async function NativeAsyncStorageSecrets(token: string) {
+  await AsyncStorage.setItem("authToken", token);
+  await AsyncStorage.setItem("session_id", token);
+  await AsyncStorage.setItem("theme", "dark");
 }

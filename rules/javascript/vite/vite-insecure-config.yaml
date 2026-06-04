@@ -1,0 +1,22 @@
+rules:
+  - id: vite-insecure-config
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Vite dev server is configured to listen on all interfaces. This can expose
+      local development services to the LAN or container network. Bind to
+      localhost unless remote device testing is intentional, and document the
+      reason when host: true is required.
+    metadata:
+      category: security
+      cwe:
+        - "CWE-200: Exposure of Sensitive Information to an Unauthorized Actor"
+      owasp:
+        - "A05:2021 - Security Misconfiguration"
+      confidence: hint
+    patterns:
+      - pattern-either:
+          - pattern: |
+              defineConfig({ ..., server: { ..., host: true, ... }, ... })
+          - pattern: |
+              export default { ..., server: { ..., host: true, ... }, ... }

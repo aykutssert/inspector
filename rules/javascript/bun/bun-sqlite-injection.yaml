@@ -1,0 +1,26 @@
+rules:
+  - id: bun-sqlite-injection
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      bun:sqlite query is built with string concatenation or interpolation. If
+      any part of the value is user-controlled, this can become SQL injection.
+      Use prepared statements with placeholders and bind values separately.
+    metadata:
+      category: security
+      cwe:
+        - "CWE-89: Improper Neutralization of Special Elements used in an SQL Command"
+      owasp:
+        - "A03:2021 - Injection"
+      confidence: hint
+    patterns:
+      - pattern-inside: |
+          import { ..., Database, ... } from "bun:sqlite";
+          ...
+          const $DB = new Database(...);
+          ...
+      - pattern-either:
+          - pattern: $DB.query(`...${...}...`)
+          - pattern: $DB.query($A + $B)
+          - pattern: $DB.prepare(`...${...}...`)
+          - pattern: $DB.prepare($A + $B)

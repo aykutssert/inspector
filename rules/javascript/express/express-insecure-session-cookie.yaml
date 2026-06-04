@@ -1,0 +1,27 @@
+rules:
+  - id: express-insecure-session-cookie
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      express-session config weakens the session cookie security flags. Session
+      cookies should normally be httpOnly so JavaScript cannot read them, and
+      secure in production so they are not sent over plain HTTP. Keep httpOnly
+      enabled and set secure true behind HTTPS.
+    metadata:
+      category: security
+      cwe:
+        - "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
+        - "CWE-1004: Sensitive Cookie Without 'HttpOnly' Flag"
+      owasp:
+        - "A05:2021 - Security Misconfiguration"
+      confidence: hint
+    patterns:
+      - pattern-either:
+          - pattern: |
+              session({ ..., cookie: { ..., httpOnly: false, ... }, ... })
+          - pattern: |
+              session({ ..., cookie: { ..., secure: false, ... }, ... })
+          - pattern: |
+              expressSession({ ..., cookie: { ..., httpOnly: false, ... }, ... })
+          - pattern: |
+              expressSession({ ..., cookie: { ..., secure: false, ... }, ... })

@@ -1,0 +1,30 @@
+rules:
+  - id: express-body-limit-missing
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Express body parsing middleware is configured without an explicit payload
+      limit. Large JSON or form bodies can consume memory and CPU before route
+      handlers run, creating a simple denial-of-service path. Set a small
+      application-specific limit such as express.json({ limit: "1mb" }).
+    metadata:
+      category: security
+      cwe:
+        - "CWE-400: Uncontrolled Resource Consumption"
+      owasp:
+        - "A05:2021 - Security Misconfiguration"
+      confidence: hint
+    patterns:
+      - pattern-either:
+          - pattern: $APP.use(express.json(...))
+          - pattern: $APP.use(express.urlencoded(...))
+          - pattern: $APP.use(bodyParser.json(...))
+          - pattern: $APP.use(bodyParser.urlencoded(...))
+      - pattern-not: |
+          $APP.use(express.json({ ..., limit: ..., ... }))
+      - pattern-not: |
+          $APP.use(express.urlencoded({ ..., limit: ..., ... }))
+      - pattern-not: |
+          $APP.use(bodyParser.json({ ..., limit: ..., ... }))
+      - pattern-not: |
+          $APP.use(bodyParser.urlencoded({ ..., limit: ..., ... }))

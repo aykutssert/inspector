@@ -1,0 +1,59 @@
+rules:
+  - id: next-root-level-request-apis
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      A Next.js request API is called at module scope. cookies(), headers(), and
+      similar request-bound APIs force the route or component to be dynamic and
+      can disable static optimization for the whole file. Move the call inside
+      the handler/component that actually needs request data.
+    metadata:
+      category: performance
+      confidence: hint
+    paths:
+      include:
+        - "page.ts"
+        - "page.tsx"
+        - "layout.ts"
+        - "layout.tsx"
+        - "route.ts"
+        - "route.tsx"
+        - "page.js"
+        - "page.jsx"
+        - "layout.js"
+        - "layout.jsx"
+        - "route.js"
+        - "route.jsx"
+        - "**/page.ts"
+        - "**/page.tsx"
+        - "**/layout.ts"
+        - "**/layout.tsx"
+        - "**/route.ts"
+        - "**/route.tsx"
+        - "**/page.js"
+        - "**/page.jsx"
+        - "**/layout.js"
+        - "**/layout.jsx"
+        - "**/route.js"
+        - "**/route.jsx"
+    patterns:
+      - pattern-either:
+          - pattern: cookies()
+          - pattern: headers()
+          - pattern: draftMode()
+      - pattern-not-inside: |
+          function $F(...) { ... }
+      - pattern-not-inside: |
+          async function $F(...) { ... }
+      - pattern-not-inside: |
+          export function $F(...) { ... }
+      - pattern-not-inside: |
+          export async function $F(...) { ... }
+      - pattern-not-inside: |
+          const $F = (...) => { ... }
+      - pattern-not-inside: |
+          const $F = async (...) => { ... }
+      - pattern-not-inside: |
+          export const $F = (...) => { ... }
+      - pattern-not-inside: |
+          export const $F = async (...) => { ... }
