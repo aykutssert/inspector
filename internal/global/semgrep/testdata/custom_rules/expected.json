@@ -1632,7 +1632,7 @@
     "rule_id": "tanstack.tanstack-mutation-without-invalidation",
     "severity": "warning",
     "category": "quality",
-    "confidence": "rule",
+    "confidence": "hint",
     "file": "client.tsx",
     "line": 22,
     "message": "useMutation is called without cache invalidation or update. When performing a mutation, you should invalidate relevant query caches using queryClient.invalidateQueries() or update query data using queryClient.setQueryData() in onSuccess or onSettled callbacks. Otherwise, the user interface will remain stale and won't reflect the server-side changes.\n"
@@ -1641,7 +1641,7 @@
     "rule_id": "tanstack.tanstack-mutation-without-invalidation",
     "severity": "warning",
     "category": "quality",
-    "confidence": "rule",
+    "confidence": "hint",
     "file": "client.tsx",
     "line": 26,
     "message": "useMutation is called without cache invalidation or update. When performing a mutation, you should invalidate relevant query caches using queryClient.invalidateQueries() or update query data using queryClient.setQueryData() in onSuccess or onSettled callbacks. Otherwise, the user interface will remain stale and won't reflect the server-side changes.\n"
@@ -1650,7 +1650,7 @@
     "rule_id": "tanstack.tanstack-mutation-without-invalidation",
     "severity": "warning",
     "category": "quality",
-    "confidence": "rule",
+    "confidence": "hint",
     "file": "client.tsx",
     "line": 33,
     "message": "useMutation is called without cache invalidation or update. When performing a mutation, you should invalidate relevant query caches using queryClient.invalidateQueries() or update query data using queryClient.setQueryData() in onSuccess or onSettled callbacks. Otherwise, the user interface will remain stale and won't reflect the server-side changes.\n"

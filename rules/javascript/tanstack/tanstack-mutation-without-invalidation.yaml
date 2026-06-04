@@ -9,7 +9,10 @@ rules:
       Otherwise, the user interface will remain stale and won't reflect the server-side changes.
     metadata:
       category: maintainability
-      confidence: rule
+      # hint, not rule: legitimate mutations skip invalidation (optimistic
+      # onMutate updates, fire-and-forget POSTs that touch no cached query), so
+      # the agent should confirm the mutation actually mutates cached data.
+      confidence: hint
     patterns:
       - pattern: useMutation($ARGS)
       - pattern-not:
