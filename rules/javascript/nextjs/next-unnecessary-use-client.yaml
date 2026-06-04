@@ -1,0 +1,191 @@
+rules:
+  - id: next-unnecessary-use-client
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Unnecessary "use client" directive at the top of the file.
+      No React/Next.js hooks, event handlers, client-only APIs (like createContext), or browser globals (like window/document) were detected.
+      Removing "use client" allows this component to be rendered as a React Server Component (RSC),
+      which reduces the client-side bundle size and improves initial page load performance.
+    metadata:
+      category: performance
+      # hint, not rule: this is a "consider removing" heuristic and cannot
+      # enumerate every client-only need, so removing the directive may break
+      # SSR. The agent must confirm the component is truly server-safe first.
+      confidence: hint
+    patterns:
+      - pattern: |
+          "use client";
+      # 1. Exclude if there are hook calls
+      - pattern-not:
+          patterns:
+            - pattern: |
+                "use client";
+            - pattern-inside: |
+                "use client";
+                ...
+                function $F(...) {
+                  ...
+                  $HOOK(...)
+                  ...
+                }
+                ...
+            - metavariable-regex:
+                metavariable: $HOOK
+                regex: ^use[A-Z].*
+      - pattern-not:
+          patterns:
+            - pattern: |
+                "use client";
+            - pattern-inside: |
+                "use client";
+                ...
+                const $F = (...) => {
+                  ...
+                  $HOOK(...)
+                  ...
+                }
+                ...
+            - metavariable-regex:
+                metavariable: $HOOK
+                regex: ^use[A-Z].*
+      - pattern-not:
+          patterns:
+            - pattern: |
+                "use client";
+            - pattern-inside: |
+                "use client";
+                ...
+                const $F = (...) => $HOOK(...)
+                ...
+            - metavariable-regex:
+                metavariable: $HOOK
+                regex: ^use[A-Z].*
+      # 2. Exclude if there are event handlers
+      - pattern-not:
+          patterns:
+            - pattern: |
+                "use client";
+            - pattern-inside: |
+                "use client";
+                ...
+                function $F(...) {
+                  ...
+                  <$TAG ... $ON={...} ... />
+                  ...
+                }
+                ...
+            - metavariable-regex:
+                metavariable: $ON
+                regex: ^on[A-Z].*
+      - pattern-not:
+          patterns:
+            - pattern: |
+                "use client";
+            - pattern-inside: |
+                "use client";
+                ...
+                const $F = (...) => {
+                  ...
+                  <$TAG ... $ON={...} ... />
+                  ...
+                }
+                ...
+            - metavariable-regex:
+                metavariable: $ON
+                regex: ^on[A-Z].*
+      - pattern-not:
+          patterns:
+            - pattern: |
+                "use client";
+            - pattern-inside: |
+                "use client";
+                ...
+                const $F = (...) => <$TAG ... $ON={...} ... />
+                ...
+            - metavariable-regex:
+                metavariable: $ON
+                regex: ^on[A-Z].*
+      # 3. Exclude if there are browser globals
+      - pattern-not:
+          patterns:
+            - pattern: |
+                "use client";
+            - pattern-inside: |
+                "use client";
+                ...
+                function $F(...) {
+                  ...
+                  $GLOBAL
+                  ...
+                }
+                ...
+            - metavariable-regex:
+                metavariable: $GLOBAL
+                regex: ^(window|document|localStorage|sessionStorage|navigator|location)$
+      - pattern-not:
+          patterns:
+            - pattern: |
+                "use client";
+            - pattern-inside: |
+                "use client";
+                ...
+                const $F = (...) => {
+                  ...
+                  $GLOBAL
+                  ...
+                }
+                ...
+            - metavariable-regex:
+                metavariable: $GLOBAL
+                regex: ^(window|document|localStorage|sessionStorage|navigator|location)$
+      - pattern-not:
+          patterns:
+            - pattern: |
+                "use client";
+            - pattern-inside: |
+                "use client";
+                ...
+                const $F = (...) => $GLOBAL
+                ...
+            - metavariable-regex:
+                metavariable: $GLOBAL
+                regex: ^(window|document|localStorage|sessionStorage|navigator|location)$
+      - pattern-not:
+          patterns:
+            - pattern: |
+                "use client";
+            - pattern-inside: |
+                "use client";
+                ...
+                $GLOBAL
+                ...
+            - metavariable-regex:
+                metavariable: $GLOBAL
+                regex: ^(window|document|localStorage|sessionStorage|navigator|location)$
+      # 3b. Exclude browser globals accessed as members (window.location,
+      # localStorage.getItem, ...). The bare-identifier patterns above miss these,
+      # so without this a component whose only client need is window.innerWidth
+      # would be wrongly told to drop "use client" and crash during SSR.
+      - pattern-not:
+          patterns:
+            - pattern: |
+                "use client";
+            - pattern-inside: |
+                "use client";
+                ...
+                $GLOBAL.$PROP
+                ...
+            - metavariable-regex:
+                metavariable: $GLOBAL
+                regex: ^(window|document|localStorage|sessionStorage|navigator|location)$
+      # 4. Exclude if there is createContext
+      - pattern-not:
+          patterns:
+            - pattern: |
+                "use client";
+            - pattern-inside: |
+                "use client";
+                ...
+                createContext(...)
+                ...

@@ -1480,6 +1480,15 @@
     "message": "Server-side fetch() is called with a dynamic or unvalidated URL. If this URL is built from user-controlled input, it can lead to Server-Side Request Forgery (SSRF), allowing attackers to query internal services, bypass firewalls, or leak credentials. Validate the URL against a strict allowlist of allowed domains, or ensure the input is sanitized and mapped to safe endpoints.\n"
   },
   {
+    "rule_id": "nextjs.next-unnecessary-use-client",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "unnecessary_client.tsx",
+    "line": 2,
+    "message": "Unnecessary \"use client\" directive at the top of the file. No React/Next.js hooks, event handlers, client-only APIs (like createContext), or browser globals (like window/document) were detected. Removing \"use client\" allows this component to be rendered as a React Server Component (RSC), which reduces the client-side bundle size and improves initial page load performance.\n"
+  },
+  {
     "rule_id": "nextjs.next-unsafe-redirect",
     "severity": "warning",
     "category": "security",
@@ -1708,6 +1717,78 @@
     "file": "client.tsx",
     "line": 50,
     "message": "TanStack Query key uses an inline string literal. Repeating raw strings across useQuery, setQueryData, and invalidateQueries makes cache updates easy to mistype or drift. Prefer a query-key factory or shared constant so reads and invalidations use the same key shape.\n"
+  },
+  {
+    "rule_id": "tanstack.tanstack-query-key-string",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 63,
+    "message": "TanStack Query key uses an inline string literal. Repeating raw strings across useQuery, setQueryData, and invalidateQueries makes cache updates easy to mistype or drift. Prefer a query-key factory or shared constant so reads and invalidations use the same key shape.\n"
+  },
+  {
+    "rule_id": "tanstack.tanstack-query-key-string",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 74,
+    "message": "TanStack Query key uses an inline string literal. Repeating raw strings across useQuery, setQueryData, and invalidateQueries makes cache updates easy to mistype or drift. Prefer a query-key factory or shared constant so reads and invalidations use the same key shape.\n"
+  },
+  {
+    "rule_id": "tanstack.tanstack-query-missing-staletime",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 512,
+    "message": "useQuery is called without specifying a staleTime. By default, staleTime is 0, which means queries are instantly considered stale. For server-side rendered (SSR) or prefetched data, this causes an immediate client-side refetch upon hydration, resulting in duplicate network requests and potential screen flickering. Set a staleTime (e.g. staleTime: 1000 * 60 * 5) to cache and reuse the hydrated data.\n"
+  },
+  {
+    "rule_id": "tanstack.tanstack-query-missing-staletime",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 514,
+    "message": "useQuery is called without specifying a staleTime. By default, staleTime is 0, which means queries are instantly considered stale. For server-side rendered (SSR) or prefetched data, this causes an immediate client-side refetch upon hydration, resulting in duplicate network requests and potential screen flickering. Set a staleTime (e.g. staleTime: 1000 * 60 * 5) to cache and reuse the hydrated data.\n"
+  },
+  {
+    "rule_id": "tanstack.tanstack-query-missing-staletime",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 515,
+    "message": "useQuery is called without specifying a staleTime. By default, staleTime is 0, which means queries are instantly considered stale. For server-side rendered (SSR) or prefetched data, this causes an immediate client-side refetch upon hydration, resulting in duplicate network requests and potential screen flickering. Set a staleTime (e.g. staleTime: 1000 * 60 * 5) to cache and reuse the hydrated data.\n"
+  },
+  {
+    "rule_id": "tanstack.tanstack-query-missing-staletime",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 516,
+    "message": "useQuery is called without specifying a staleTime. By default, staleTime is 0, which means queries are instantly considered stale. For server-side rendered (SSR) or prefetched data, this causes an immediate client-side refetch upon hydration, resulting in duplicate network requests and potential screen flickering. Set a staleTime (e.g. staleTime: 1000 * 60 * 5) to cache and reuse the hydrated data.\n"
+  },
+  {
+    "rule_id": "tanstack.tanstack-query-missing-staletime",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 63,
+    "message": "useQuery is called without specifying a staleTime. By default, staleTime is 0, which means queries are instantly considered stale. For server-side rendered (SSR) or prefetched data, this causes an immediate client-side refetch upon hydration, resulting in duplicate network requests and potential screen flickering. Set a staleTime (e.g. staleTime: 1000 * 60 * 5) to cache and reuse the hydrated data.\n"
+  },
+  {
+    "rule_id": "tanstack.tanstack-query-missing-staletime",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 68,
+    "message": "useQuery is called without specifying a staleTime. By default, staleTime is 0, which means queries are instantly considered stale. For server-side rendered (SSR) or prefetched data, this causes an immediate client-side refetch upon hydration, resulting in duplicate network requests and potential screen flickering. Set a staleTime (e.g. staleTime: 1000 * 60 * 5) to cache and reuse the hydrated data.\n"
   },
   {
     "rule_id": "vite.vite-insecure-config",

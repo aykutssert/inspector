@@ -1,0 +1,39 @@
+rules:
+  - id: tanstack-query-missing-staletime
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      useQuery is called without specifying a staleTime.
+      By default, staleTime is 0, which means queries are instantly considered stale.
+      For server-side rendered (SSR) or prefetched data, this causes an immediate client-side refetch upon hydration,
+      resulting in duplicate network requests and potential screen flickering.
+      Set a staleTime (e.g. staleTime: 1000 * 60 * 5) to cache and reuse the hydrated data.
+    metadata:
+      category: performance
+      # hint, not rule: staleTime: 0 is the correct choice for real-time or
+      # polling queries, and the rule fires on every useQuery regardless of SSR,
+      # so the agent should confirm the data is actually cacheable.
+      confidence: hint
+    patterns:
+      - pattern-either:
+          - pattern: useQuery(...)
+          - pattern: useInfiniteQuery(...)
+          - pattern: useSuspenseQuery(...)
+      - pattern-not: |
+          useQuery({ ..., staleTime: $VAL, ... })
+      - pattern-not: |
+          useQuery($KEY, { ..., staleTime: $VAL, ... })
+      - pattern-not: |
+          useQuery($KEY, $FN, { ..., staleTime: $VAL, ... })
+      - pattern-not: |
+          useInfiniteQuery({ ..., staleTime: $VAL, ... })
+      - pattern-not: |
+          useInfiniteQuery($KEY, { ..., staleTime: $VAL, ... })
+      - pattern-not: |
+          useInfiniteQuery($KEY, $FN, { ..., staleTime: $VAL, ... })
+      - pattern-not: |
+          useSuspenseQuery({ ..., staleTime: $VAL, ... })
+      - pattern-not: |
+          useSuspenseQuery($KEY, { ..., staleTime: $VAL, ... })
+      - pattern-not: |
+          useSuspenseQuery($KEY, $FN, { ..., staleTime: $VAL, ... })

@@ -5,7 +5,7 @@ import { useState } from "react";
 import fs from "fs"; // should trigger next-server-only-in-client
 import { Example } from "./case";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery, useSuspenseQuery } from "@tanstack/react-query";
 
 export function ClientComponent() {
   const [state, setState] = useState(0);
@@ -57,4 +57,36 @@ export function MutationTestComponent() {
     }
   });
 }
+
+export function QueryTestComponent() {
+  // Violations (missing staleTime)
+  const query1 = useQuery({
+    queryKey: ['todos'],
+    queryFn: () => axios.get('/todos'),
+  }); // triggers tanstack-query-missing-staletime
+
+  const query2 = useSuspenseQuery({
+    queryKey: ['projects'],
+    queryFn: () => axios.get('/projects'),
+  }); // triggers tanstack-query-missing-staletime
+
+  // Safe cases (with staleTime)
+  const safeQuery1 = useQuery({
+    queryKey: ['todos'],
+    queryFn: () => axios.get('/todos'),
+    staleTime: 5000,
+  });
+
+  const safeQuery2 = useSuspenseQuery({
+    queryKey: ['projects'],
+    queryFn: () => axios.get('/projects'),
+    staleTime: 1000 * 60 * 5,
+  });
+
+  // Older signature safe cases
+  const safeQuery3 = useQuery(['todos'], () => axios.get('/todos'), {
+    staleTime: 10000,
+  });
+}
+
 
