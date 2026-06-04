@@ -23,3 +23,32 @@ export function realCharge(amount: number): number {
   }
   return amount * 100;
 }
+
+export async function weakBcryptCosts(bcryptModule: any, password: string) {
+  await bcryptModule.hash(password, 4); // should trigger bcrypt-weak-cost
+  bcryptModule.hashSync(password, 8); // should trigger bcrypt-weak-cost
+  await bcryptModule.genSalt(5); // should trigger bcrypt-weak-cost
+  bcryptModule.genSaltSync(9); // should trigger bcrypt-weak-cost
+}
+
+export async function acceptableBcryptCosts(bcryptModule: any, password: string) {
+  await bcryptModule.hash(password, 10);
+  bcryptModule.hashSync(password, 12);
+  await bcryptModule.genSalt(10);
+  bcryptModule.genSaltSync(14);
+}
+
+export function ignoredTypeErrorWithoutReason(value: unknown) {
+  // @ts-ignore
+  return value.missing;
+}
+
+export function ignoredTypeErrorWithReason(value: unknown) {
+  // @ts-ignore: third-party type definition is stale in this fixture
+  return value.missing;
+}
+
+export function expectedTypeErrorWithReason(value: unknown) {
+  // @ts-expect-error: fixture intentionally accesses an unknown property
+  return value.missing;
+}

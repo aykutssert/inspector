@@ -1,0 +1,21 @@
+rules:
+  - id: rn-anonymous-renderitem
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      FlatList renderItem receives an inline function. This creates a new
+      function on every render, which can defeat list item memoization and add
+      avoidable work on large lists. Move renderItem to a stable function or wrap
+      it in useCallback with correct dependencies.
+    metadata:
+      category: performance
+      confidence: hint
+    patterns:
+      - pattern-inside: |
+          import { ..., FlatList, ... } from "react-native";
+          ...
+      - pattern-either:
+          - pattern: |
+              <FlatList ... renderItem={($ITEM) => ...} ... />
+          - pattern: |
+              <FlatList ... renderItem={function ($ITEM) { ... }} ... />

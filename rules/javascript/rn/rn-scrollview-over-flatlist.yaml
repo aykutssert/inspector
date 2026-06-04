@@ -1,0 +1,21 @@
+rules:
+  - id: rn-scrollview-over-flatlist
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      ScrollView renders every child eagerly while this code maps over a dynamic
+      collection. Large or growing lists can cause memory pressure and jank on
+      native devices. Use FlatList or SectionList so React Native can virtualize
+      rows.
+    metadata:
+      category: performance
+      confidence: hint
+    patterns:
+      - pattern-inside: |
+          import { ..., ScrollView, ... } from "react-native";
+          ...
+      - pattern-either:
+          - pattern: |
+              <ScrollView ...>{ $ITEMS.map(($ITEM) => ...) }</ScrollView>
+          - pattern: |
+              <ScrollView ...>{ $ITEMS.map(function ($ITEM) { ... }) }</ScrollView>

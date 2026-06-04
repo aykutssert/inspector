@@ -1,0 +1,22 @@
+rules:
+  - id: rn-dom-element-in-native
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: >
+      A DOM element is rendered inside a React Native component. React Native
+      does not support HTML tags such as div, span, p, button, or input; this
+      crashes or fails to render on native platforms. Use View, Text, Pressable,
+      TextInput, or another React Native component instead.
+    metadata:
+      category: correctness
+      confidence: rule
+    patterns:
+      - pattern-inside: |
+          import { ..., $RN, ... } from "react-native";
+          ...
+      - pattern-either:
+          - pattern: <$TAG ... />
+          - pattern: <$TAG ...>...</$TAG>
+      - metavariable-regex:
+          metavariable: $TAG
+          regex: ^(div|span|p|button|input|img|ul|ol|li|a|form|label)$

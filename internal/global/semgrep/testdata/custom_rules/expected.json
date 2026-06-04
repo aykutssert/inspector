@@ -71,6 +71,24 @@
     "message": "An asynchronous Express route handler does not wrap its execution in a try/catch block or use an async error handler wrapper. Unhandled async rejections in Express can crash the Node.js process or cause requests to hang. Wrap the body in try/catch and pass the error to next(err).\n"
   },
   {
+    "rule_id": "express.express-cors-wildcard-with-credentials",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "express.ts",
+    "line": 45,
+    "message": "CORS is configured with origin '*' and credentials enabled. Browsers reject this combination, and relaxing it later often turns into credential leakage. Use an explicit allowlist of trusted origins when cookies or authorization headers are allowed.\n"
+  },
+  {
+    "rule_id": "express.express-cors-wildcard-with-credentials",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "express.ts",
+    "line": 46,
+    "message": "CORS is configured with origin '*' and credentials enabled. Browsers reject this combination, and relaxing it later often turns into credential leakage. Use an explicit allowlist of trusted origins when cookies or authorization headers are allowed.\n"
+  },
+  {
     "rule_id": "express.express-missing-helmet",
     "severity": "warning",
     "category": "security",
@@ -111,6 +129,24 @@
     "severity": "warning",
     "category": "security",
     "confidence": "hint",
+    "file": "case.tsx",
+    "line": 191,
+    "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
+  },
+  {
+    "rule_id": "express.express-missing-rate-limit",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 200,
+    "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
+  },
+  {
+    "rule_id": "express.express-missing-rate-limit",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
     "file": "express.ts",
     "line": 11,
     "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
@@ -141,6 +177,42 @@
     "file": "case.tsx",
     "line": 40,
     "message": "An await sits directly inside a loop, so the iterations run strictly one after another: each waits for the previous to finish. When the operations are independent (e.g. fetching N urls), this is needlessly slow and should be parallelized with Promise.all(items.map(...)). If each iteration genuinely depends on the previous, or you are intentionally rate-limiting, the serial form is correct.\n"
+  },
+  {
+    "rule_id": "general.bcrypt-weak-cost",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "incomplete.ts",
+    "line": 28,
+    "message": "bcrypt is configured with a cost factor below 10. Low bcrypt rounds make offline password cracking materially cheaper if password hashes leak. Use a cost of at least 10, then tune upward based on your production latency budget.\n"
+  },
+  {
+    "rule_id": "general.bcrypt-weak-cost",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "incomplete.ts",
+    "line": 29,
+    "message": "bcrypt is configured with a cost factor below 10. Low bcrypt rounds make offline password cracking materially cheaper if password hashes leak. Use a cost of at least 10, then tune upward based on your production latency budget.\n"
+  },
+  {
+    "rule_id": "general.bcrypt-weak-cost",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "incomplete.ts",
+    "line": 30,
+    "message": "bcrypt is configured with a cost factor below 10. Low bcrypt rounds make offline password cracking materially cheaper if password hashes leak. Use a cost of at least 10, then tune upward based on your production latency budget.\n"
+  },
+  {
+    "rule_id": "general.bcrypt-weak-cost",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "incomplete.ts",
+    "line": 31,
+    "message": "bcrypt is configured with a cost factor below 10. Low bcrypt rounds make offline password cracking materially cheaper if password hashes leak. Use a cost of at least 10, then tune upward based on your production latency budget.\n"
   },
   {
     "rule_id": "general.dom-innerhtml-variable",
@@ -341,6 +413,15 @@
     "message": "A javascript: URL executes code when the link is activated. Use a real route, button handler, or safe URL instead.\n"
   },
   {
+    "rule_id": "general.json-parse-without-guard",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "express.ts",
+    "line": 61,
+    "message": "JSON.parse is called on request-controlled input without a local try/catch. A malformed payload can throw synchronously and turn a single bad request into a 500 response or process-level failure, depending on the framework error path. Validate the input or catch SyntaxError before using it.\n"
+  },
+  {
     "rule_id": "general.json-stringify-deep-clone",
     "severity": "warning",
     "category": "performance",
@@ -521,6 +602,15 @@
     "message": "Unsafe raw SQL query detected. Using string interpolation or concatenation inside Prisma ($queryRaw, $executeRaw, $queryRawUnsafe, $executeRawUnsafe) or TypeORM (query) bypasses parameterized query generation, risking SQL injection. Use safe tagged templates (e.g. prisma.$queryRaw`...`) or pass parameters as a separate argument/binding.\n"
   },
   {
+    "rule_id": "general.path-traversal-unchecked-join",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "express.ts",
+    "line": 80,
+    "message": "Request-controlled input is joined into a filesystem path without an obvious basename/normalize/allowlist step. Attackers can use ../ segments or absolute paths to escape the intended directory. Resolve against a fixed base directory and reject paths that leave it, or map user input to known filenames.\n"
+  },
+  {
     "rule_id": "general.placeholder-or-ai-slop-comment",
     "severity": "warning",
     "category": "quality",
@@ -609,6 +699,24 @@
     "file": "case.tsx",
     "line": 12,
     "message": "A token/secret/credential is written to localStorage or sessionStorage. Web storage is readable by any script on the page, so any XSS can exfiltrate it; unlike an httpOnly cookie it is not protected from JavaScript. Prefer an httpOnly, Secure, SameSite cookie for auth material, or keep it in memory.\n"
+  },
+  {
+    "rule_id": "general.sync-fs-in-server",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "express.ts",
+    "line": 51,
+    "message": "Synchronous fs I/O runs inside an Express request handler. readFileSync, writeFileSync, and existsSync block the Node.js event loop, so one slow disk operation can stall unrelated requests. Use async fs APIs, pre-load static data at startup, or move the work outside the request path.\n"
+  },
+  {
+    "rule_id": "general.sync-fs-in-server",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "express.ts",
+    "line": 56,
+    "message": "Synchronous fs I/O runs inside an Express request handler. readFileSync, writeFileSync, and existsSync block the Node.js event loop, so one slow disk operation can stall unrelated requests. Use async fs APIs, pre-load static data at startup, or move the work outside the request path.\n"
   },
   {
     "rule_id": "general.tainted-command-injection",
@@ -807,6 +915,15 @@
     "file": "case.tsx",
     "line": 466,
     "message": "User-controlled request data reaches an outbound HTTP request URL. This can lead to Server-Side Request Forgery (SSRF), where attackers make the server call internal services or attacker-controlled hosts. Resolve the destination from trusted route names or validate it against a strict allowlist before making the request.\n"
+  },
+  {
+    "rule_id": "general.ts-ignore-without-reason",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "incomplete.ts",
+    "line": 42,
+    "message": "@ts-ignore suppresses the TypeScript checker without documenting why. This can hide real type regressions permanently. Prefer @ts-expect-error with a short reason, or add an explicit reason if the suppression is unavoidable.\n"
   },
   {
     "rule_id": "nestjs.nestjs-fat-controller",
@@ -1126,5 +1243,50 @@
     "file": "case.tsx",
     "line": 29,
     "message": "A React key derived from Math.random()/Date.now() changes on every render, so React remounts the element each time: local state is lost, inputs lose focus, and reconciliation degrades. Use a stable id from the data instead.\n"
+  },
+  {
+    "rule_id": "rn.rn-anonymous-renderitem",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 24,
+    "message": "FlatList renderItem receives an inline function. This creates a new function on every render, which can defeat list item memoization and add avoidable work on large lists. Move renderItem to a stable function or wrap it in useCallback with correct dependencies.\n"
+  },
+  {
+    "rule_id": "rn.rn-anonymous-renderitem",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 25,
+    "message": "FlatList renderItem receives an inline function. This creates a new function on every render, which can defeat list item memoization and add avoidable work on large lists. Move renderItem to a stable function or wrap it in useCallback with correct dependencies.\n"
+  },
+  {
+    "rule_id": "rn.rn-dom-element-in-native",
+    "severity": "error",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "rn.tsx",
+    "line": 8,
+    "message": "A DOM element is rendered inside a React Native component. React Native does not support HTML tags such as div, span, p, button, or input; this crashes or fails to render on native platforms. Use View, Text, Pressable, TextInput, or another React Native component instead.\n"
+  },
+  {
+    "rule_id": "rn.rn-dom-element-in-native",
+    "severity": "error",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "rn.tsx",
+    "line": 9,
+    "message": "A DOM element is rendered inside a React Native component. React Native does not support HTML tags such as div, span, p, button, or input; this crashes or fails to render on native platforms. Use View, Text, Pressable, TextInput, or another React Native component instead.\n"
+  },
+  {
+    "rule_id": "rn.rn-scrollview-over-flatlist",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 32,
+    "message": "ScrollView renders every child eagerly while this code maps over a dynamic collection. Large or growing lists can cause memory pressure and jank on native devices. Use FlatList or SectionList so React Native can virtualize rows.\n"
   }
 ]

@@ -1,0 +1,47 @@
+rules:
+  - id: path-traversal-unchecked-join
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Request-controlled input is joined into a filesystem path without an
+      obvious basename/normalize/allowlist step. Attackers can use ../ segments
+      or absolute paths to escape the intended directory. Resolve against a fixed
+      base directory and reject paths that leave it, or map user input to known
+      filenames.
+    metadata:
+      category: security
+      cwe:
+        - "CWE-22: Improper Limitation of a Pathname to a Restricted Directory"
+      owasp:
+        - "A01:2021 - Broken Access Control"
+      confidence: hint
+    patterns:
+      - pattern-either:
+          - pattern-inside: |
+              $APP.$METHOD($PATH, ($REQ, $RES) => { ... })
+          - pattern-inside: |
+              $APP.$METHOD($PATH, ($REQ, $RES, $NEXT) => { ... })
+          - pattern-inside: |
+              $APP.$METHOD($PATH, async ($REQ, $RES) => { ... })
+          - pattern-inside: |
+              $APP.$METHOD($PATH, async ($REQ, $RES, $NEXT) => { ... })
+          - pattern-inside: |
+              $APP.$METHOD($PATH, function ($REQ, $RES) { ... })
+          - pattern-inside: |
+              $APP.$METHOD($PATH, function ($REQ, $RES, $NEXT) { ... })
+          - pattern-inside: |
+              $APP.$METHOD($PATH, async function ($REQ, $RES) { ... })
+          - pattern-inside: |
+              $APP.$METHOD($PATH, async function ($REQ, $RES, $NEXT) { ... })
+      - metavariable-regex:
+          metavariable: $METHOD
+          regex: ^(get|post|put|patch|delete|all)$
+      - pattern-either:
+          - pattern: path.join($BASE, $REQ.query.$FIELD, ...)
+          - pattern: path.join($BASE, $REQ.params.$FIELD, ...)
+          - pattern: path.join($BASE, $REQ.body.$FIELD, ...)
+          - pattern: path.join($BASE, $REQ.headers.$FIELD, ...)
+          - pattern: join($BASE, $REQ.query.$FIELD, ...)
+          - pattern: join($BASE, $REQ.params.$FIELD, ...)
+          - pattern: join($BASE, $REQ.body.$FIELD, ...)
+          - pattern: join($BASE, $REQ.headers.$FIELD, ...)

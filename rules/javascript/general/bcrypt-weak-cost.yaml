@@ -1,0 +1,28 @@
+rules:
+  - id: bcrypt-weak-cost
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      bcrypt is configured with a cost factor below 10. Low bcrypt rounds make
+      offline password cracking materially cheaper if password hashes leak. Use
+      a cost of at least 10, then tune upward based on your production latency
+      budget.
+    metadata:
+      category: security
+      cwe:
+        - "CWE-916: Use of Password Hash With Insufficient Computational Effort"
+      owasp:
+        - "A02:2021 - Cryptographic Failures"
+      confidence: hint
+    patterns:
+      - pattern-either:
+          - pattern: $BCRYPT.hash($PASSWORD, $ROUNDS, ...)
+          - pattern: $BCRYPT.hashSync($PASSWORD, $ROUNDS, ...)
+          - pattern: $BCRYPT.genSalt($ROUNDS, ...)
+          - pattern: $BCRYPT.genSaltSync($ROUNDS, ...)
+      - metavariable-regex:
+          metavariable: $ROUNDS
+          regex: ^[0-9]$
+      - metavariable-regex:
+          metavariable: $BCRYPT
+          regex: (?i).*bcrypt.*

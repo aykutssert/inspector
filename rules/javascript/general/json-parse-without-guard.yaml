@@ -1,0 +1,50 @@
+rules:
+  - id: json-parse-without-guard
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      JSON.parse is called on request-controlled input without a local try/catch.
+      A malformed payload can throw synchronously and turn a single bad request
+      into a 500 response or process-level failure, depending on the framework
+      error path. Validate the input or catch SyntaxError before using it.
+    metadata:
+      category: security
+      cwe:
+        - "CWE-248: Uncaught Exception"
+      owasp:
+        - "A04:2021 - Insecure Design"
+      confidence: hint
+    patterns:
+      - pattern-either:
+          - pattern-inside: |
+              $APP.$METHOD($PATH, ($REQ, $RES) => { ... })
+          - pattern-inside: |
+              $APP.$METHOD($PATH, ($REQ, $RES, $NEXT) => { ... })
+          - pattern-inside: |
+              $APP.$METHOD($PATH, async ($REQ, $RES) => { ... })
+          - pattern-inside: |
+              $APP.$METHOD($PATH, async ($REQ, $RES, $NEXT) => { ... })
+          - pattern-inside: |
+              $APP.$METHOD($PATH, function ($REQ, $RES) { ... })
+          - pattern-inside: |
+              $APP.$METHOD($PATH, function ($REQ, $RES, $NEXT) { ... })
+          - pattern-inside: |
+              $APP.$METHOD($PATH, async function ($REQ, $RES) { ... })
+          - pattern-inside: |
+              $APP.$METHOD($PATH, async function ($REQ, $RES, $NEXT) { ... })
+      - metavariable-regex:
+          metavariable: $METHOD
+          regex: ^(get|post|put|patch|delete|all)$
+      - pattern-either:
+          - pattern: JSON.parse($REQ.body)
+          - pattern: JSON.parse($REQ.body.$FIELD)
+          - pattern: JSON.parse($REQ.query.$FIELD)
+          - pattern: JSON.parse($REQ.params.$FIELD)
+          - pattern: JSON.parse($REQ.headers.$FIELD)
+          - pattern: JSON.parse($REQ.get(...))
+      - pattern-not-inside: |
+          try {
+            ...
+          } catch ($ERR) {
+            ...
+          }

@@ -1,0 +1,13 @@
+rules:
+  - id: ts-ignore-without-reason
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      @ts-ignore suppresses the TypeScript checker without documenting why. This
+      can hide real type regressions permanently. Prefer @ts-expect-error with a
+      short reason, or add an explicit reason if the suppression is unavoidable.
+    metadata:
+      category: maintainability
+      confidence: hint
+    patterns:
+      - pattern-regex: '(?m)//\s*@ts-ignore\s*$'

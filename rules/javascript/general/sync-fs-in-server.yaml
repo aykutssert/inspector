@@ -1,0 +1,59 @@
+rules:
+  - id: sync-fs-in-server
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Synchronous fs I/O runs inside an Express request handler. readFileSync,
+      writeFileSync, and existsSync block the Node.js event loop, so one slow disk
+      operation can stall unrelated requests. Use async fs APIs, pre-load static
+      data at startup, or move the work outside the request path.
+    metadata:
+      category: security
+      cwe:
+        - "CWE-400: Uncontrolled Resource Consumption"
+      owasp:
+        - "A04:2021 - Insecure Design"
+      confidence: hint
+    patterns:
+      - pattern-either:
+          - pattern-inside: |
+              $APP.$METHOD($PATH, ($REQ, $RES) => { ... })
+          - pattern-inside: |
+              $APP.$METHOD($PATH, ($REQ, $RES, $NEXT) => { ... })
+          - pattern-inside: |
+              $APP.$METHOD($PATH, async ($REQ, $RES) => { ... })
+          - pattern-inside: |
+              $APP.$METHOD($PATH, async ($REQ, $RES, $NEXT) => { ... })
+          - pattern-inside: |
+              $APP.$METHOD($PATH, function ($REQ, $RES) { ... })
+          - pattern-inside: |
+              $APP.$METHOD($PATH, function ($REQ, $RES, $NEXT) { ... })
+          - pattern-inside: |
+              $APP.$METHOD($PATH, async function ($REQ, $RES) { ... })
+          - pattern-inside: |
+              $APP.$METHOD($PATH, async function ($REQ, $RES, $NEXT) { ... })
+      - metavariable-regex:
+          metavariable: $METHOD
+          regex: ^(get|post|put|patch|delete|all)$
+      - pattern-either:
+          - pattern: fs.readFileSync(...)
+          - pattern: fs.writeFileSync(...)
+          - pattern: fs.existsSync(...)
+          - pattern: nodeFs.readFileSync(...)
+          - pattern: nodeFs.writeFileSync(...)
+          - pattern: nodeFs.existsSync(...)
+          - pattern: fsModule.readFileSync(...)
+          - pattern: fsModule.writeFileSync(...)
+          - pattern: fsModule.existsSync(...)
+          - pattern: fileSystem.readFileSync(...)
+          - pattern: fileSystem.writeFileSync(...)
+          - pattern: fileSystem.existsSync(...)
+          - pattern: readFileSync(...)
+          - pattern: writeFileSync(...)
+          - pattern: existsSync(...)
+          - pattern: require("fs").readFileSync(...)
+          - pattern: require("fs").writeFileSync(...)
+          - pattern: require("fs").existsSync(...)
+          - pattern: require('fs').readFileSync(...)
+          - pattern: require('fs').writeFileSync(...)
+          - pattern: require('fs').existsSync(...)
