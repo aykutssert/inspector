@@ -117,3 +117,91 @@ func TestScanMissingDepsNotice(t *testing.T) {
 		t.Fatalf("expected one info skip notice, got %#v", got)
 	}
 }
+
+func TestScanNoFloatingPromises(t *testing.T) {
+	repoRoot, ok := repoRootWithTypeScriptToolchainForTest()
+	if !ok {
+		t.Skip("typescript toolchain not installed")
+	}
+	t.Setenv("INSPECTOR_HOME", repoRoot)
+	dir := t.TempDir()
+	writeTSProjectFile(t, dir, "tsconfig.json", `{
+  "compilerOptions": {
+    "strict": true,
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Node"
+  },
+  "include": ["src/**/*.ts"]
+}`)
+	if err := os.Mkdir(filepath.Join(dir, "node_modules"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	writeTSProjectFile(t, dir, "src/unsafe.ts", `async function saveAsync(): Promise<void> {
+  return;
+}
+
+saveAsync();
+`)
+	writeTSProjectFile(t, dir, "src/safe.ts", `async function saveAsync(): Promise<void> {
+  return;
+}
+
+async function main(): Promise<void> {
+  await saveAsync();
+  void saveAsync();
+  saveAsync().catch(() => undefined);
+}
+
+void main();
+`)
+
+	got, err := New().Scan(core.ProjectContext{
+		Root:  dir,
+		Files: []string{"src/unsafe.ts", "src/safe.ts"},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	var floating []core.Finding
+	for _, f := range got {
+		if f.RuleID == "no-floating-promises" {
+			floating = append(floating, f)
+		}
+	}
+	if len(floating) != 1 {
+		t.Fatalf("expected one no-floating-promises finding, got all=%#v floating=%#v", got, floating)
+	}
+	if !strings.HasSuffix(floating[0].File, "src/unsafe.ts") || floating[0].Line != 5 || floating[0].Severity != core.SeverityError {
+		t.Fatalf("bad floating promise finding: %#v", floating[0])
+	}
+}
+
+func repoRootWithTypeScriptToolchainForTest() (string, bool) {
+	dir, err := os.Getwd()
+	if err != nil {
+		return "", false
+	}
+	for {
+		path := filepath.Join(dir, "_toolchains", "typescript", "node_modules", ".bin", "eslint")
+		if _, err := os.Stat(path); err == nil {
+			return dir, true
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			return "", false
+		}
+		dir = parent
+	}
+}
+
+func writeTSProjectFile(t *testing.T, root, rel, body string) {
+	t.Helper()
+	path := filepath.Join(root, rel)
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(path, []byte(body), 0o644); err != nil {
+		t.Fatal(err)
+	}
+}
