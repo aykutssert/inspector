@@ -21,10 +21,10 @@ const functionQuery = `
 func detectComplexity(root *sitter.Node, lang *sitter.Language, src []byte, file string) []core.Finding {
 	var entities []complexity.Entity
 	type details struct {
-		name  string
-		lines int
+		name   string
+		lines  int
 		inputs int
-		deps  int
+		deps   int
 	}
 	entDetails := make(map[int]details)
 

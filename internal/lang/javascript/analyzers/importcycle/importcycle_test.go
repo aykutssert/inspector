@@ -9,7 +9,6 @@ import (
 	"github.com/aykutssert/inspector/internal/core"
 )
 
-
 // No JS/TS files → silent no-op (never builds a graph).
 func TestScanNoJSFiles(t *testing.T) {
 	got, err := New().Scan(core.ProjectContext{Root: t.TempDir(), Files: []string{"style.css", "data.json"}})

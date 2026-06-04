@@ -84,11 +84,11 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 	var findings []core.Finding
 	for _, v := range violations {
 		findings = append(findings, core.Finding{
-			Analyzer:   a.Name(),
-			RuleID:     v.RuleID,
-			Severity:   core.SeverityWarning,
-			Level:      core.SeverityWarning.String(),
-			Category:   "security",
+			Analyzer: a.Name(),
+			RuleID:   v.RuleID,
+			Severity: core.SeverityWarning,
+			Level:    core.SeverityWarning.String(),
+			Category: "security",
 			// hint: route policy coverage is inferred from guard/middleware names,
 			// which legitimately vary (public routes, custom auth names). The agent
 			// confirms the route truly lacks auth. Kept at hint until the

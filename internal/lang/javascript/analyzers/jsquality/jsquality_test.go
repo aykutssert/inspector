@@ -110,7 +110,7 @@ func TestGodClassComplexity(t *testing.T) {
     private i: any
   ) {}
 ` + methods + strings.Repeat("  let x = 1;\n", 200) + `}`
-	
+
 	findings := scanSrc(t, "controller.ts", src)
 	if !hasRule(findings, "god-class") {
 		t.Fatalf("expected god-class violation, got %#v", findings)

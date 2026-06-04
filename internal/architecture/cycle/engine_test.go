@@ -7,9 +7,9 @@ import (
 
 func TestFindCycles(t *testing.T) {
 	tests := []struct {
-		name string
+		name  string
 		graph Graph
-		want [][]string
+		want  [][]string
 	}{
 		{
 			name: "DAG (no cycles)",

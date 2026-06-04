@@ -26,10 +26,10 @@ type Rule struct {
 
 // Violation represents a failure to meet the splitting rules.
 type Violation struct {
-	RuleID   string `json:"rule_id"`
-	File     string `json:"file"`
-	Line     int    `json:"line"`
-	Message  string `json:"message"`
+	RuleID  string `json:"rule_id"`
+	File    string `json:"file"`
+	Line    int    `json:"line"`
+	Message string `json:"message"`
 }
 
 // Analyze evaluates file metrics against splitting rules.
