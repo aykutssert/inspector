@@ -56,6 +56,28 @@ func TestResolveImportRelativeAndIndex(t *testing.T) {
 	}
 }
 
+func TestResolveReExportImportEdge(t *testing.T) {
+	root, files := writeProject(t, map[string]string{
+		"index.ts": `export { secret } from "./server";
+export * from "./util";
+`,
+		"server.ts": `export const secret = 1`,
+		"util.ts":   `export const util = 1`,
+	})
+	g := Build(root, files)
+
+	got := g.Imports("index.ts")
+	want := map[string]bool{"server.ts": true, "util.ts": true}
+	if len(got) != len(want) {
+		t.Fatalf("imports = %v, want server.ts and util.ts", got)
+	}
+	for _, file := range got {
+		if !want[file] {
+			t.Fatalf("unexpected import edge %q in %v", file, got)
+		}
+	}
+}
+
 // Two files define handler(). Callers must be attributed to the definition
 // they can reach via imports, not merged across both.
 func TestCallerDisambiguationByImport(t *testing.T) {

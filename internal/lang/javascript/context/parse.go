@@ -117,6 +117,7 @@ const jsxQuery = `
 
 const importsQuery = `
 (import_statement source: (string) @src)
+(export_statement source: (string) @src)
 (call_expression
   function: (identifier) @fn
   arguments: (arguments (string) @arg))
