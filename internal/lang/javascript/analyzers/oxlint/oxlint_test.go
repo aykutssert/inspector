@@ -58,6 +58,60 @@ func TestBuildConfigDisablesCoreNoiseRules(t *testing.T) {
 	}
 }
 
+// TestOxlintRuleCoverage runs the real oxlint binary over fixtures and asserts
+// every rule the inspector explicitly enables for React still fires, and every
+// rule it suppresses stays silent. The config-string tests above prove intent;
+// this proves behavior, catching an oxlint upgrade or rule rename that silently
+// drops a rule we depend on. Skips when oxlint is absent unless
+// INSPECTOR_REQUIRE_OXLINT=1 forces it.
+func TestOxlintRuleCoverage(t *testing.T) {
+	a := New()
+	if !a.Available() {
+		if os.Getenv("INSPECTOR_REQUIRE_OXLINT") == "1" {
+			t.Fatal("oxlint is required but not installed")
+		}
+		t.Skip("oxlint not installed")
+	}
+
+	root, err := filepath.Abs(filepath.Join("testdata", "coverage"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	got, err := a.Scan(core.ProjectContext{
+		Root:  root,
+		Files: []string{"react_rules.tsx", "noise.tsx"},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	fired := make(map[string]bool, len(got))
+	for _, f := range got {
+		fired[f.RuleID] = true
+	}
+
+	// Enabled rules whose firing the inspector relies on (see reactRules).
+	for _, rule := range []string{
+		"button-has-type",
+		"rules-of-hooks",
+		"exhaustive-deps",
+		"no-array-index-key",
+	} {
+		if !fired[rule] {
+			t.Errorf("enabled oxlint rule %q did not fire — config drift or oxlint rename?", rule)
+		}
+	}
+	// Suppressed noise rules must never reach a finding.
+	for _, rule := range []string{
+		"no-underscore-dangle",
+		"no-unused-vars",
+		"no-shadow",
+	} {
+		if fired[rule] {
+			t.Errorf("suppressed noise rule %q fired — suppression regressed", rule)
+		}
+	}
+}
+
 func TestCoreNoiseRuleFilter(t *testing.T) {
 	cases := []struct {
 		plugin string

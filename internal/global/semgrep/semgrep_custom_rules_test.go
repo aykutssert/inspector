@@ -2,9 +2,11 @@ package semgrep
 
 import (
 	"encoding/json"
+	"io/fs"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
 	"testing"
@@ -131,4 +133,56 @@ func normalizeFindings(findings []core.Finding) []goldenFinding {
 		return out[i].Line < out[j].Line
 	})
 	return out
+}
+
+// TestEveryCustomRuleHasGoldenCoverage fails when a rule file under
+// rules/javascript ships without a matching firing in the golden expected.json.
+// It is the cheap guard (no semgrep needed) that keeps rule authors honest: a
+// new rule must come with a fixture that proves it fires, or this test breaks.
+func TestEveryCustomRuleHasGoldenCoverage(t *testing.T) {
+	repo := repoRoot(t)
+	ruleDir := filepath.Join(repo, "rules", "javascript")
+
+	expected, err := os.ReadFile(filepath.Join(repo,
+		"internal", "global", "semgrep", "testdata", "custom_rules", "expected.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	golden := string(expected)
+
+	idLine := regexp.MustCompile(`(?m)^\s*-\s*id:\s*(\S+)`)
+	var missing []string
+	err = filepath.WalkDir(ruleDir, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if d.IsDir() {
+			return nil
+		}
+		if ext := filepath.Ext(path); ext != ".yaml" && ext != ".yml" {
+			return nil
+		}
+		data, rerr := os.ReadFile(path)
+		if rerr != nil {
+			return rerr
+		}
+		// The finding's rule_id is namespaced by the rule file's parent dir
+		// (e.g. general/hardcoded-secret.yaml -> "general.hardcoded-secret").
+		ns := filepath.Base(filepath.Dir(path))
+		for _, m := range idLine.FindAllStringSubmatch(string(data), -1) {
+			id := ns + "." + strings.Trim(m[1], `"'`)
+			if !strings.Contains(golden, `"rule_id": "`+id+`"`) {
+				missing = append(missing, id+"  ("+filepath.Base(path)+")")
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(missing) > 0 {
+		sort.Strings(missing)
+		t.Fatalf("custom rules with no golden fixture coverage (add a trigger to testdata/custom_rules and rerun the golden test):\n  %s",
+			strings.Join(missing, "\n  "))
+	}
 }
