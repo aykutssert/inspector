@@ -21,6 +21,7 @@ import (
 	"github.com/smacker/go-tree-sitter/typescript/tsx"
 	"github.com/smacker/go-tree-sitter/typescript/typescript"
 
+	"github.com/aykutssert/inspector/internal/architecture/duplication"
 	"github.com/aykutssert/inspector/internal/core"
 )
 
@@ -132,18 +133,11 @@ const (
 
 const literalQuery = `[(string) (number)] @lit`
 
-type literalStat struct {
-	kind      string
-	display   string
-	firstLine int
-	count     int
-}
-
 // detectRepeatedLiteral flags repeated magic strings/numbers in one file. The
 // signal is grouped per literal to avoid noisy output: a repeated value gets one
 // hint at its first occurrence, not one finding per use.
 func detectRepeatedLiteral(root *sitter.Node, lang *sitter.Language, src []byte, file string) []core.Finding {
-	stats := map[string]*literalStat{}
+	var lits []duplication.Literal
 	runQuery(literalQuery, root, lang, func(node *sitter.Node) {
 		if isInsideNodeType(node, "import_statement") || isInsideNodeType(node, "export_statement") {
 			return
@@ -152,33 +146,31 @@ func detectRepeatedLiteral(root *sitter.Node, lang *sitter.Language, src []byte,
 		if !ok {
 			return
 		}
-		key := kind + ":" + value
-		stat := stats[key]
-		if stat == nil {
-			stat = &literalStat{
-				kind:      kind,
-				display:   value,
-				firstLine: int(node.StartPoint().Row) + 1,
-			}
-			stats[key] = stat
-		}
-		stat.count++
+		lits = append(lits, duplication.Literal{
+			Value: value,
+			Kind:  kind,
+			Line:  int(node.StartPoint().Row) + 1,
+		})
 	})
 
-	out := make([]core.Finding, 0, len(stats))
-	for _, stat := range stats {
-		if !isRepeatedLiteral(stat) {
-			continue
-		}
+	rules := []duplication.Rule{
+		{
+			ID:              "repeated-magic-literal",
+			ThresholdString: repeatedStringThreshold,
+			ThresholdNumber: repeatedNumberThreshold,
+			MaxViolations:   maxRepeatedLiteralHints,
+		},
+	}
+
+	violations := duplication.Analyze(file, lits, rules)
+
+	var out []core.Finding
+	for _, v := range violations {
 		out = append(out, hint(
-			"repeated-magic-literal", "quality", core.SeverityInfo, file, stat.firstLine,
-			stat.kind+" literal "+stat.display+" is repeated "+strconv.Itoa(stat.count)+" times in this file; repeated domain values are easy to mistype and hard for agents to safely change.",
+			v.RuleID, "quality", core.SeverityInfo, v.File, v.Line,
+			v.Message,
 			"Extract the value to a named constant, enum, route map, or shared configuration when the repetitions refer to the same concept.",
 		))
-	}
-	sortFindingsByLine(out)
-	if len(out) > maxRepeatedLiteralHints {
-		out = out[:maxRepeatedLiteralHints]
 	}
 	return out
 }
@@ -242,17 +234,6 @@ func isMagicNumberCandidate(value string) bool {
 	}
 }
 
-func isRepeatedLiteral(stat *literalStat) bool {
-	switch stat.kind {
-	case "string":
-		return stat.count >= repeatedStringThreshold
-	case "number":
-		return stat.count >= repeatedNumberThreshold
-	default:
-		return false
-	}
-}
-
 func isInsideNodeType(node *sitter.Node, typ string) bool {
 	for parent := node.Parent(); parent != nil; parent = parent.Parent() {
 		if parent.Type() == typ {
@@ -260,14 +241,6 @@ func isInsideNodeType(node *sitter.Node, typ string) bool {
 		}
 	}
 	return false
-}
-
-func sortFindingsByLine(findings []core.Finding) {
-	for i := 1; i < len(findings); i++ {
-		for j := i; j > 0 && findings[j].Line < findings[j-1].Line; j-- {
-			findings[j], findings[j-1] = findings[j-1], findings[j]
-		}
-	}
 }
 
 func hint(rule, cat string, sev core.Severity, file string, line int, msg, fix string) core.Finding {
