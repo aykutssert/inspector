@@ -143,6 +143,24 @@
     "message": "innerHTML is assigned a dynamic value. If that value contains user-controlled data, this is a DOM XSS sink. Prefer textContent for plain text, or sanitize trusted HTML before assigning it.\n"
   },
   {
+    "rule_id": "general.dom-innerhtml-variable",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 421,
+    "message": "innerHTML is assigned a dynamic value. If that value contains user-controlled data, this is a DOM XSS sink. Prefer textContent for plain text, or sanitize trusted HTML before assigning it.\n"
+  },
+  {
+    "rule_id": "general.dom-innerhtml-variable",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 454,
+    "message": "innerHTML is assigned a dynamic value. If that value contains user-controlled data, this is a DOM XSS sink. Prefer textContent for plain text, or sanitize trusted HTML before assigning it.\n"
+  },
+  {
     "rule_id": "general.dynamic-code-execution",
     "severity": "error",
     "category": "security",
@@ -239,6 +257,33 @@
     "confidence": "rule",
     "file": "case.tsx",
     "line": 143,
+    "message": "A hardcoded secret or credential appears in the source (an AWS access key, a GitHub/Slack/Stripe token, a Google API key, or a PEM private key). Committed secrets are exposed to everyone with repository access and stay in git history even after the line is deleted. Move the value to an environment variable or a secret manager, rotate the leaked credential immediately, and purge it from git history.\n"
+  },
+  {
+    "rule_id": "general.hardcoded-secret",
+    "severity": "error",
+    "category": "security",
+    "confidence": "rule",
+    "file": "case.tsx",
+    "line": 470,
+    "message": "A hardcoded secret or credential appears in the source (an AWS access key, a GitHub/Slack/Stripe token, a Google API key, or a PEM private key). Committed secrets are exposed to everyone with repository access and stay in git history even after the line is deleted. Move the value to an environment variable or a secret manager, rotate the leaked credential immediately, and purge it from git history.\n"
+  },
+  {
+    "rule_id": "general.hardcoded-secret",
+    "severity": "error",
+    "category": "security",
+    "confidence": "rule",
+    "file": "case.tsx",
+    "line": 475,
+    "message": "A hardcoded secret or credential appears in the source (an AWS access key, a GitHub/Slack/Stripe token, a Google API key, or a PEM private key). Committed secrets are exposed to everyone with repository access and stay in git history even after the line is deleted. Move the value to an environment variable or a secret manager, rotate the leaked credential immediately, and purge it from git history.\n"
+  },
+  {
+    "rule_id": "general.hardcoded-secret",
+    "severity": "error",
+    "category": "security",
+    "confidence": "rule",
+    "file": "case.tsx",
+    "line": 482,
     "message": "A hardcoded secret or credential appears in the source (an AWS access key, a GitHub/Slack/Stripe token, a Google API key, or a PEM private key). Committed secrets are exposed to everyone with repository access and stay in git history even after the line is deleted. Move the value to an environment variable or a secret manager, rotate the leaked credential immediately, and purge it from git history.\n"
   },
   {
@@ -440,6 +485,24 @@
     "message": "Unsafe raw SQL query detected. Using string interpolation or concatenation inside Prisma ($queryRaw, $executeRaw, $queryRawUnsafe, $executeRawUnsafe) or TypeORM (query) bypasses parameterized query generation, risking SQL injection. Use safe tagged templates (e.g. prisma.$queryRaw`...`) or pass parameters as a separate argument/binding.\n"
   },
   {
+    "rule_id": "general.orm-unsafe-raw-query",
+    "severity": "error",
+    "category": "security",
+    "confidence": "rule",
+    "file": "case.tsx",
+    "line": 437,
+    "message": "Unsafe raw SQL query detected. Using string interpolation or concatenation inside Prisma ($queryRaw, $executeRaw, $queryRawUnsafe, $executeRawUnsafe) or TypeORM (query) bypasses parameterized query generation, risking SQL injection. Use safe tagged templates (e.g. prisma.$queryRaw`...`) or pass parameters as a separate argument/binding.\n"
+  },
+  {
+    "rule_id": "general.orm-unsafe-raw-query",
+    "severity": "error",
+    "category": "security",
+    "confidence": "rule",
+    "file": "case.tsx",
+    "line": 461,
+    "message": "Unsafe raw SQL query detected. Using string interpolation or concatenation inside Prisma ($queryRaw, $executeRaw, $queryRawUnsafe, $executeRawUnsafe) or TypeORM (query) bypasses parameterized query generation, risking SQL injection. Use safe tagged templates (e.g. prisma.$queryRaw`...`) or pass parameters as a separate argument/binding.\n"
+  },
+  {
     "rule_id": "general.placeholder-or-ai-slop-comment",
     "severity": "warning",
     "category": "quality",
@@ -566,6 +629,69 @@
     "message": "User-controlled request data reaches an OS command execution sink. An attacker can inject shell metacharacters to run arbitrary commands on the server. Avoid passing request data into a shell; use a fixed command with an argument array (no shell), or validate the input against a strict allowlist before execution.\n"
   },
   {
+    "rule_id": "general.tainted-command-injection",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 447,
+    "message": "User-controlled request data reaches an OS command execution sink. An attacker can inject shell metacharacters to run arbitrary commands on the server. Avoid passing request data into a shell; use a fixed command with an argument array (no shell), or validate the input against a strict allowlist before execution.\n"
+  },
+  {
+    "rule_id": "general.tainted-dom-xss",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 421,
+    "message": "Browser-controlled input reaches an HTML-injection sink without sanitization, leading to DOM-based Cross-Site Scripting (XSS). An attacker can craft a URL, fragment, or request field that injects script into the page. Render untrusted data as text (textContent), or sanitize it with a trusted library (e.g. DOMPurify.sanitize) before assigning it to an HTML sink.\n"
+  },
+  {
+    "rule_id": "general.tainted-dom-xss",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 425,
+    "message": "Browser-controlled input reaches an HTML-injection sink without sanitization, leading to DOM-based Cross-Site Scripting (XSS). An attacker can craft a URL, fragment, or request field that injects script into the page. Render untrusted data as text (textContent), or sanitize it with a trusted library (e.g. DOMPurify.sanitize) before assigning it to an HTML sink.\n"
+  },
+  {
+    "rule_id": "general.tainted-dom-xss",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 454,
+    "message": "Browser-controlled input reaches an HTML-injection sink without sanitization, leading to DOM-based Cross-Site Scripting (XSS). An attacker can craft a URL, fragment, or request field that injects script into the page. Render untrusted data as text (textContent), or sanitize it with a trusted library (e.g. DOMPurify.sanitize) before assigning it to an HTML sink.\n"
+  },
+  {
+    "rule_id": "general.tainted-hardcoded-secret",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 471,
+    "message": "A hardcoded secret or credential (an AWS access key, a GitHub/Slack/Stripe token, a Google API key, or a PEM private key) is assigned to a variable or object property and then flows into a function call. Unlike the regex rule, this catches indirect usage where the literal is stored first and consumed elsewhere. Committed secrets are exposed to everyone with repository access and remain in git history even after deletion. Move the value to an environment variable or a secret manager, rotate the leaked credential immediately, and purge it from git history.\n"
+  },
+  {
+    "rule_id": "general.tainted-hardcoded-secret",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 478,
+    "message": "A hardcoded secret or credential (an AWS access key, a GitHub/Slack/Stripe token, a Google API key, or a PEM private key) is assigned to a variable or object property and then flows into a function call. Unlike the regex rule, this catches indirect usage where the literal is stored first and consumed elsewhere. Committed secrets are exposed to everyone with repository access and remain in git history even after deletion. Move the value to an environment variable or a secret manager, rotate the leaked credential immediately, and purge it from git history.\n"
+  },
+  {
+    "rule_id": "general.tainted-hardcoded-secret",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 483,
+    "message": "A hardcoded secret or credential (an AWS access key, a GitHub/Slack/Stripe token, a Google API key, or a PEM private key) is assigned to a variable or object property and then flows into a function call. Unlike the regex rule, this catches indirect usage where the literal is stored first and consumed elsewhere. Committed secrets are exposed to everyone with repository access and remain in git history even after deletion. Move the value to an environment variable or a secret manager, rotate the leaked credential immediately, and purge it from git history.\n"
+  },
+  {
     "rule_id": "general.tainted-sql-query",
     "severity": "warning",
     "category": "security",
@@ -581,6 +707,42 @@
     "confidence": "hint",
     "file": "case.tsx",
     "line": 371,
+    "message": "User-controlled request data reaches a raw SQL query sink. Build SQL with parameterized placeholders or trusted query-builder APIs instead of concatenating request data into the SQL text.\n"
+  },
+  {
+    "rule_id": "general.tainted-sql-query",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 383,
+    "message": "User-controlled request data reaches a raw SQL query sink. Build SQL with parameterized placeholders or trusted query-builder APIs instead of concatenating request data into the SQL text.\n"
+  },
+  {
+    "rule_id": "general.tainted-sql-query",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 385,
+    "message": "User-controlled request data reaches a raw SQL query sink. Build SQL with parameterized placeholders or trusted query-builder APIs instead of concatenating request data into the SQL text.\n"
+  },
+  {
+    "rule_id": "general.tainted-sql-query",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 437,
+    "message": "User-controlled request data reaches a raw SQL query sink. Build SQL with parameterized placeholders or trusted query-builder APIs instead of concatenating request data into the SQL text.\n"
+  },
+  {
+    "rule_id": "general.tainted-sql-query",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 461,
     "message": "User-controlled request data reaches a raw SQL query sink. Build SQL with parameterized placeholders or trusted query-builder APIs instead of concatenating request data into the SQL text.\n"
   },
   {
@@ -611,6 +773,24 @@
     "message": "User-controlled request data reaches an outbound HTTP request URL. This can lead to Server-Side Request Forgery (SSRF), where attackers make the server call internal services or attacker-controlled hosts. Resolve the destination from trusted route names or validate it against a strict allowlist before making the request.\n"
   },
   {
+    "rule_id": "general.tainted-ssrf-request",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 442,
+    "message": "User-controlled request data reaches an outbound HTTP request URL. This can lead to Server-Side Request Forgery (SSRF), where attackers make the server call internal services or attacker-controlled hosts. Resolve the destination from trusted route names or validate it against a strict allowlist before making the request.\n"
+  },
+  {
+    "rule_id": "general.tainted-ssrf-request",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 466,
+    "message": "User-controlled request data reaches an outbound HTTP request URL. This can lead to Server-Side Request Forgery (SSRF), where attackers make the server call internal services or attacker-controlled hosts. Resolve the destination from trusted route names or validate it against a strict allowlist before making the request.\n"
+  },
+  {
     "rule_id": "nestjs.nestjs-fat-controller",
     "severity": "warning",
     "category": "quality",
@@ -638,12 +818,30 @@
     "message": "A NestJS controller directly performs database or ORM operations. NestJS architecture mandates that controllers only handle HTTP routing and delegate business logic and data access to services. Move this database operation into a service class.\n"
   },
   {
+    "rule_id": "nestjs.nestjs-fat-controller",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 437,
+    "message": "A NestJS controller directly performs database or ORM operations. NestJS architecture mandates that controllers only handle HTTP routing and delegate business logic and data access to services. Move this database operation into a service class.\n"
+  },
+  {
     "rule_id": "nestjs.nestjs-missing-validation-pipe",
     "severity": "warning",
     "category": "quality",
     "confidence": "hint",
     "file": "case.tsx",
     "line": 256,
+    "message": "A NestJS controller method accepts a request body via @Body(), but no @UsePipes(ValidationPipe) decorator is declared on the method or the class. Ensure input validation is active (either via local @UsePipes or a global ValidationPipe in main.ts) to prevent unvalidated payloads.\n"
+  },
+  {
+    "rule_id": "nestjs.nestjs-missing-validation-pipe",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 440,
     "message": "A NestJS controller method accepts a request body via @Body(), but no @UsePipes(ValidationPipe) decorator is declared on the method or the class. Ensure input validation is active (either via local @UsePipes or a global ValidationPipe in main.ts) to prevent unvalidated payloads.\n"
   },
   {
@@ -728,6 +926,24 @@
     "message": "A Next.js Server Action accepts input but does not appear to validate it with a schema parser. Server Actions are callable from the client, so unvalidated parameters can become authorization, injection, or data integrity bugs. Validate the input with Zod, Valibot, or a similar schema before using it.\n"
   },
   {
+    "rule_id": "nextjs.next-server-action-missing-validation",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 459,
+    "message": "A Next.js Server Action accepts input but does not appear to validate it with a schema parser. Server Actions are callable from the client, so unvalidated parameters can become authorization, injection, or data integrity bugs. Validate the input with Zod, Valibot, or a similar schema before using it.\n"
+  },
+  {
+    "rule_id": "nextjs.next-server-action-missing-validation",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 464,
+    "message": "A Next.js Server Action accepts input but does not appear to validate it with a schema parser. Server Actions are callable from the client, so unvalidated parameters can become authorization, injection, or data integrity bugs. Validate the input with Zod, Valibot, or a similar schema before using it.\n"
+  },
+  {
     "rule_id": "nextjs.next-server-only-in-client",
     "severity": "error",
     "confidence": "rule",
@@ -808,6 +1024,24 @@
     "message": "Server-side fetch() is called with a dynamic or unvalidated URL. If this URL is built from user-controlled input, it can lead to Server-Side Request Forgery (SSRF), allowing attackers to query internal services, bypass firewalls, or leak credentials. Validate the URL against a strict allowlist of allowed domains, or ensure the input is sanitized and mapped to safe endpoints.\n"
   },
   {
+    "rule_id": "nextjs.next-ssrf-prone-fetch",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 442,
+    "message": "Server-side fetch() is called with a dynamic or unvalidated URL. If this URL is built from user-controlled input, it can lead to Server-Side Request Forgery (SSRF), allowing attackers to query internal services, bypass firewalls, or leak credentials. Validate the URL against a strict allowlist of allowed domains, or ensure the input is sanitized and mapped to safe endpoints.\n"
+  },
+  {
+    "rule_id": "nextjs.next-ssrf-prone-fetch",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 466,
+    "message": "Server-side fetch() is called with a dynamic or unvalidated URL. If this URL is built from user-controlled input, it can lead to Server-Side Request Forgery (SSRF), allowing attackers to query internal services, bypass firewalls, or leak credentials. Validate the URL against a strict allowlist of allowed domains, or ensure the input is sanitized and mapped to safe endpoints.\n"
+  },
+  {
     "rule_id": "nextjs.next-unsafe-redirect",
     "severity": "warning",
     "category": "security",
@@ -835,6 +1069,24 @@
     "message": "dangerouslySetInnerHTML is fed a dynamic value (not a string literal). If that value contains any user-controlled data, this is a stored/reflected XSS sink. Confirm the HTML is sanitized (e.g. DOMPurify) before it reaches this prop, or render the value as text instead.\n"
   },
   {
+    "rule_id": "react.dangerously-set-inner-html-variable",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 425,
+    "message": "dangerouslySetInnerHTML is fed a dynamic value (not a string literal). If that value contains any user-controlled data, this is a stored/reflected XSS sink. Confirm the HTML is sanitized (e.g. DOMPurify) before it reaches this prop, or render the value as text instead.\n"
+  },
+  {
+    "rule_id": "react.dangerously-set-inner-html-variable",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 428,
+    "message": "dangerouslySetInnerHTML is fed a dynamic value (not a string literal). If that value contains any user-controlled data, this is a stored/reflected XSS sink. Confirm the HTML is sanitized (e.g. DOMPurify) before it reaches this prop, or render the value as text instead.\n"
+  },
+  {
     "rule_id": "react.direct-dom-manipulation",
     "severity": "warning",
     "confidence": "hint",
@@ -848,6 +1100,22 @@
     "confidence": "hint",
     "file": "case.tsx",
     "line": 319,
+    "message": "Direct DOM manipulation call detected in React file. Accessing or modifying the DOM directly (using document.getElementById, querySelector, etc.) bypasses the Virtual DOM, causing state inconsistencies and rendering issues. Use React refs (useRef) or state binding instead.\n"
+  },
+  {
+    "rule_id": "react.direct-dom-manipulation",
+    "severity": "warning",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 419,
+    "message": "Direct DOM manipulation call detected in React file. Accessing or modifying the DOM directly (using document.getElementById, querySelector, etc.) bypasses the Virtual DOM, causing state inconsistencies and rendering issues. Use React refs (useRef) or state binding instead.\n"
+  },
+  {
+    "rule_id": "react.direct-dom-manipulation",
+    "severity": "warning",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 452,
     "message": "Direct DOM manipulation call detected in React file. Accessing or modifying the DOM directly (using document.getElementById, querySelector, etc.) bypasses the Virtual DOM, causing state inconsistencies and rendering issues. Use React refs (useRef) or state binding instead.\n"
   },
   {

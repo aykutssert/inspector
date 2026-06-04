@@ -16,21 +16,80 @@ rules:
       owasp:
         - "A10:2021 - Server-Side Request Forgery (SSRF)"
       confidence: hint
-    patterns:
-      - pattern-not-inside: |
-          "use client";
-          ...
-      - pattern-not-inside: |
-          'use client';
-          ...
     pattern-sources:
+      # Express query/body/params sources
       - pattern: $REQ.query.$FIELD
       - pattern: $REQ.body.$FIELD
       - pattern: $REQ.params.$FIELD
       - pattern: $REQ.query[$FIELD]
       - pattern: $REQ.body[$FIELD]
       - pattern: $REQ.params[$FIELD]
+      # Next.js request sources
       - pattern: $REQ.nextUrl.searchParams.get(...)
+      # NestJS parameter decorators source
+      - patterns:
+          - pattern: $VAR
+          - pattern-inside: |
+              class $CLASS {
+                $METHOD(..., @$PARAM_DEC(...) $VAR, ...) {
+                  ...
+                }
+              }
+          - metavariable-regex:
+              metavariable: $PARAM_DEC
+              regex: ^(Body|Query|Param|Headers|Req|Request)$
+      # Next.js Server Actions parameter source (function-level "use server")
+      - patterns:
+          - pattern: $PARAM
+          - pattern-either:
+              - pattern-inside: |
+                  function $FUNC(..., $PARAM, ...) {
+                    "use server";
+                    ...
+                  }
+              - pattern-inside: |
+                  async function $FUNC(..., $PARAM, ...) {
+                    "use server";
+                    ...
+                  }
+              - pattern-inside: |
+                  const $FUNC = (..., $PARAM, ...) => {
+                    "use server";
+                    ...
+                  }
+              - pattern-inside: |
+                  const $FUNC = async (..., $PARAM, ...) => {
+                    "use server";
+                    ...
+                  }
+      # Next.js Server Actions parameter source (file-level "use server")
+      - patterns:
+          - pattern: $PARAM
+          - pattern-either:
+              - pattern-inside: |
+                  "use server";
+                  ...
+                  function $FUNC(..., $PARAM, ...) {
+                    ...
+                  }
+              - pattern-inside: |
+                  "use server";
+                  ...
+                  async function $FUNC(..., $PARAM, ...) {
+                    ...
+                  }
+              - pattern-inside: |
+                  "use server";
+                  ...
+                  const $FUNC = (..., $PARAM, ...) => {
+                    ...
+                  }
+              - pattern-inside: |
+                  "use server";
+                  ...
+                  const $FUNC = async (..., $PARAM, ...) => {
+                    ...
+                  }
     pattern-sanitizers:
       - pattern: assertAllowedUrl(...)
       - pattern: validateAllowedUrl(...)
@@ -44,6 +103,19 @@ rules:
       - pattern: axios.put($URL, ...)
       - pattern: axios.patch($URL, ...)
       - pattern: axios.delete($URL, ...)
+      - pattern: axios.request($URL, ...)
       - pattern: got($URL, ...)
       - pattern: got.get($URL, ...)
+      - pattern: got.post($URL, ...)
+      - pattern: got.put($URL, ...)
+      - pattern: got.patch($URL, ...)
+      - pattern: got.delete($URL, ...)
+      - pattern: got.head($URL, ...)
+      - pattern: got.options($URL, ...)
+      - pattern: got.any($URL, ...)
       - pattern: request($URL, ...)
+      - pattern: request.get($URL, ...)
+      - pattern: request.post($URL, ...)
+      - pattern: superagent.get($URL, ...)
+      - pattern: superagent.post($URL, ...)
+      - pattern: urllib.request($URL, ...)

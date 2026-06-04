@@ -413,3 +413,76 @@ export function taintedCommandDemoSafe(req: any) {
 
   execSync("git status"); // should be ok
 }
+
+export function taintedDomXssDemo() {
+  const search = location.search;
+  const el = document.getElementById("main");
+  if (el) {
+    el.innerHTML = search; // should trigger tainted-dom-xss
+  }
+
+  const hash = window.location.hash;
+  const comp = <div dangerouslySetInnerHTML={{ __html: hash }} />; // should trigger tainted-dom-xss
+
+  const safeHtml = DOMPurify.sanitize(search);
+  const safeComp = <div dangerouslySetInnerHTML={{ __html: safeHtml }} />; // should be ok
+}
+
+@Controller("taint-test")
+export class TaintTestController {
+  constructor(private readonly db: any) {}
+
+  @Get("sql")
+  async runSql(@Query("q") queryParam: string) {
+    await this.db.query("SELECT * FROM users WHERE name = " + queryParam); // should trigger tainted-sql-query
+  }
+
+  @Post("ssrf")
+  async runSsrf(@Body() body: any) {
+    await fetch(body.url); // should trigger tainted-ssrf-request
+  }
+
+  @Post("cmd")
+  async runCmd(@Param("cmd") command: string) {
+    exec(command); // should trigger tainted-command-injection
+  }
+
+  @Get("xss")
+  async runXss(@Headers("x-user") userHeader: string) {
+    const el = document.getElementById("app");
+    if (el) {
+      el.innerHTML = userHeader; // should trigger tainted-dom-xss
+    }
+  }
+}
+
+export async function actionSql(input: any) {
+  "use server";
+  await db.query("SELECT * FROM users WHERE name = " + input.name); // should trigger tainted-sql-query
+}
+
+export async function actionSsrf(url: string) {
+  "use server";
+  await fetch(url); // should trigger tainted-ssrf-request
+}
+
+export function taintedSecretsDemo() {
+  const stripeKey = "sk_live_0123456789abcdefABCDEF";
+  initializeStripe(stripeKey); // should trigger tainted-hardcoded-secret
+
+  const config = {
+    secrets: {
+      stripe: "sk_live_0123456789abcdefABCDEF",
+    }
+  };
+  initializeStripe(config.secrets.stripe); // should trigger tainted-hardcoded-secret
+
+  const myConfig: any = {};
+  myConfig.secrets = {};
+  myConfig.secrets.stripe = "sk_live_0123456789abcdefABCDEF";
+  initializeStripe(myConfig.secrets.stripe); // should trigger tainted-hardcoded-secret
+
+  const devKey = "sk_test_0123456789abcdef";
+  initializeStripe(devKey); // should be ok
+}
+

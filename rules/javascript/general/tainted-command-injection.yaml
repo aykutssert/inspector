@@ -15,18 +15,81 @@ rules:
         - "CWE-78: Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
       owasp:
         - "A03:2021 - Injection"
-      # hint: taint reaches a command sink, but the agent confirms the input is
-      # truly attacker-controlled and not already constrained. Kept at hint
-      # until the false-positive profile is measured, like the other taint rules.
       confidence: hint
     pattern-sources:
+      # Express query/body/params sources
       - pattern: $REQ.query.$FIELD
       - pattern: $REQ.body.$FIELD
       - pattern: $REQ.params.$FIELD
       - pattern: $REQ.query[$FIELD]
       - pattern: $REQ.body[$FIELD]
       - pattern: $REQ.params[$FIELD]
+      # Next.js request sources
       - pattern: $REQ.nextUrl.searchParams.get(...)
+      # NestJS parameter decorators source
+      - patterns:
+          - pattern: $VAR
+          - pattern-inside: |
+              class $CLASS {
+                $METHOD(..., @$PARAM_DEC(...) $VAR, ...) {
+                  ...
+                }
+              }
+          - metavariable-regex:
+              metavariable: $PARAM_DEC
+              regex: ^(Body|Query|Param|Headers|Req|Request)$
+      # Next.js Server Actions parameter source (function-level "use server")
+      - patterns:
+          - pattern: $PARAM
+          - pattern-either:
+              - pattern-inside: |
+                  function $FUNC(..., $PARAM, ...) {
+                    "use server";
+                    ...
+                  }
+              - pattern-inside: |
+                  async function $FUNC(..., $PARAM, ...) {
+                    "use server";
+                    ...
+                  }
+              - pattern-inside: |
+                  const $FUNC = (..., $PARAM, ...) => {
+                    "use server";
+                    ...
+                  }
+              - pattern-inside: |
+                  const $FUNC = async (..., $PARAM, ...) => {
+                    "use server";
+                    ...
+                  }
+      # Next.js Server Actions parameter source (file-level "use server")
+      - patterns:
+          - pattern: $PARAM
+          - pattern-either:
+              - pattern-inside: |
+                  "use server";
+                  ...
+                  function $FUNC(..., $PARAM, ...) {
+                    ...
+                  }
+              - pattern-inside: |
+                  "use server";
+                  ...
+                  async function $FUNC(..., $PARAM, ...) {
+                    ...
+                  }
+              - pattern-inside: |
+                  "use server";
+                  ...
+                  const $FUNC = (..., $PARAM, ...) => {
+                    ...
+                  }
+              - pattern-inside: |
+                  "use server";
+                  ...
+                  const $FUNC = async (..., $PARAM, ...) => {
+                    ...
+                  }
     pattern-sanitizers:
       - pattern: shellEscape(...)
       - pattern: escapeShell(...)
