@@ -12,6 +12,11 @@ export function Widget({ items, cond }: { items: string[]; cond: boolean }) {
 
   const [count, setCount] = useState(0);
 
+  // unicorn/prefer-number-properties: global isNaN over Number.isNaN.
+  if (isNaN(count)) {
+    setCount(0);
+  }
+
   // react-hooks/exhaustive-deps: effect reads `count` but omits it from deps.
   useEffect(() => {
     console.log(count);

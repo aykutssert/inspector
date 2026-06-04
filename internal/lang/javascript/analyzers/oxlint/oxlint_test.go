@@ -95,6 +95,7 @@ func TestOxlintRuleCoverage(t *testing.T) {
 		"rules-of-hooks",
 		"exhaustive-deps",
 		"no-array-index-key",
+		"prefer-number-properties", // unicorn quality/modernization set
 	} {
 		if !fired[rule] {
 			t.Errorf("enabled oxlint rule %q did not fire — config drift or oxlint rename?", rule)

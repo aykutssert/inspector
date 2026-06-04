@@ -62,6 +62,33 @@ const reactRules = `
     "react/no-array-index-key": "warn"
   `
 
+// qualityRules enable the unicorn "prefer X over Y" modernization set on every
+// JS/TS project (framework-agnostic). These are the perf/quality upgrades an
+// agent can act on directly — Number.isNaN over isNaN, node: import protocol,
+// Array.flatMap over .map().flat(), Set lookups over repeated Array.includes,
+// and so on. Measured across the corpus they fire at a low, real-TP density.
+//
+// consistent-function-scoping is turned OFF: enabling the unicorn plugin pulls
+// in its correctness/suspicious defaults, and that one rule alone fired 431
+// times on a single repo (pure-style "move this closure up" churn) — it would
+// bury the signal. The promise plugin's prefer-await-to-then is intentionally
+// NOT enabled for the same reason (1318 firings on one repo).
+const qualityRules = `
+    "unicorn/consistent-function-scoping": "off",
+    "unicorn/prefer-node-protocol": "warn",
+    "unicorn/prefer-number-properties": "warn",
+    "unicorn/prefer-date-now": "warn",
+    "unicorn/prefer-array-find": "warn",
+    "unicorn/prefer-array-some": "warn",
+    "unicorn/prefer-array-index-of": "warn",
+    "unicorn/prefer-array-flat-map": "warn",
+    "unicorn/prefer-includes": "warn",
+    "unicorn/prefer-set-has": "warn",
+    "unicorn/prefer-math-min-max": "warn",
+    "unicorn/prefer-modern-math-apis": "warn",
+    "unicorn/prefer-logical-operator-over-ternary": "warn"
+  `
+
 // coreNoiseRules are low-signal style/churn checks that bury security and bug
 // findings in large JS repos. Dead-code signal is handled by the knip analyzer,
 // so oxlint should not also report every unused local or shadowed identifier.
@@ -87,8 +114,10 @@ var coreNoiseRules = map[string]bool{
 // code, where any function using `this` is mistaken for a stateless component.
 // The Next.js plugin is appended only for real Next.js apps.
 func buildConfig(react, next bool) string {
-	var plugins []string
-	rules := coreRuleOverrides()
+	// unicorn is framework-agnostic, so it loads on every project to power the
+	// qualityRules modernization set.
+	plugins := []string{`"unicorn"`}
+	rules := coreRuleOverrides() + "," + qualityRules
 	if react {
 		plugins = append(plugins, `"react"`, `"react-perf"`, `"jsx-a11y"`, `"react-hooks"`)
 		rules = rules + "," + reactRules
