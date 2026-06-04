@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"strings"
 
 	"github.com/aykutssert/inspector/internal/core"
 	"github.com/aykutssert/inspector/internal/execx"
+	"github.com/aykutssert/inspector/internal/lang/javascript/jsproject"
 )
 
 type Analyzer struct{}
@@ -102,85 +102,20 @@ func coreRuleOverrides() string {
 
 // relevantPkgDirs returns the package.json locations worth inspecting: the repo
 // root plus every directory on the path from each scanned file up to the root.
-// The walk-up makes dependency detection work in monorepos/workspaces where an
-// app lives in a sub-package (apps/web) rather than the root.
-func relevantPkgDirs(ctx core.ProjectContext) map[string]bool {
-	dirs := map[string]bool{ctx.Root: true}
-	for _, f := range ctx.Files {
-		dir := filepath.Dir(f)
-		if !filepath.IsAbs(dir) {
-			dir = filepath.Join(ctx.Root, dir)
-		}
-		for {
-			dirs[dir] = true
-			if dir == ctx.Root || !strings.HasPrefix(dir, ctx.Root) {
-				break
-			}
-			parent := filepath.Dir(dir)
-			if parent == dir {
-				break
-			}
-			dir = parent
-		}
-	}
-	return dirs
-}
+func relevantPkgDirs(ctx core.ProjectContext) map[string]bool { return jsproject.RelevantPkgDirs(ctx) }
 
 // isNextProject reports whether the scan target is a Next.js app: a next.config.*
 // among the scanned files, or a "next" dependency in any relevant package.json.
-func isNextProject(ctx core.ProjectContext) bool {
-	for _, f := range ctx.Files {
-		if strings.HasPrefix(filepath.Base(f), "next.config.") {
-			return true
-		}
-	}
-	for dir := range relevantPkgDirs(ctx) {
-		if pkgHasDep(filepath.Join(dir, "package.json"), "next") {
-			return true
-		}
-	}
-	return false
-}
+func isNextProject(ctx core.ProjectContext) bool { return jsproject.IsNext(ctx) }
 
-// isReactProject reports whether the scan target is a React app: any scanned
-// .jsx/.tsx file, or a "react" dependency in any relevant package.json. Used to
-// gate the React-family oxlint plugins so their rules don't misfire on plain
-// Node/backend code.
-func isReactProject(ctx core.ProjectContext) bool {
-	for _, f := range ctx.Files {
-		switch strings.ToLower(filepath.Ext(f)) {
-		case ".jsx", ".tsx":
-			return true
-		}
-	}
-	for dir := range relevantPkgDirs(ctx) {
-		if pkgHasDep(filepath.Join(dir, "package.json"), "react") {
-			return true
-		}
-	}
-	return false
-}
+// isReactProject reports whether the scan target is a React app. It delegates to
+// jsproject so oxlint's plugin gating and the React hint pack share one
+// definition.
+func isReactProject(ctx core.ProjectContext) bool { return jsproject.IsReact(ctx) }
 
 // pkgHasDep reports whether the package.json at path lists dep among its
 // dependencies or devDependencies.
-func pkgHasDep(path, dep string) bool {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return false
-	}
-	var pkg struct {
-		Dependencies    map[string]string `json:"dependencies"`
-		DevDependencies map[string]string `json:"devDependencies"`
-	}
-	if json.Unmarshal(data, &pkg) != nil {
-		return false
-	}
-	if _, ok := pkg.Dependencies[dep]; ok {
-		return true
-	}
-	_, ok := pkg.DevDependencies[dep]
-	return ok
-}
+func pkgHasDep(path, dep string) bool { return jsproject.PkgHasDep(path, dep) }
 
 type oxlintOut struct {
 	Diagnostics []struct {
