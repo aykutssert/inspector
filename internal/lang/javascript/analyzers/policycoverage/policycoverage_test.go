@@ -35,6 +35,10 @@ export class UsersController {
 
 @Controller('admin')
 export class AdminController {
+  @UseGuards(JwtAuthGuard)
+  @Get('stats')
+  stats() {}
+
   @Post('delete')
   deleteUser() {}
 }

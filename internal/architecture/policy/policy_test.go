@@ -128,6 +128,71 @@ func TestPolicyCoverageEngine(t *testing.T) {
 			wantCount: 1,
 			wantRules: []string{"dotnet.missing-authorize-attribute"},
 		},
+		{
+			name: "consistency: mixed scope flags the forgotten guard",
+			endpoints: []Endpoint{
+				{
+					Framework: "nestjs",
+					File:      "orders.controller.ts",
+					Line:      10,
+					Class:     "OrdersController",
+					Handler:   "list",
+					Route:     "GET /orders",
+					Policies:  []string{"JwtAuthGuard"},
+				},
+				{
+					Framework: "nestjs",
+					File:      "orders.controller.ts",
+					Line:      20,
+					Class:     "OrdersController",
+					Handler:   "remove",
+					Route:     "DELETE /orders/:id",
+					// guarded siblings exist -> this looks forgotten
+				},
+			},
+			rules: []Rule{
+				{
+					ID:                 "nestjs.missing-auth-guard",
+					Framework:          "nestjs",
+					RequiredAnyOf:      []string{"JwtAuthGuard", "AuthGuard"},
+					Exclusions:         []string{"Public"},
+					RequireConsistency: true,
+				},
+			},
+			wantCount: 1,
+			wantRules: []string{"nestjs.missing-auth-guard"},
+		},
+		{
+			name: "consistency: fully uncovered scope is treated as public and stays silent",
+			endpoints: []Endpoint{
+				{
+					Framework: "nestjs",
+					File:      "health.controller.ts",
+					Line:      8,
+					Class:     "HealthController",
+					Handler:   "live",
+					Route:     "GET /health/live",
+				},
+				{
+					Framework: "nestjs",
+					File:      "health.controller.ts",
+					Line:      14,
+					Class:     "HealthController",
+					Handler:   "ready",
+					Route:     "GET /health/ready",
+				},
+			},
+			rules: []Rule{
+				{
+					ID:                 "nestjs.missing-auth-guard",
+					Framework:          "nestjs",
+					RequiredAnyOf:      []string{"JwtAuthGuard", "AuthGuard"},
+					Exclusions:         []string{"Public"},
+					RequireConsistency: true,
+				},
+			},
+			wantCount: 0,
+		},
 	}
 
 	for _, tt := range tests {

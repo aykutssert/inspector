@@ -22,6 +22,14 @@ type Rule struct {
 	RequiredAnyOf []string // At least one of these policies must be present on the endpoint (or its parent class/router).
 	Exclusions    []string // If any of these exclusion tags are present, the rule is skipped.
 	Message       string   // Error message to display on violation.
+
+	// RequireConsistency raises the actionable rate: only flag an endpoint that
+	// lacks the policy when a sibling in the same scope (controller class, or
+	// file/router when there is no class) DOES apply it. A scope where every
+	// endpoint is uncovered is treated as an intentionally public surface (a
+	// health check, a webhook, global middleware we cannot see) and stays
+	// silent. A mixed scope signals a forgotten guard, which is worth surfacing.
+	RequireConsistency bool
 }
 
 // Violation represents an endpoint that failed to meet the policy requirements.
@@ -40,60 +48,91 @@ func Analyze(endpoints []Endpoint, rules []Rule) []Violation {
 	var out []Violation
 
 	for _, rule := range rules {
+		if len(rule.RequiredAnyOf) == 0 {
+			continue
+		}
 		reqMap := make(map[string]bool)
 		for _, p := range rule.RequiredAnyOf {
 			reqMap[p] = true
 		}
-
 		exclMap := make(map[string]bool)
 		for _, e := range rule.Exclusions {
 			exclMap[e] = true
 		}
 
+		// In consistency mode, first find which scopes prove the policy is
+		// applied somewhere; scopes that are entirely uncovered are skipped.
+		var scopeHasCompliant map[string]bool
+		if rule.RequireConsistency {
+			scopeHasCompliant = make(map[string]bool)
+			for _, ep := range endpoints {
+				if !ruleApplies(rule, ep, exclMap) {
+					continue
+				}
+				if hasAnyPolicy(ep, reqMap) {
+					scopeHasCompliant[scopeKey(ep)] = true
+				}
+			}
+		}
+
 		for _, ep := range endpoints {
-			// 0. Filter by framework if specified in the rule
-			if rule.Framework != "" && ep.Framework != rule.Framework {
+			if !ruleApplies(rule, ep, exclMap) {
 				continue
 			}
-
-			// 1. Check if endpoint is excluded
-			isExcluded := false
-			for _, excl := range ep.Exclusions {
-				if exclMap[excl] {
-					isExcluded = true
-					break
-				}
-			}
-			if isExcluded {
+			if hasAnyPolicy(ep, reqMap) {
 				continue
 			}
-
-			// 2. Check if required policies are satisfied
-			hasPolicy := false
-			for _, pol := range ep.Policies {
-				if reqMap[pol] {
-					hasPolicy = true
-					break
-				}
+			if rule.RequireConsistency && !scopeHasCompliant[scopeKey(ep)] {
+				continue
 			}
-
-			// 3. If required policies are defined but none matched, report violation
-			if len(rule.RequiredAnyOf) > 0 && !hasPolicy {
-				msg := rule.Message
-				if msg == "" {
-					msg = fmt.Sprintf("Endpoint %s (%s) is missing required security policy.", ep.Route, ep.Handler)
-				}
-				out = append(out, Violation{
-					RuleID:  rule.ID,
-					File:    ep.File,
-					Line:    ep.Line,
-					Route:   ep.Route,
-					Handler: ep.Handler,
-					Message: msg,
-				})
+			msg := rule.Message
+			if msg == "" {
+				msg = fmt.Sprintf("Endpoint %s (%s) is missing required security policy.", ep.Route, ep.Handler)
 			}
+			out = append(out, Violation{
+				RuleID:  rule.ID,
+				File:    ep.File,
+				Line:    ep.Line,
+				Route:   ep.Route,
+				Handler: ep.Handler,
+				Message: msg,
+			})
 		}
 	}
 
 	return out
+}
+
+// ruleApplies reports whether the rule should evaluate this endpoint: the
+// framework matches (when constrained) and no exclusion tag bypasses it.
+func ruleApplies(rule Rule, ep Endpoint, exclMap map[string]bool) bool {
+	if rule.Framework != "" && ep.Framework != rule.Framework {
+		return false
+	}
+	for _, excl := range ep.Exclusions {
+		if exclMap[excl] {
+			return false
+		}
+	}
+	return true
+}
+
+// hasAnyPolicy reports whether the endpoint carries at least one required policy.
+func hasAnyPolicy(ep Endpoint, reqMap map[string]bool) bool {
+	for _, pol := range ep.Policies {
+		if reqMap[pol] {
+			return true
+		}
+	}
+	return false
+}
+
+// scopeKey groups endpoints by their enclosing unit — the controller class when
+// present, otherwise the file (router module) — within a framework.
+func scopeKey(ep Endpoint) string {
+	unit := ep.Class
+	if unit == "" {
+		unit = ep.File
+	}
+	return ep.Framework + "|" + unit
 }

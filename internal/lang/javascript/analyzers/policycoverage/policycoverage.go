@@ -63,17 +63,19 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 	// Default rules for NestJS and Express
 	rules := []Rule{
 		{
-			ID:            "nestjs.missing-auth-guard",
-			Framework:     "nestjs",
-			RequiredAnyOf: []string{"JwtAuthGuard", "AuthGuard"},
-			Exclusions:    []string{"Public"},
-			Message:       "NestJS controller route is missing authentication guards or explicit @Public() exclusion.",
+			ID:                 "nestjs.missing-auth-guard",
+			Framework:          "nestjs",
+			RequiredAnyOf:      []string{"JwtAuthGuard", "AuthGuard"},
+			Exclusions:         []string{"Public"},
+			RequireConsistency: true,
+			Message:            "NestJS controller route is missing authentication guards while sibling routes in the same controller are guarded; it looks like a forgotten guard rather than an intentionally public route.",
 		},
 		{
-			ID:            "express.missing-auth-middleware",
-			Framework:     "express",
-			RequiredAnyOf: []string{"auth", "requireAuth", "authenticate", "passport.authenticate"},
-			Message:       "Express route is missing required authentication middleware.",
+			ID:                 "express.missing-auth-middleware",
+			Framework:          "express",
+			RequiredAnyOf:      []string{"auth", "requireAuth", "authenticate", "passport.authenticate"},
+			RequireConsistency: true,
+			Message:            "Express route is missing authentication middleware while sibling routes in the same file are protected; it looks like a forgotten guard rather than an intentionally public route.",
 		},
 	}
 
@@ -104,22 +106,24 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 
 // Rule wrapper to local package structure
 type Rule struct {
-	ID            string
-	Framework     string
-	RequiredAnyOf []string
-	Exclusions    []string
-	Message       string
+	ID                 string
+	Framework          string
+	RequiredAnyOf      []string
+	Exclusions         []string
+	Message            string
+	RequireConsistency bool
 }
 
 func translateRules(rules []Rule) []policy.Rule {
 	var out []policy.Rule
 	for _, r := range rules {
 		out = append(out, policy.Rule{
-			ID:            r.ID,
-			Framework:     r.Framework,
-			RequiredAnyOf: r.RequiredAnyOf,
-			Exclusions:    r.Exclusions,
-			Message:       r.Message,
+			ID:                 r.ID,
+			Framework:          r.Framework,
+			RequiredAnyOf:      r.RequiredAnyOf,
+			Exclusions:         r.Exclusions,
+			Message:            r.Message,
+			RequireConsistency: r.RequireConsistency,
 		})
 	}
 	return out
@@ -325,19 +329,28 @@ func extractExpressPolicy(node *sitter.Node, src []byte) []string {
 
 func decoratorsOfNode(n *sitter.Node, src []byte) map[string][]string {
 	out := map[string][]string{}
-	// Decorators can precede class declarations in parent
+	// Decorators can precede the node as siblings in the parent. Only the run of
+	// decorators IMMEDIATELY before the node belongs to it: reset when a
+	// non-decorator sibling (e.g. an earlier method) intervenes, otherwise a
+	// method would inherit a previous member's decorators.
 	parent := n.Parent()
 	if parent != nil {
+		pending := map[string][]string{}
 		for i := 0; i < int(parent.NamedChildCount()); i++ {
 			ch := parent.NamedChild(i)
 			if ch == n {
+				for k, v := range pending {
+					out[k] = v
+				}
 				break
 			}
 			if ch.Type() == "decorator" {
 				name, args := parseDecorator(ch, src)
 				if name != "" {
-					out[name] = args
+					pending[name] = args
 				}
+			} else {
+				pending = map[string][]string{}
 			}
 		}
 	}
