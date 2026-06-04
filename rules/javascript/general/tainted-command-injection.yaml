@@ -1,0 +1,46 @@
+rules:
+  - id: tainted-command-injection
+    mode: taint
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      User-controlled request data reaches an OS command execution sink. An
+      attacker can inject shell metacharacters to run arbitrary commands on the
+      server. Avoid passing request data into a shell; use a fixed command with
+      an argument array (no shell), or validate the input against a strict
+      allowlist before execution.
+    metadata:
+      category: security
+      cwe:
+        - "CWE-78: Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+      owasp:
+        - "A03:2021 - Injection"
+      # hint: taint reaches a command sink, but the agent confirms the input is
+      # truly attacker-controlled and not already constrained. Kept at hint
+      # until the false-positive profile is measured, like the other taint rules.
+      confidence: hint
+    pattern-sources:
+      - pattern: $REQ.query.$FIELD
+      - pattern: $REQ.body.$FIELD
+      - pattern: $REQ.params.$FIELD
+      - pattern: $REQ.query[$FIELD]
+      - pattern: $REQ.body[$FIELD]
+      - pattern: $REQ.params[$FIELD]
+      - pattern: $REQ.nextUrl.searchParams.get(...)
+    pattern-sanitizers:
+      - pattern: shellEscape(...)
+      - pattern: escapeShell(...)
+      - pattern: shellQuote(...)
+      - pattern: assertAllowedCommand(...)
+      - pattern: allowedCommand(...)
+    pattern-sinks:
+      - pattern: exec($CMD, ...)
+      - pattern: execSync($CMD, ...)
+      - pattern: spawn($CMD, ...)
+      - pattern: spawnSync($CMD, ...)
+      - pattern: execa($CMD, ...)
+      - pattern: execa.command($CMD, ...)
+      - pattern: $CP.exec($CMD, ...)
+      - pattern: $CP.execSync($CMD, ...)
+      - pattern: $CP.spawn($CMD, ...)
+      - pattern: $CP.spawnSync($CMD, ...)

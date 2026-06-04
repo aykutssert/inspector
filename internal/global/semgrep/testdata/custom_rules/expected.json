@@ -530,6 +530,42 @@
     "message": "A token/secret/credential is written to localStorage or sessionStorage. Web storage is readable by any script on the page, so any XSS can exfiltrate it; unlike an httpOnly cookie it is not protected from JavaScript. Prefer an httpOnly, Secure, SameSite cookie for auth material, or keep it in memory.\n"
   },
   {
+    "rule_id": "general.tainted-command-injection",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 399,
+    "message": "User-controlled request data reaches an OS command execution sink. An attacker can inject shell metacharacters to run arbitrary commands on the server. Avoid passing request data into a shell; use a fixed command with an argument array (no shell), or validate the input against a strict allowlist before execution.\n"
+  },
+  {
+    "rule_id": "general.tainted-command-injection",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 402,
+    "message": "User-controlled request data reaches an OS command execution sink. An attacker can inject shell metacharacters to run arbitrary commands on the server. Avoid passing request data into a shell; use a fixed command with an argument array (no shell), or validate the input against a strict allowlist before execution.\n"
+  },
+  {
+    "rule_id": "general.tainted-command-injection",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 405,
+    "message": "User-controlled request data reaches an OS command execution sink. An attacker can inject shell metacharacters to run arbitrary commands on the server. Avoid passing request data into a shell; use a fixed command with an argument array (no shell), or validate the input against a strict allowlist before execution.\n"
+  },
+  {
+    "rule_id": "general.tainted-command-injection",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 407,
+    "message": "User-controlled request data reaches an OS command execution sink. An attacker can inject shell metacharacters to run arbitrary commands on the server. Avoid passing request data into a shell; use a fixed command with an argument array (no shell), or validate the input against a strict allowlist before execution.\n"
+  },
+  {
     "rule_id": "general.tainted-sql-query",
     "severity": "warning",
     "category": "security",

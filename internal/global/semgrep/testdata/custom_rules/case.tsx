@@ -393,3 +393,23 @@ export async function taintedSsrfDemoSafe(req: any) {
   const serviceUrl = trustedServiceUrl(req.params.service);
   await fetch(serviceUrl); // should be ok
 }
+
+export function taintedCommandDemoUnsafe(req: any, cp: any) {
+  const file = req.query.file;
+  exec("cat " + file); // should trigger tainted-command-injection
+
+  const branch = req.body.branch;
+  execSync(`git checkout ${branch}`); // should trigger tainted-command-injection
+
+  const name = req.params.name;
+  spawn(name); // should trigger tainted-command-injection
+
+  cp.execSync("ls " + req.query.dir); // should trigger tainted-command-injection
+}
+
+export function taintedCommandDemoSafe(req: any) {
+  const file = assertAllowedCommand(req.query.file);
+  exec("cat " + file); // should be ok
+
+  execSync("git status"); // should be ok
+}
