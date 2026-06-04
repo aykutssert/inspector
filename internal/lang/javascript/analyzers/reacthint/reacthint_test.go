@@ -472,3 +472,99 @@ func scanReactProject(t *testing.T, root string) []core.Finding {
 	}
 	return got
 }
+
+func TestCallbackPropRenderedNotInvoked(t *testing.T) {
+	src := `function Button({ onClick }) {
+  return <span>{onClick}</span>;
+}`
+	if ids := parseSrc(t, ".tsx", src); !has(ids, "callback-prop-not-invoked") {
+		t.Fatalf("expected callback-prop-not-invoked, got %v", ids)
+	}
+}
+
+func TestCallbackPropRenamedPairRendered(t *testing.T) {
+	src := `function Row({ onSave: save }) {
+  return <div>{save}</div>;
+}`
+	if ids := parseSrc(t, ".tsx", src); !has(ids, "callback-prop-not-invoked") {
+		t.Fatalf("expected flag for renamed callback prop, got %v", ids)
+	}
+}
+
+func TestCallbackPropInterpolated(t *testing.T) {
+	src := "function L({ onChange }) {\n" +
+		"  const label = `value=${onChange}`;\n" +
+		"  return <p>{label}</p>;\n" +
+		"}"
+	if ids := parseSrc(t, ".tsx", src); !has(ids, "callback-prop-not-invoked") {
+		t.Fatalf("expected flag for interpolated callback prop, got %v", ids)
+	}
+}
+
+func TestCallbackPropForwardedNotFlagged(t *testing.T) {
+	src := `function Button({ onClick }) {
+  return <button onClick={onClick}>ok</button>;
+}`
+	if ids := parseSrc(t, ".tsx", src); has(ids, "callback-prop-not-invoked") {
+		t.Fatalf("forwarded handler should not be flagged, got %v", ids)
+	}
+}
+
+func TestCallbackPropInvokedNotFlagged(t *testing.T) {
+	src := `function Form({ onSubmit }) {
+  const submit = () => onSubmit();
+  return <form onSubmit={submit}>x</form>;
+}`
+	if ids := parseSrc(t, ".tsx", src); has(ids, "callback-prop-not-invoked") {
+		t.Fatalf("invoked callback should not be flagged, got %v", ids)
+	}
+}
+
+func TestCallbackPropAliasedNotFlagged(t *testing.T) {
+	src := `function W({ onLoad }) {
+  const cb = onLoad;
+  cb();
+  return <div>x</div>;
+}`
+	if ids := parseSrc(t, ".tsx", src); has(ids, "callback-prop-not-invoked") {
+		t.Fatalf("aliased callback should not be flagged, got %v", ids)
+	}
+}
+
+func TestCallbackPropPassedAsArgNotFlagged(t *testing.T) {
+	src := `function W({ onMount }) {
+  useEffect(onMount, []);
+  return <div>x</div>;
+}`
+	if ids := parseSrc(t, ".tsx", src); has(ids, "callback-prop-not-invoked") {
+		t.Fatalf("callback passed as argument should not be flagged, got %v", ids)
+	}
+}
+
+func TestCallbackPropGuardNotFlagged(t *testing.T) {
+	src := `function W({ onClose }) {
+  return <div>{onClose && <button onClick={onClose}>x</button>}</div>;
+}`
+	if ids := parseSrc(t, ".tsx", src); has(ids, "callback-prop-not-invoked") {
+		t.Fatalf("guarded callback should not be flagged, got %v", ids)
+	}
+}
+
+func TestCallbackPropRenderedButAlsoCalledNotFlagged(t *testing.T) {
+	src := `function W({ onPing }) {
+  onPing();
+  return <span>{onPing}</span>;
+}`
+	if ids := parseSrc(t, ".tsx", src); has(ids, "callback-prop-not-invoked") {
+		t.Fatalf("a callback invoked anywhere honors the contract, got %v", ids)
+	}
+}
+
+func TestNonCallbackPropRenderedNotFlagged(t *testing.T) {
+	src := `function W({ title }) {
+  return <h1>{title}</h1>;
+}`
+	if ids := parseSrc(t, ".tsx", src); has(ids, "callback-prop-not-invoked") {
+		t.Fatalf("non-callback prop should not be flagged, got %v", ids)
+	}
+}

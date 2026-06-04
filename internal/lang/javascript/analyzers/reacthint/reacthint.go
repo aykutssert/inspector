@@ -59,6 +59,7 @@ var jsxDetectors = []jsxDetector{
 	detectMemoizedChildUnstableProp,
 	detectEmDashInJSX,
 	detectRenderTimeAllocation,
+	detectCallbackPropContract,
 }
 
 func hint(rule, cat string, sev core.Severity, file string, line int, msg, fix string) core.Finding {
