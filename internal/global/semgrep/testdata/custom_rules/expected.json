@@ -827,24 +827,6 @@
     "message": "A NestJS controller directly performs database or ORM operations. NestJS architecture mandates that controllers only handle HTTP routing and delegate business logic and data access to services. Move this database operation into a service class.\n"
   },
   {
-    "rule_id": "nestjs.nestjs-missing-validation-pipe",
-    "severity": "warning",
-    "category": "quality",
-    "confidence": "hint",
-    "file": "case.tsx",
-    "line": 256,
-    "message": "A NestJS controller method accepts a request body via @Body(), but no @UsePipes(ValidationPipe) decorator is declared on the method or the class. Ensure input validation is active (either via local @UsePipes or a global ValidationPipe in main.ts) to prevent unvalidated payloads.\n"
-  },
-  {
-    "rule_id": "nestjs.nestjs-missing-validation-pipe",
-    "severity": "warning",
-    "category": "quality",
-    "confidence": "hint",
-    "file": "case.tsx",
-    "line": 440,
-    "message": "A NestJS controller method accepts a request body via @Body(), but no @UsePipes(ValidationPipe) decorator is declared on the method or the class. Ensure input validation is active (either via local @UsePipes or a global ValidationPipe in main.ts) to prevent unvalidated payloads.\n"
-  },
-  {
     "rule_id": "nextjs.next-insecure-cookie-setting",
     "severity": "warning",
     "category": "security",

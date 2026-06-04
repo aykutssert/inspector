@@ -11,6 +11,7 @@ import (
 	"github.com/aykutssert/inspector/internal/lang/javascript/analyzers/nexthint"
 	"github.com/aykutssert/inspector/internal/lang/javascript/analyzers/oxlint"
 	"github.com/aykutssert/inspector/internal/lang/javascript/analyzers/policycoverage"
+	"github.com/aykutssert/inspector/internal/lang/javascript/analyzers/validationcoverage"
 	jscontext "github.com/aykutssert/inspector/internal/lang/javascript/context"
 )
 
@@ -48,5 +49,5 @@ func (javascriptPack) ContextProviders() []inspectctx.Provider {
 }
 
 func (javascriptPack) Analyzers() []core.Analyzer {
-	return []core.Analyzer{oxlint.New(), importcycle.New(), knip.New(), nesthint.New(), nexthint.New(), archhint.New(), jsquality.New(), policycoverage.New()}
+	return []core.Analyzer{oxlint.New(), importcycle.New(), knip.New(), nesthint.New(), nexthint.New(), archhint.New(), jsquality.New(), policycoverage.New(), validationcoverage.New()}
 }
