@@ -25,7 +25,10 @@ jobs:
       matrix:
         include:
           - { runner: macos-latest, goos: darwin, goarch: arm64 }
-          - { runner: macos-13, goos: darwin, goarch: amd64 }
+          # darwin/amd64 cross-built on the arm64 runner — the scarce macos-13
+          # Intel runners queue for many minutes. macOS clang targets x86_64
+          # natively (universal SDK), so CGO/tree-sitter cross-compiles fine.
+          - { runner: macos-latest, goos: darwin, goarch: amd64 }
           - { runner: ubuntu-latest, goos: linux, goarch: amd64 }
           - { runner: ubuntu-latest, goos: linux, goarch: arm64, cc: aarch64-linux-gnu-gcc, apt: gcc-aarch64-linux-gnu }
           - { runner: windows-latest, goos: windows, goarch: amd64, ext: .exe }
