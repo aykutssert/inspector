@@ -129,3 +129,95 @@ func TestLargeFunctionComplexity(t *testing.T) {
 		t.Fatalf("expected large-function violation, got %#v", findings)
 	}
 }
+
+func TestNonNullAssertionSpam(t *testing.T) {
+	// 11 non-null assertions -> exceeds threshold of 10
+	src := `
+		const a = obj!.prop;
+		const b = obj!.prop;
+		const c = obj!.prop;
+		const d = obj!.prop;
+		const e = obj!.prop;
+		const f = obj!.prop;
+		const g = obj!.prop;
+		const h = obj!.prop;
+		const i = obj!.prop;
+		const j = obj!.prop;
+		const k = obj!.prop;
+	`
+	findings := scanSrc(t, "spam.ts", src)
+	if !hasRule(findings, "non-null-assertion-spam") {
+		t.Fatalf("expected non-null-assertion-spam violation, got %#v", findings)
+	}
+	// Check the violation info
+	for _, f := range findings {
+		if f.RuleID == "non-null-assertion-spam" {
+			if f.Line != 2 {
+				t.Fatalf("expected violation line to be first occurrence (2), got %d", f.Line)
+			}
+			if f.Severity != core.SeverityWarning {
+				t.Fatalf("expected warning severity, got %v", f.Severity)
+			}
+		}
+	}
+}
+
+func TestNonNullAssertionSpamSafe(t *testing.T) {
+	// 10 non-null assertions -> exactly at/under threshold of 10, should be safe
+	src := `
+		const a = obj!.prop;
+		const b = obj!.prop;
+		const c = obj!.prop;
+		const d = obj!.prop;
+		const e = obj!.prop;
+		const f = obj!.prop;
+		const g = obj!.prop;
+		const h = obj!.prop;
+		const i = obj!.prop;
+		const j = obj!.prop;
+	`
+	findings := scanSrc(t, "safe.ts", src)
+	if hasRule(findings, "non-null-assertion-spam") {
+		t.Fatalf("did not expect non-null-assertion-spam violation on 10 assertions, got %#v", findings)
+	}
+}
+
+func TestSequentialAwaits(t *testing.T) {
+	src := `
+		async function test() {
+			const a = await foo();
+			const b = await bar(); // Violation: independent
+		}
+	`
+	findings := scanSrc(t, "awaits.ts", src)
+	if !hasRule(findings, "sequential-awaits-independent") {
+		t.Fatalf("expected sequential-awaits-independent, got %#v", findings)
+	}
+}
+
+func TestSequentialAwaitsDependent(t *testing.T) {
+	src := `
+		async function test() {
+			const a = await foo();
+			const b = await bar(a); // Safe: depends on a
+		}
+	`
+	findings := scanSrc(t, "awaits_dep.ts", src)
+	if hasRule(findings, "sequential-awaits-independent") {
+		t.Fatalf("did not expect sequential-awaits-independent, got %#v", findings)
+	}
+}
+
+func TestSequentialAwaitsNonConsecutive(t *testing.T) {
+	src := `
+		async function test() {
+			const a = await foo();
+			console.log("something in between");
+			const b = await bar(); // Safe: non-consecutive
+		}
+	`
+	findings := scanSrc(t, "awaits_non_consec.ts", src)
+	if hasRule(findings, "sequential-awaits-independent") {
+		t.Fatalf("did not expect sequential-awaits-independent, got %#v", findings)
+	}
+}

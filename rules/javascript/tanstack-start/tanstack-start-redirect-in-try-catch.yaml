@@ -1,0 +1,21 @@
+rules:
+  - id: tanstack-start-redirect-in-try-catch
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Calling 'redirect()' or 'notFound()' inside a try-catch block can prevent the navigation from working
+      correctly because TanStack Router uses thrown errors internally to redirect or show a 404 page.
+      Call redirect() outside the try-catch block or rethrow the exception.
+    metadata:
+      category: correctness
+      confidence: hint
+    patterns:
+      - pattern-inside: |
+          try {
+            ...
+          } catch ($ERR) {
+            ...
+          }
+      - pattern-either:
+          - pattern: redirect(...)
+          - pattern: notFound(...)

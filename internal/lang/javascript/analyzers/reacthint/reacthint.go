@@ -53,6 +53,7 @@ var detectors = []detector{
 	detectPreferUseReducer,
 	detectGodComponent,
 	detectComponentSplitting,
+	detectUseEffectFetchSuggestQuery,
 }
 
 // jsxDetectors need JSX grammar (text/elements) and only run on js/jsx/tsx.
@@ -61,6 +62,7 @@ var jsxDetectors = []jsxDetector{
 	detectEmDashInJSX,
 	detectRenderTimeAllocation,
 	detectCallbackPropContract,
+	detectDeepPropDrilling,
 }
 
 func hint(rule, cat string, sev core.Severity, file string, line int, msg, fix string) core.Finding {

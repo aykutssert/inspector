@@ -3,6 +3,7 @@ package reacthint
 import (
 	"regexp"
 	"strconv"
+	"strings"
 
 	sitter "github.com/smacker/go-tree-sitter"
 
@@ -122,4 +123,51 @@ func callsSetter(node *sitter.Node, lang *sitter.Language, src []byte) bool {
 		}
 	})
 	return found
+}
+
+func detectUseEffectFetchSuggestQuery(root *sitter.Node, lang *sitter.Language, src []byte, file string) []core.Finding {
+	var out []core.Finding
+	walkReact(root, func(node *sitter.Node) {
+		if node.Type() != "call_expression" {
+			return
+		}
+		fnNode := node.ChildByFieldName("function")
+		if fnNode == nil || nodeText(fnNode, src) != "useEffect" {
+			return
+		}
+		argsNode := node.ChildByFieldName("arguments")
+		if argsNode == nil || argsNode.NamedChildCount() == 0 {
+			return
+		}
+		cb := argsNode.NamedChild(0)
+		if cb == nil {
+			return
+		}
+
+		// Check if callback body calls fetch or axios
+		hasFetch := false
+		walkReact(cb, func(n *sitter.Node) {
+			if hasFetch || n.Type() != "call_expression" {
+				return
+			}
+			callee := n.ChildByFieldName("function")
+			if callee == nil {
+				return
+			}
+			calleeText := nodeText(callee, src)
+			if calleeText == "fetch" || calleeText == "axios" || strings.HasPrefix(calleeText, "axios.") {
+				hasFetch = true
+			}
+		})
+
+		if hasFetch {
+			out = append(out, hint(
+				"react-useeffect-fetch-suggest-query", "quality", core.SeverityInfo, file,
+				int(node.StartPoint().Row)+1,
+				"useEffect is performing basic client-side data fetching. Consider using TanStack Query (useQuery) for robust state caching, caching strategies, automatic retries, and clean deduplication.",
+				"Migrate this fetch to a TanStack Query hook.",
+			))
+		}
+	})
+	return out
 }

@@ -1,0 +1,37 @@
+rules:
+  - id: next-client-component-data-fetch
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Client-side data fetching detected inside useEffect in a Client Component.
+      Using useEffect with fetch or axios in Client Components can lead to request waterfalls,
+      increased bundle sizes, and negative impact on SEO.
+      Consider moving data fetching to a React Server Component (RSC),
+      or use a library like TanStack Query for client-side state and caching.
+    metadata:
+      category: performance
+      # hint, not rule: interaction-driven and polling client fetches are
+      # legitimate, so moving to an RSC is advice the agent should weigh, not a
+      # definite defect.
+      confidence: hint
+    patterns:
+      - pattern-either:
+          - pattern: fetch(...)
+          - pattern: $AXIOS.get(...)
+          - pattern: $AXIOS.post(...)
+          - pattern: $AXIOS.put(...)
+          - pattern: $AXIOS.delete(...)
+          - pattern: $AXIOS.patch(...)
+          - pattern: $AXIOS(...)
+      - metavariable-regex:
+          metavariable: $AXIOS
+          regex: ^axios$
+      - pattern-inside: |
+          "use client";
+          ...
+      - pattern-inside: |
+          $EFFECT(...)
+          ...
+      - metavariable-regex:
+          metavariable: $EFFECT
+          regex: ^(React\.)?useEffect$

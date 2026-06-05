@@ -212,6 +212,15 @@
     "message": "The Express application is initialized but does not appear to use the 'helmet' middleware. Helmet sets critical security headers to protect the app from common web vulnerabilities (XSS, Clickjacking, MIME-sniffing, etc.). Add app.use(helmet()) to secure HTTP headers.\n"
   },
   {
+    "rule_id": "express.express-missing-helmet",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "express_sensitive_route_no_auth.ts",
+    "line": 3,
+    "message": "The Express application is initialized but does not appear to use the 'helmet' middleware. Helmet sets critical security headers to protect the app from common web vulnerabilities (XSS, Clickjacking, MIME-sniffing, etc.). Add app.use(helmet()) to secure HTTP headers.\n"
+  },
+  {
     "rule_id": "express.express-missing-rate-limit",
     "severity": "warning",
     "category": "security",
@@ -336,6 +345,51 @@
     "file": "express.ts",
     "line": 79,
     "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
+  },
+  {
+    "rule_id": "express.express-missing-rate-limit",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "express_sensitive_route_no_auth.ts",
+    "line": 10,
+    "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
+  },
+  {
+    "rule_id": "express.express-missing-rate-limit",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "express_sensitive_route_no_auth.ts",
+    "line": 13,
+    "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
+  },
+  {
+    "rule_id": "express.express-missing-rate-limit",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "express_sensitive_route_no_auth.ts",
+    "line": 16,
+    "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
+  },
+  {
+    "rule_id": "express.express-sensitive-route-no-auth",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "express_sensitive_route_no_auth.ts",
+    "line": 10,
+    "message": "A sensitive Express route (e.g., containing 'admin', 'delete', 'update', 'secure', 'private', or 'remove') does not seem to use any authorization or authentication middleware. Ensure that route handlers for sensitive paths are protected using an authentication or permission-checking middleware.\n"
+  },
+  {
+    "rule_id": "express.express-sensitive-route-no-auth",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "express_sensitive_route_no_auth.ts",
+    "line": 13,
+    "message": "A sensitive Express route (e.g., containing 'admin', 'delete', 'update', 'secure', 'private', or 'remove') does not seem to use any authorization or authentication middleware. Ensure that route handlers for sensitive paths are protected using an authentication or permission-checking middleware.\n"
   },
   {
     "rule_id": "general.await-in-loop",
@@ -470,6 +524,51 @@
     "confidence": "hint",
     "file": "case.tsx",
     "line": 316,
+    "message": "A hardcoded HTTP/HTTPS URL is used directly in a network request. To ensure flexibility across different environments (development, staging, production), avoid hardcoding base URLs. Load the base URL from an environment variable or use an API client with a configured baseURL.\n"
+  },
+  {
+    "rule_id": "general.hardcoded-api-url",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "client_data_fetch.tsx",
+    "line": 48,
+    "message": "A hardcoded HTTP/HTTPS URL is used directly in a network request. To ensure flexibility across different environments (development, staging, production), avoid hardcoding base URLs. Load the base URL from an environment variable or use an API client with a configured baseURL.\n"
+  },
+  {
+    "rule_id": "general.hardcoded-api-url",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "server_api_hop.tsx",
+    "line": 14,
+    "message": "A hardcoded HTTP/HTTPS URL is used directly in a network request. To ensure flexibility across different environments (development, staging, production), avoid hardcoding base URLs. Load the base URL from an environment variable or use an API client with a configured baseURL.\n"
+  },
+  {
+    "rule_id": "general.hardcoded-api-url",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "server_api_hop.tsx",
+    "line": 21,
+    "message": "A hardcoded HTTP/HTTPS URL is used directly in a network request. To ensure flexibility across different environments (development, staging, production), avoid hardcoding base URLs. Load the base URL from an environment variable or use an API client with a configured baseURL.\n"
+  },
+  {
+    "rule_id": "general.hardcoded-api-url",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "server_api_hop.tsx",
+    "line": 33,
+    "message": "A hardcoded HTTP/HTTPS URL is used directly in a network request. To ensure flexibility across different environments (development, staging, production), avoid hardcoding base URLs. Load the base URL from an environment variable or use an API client with a configured baseURL.\n"
+  },
+  {
+    "rule_id": "general.hardcoded-api-url",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "server_api_hop.tsx",
+    "line": 40,
     "message": "A hardcoded HTTP/HTTPS URL is used directly in a network request. To ensure flexibility across different environments (development, staging, production), avoid hardcoding base URLs. Load the base URL from an environment variable or use an API client with a configured baseURL.\n"
   },
   {
@@ -662,12 +761,84 @@
     "message": "A console.log/console.debug call was left in the source. These are typically debugging leftovers (a common artifact of AI-generated or rushed code) that leak data to the browser console and add noise in production. Remove it, or route it through an intentional logger. console.warn/console.error are not flagged, since those are usually deliberate.\n"
   },
   {
+    "rule_id": "general.leftover-console-statement",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "heavy_import_no_dynamic.tsx",
+    "line": 16,
+    "message": "A console.log/console.debug call was left in the source. These are typically debugging leftovers (a common artifact of AI-generated or rushed code) that leak data to the browser console and add noise in production. Remove it, or route it through an intentional logger. console.warn/console.error are not flagged, since those are usually deliberate.\n"
+  },
+  {
+    "rule_id": "general.leftover-console-statement",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "next_no_redirect_in_try_catch.tsx",
+    "line": 15,
+    "message": "A console.log/console.debug call was left in the source. These are typically debugging leftovers (a common artifact of AI-generated or rushed code) that leak data to the browser console and add noise in production. Remove it, or route it through an intentional logger. console.warn/console.error are not flagged, since those are usually deliberate.\n"
+  },
+  {
+    "rule_id": "general.leftover-console-statement",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "next_no_redirect_in_try_catch.tsx",
+    "line": 27,
+    "message": "A console.log/console.debug call was left in the source. These are typically debugging leftovers (a common artifact of AI-generated or rushed code) that leak data to the browser console and add noise in production. Remove it, or route it through an intentional logger. console.warn/console.error are not flagged, since those are usually deliberate.\n"
+  },
+  {
+    "rule_id": "general.leftover-console-statement",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "server_no_mutable_module_state.tsx",
+    "line": 15,
+    "message": "A console.log/console.debug call was left in the source. These are typically debugging leftovers (a common artifact of AI-generated or rushed code) that leak data to the browser console and add noise in production. Remove it, or route it through an intentional logger. console.warn/console.error are not flagged, since those are usually deliberate.\n"
+  },
+  {
+    "rule_id": "general.leftover-console-statement",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "server_no_mutable_module_state.tsx",
+    "line": 25,
+    "message": "A console.log/console.debug call was left in the source. These are typically debugging leftovers (a common artifact of AI-generated or rushed code) that leak data to the browser console and add noise in production. Remove it, or route it through an intentional logger. console.warn/console.error are not flagged, since those are usually deliberate.\n"
+  },
+  {
+    "rule_id": "general.leftover-console-statement",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "tanstack_start_redirect_in_try_catch.tsx",
+    "line": 15,
+    "message": "A console.log/console.debug call was left in the source. These are typically debugging leftovers (a common artifact of AI-generated or rushed code) that leak data to the browser console and add noise in production. Remove it, or route it through an intentional logger. console.warn/console.error are not flagged, since those are usually deliberate.\n"
+  },
+  {
+    "rule_id": "general.leftover-console-statement",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "tanstack_start_redirect_in_try_catch.tsx",
+    "line": 27,
+    "message": "A console.log/console.debug call was left in the source. These are typically debugging leftovers (a common artifact of AI-generated or rushed code) that leak data to the browser console and add noise in production. Remove it, or route it through an intentional logger. console.warn/console.error are not flagged, since those are usually deliberate.\n"
+  },
+  {
     "rule_id": "general.lodash-barrel-import",
     "severity": "warning",
     "category": "performance",
     "confidence": "hint",
     "file": "case.tsx",
     "line": 73,
+    "message": "Lodash is imported from the top-level package, which can pull a much larger bundle than the one helper this file needs. Prefer a per-method import such as lodash/debounce, or use lodash-es with a bundler that tree-shakes it correctly.\n"
+  },
+  {
+    "rule_id": "general.lodash-barrel-import",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "heavy_import_no_dynamic.tsx",
+    "line": 8,
     "message": "Lodash is imported from the top-level package, which can pull a much larger bundle than the one helper this file needs. Prefer a per-method import such as lodash/debounce, or use lodash-es with a bundler that tree-shakes it correctly.\n"
   },
   {
@@ -921,6 +1092,33 @@
     "file": "case.tsx",
     "line": 62,
     "message": "This reduce callback rebuilds the accumulator with [...acc, ...] on every iteration, which copies the growing array repeatedly and turns a linear collection step into O(n²) work. Prefer map/filter, or mutate a local accumulator inside the reduce callback when reduce is genuinely needed.\n"
+  },
+  {
+    "rule_id": "general.regex-dos-candidate",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "regex_dos_candidate.ts",
+    "line": 2,
+    "message": "Regular expression contains nested quantifiers (e.g. (a+)+, ([a-z]+)*) which can lead to Regular Expression Denial of Service (ReDoS) due to catastrophic backtracking when matched against malicious or extremely long inputs. Simplify the regex or use a safe regex engine/validator.\n"
+  },
+  {
+    "rule_id": "general.regex-dos-candidate",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "regex_dos_candidate.ts",
+    "line": 5,
+    "message": "Regular expression contains nested quantifiers (e.g. (a+)+, ([a-z]+)*) which can lead to Regular Expression Denial of Service (ReDoS) due to catastrophic backtracking when matched against malicious or extremely long inputs. Simplify the regex or use a safe regex engine/validator.\n"
+  },
+  {
+    "rule_id": "general.regex-dos-candidate",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "regex_dos_candidate.ts",
+    "line": 8,
+    "message": "Regular expression contains nested quantifiers (e.g. (a+)+, ([a-z]+)*) which can lead to Regular Expression Denial of Service (ReDoS) due to catastrophic backtracking when matched against malicious or extremely long inputs. Simplify the regex or use a safe regex engine/validator.\n"
   },
   {
     "rule_id": "general.sensitive-data-in-web-storage",
@@ -1211,6 +1409,60 @@
     "message": "A NestJS controller directly performs database or ORM operations. NestJS architecture mandates that controllers only handle HTTP routing and delegate business logic and data access to services. Move this database operation into a service class.\n"
   },
   {
+    "rule_id": "nextjs.heavy-import-no-dynamic",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "heavy_import_no_dynamic.tsx",
+    "line": 2,
+    "message": "Heavy library is statically imported. Statically importing large libraries (like monaco-editor, three, lodash, or chart.js) increases the initial client bundle size and slows down page loads. Consider using dynamic imports (e.g., Next.js dynamic() or dynamic import()) to load this library lazily.\n"
+  },
+  {
+    "rule_id": "nextjs.heavy-import-no-dynamic",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "heavy_import_no_dynamic.tsx",
+    "line": 5,
+    "message": "Heavy library is statically imported. Statically importing large libraries (like monaco-editor, three, lodash, or chart.js) increases the initial client bundle size and slows down page loads. Consider using dynamic imports (e.g., Next.js dynamic() or dynamic import()) to load this library lazily.\n"
+  },
+  {
+    "rule_id": "nextjs.heavy-import-no-dynamic",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "heavy_import_no_dynamic.tsx",
+    "line": 8,
+    "message": "Heavy library is statically imported. Statically importing large libraries (like monaco-editor, three, lodash, or chart.js) increases the initial client bundle size and slows down page loads. Consider using dynamic imports (e.g., Next.js dynamic() or dynamic import()) to load this library lazily.\n"
+  },
+  {
+    "rule_id": "nextjs.next-async-client-component",
+    "severity": "error",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "client_data_fetch.tsx",
+    "line": 47,
+    "message": "Client Components cannot be async functions. Making a Client Component async results in runtime errors and prevents proper client-side rendering. Convert the component to a synchronous function and use hooks like useEffect or useSWR/TanStack Query for data fetching, or keep it as a Server Component.\n"
+  },
+  {
+    "rule_id": "nextjs.next-async-client-component",
+    "severity": "error",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "next_async_client_component.tsx",
+    "line": 4,
+    "message": "Client Components cannot be async functions. Making a Client Component async results in runtime errors and prevents proper client-side rendering. Convert the component to a synchronous function and use hooks like useEffect or useSWR/TanStack Query for data fetching, or keep it as a Server Component.\n"
+  },
+  {
+    "rule_id": "nextjs.next-async-client-component",
+    "severity": "error",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "next_async_client_component.tsx",
+    "line": 9,
+    "message": "Client Components cannot be async functions. Making a Client Component async results in runtime errors and prevents proper client-side rendering. Convert the component to a synchronous function and use hooks like useEffect or useSWR/TanStack Query for data fetching, or keep it as a Server Component.\n"
+  },
+  {
     "rule_id": "nextjs.next-browser-api-during-ssr",
     "severity": "error",
     "category": "bug",
@@ -1238,6 +1490,24 @@
     "message": "A Next.js Server Component or route file uses a browser-only API without a \"use client\" directive. window, document, localStorage, sessionStorage, navigator, and similar APIs are not available during server rendering and can crash with ReferenceError. Move this code to a Client Component or guard it so it only runs in the browser.\n"
   },
   {
+    "rule_id": "nextjs.next-client-component-data-fetch",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "client_data_fetch.tsx",
+    "line": 20,
+    "message": "Client-side data fetching detected inside useEffect in a Client Component. Using useEffect with fetch or axios in Client Components can lead to request waterfalls, increased bundle sizes, and negative impact on SEO. Consider moving data fetching to a React Server Component (RSC), or use a library like TanStack Query for client-side state and caching.\n"
+  },
+  {
+    "rule_id": "nextjs.next-client-component-data-fetch",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "client_data_fetch.tsx",
+    "line": 25,
+    "message": "Client-side data fetching detected inside useEffect in a Client Component. Using useEffect with fetch or axios in Client Components can lead to request waterfalls, increased bundle sizes, and negative impact on SEO. Consider moving data fetching to a React Server Component (RSC), or use a library like TanStack Query for client-side state and caching.\n"
+  },
+  {
     "rule_id": "nextjs.next-insecure-cookie-setting",
     "severity": "warning",
     "category": "security",
@@ -1254,6 +1524,33 @@
     "file": "case.tsx",
     "line": 166,
     "message": "A cookie is set via cookies().set() without explicitly enabling the secure flag. Sensitive cookies (like session tokens) should always be set with 'secure: true' in production to prevent them from being transmitted over unencrypted HTTP connections.\n"
+  },
+  {
+    "rule_id": "nextjs.next-no-redirect-in-try-catch",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "next_no_redirect_in_try_catch.tsx",
+    "line": 6,
+    "message": "Calling 'redirect()' or 'permanentRedirect()' inside a try-catch block can prevent the redirect from working correctly because Next.js uses thrown errors internally to control routing. Call redirect() outside the try-catch block or ensure the redirect error is rethrown.\n"
+  },
+  {
+    "rule_id": "nextjs.next-no-redirect-in-try-catch",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "next_no_redirect_in_try_catch.tsx",
+    "line": 13,
+    "message": "Calling 'redirect()' or 'permanentRedirect()' inside a try-catch block can prevent the redirect from working correctly because Next.js uses thrown errors internally to control routing. Call redirect() outside the try-catch block or ensure the redirect error is rethrown.\n"
+  },
+  {
+    "rule_id": "nextjs.next-no-redirect-in-try-catch",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "tanstack_start_redirect_in_try_catch.tsx",
+    "line": 6,
+    "message": "Calling 'redirect()' or 'permanentRedirect()' inside a try-catch block can prevent the redirect from working correctly because Next.js uses thrown errors internally to control routing. Call redirect() outside the try-catch block or ensure the redirect error is rethrown.\n"
   },
   {
     "rule_id": "nextjs.next-prefer-image-component",
@@ -1382,6 +1679,78 @@
     "message": "A Next.js Server Action accepts input but does not appear to validate it with a schema parser. Server Actions are callable from the client, so unvalidated parameters can become authorization, injection, or data integrity bugs. Validate the input with Zod, Valibot, or a similar schema before using it.\n"
   },
   {
+    "rule_id": "nextjs.next-server-action-missing-validation",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "server_auth_actions.tsx",
+    "line": 2,
+    "message": "A Next.js Server Action accepts input but does not appear to validate it with a schema parser. Server Actions are callable from the client, so unvalidated parameters can become authorization, injection, or data integrity bugs. Validate the input with Zod, Valibot, or a similar schema before using it.\n"
+  },
+  {
+    "rule_id": "nextjs.next-server-action-missing-validation",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "server_auth_actions.tsx",
+    "line": 8,
+    "message": "A Next.js Server Action accepts input but does not appear to validate it with a schema parser. Server Actions are callable from the client, so unvalidated parameters can become authorization, injection, or data integrity bugs. Validate the input with Zod, Valibot, or a similar schema before using it.\n"
+  },
+  {
+    "rule_id": "nextjs.next-server-action-missing-validation",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "server_auth_actions.tsx",
+    "line": 16,
+    "message": "A Next.js Server Action accepts input but does not appear to validate it with a schema parser. Server Actions are callable from the client, so unvalidated parameters can become authorization, injection, or data integrity bugs. Validate the input with Zod, Valibot, or a similar schema before using it.\n"
+  },
+  {
+    "rule_id": "nextjs.next-server-component-api-hop",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "case.tsx",
+    "line": 159,
+    "message": "Server Component fetches its own API route. Server Components can access databases, services, or internal APIs directly in Next.js. Fetching an internal /api/... route adds unnecessary HTTP request overhead (serialization, latency, network hop). Call the database or service function directly instead of performing an HTTP fetch.\n"
+  },
+  {
+    "rule_id": "nextjs.next-server-component-api-hop",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "case.tsx",
+    "line": 323,
+    "message": "Server Component fetches its own API route. Server Components can access databases, services, or internal APIs directly in Next.js. Fetching an internal /api/... route adds unnecessary HTTP request overhead (serialization, latency, network hop). Call the database or service function directly instead of performing an HTTP fetch.\n"
+  },
+  {
+    "rule_id": "nextjs.next-server-component-api-hop",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "server_api_hop.tsx",
+    "line": 7,
+    "message": "Server Component fetches its own API route. Server Components can access databases, services, or internal APIs directly in Next.js. Fetching an internal /api/... route adds unnecessary HTTP request overhead (serialization, latency, network hop). Call the database or service function directly instead of performing an HTTP fetch.\n"
+  },
+  {
+    "rule_id": "nextjs.next-server-component-api-hop",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "server_api_hop.tsx",
+    "line": 14,
+    "message": "Server Component fetches its own API route. Server Components can access databases, services, or internal APIs directly in Next.js. Fetching an internal /api/... route adds unnecessary HTTP request overhead (serialization, latency, network hop). Call the database or service function directly instead of performing an HTTP fetch.\n"
+  },
+  {
+    "rule_id": "nextjs.next-server-component-api-hop",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "server_api_hop.tsx",
+    "line": 21,
+    "message": "Server Component fetches its own API route. Server Components can access databases, services, or internal APIs directly in Next.js. Fetching an internal /api/... route adds unnecessary HTTP request overhead (serialization, latency, network hop). Call the database or service function directly instead of performing an HTTP fetch.\n"
+  },
+  {
     "rule_id": "nextjs.next-server-only-in-client",
     "severity": "error",
     "confidence": "rule",
@@ -1484,6 +1853,15 @@
     "severity": "warning",
     "category": "performance",
     "confidence": "hint",
+    "file": "next_async_client_component.tsx",
+    "line": 1,
+    "message": "Unnecessary \"use client\" directive at the top of the file. No React/Next.js hooks, event handlers, client-only APIs (like createContext), or browser globals (like window/document) were detected. Removing \"use client\" allows this component to be rendered as a React Server Component (RSC), which reduces the client-side bundle size and improves initial page load performance.\n"
+  },
+  {
+    "rule_id": "nextjs.next-unnecessary-use-client",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
     "file": "unnecessary_client.tsx",
     "line": 2,
     "message": "Unnecessary \"use client\" directive at the top of the file. No React/Next.js hooks, event handlers, client-only APIs (like createContext), or browser globals (like window/document) were detected. Removing \"use client\" allows this component to be rendered as a React Server Component (RSC), which reduces the client-side bundle size and improves initial page load performance.\n"
@@ -1505,6 +1883,42 @@
     "file": "case.tsx",
     "line": 153,
     "message": "A Next.js redirect target is built from a dynamic value. If this value can be influenced by a user, the app may redirect to an attacker-controlled URL. Validate against an allowlist, resolve only internal paths, or build the destination from trusted route names.\n"
+  },
+  {
+    "rule_id": "nextjs.next-unsafe-redirect",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "tanstack_start_redirect_in_try_catch.tsx",
+    "line": 6,
+    "message": "A Next.js redirect target is built from a dynamic value. If this value can be influenced by a user, the app may redirect to an attacker-controlled URL. Validate against an allowlist, resolve only internal paths, or build the destination from trusted route names.\n"
+  },
+  {
+    "rule_id": "nextjs.next-unsafe-redirect",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "tanstack_start_redirect_in_try_catch.tsx",
+    "line": 21,
+    "message": "A Next.js redirect target is built from a dynamic value. If this value can be influenced by a user, the app may redirect to an attacker-controlled URL. Validate against an allowlist, resolve only internal paths, or build the destination from trusted route names.\n"
+  },
+  {
+    "rule_id": "nextjs.next-unsafe-redirect",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "tanstack_start_redirect_in_try_catch.tsx",
+    "line": 25,
+    "message": "A Next.js redirect target is built from a dynamic value. If this value can be influenced by a user, the app may redirect to an attacker-controlled URL. Validate against an allowlist, resolve only internal paths, or build the destination from trusted route names.\n"
+  },
+  {
+    "rule_id": "nextjs.nextjs-no-use-search-params-without-suspense",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "nextjs_no_use_search_params_without_suspense.tsx",
+    "line": 5,
+    "message": "'useSearchParams()' is used in a Client Component. Next.js requires components using 'useSearchParams()' to be wrapped in a '\u003cSuspense\u003e' boundary at the parent level during static rendering. Without a Suspense boundary, the entire page will fallback to client-side rendering.\n"
   },
   {
     "rule_id": "react.dangerously-set-inner-html-variable",
@@ -1638,6 +2052,159 @@
     "message": "ScrollView renders every child eagerly while this code maps over a dynamic collection. Large or growing lists can cause memory pressure and jank on native devices. Use FlatList or SectionList so React Native can virtualize rows.\n"
   },
   {
+    "rule_id": "server.server-auth-actions",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 347,
+    "message": "Server Action accepts input but does not appear to perform any authorization or authentication check. Server Actions are publicly accessible POST endpoints. Always verify the user's session and permissions at the start of the action (e.g. using auth(), getServerSession(), or custom verification helpers) to prevent unauthorized access.\n"
+  },
+  {
+    "rule_id": "server.server-auth-actions",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 347,
+    "message": "Server Action accepts input but does not appear to perform any authorization or authentication check. Server Actions are publicly accessible POST endpoints. Always verify the user's session and permissions at the start of the action (e.g. using auth(), getServerSession(), or custom verification helpers) to prevent unauthorized access.\n"
+  },
+  {
+    "rule_id": "server.server-auth-actions",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 352,
+    "message": "Server Action accepts input but does not appear to perform any authorization or authentication check. Server Actions are publicly accessible POST endpoints. Always verify the user's session and permissions at the start of the action (e.g. using auth(), getServerSession(), or custom verification helpers) to prevent unauthorized access.\n"
+  },
+  {
+    "rule_id": "server.server-auth-actions",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 352,
+    "message": "Server Action accepts input but does not appear to perform any authorization or authentication check. Server Actions are publicly accessible POST endpoints. Always verify the user's session and permissions at the start of the action (e.g. using auth(), getServerSession(), or custom verification helpers) to prevent unauthorized access.\n"
+  },
+  {
+    "rule_id": "server.server-auth-actions",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 358,
+    "message": "Server Action accepts input but does not appear to perform any authorization or authentication check. Server Actions are publicly accessible POST endpoints. Always verify the user's session and permissions at the start of the action (e.g. using auth(), getServerSession(), or custom verification helpers) to prevent unauthorized access.\n"
+  },
+  {
+    "rule_id": "server.server-auth-actions",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 358,
+    "message": "Server Action accepts input but does not appear to perform any authorization or authentication check. Server Actions are publicly accessible POST endpoints. Always verify the user's session and permissions at the start of the action (e.g. using auth(), getServerSession(), or custom verification helpers) to prevent unauthorized access.\n"
+  },
+  {
+    "rule_id": "server.server-auth-actions",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 459,
+    "message": "Server Action accepts input but does not appear to perform any authorization or authentication check. Server Actions are publicly accessible POST endpoints. Always verify the user's session and permissions at the start of the action (e.g. using auth(), getServerSession(), or custom verification helpers) to prevent unauthorized access.\n"
+  },
+  {
+    "rule_id": "server.server-auth-actions",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 459,
+    "message": "Server Action accepts input but does not appear to perform any authorization or authentication check. Server Actions are publicly accessible POST endpoints. Always verify the user's session and permissions at the start of the action (e.g. using auth(), getServerSession(), or custom verification helpers) to prevent unauthorized access.\n"
+  },
+  {
+    "rule_id": "server.server-auth-actions",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 464,
+    "message": "Server Action accepts input but does not appear to perform any authorization or authentication check. Server Actions are publicly accessible POST endpoints. Always verify the user's session and permissions at the start of the action (e.g. using auth(), getServerSession(), or custom verification helpers) to prevent unauthorized access.\n"
+  },
+  {
+    "rule_id": "server.server-auth-actions",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 464,
+    "message": "Server Action accepts input but does not appear to perform any authorization or authentication check. Server Actions are publicly accessible POST endpoints. Always verify the user's session and permissions at the start of the action (e.g. using auth(), getServerSession(), or custom verification helpers) to prevent unauthorized access.\n"
+  },
+  {
+    "rule_id": "server.server-auth-actions",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "server_auth_actions.tsx",
+    "line": 2,
+    "message": "Server Action accepts input but does not appear to perform any authorization or authentication check. Server Actions are publicly accessible POST endpoints. Always verify the user's session and permissions at the start of the action (e.g. using auth(), getServerSession(), or custom verification helpers) to prevent unauthorized access.\n"
+  },
+  {
+    "rule_id": "server.server-auth-actions",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "server_auth_actions.tsx",
+    "line": 2,
+    "message": "Server Action accepts input but does not appear to perform any authorization or authentication check. Server Actions are publicly accessible POST endpoints. Always verify the user's session and permissions at the start of the action (e.g. using auth(), getServerSession(), or custom verification helpers) to prevent unauthorized access.\n"
+  },
+  {
+    "rule_id": "server.server-auth-actions",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "server_auth_actions.tsx",
+    "line": 8,
+    "message": "Server Action accepts input but does not appear to perform any authorization or authentication check. Server Actions are publicly accessible POST endpoints. Always verify the user's session and permissions at the start of the action (e.g. using auth(), getServerSession(), or custom verification helpers) to prevent unauthorized access.\n"
+  },
+  {
+    "rule_id": "server.server-auth-actions",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "server_auth_actions.tsx",
+    "line": 16,
+    "message": "Server Action accepts input but does not appear to perform any authorization or authentication check. Server Actions are publicly accessible POST endpoints. Always verify the user's session and permissions at the start of the action (e.g. using auth(), getServerSession(), or custom verification helpers) to prevent unauthorized access.\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-redirect-in-try-catch",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "next_no_redirect_in_try_catch.tsx",
+    "line": 6,
+    "message": "Calling 'redirect()' or 'notFound()' inside a try-catch block can prevent the navigation from working correctly because TanStack Router uses thrown errors internally to redirect or show a 404 page. Call redirect() outside the try-catch block or rethrow the exception.\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-redirect-in-try-catch",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "tanstack_start_redirect_in_try_catch.tsx",
+    "line": 6,
+    "message": "Calling 'redirect()' or 'notFound()' inside a try-catch block can prevent the navigation from working correctly because TanStack Router uses thrown errors internally to redirect or show a 404 page. Call redirect() outside the try-catch block or rethrow the exception.\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-redirect-in-try-catch",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "tanstack_start_redirect_in_try_catch.tsx",
+    "line": 13,
+    "message": "Calling 'redirect()' or 'notFound()' inside a try-catch block can prevent the navigation from working correctly because TanStack Router uses thrown errors internally to redirect or show a 404 page. Call redirect() outside the try-catch block or rethrow the exception.\n"
+  },
+  {
     "rule_id": "tanstack.tanstack-mutation-without-invalidation",
     "severity": "warning",
     "category": "quality",
@@ -1737,6 +2304,15 @@
     "message": "TanStack Query key uses an inline string literal. Repeating raw strings across useQuery, setQueryData, and invalidateQueries makes cache updates easy to mistype or drift. Prefer a query-key factory or shared constant so reads and invalidations use the same key shape.\n"
   },
   {
+    "rule_id": "tanstack.tanstack-query-key-string",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "client_data_fetch.tsx",
+    "line": 34,
+    "message": "TanStack Query key uses an inline string literal. Repeating raw strings across useQuery, setQueryData, and invalidateQueries makes cache updates easy to mistype or drift. Prefer a query-key factory or shared constant so reads and invalidations use the same key shape.\n"
+  },
+  {
     "rule_id": "tanstack.tanstack-query-missing-staletime",
     "severity": "warning",
     "category": "performance",
@@ -1788,6 +2364,15 @@
     "confidence": "hint",
     "file": "client.tsx",
     "line": 68,
+    "message": "useQuery is called without specifying a staleTime. By default, staleTime is 0, which means queries are instantly considered stale. For server-side rendered (SSR) or prefetched data, this causes an immediate client-side refetch upon hydration, resulting in duplicate network requests and potential screen flickering. Set a staleTime (e.g. staleTime: 1000 * 60 * 5) to cache and reuse the hydrated data.\n"
+  },
+  {
+    "rule_id": "tanstack.tanstack-query-missing-staletime",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "client_data_fetch.tsx",
+    "line": 34,
     "message": "useQuery is called without specifying a staleTime. By default, staleTime is 0, which means queries are instantly considered stale. For server-side rendered (SSR) or prefetched data, this causes an immediate client-side refetch upon hydration, resulting in duplicate network requests and potential screen flickering. Set a staleTime (e.g. staleTime: 1000 * 60 * 5) to cache and reuse the hydrated data.\n"
   },
   {

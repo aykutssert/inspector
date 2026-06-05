@@ -598,3 +598,84 @@ export function CompB() {
 		t.Fatalf("should not suggest component-splitting if only one large, got %v", ids)
 	}
 }
+
+func TestDeepPropDrilling(t *testing.T) {
+	src := `
+		function Parent() {
+			return <CompB user="alice" />;
+		}
+		
+		function CompB({ user }) { // drilling node
+			return <CompC user={user} />;
+		}
+		
+		function CompC({ user }) { // drilling node
+			return <CompD user={user} />;
+		}
+		
+		function CompD({ user }) { // destination
+			return <div>{user}</div>;
+		}
+	`
+	ids := parseSrc(t, ".tsx", src)
+	if !has(ids, "deep-prop-drilling") {
+		t.Fatalf("expected deep-prop-drilling violation, got %v", ids)
+	}
+}
+
+func TestDeepPropDrillingSafe(t *testing.T) {
+	src := `
+		function Parent() {
+			return <CompB user="alice" />;
+		}
+		
+		function CompB({ user }) { // safe: used locally!
+			console.log(user);
+			return <CompC user={user} />;
+		}
+		
+		function CompC({ user }) { // destination
+			return <div>{user}</div>;
+		}
+	`
+	ids := parseSrc(t, ".tsx", src)
+	if has(ids, "deep-prop-drilling") {
+		t.Fatalf("did not expect deep-prop-drilling violation, got %v", ids)
+	}
+}
+
+func TestUseEffectFetchSuggestQuery(t *testing.T) {
+	src := `
+		function Comp() {
+			useEffect(() => {
+				fetch('/api/data').then(res => res.json());
+			}, []);
+
+			useEffect(() => {
+				axios.get('/api/info');
+			}, []);
+
+			return null;
+		}
+	`
+	ids := parseSrc(t, ".tsx", src)
+	if countID(ids, "react-useeffect-fetch-suggest-query") != 2 {
+		t.Fatalf("expected 2 react-useeffect-fetch-suggest-query findings, got %v", ids)
+	}
+}
+
+func TestUseEffectFetchSuggestQuerySafe(t *testing.T) {
+	src := `
+		function Comp() {
+			// Safe: standard useEffect, no fetch or axios
+			useEffect(() => {
+				console.log("mounted");
+			}, []);
+			return null;
+		}
+	`
+	ids := parseSrc(t, ".tsx", src)
+	if has(ids, "react-useeffect-fetch-suggest-query") {
+		t.Fatalf("did not expect react-useeffect-fetch-suggest-query finding, got %v", ids)
+	}
+}

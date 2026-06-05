@@ -1,0 +1,19 @@
+rules:
+  - id: heavy-import-no-dynamic
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Heavy library is statically imported. Statically importing large libraries (like monaco-editor,
+      three, lodash, or chart.js) increases the initial client bundle size and slows down page loads.
+      Consider using dynamic imports (e.g., Next.js dynamic() or dynamic import()) to load this library lazily.
+    metadata:
+      category: performance
+      confidence: hint
+    patterns:
+      - pattern-either:
+          - pattern: import $X from '$LIB';
+          - pattern: import { ... } from '$LIB';
+          - pattern: import * as $X from '$LIB';
+      - metavariable-regex:
+          metavariable: $LIB
+          regex: ^(monaco-editor|three|recharts|chart\.js|pdfjs-dist|xlsx|lodash|moment)$

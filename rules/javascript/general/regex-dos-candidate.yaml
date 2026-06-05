@@ -1,0 +1,19 @@
+rules:
+  - id: regex-dos-candidate
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Regular expression contains nested quantifiers (e.g. (a+)+, ([a-z]+)*) which can lead to
+      Regular Expression Denial of Service (ReDoS) due to catastrophic backtracking when matched
+      against malicious or extremely long inputs. Simplify the regex or use a safe regex engine/validator.
+    metadata:
+      category: security
+      cwe:
+        - "CWE-1333: Inefficient Regular Expression Complexity"
+      confidence: hint
+    patterns:
+      - pattern-either:
+          # Match literal regexes containing nested quantifiers
+          - pattern-regex: /\([^)]+[+*]\)[+*]/
+          # Match RegExp constructors with nested quantifiers in string literal
+          - pattern-regex: new RegExp\(['"`][^'"`]*\([^)]+[+*]\)[+*][^'"`]*['"`]\)

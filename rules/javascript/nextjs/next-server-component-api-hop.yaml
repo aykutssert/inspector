@@ -1,0 +1,29 @@
+rules:
+  - id: next-server-component-api-hop
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Server Component fetches its own API route.
+      Server Components can access databases, services, or internal APIs directly in Next.js.
+      Fetching an internal /api/... route adds unnecessary HTTP request overhead (serialization, latency, network hop).
+      Call the database or service function directly instead of performing an HTTP fetch.
+    metadata:
+      category: performance
+      confidence: rule
+    patterns:
+      - pattern-either:
+          - pattern: fetch($URL, ...)
+          - patterns:
+              - pattern-either:
+                  - pattern: $AXIOS.get($URL, ...)
+                  - pattern: $AXIOS.post($URL, ...)
+                  - pattern: $AXIOS($URL, ...)
+              - metavariable-regex:
+                  metavariable: $AXIOS
+                  regex: ^axios$
+      - pattern-not-inside: |
+          "use client";
+          ...
+      - metavariable-regex:
+          metavariable: $URL
+          regex: ^['"`](https?://(localhost|127\.0\.0\.1)(:\d+)?)?/api/

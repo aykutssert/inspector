@@ -12,6 +12,7 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -96,6 +97,10 @@ func scanFile(abs, rel string) ([]core.Finding, error) {
 	var findings []core.Finding
 	findings = append(findings, detectRepeatedLiteral(tree.RootNode(), lang, src, rel)...)
 	findings = append(findings, detectComplexity(tree.RootNode(), lang, src, rel)...)
+	if isTypeScriptFile(abs) {
+		findings = append(findings, detectNonNullAssertionSpam(tree.RootNode(), lang, src, rel)...)
+	}
+	findings = append(findings, detectSequentialAwaits(tree.RootNode(), lang, src, rel)...)
 	return findings, nil
 }
 
@@ -263,4 +268,187 @@ func hint(rule, cat string, sev core.Severity, file string, line int, msg, fix s
 		Message:    msg,
 		Fix:        fix,
 	}
+}
+
+func isTypeScriptFile(path string) bool {
+	switch strings.ToLower(filepath.Ext(path)) {
+	case ".ts", ".tsx", ".mts", ".cts":
+		return true
+	}
+	return false
+}
+
+const nonNullAssertionQuery = `(non_null_expression) @non_null`
+
+func detectNonNullAssertionSpam(root *sitter.Node, lang *sitter.Language, src []byte, file string) []core.Finding {
+	var occurrences []*sitter.Node
+	runQuery(nonNullAssertionQuery, root, lang, func(node *sitter.Node) {
+		occurrences = append(occurrences, node)
+	})
+
+	if len(occurrences) > 10 {
+		first := occurrences[0]
+		line := int(first.StartPoint().Row) + 1
+		msg := "This file contains an excessive number of non-null assertions (" + strconv.Itoa(len(occurrences)) + "). " +
+			"Spamming the non-null assertion operator ('!') bypasses TypeScript's type-safety guarantees and increases the risk of runtime crashes if a value is null or undefined."
+
+		return []core.Finding{hint(
+			"non-null-assertion-spam", "quality", core.SeverityWarning, file, line,
+			msg,
+			"Use optional chaining ('?.'), nullish coalescing ('??'), or explicit runtime checks to handle potentially null or undefined values safely.",
+		)}
+	}
+	return nil
+}
+
+func findBlockStatement(node *sitter.Node) (*sitter.Node, *sitter.Node) {
+	curr := node
+	for curr != nil {
+		parent := curr.Parent()
+		if parent != nil {
+			pt := parent.Type()
+			if pt == "statement_block" || pt == "program" {
+				return curr, parent
+			}
+		}
+		curr = parent
+	}
+	return nil, nil
+}
+
+const awaitQuery = `(await_expression) @await`
+
+func detectSequentialAwaits(root *sitter.Node, lang *sitter.Language, src []byte, file string) []core.Finding {
+	groups := make(map[uint32][]*sitter.Node)
+	seenStmts := make(map[uint32]bool)
+
+	runQuery(awaitQuery, root, lang, func(node *sitter.Node) {
+		stmt, parent := findBlockStatement(node)
+		if stmt == nil || parent == nil {
+			return
+		}
+		stmtKey := stmt.StartByte()
+		if seenStmts[stmtKey] {
+			return
+		}
+		seenStmts[stmtKey] = true
+
+		parentKey := parent.StartByte()
+		groups[parentKey] = append(groups[parentKey], stmt)
+	})
+
+	var out []core.Finding
+	for _, stmts := range groups {
+		sort.Slice(stmts, func(i, j int) bool {
+			return stmts[i].StartByte() < stmts[j].StartByte()
+		})
+
+		for i := 0; i < len(stmts)-1; i++ {
+			stmt1 := stmts[i]
+			stmt2 := stmts[i+1]
+
+			if !areConsecutiveStatements(stmt1, stmt2) {
+				continue
+			}
+
+			declaredNames := make(map[string]bool)
+			collectDeclaredNames(stmt1, src, declaredNames)
+
+			if len(declaredNames) > 0 && referencesAny(stmt2, src, declaredNames) {
+				continue
+			}
+
+			line := int(stmt2.StartPoint().Row) + 1
+			out = append(out, hint(
+				"sequential-awaits-independent", "performance", core.SeverityWarning, file, line,
+				"Consecutive awaits are independent. These asynchronous operations can be parallelized with Promise.all to reduce latency.",
+				"Consider using Promise.all to run these operations in parallel, e.g. const [a, b] = await Promise.all([foo(), bar()]).",
+			))
+		}
+	}
+	return out
+}
+
+func areConsecutiveStatements(stmt1, stmt2 *sitter.Node) bool {
+	parent := stmt1.Parent()
+	if parent == nil || parent != stmt2.Parent() {
+		return false
+	}
+
+	idx1 := -1
+	idx2 := -1
+	for k := 0; k < int(parent.ChildCount()); k++ {
+		child := parent.Child(k)
+		if child.StartByte() == stmt1.StartByte() && child.EndByte() == stmt1.EndByte() {
+			idx1 = k
+		}
+		if child.StartByte() == stmt2.StartByte() && child.EndByte() == stmt2.EndByte() {
+			idx2 = k
+		}
+	}
+
+	if idx1 == -1 || idx2 == -1 || idx1 >= idx2 {
+		return false
+	}
+
+	for k := idx1 + 1; k < idx2; k++ {
+		child := parent.Child(k)
+		if isStatement(child) {
+			return false
+		}
+	}
+	return true
+}
+
+func isStatement(node *sitter.Node) bool {
+	t := node.Type()
+	return strings.HasSuffix(t, "_statement") || strings.HasSuffix(t, "_declaration")
+}
+
+func collectDeclaredNames(node *sitter.Node, src []byte, names map[string]bool) {
+	if node == nil {
+		return
+	}
+
+	t := node.Type()
+	if t == "lexical_declaration" || t == "variable_declaration" {
+		for i := 0; i < int(node.ChildCount()); i++ {
+			child := node.Child(i)
+			if child.Type() == "variable_declarator" {
+				if child.ChildCount() > 0 {
+					collectIdentifiers(child.Child(0), src, names)
+				}
+			}
+		}
+	}
+}
+
+func collectIdentifiers(node *sitter.Node, src []byte, names map[string]bool) {
+	if node == nil {
+		return
+	}
+	if node.Type() == "identifier" {
+		names[string(node.Content(src))] = true
+		return
+	}
+	for i := 0; i < int(node.ChildCount()); i++ {
+		collectIdentifiers(node.Child(i), src, names)
+	}
+}
+
+func referencesAny(node *sitter.Node, src []byte, names map[string]bool) bool {
+	if node == nil {
+		return false
+	}
+	if node.Type() == "identifier" {
+		if names[string(node.Content(src))] {
+			return true
+		}
+	}
+	for i := 0; i < int(node.ChildCount()); i++ {
+		if referencesAny(node.Child(i), src, names) {
+			return true
+		}
+	}
+	return false
 }

@@ -1,0 +1,22 @@
+rules:
+  - id: next-async-client-component
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: >
+      Client Components cannot be async functions. Making a Client Component async results in runtime errors
+      and prevents proper client-side rendering. Convert the component to a synchronous function and use
+      hooks like useEffect or useSWR/TanStack Query for data fetching, or keep it as a Server Component.
+    metadata:
+      category: correctness
+      confidence: rule
+    patterns:
+      - pattern-inside: |
+          "use client";
+          ...
+      - pattern-either:
+          - pattern: async function $COMP(...) { ... }
+          - pattern: const $COMP = async (...) => { ... }
+          - pattern: const $COMP = async function(...) { ... }
+      - metavariable-regex:
+          metavariable: $COMP
+          regex: ^[A-Z]

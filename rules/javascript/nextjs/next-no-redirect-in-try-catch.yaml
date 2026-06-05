@@ -1,0 +1,22 @@
+rules:
+  - id: next-no-redirect-in-try-catch
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Calling 'redirect()' or 'permanentRedirect()' inside a try-catch block
+      can prevent the redirect from working correctly because Next.js uses
+      thrown errors internally to control routing. Call redirect() outside
+      the try-catch block or ensure the redirect error is rethrown.
+    metadata:
+      category: correctness
+      confidence: hint
+    patterns:
+      - pattern-inside: |
+          try {
+            ...
+          } catch ($ERR) {
+            ...
+          }
+      - pattern-either:
+          - pattern: redirect(...)
+          - pattern: permanentRedirect(...)

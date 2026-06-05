@@ -1,0 +1,25 @@
+rules:
+  - id: express-sensitive-route-no-auth
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      A sensitive Express route (e.g., containing 'admin', 'delete', 'update', 'secure', 'private', or 'remove')
+      does not seem to use any authorization or authentication middleware. Ensure that route handlers for sensitive paths
+      are protected using an authentication or permission-checking middleware.
+    metadata:
+      category: security
+      cwe:
+        - "CWE-285: Improper Authorization"
+      confidence: hint
+    patterns:
+      - pattern-either:
+          - pattern: $APP.$METHOD($PATH, $HANDLER)
+          - pattern: $ROUTER.$METHOD($PATH, $HANDLER)
+      # Match standard HTTP methods used in Express routing
+      - metavariable-regex:
+          metavariable: $METHOD
+          regex: ^(get|post|put|delete|patch|use)$
+      # Match sensitive path names
+      - metavariable-regex:
+          metavariable: $PATH
+          regex: (?i).*(admin|delete|update|remove|secure|private|create).*

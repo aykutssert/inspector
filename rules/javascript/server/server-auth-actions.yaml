@@ -1,0 +1,79 @@
+rules:
+  - id: server-auth-actions
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Server Action accepts input but does not appear to perform any authorization or authentication check.
+      Server Actions are publicly accessible POST endpoints. Always verify the user's session and permissions
+      at the start of the action (e.g. using auth(), getServerSession(), or custom verification helpers)
+      to prevent unauthorized access.
+    metadata:
+      category: security
+      cwe:
+        - "CWE-285: Improper Authorization"
+      confidence: hint
+    patterns:
+      - pattern-either:
+          - pattern: |
+              export async function $ACTION(...) {
+                "use server";
+                ...
+              }
+          - pattern: |
+              export async function $ACTION(...) {
+                'use server';
+                ...
+              }
+          - pattern: |
+              async function $ACTION(...) {
+                "use server";
+                ...
+              }
+          - pattern: |
+              async function $ACTION(...) {
+                'use server';
+                ...
+              }
+      # Exclude functions that call common authentication/session helpers
+      - pattern-not: |
+          async function $ACTION(...) {
+            ...
+            auth(...)
+            ...
+          }
+      - pattern-not: |
+          async function $ACTION(...) {
+            ...
+            getServerSession(...)
+            ...
+          }
+      - pattern-not: |
+          async function $ACTION(...) {
+            ...
+            getSession(...)
+            ...
+          }
+      - pattern-not: |
+          async function $ACTION(...) {
+            ...
+            currentUser(...)
+            ...
+          }
+      - pattern-not: |
+          async function $ACTION(...) {
+            ...
+            checkAuth(...)
+            ...
+          }
+      - pattern-not: |
+          async function $ACTION(...) {
+            ...
+            requireAuth(...)
+            ...
+          }
+      - pattern-not: |
+          async function $ACTION(...) {
+            ...
+            verifySession(...)
+            ...
+          }

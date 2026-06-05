@@ -1,0 +1,13 @@
+rules:
+  - id: nextjs-no-use-search-params-without-suspense
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      'useSearchParams()' is used in a Client Component. Next.js requires components using 'useSearchParams()'
+      to be wrapped in a '<Suspense>' boundary at the parent level during static rendering. Without a Suspense
+      boundary, the entire page will fallback to client-side rendering.
+    metadata:
+      category: performance
+      confidence: hint
+    patterns:
+      - pattern: useSearchParams()
