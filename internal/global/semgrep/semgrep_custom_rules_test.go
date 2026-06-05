@@ -11,7 +11,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/aykutssert/inspector/internal/core"
+	"github.com/aykutssert/scout/internal/core"
 )
 
 type goldenFinding struct {
@@ -59,7 +59,7 @@ func TestJavaScriptCustomRulesGolden(t *testing.T) {
 
 func requireUsableSemgrep(t *testing.T) {
 	t.Helper()
-	required := os.Getenv("INSPECTOR_REQUIRE_SEMGREP") == "1"
+	required := os.Getenv("SCOUT_REQUIRE_SEMGREP") == "1"
 	if _, err := exec.LookPath("semgrep"); err != nil {
 		if required {
 			t.Fatal("semgrep is required but not installed")

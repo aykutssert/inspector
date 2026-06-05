@@ -1,10 +1,10 @@
 package javascript
 
 import (
-	inspectctx "github.com/aykutssert/inspector/internal/context"
-	"github.com/aykutssert/inspector/internal/core"
-	"github.com/aykutssert/inspector/internal/lang/javascript/analyzers/tsc"
-	"github.com/aykutssert/inspector/internal/lang/javascript/analyzers/tseslint"
+	inspectctx "github.com/aykutssert/scout/internal/context"
+	"github.com/aykutssert/scout/internal/core"
+	"github.com/aykutssert/scout/internal/lang/javascript/analyzers/tsc"
+	"github.com/aykutssert/scout/internal/lang/javascript/analyzers/tseslint"
 )
 
 type typescriptPack struct{}

@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/aykutssert/inspector/internal/core"
+	"github.com/aykutssert/scout/internal/core"
 )
 
 func TestValidationCoverage(t *testing.T) {

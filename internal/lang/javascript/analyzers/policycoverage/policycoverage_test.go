@@ -6,11 +6,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/aykutssert/inspector/internal/core"
+	"github.com/aykutssert/scout/internal/core"
 )
 
 func TestPolicyCoverageAnalyzer(t *testing.T) {
-	tmp, err := os.MkdirTemp("", "inspector-policycoverage-*")
+	tmp, err := os.MkdirTemp("", "scout-policycoverage-*")
 	if err != nil {
 		t.Fatal(err)
 	}

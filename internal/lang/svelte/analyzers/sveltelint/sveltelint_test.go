@@ -3,7 +3,7 @@ package sveltelint
 import (
 	"testing"
 
-	"github.com/aykutssert/inspector/internal/core"
+	"github.com/aykutssert/scout/internal/core"
 )
 
 func TestMapSeverity(t *testing.T) {

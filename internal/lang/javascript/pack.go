@@ -1,18 +1,18 @@
 package javascript
 
 import (
-	inspectctx "github.com/aykutssert/inspector/internal/context"
-	"github.com/aykutssert/inspector/internal/core"
-	"github.com/aykutssert/inspector/internal/lang/javascript/analyzers/archhint"
-	"github.com/aykutssert/inspector/internal/lang/javascript/analyzers/importcycle"
-	"github.com/aykutssert/inspector/internal/lang/javascript/analyzers/jsquality"
-	"github.com/aykutssert/inspector/internal/lang/javascript/analyzers/knip"
-	"github.com/aykutssert/inspector/internal/lang/javascript/analyzers/nesthint"
-	"github.com/aykutssert/inspector/internal/lang/javascript/analyzers/nexthint"
-	"github.com/aykutssert/inspector/internal/lang/javascript/analyzers/oxlint"
-	"github.com/aykutssert/inspector/internal/lang/javascript/analyzers/policycoverage"
-	"github.com/aykutssert/inspector/internal/lang/javascript/analyzers/validationcoverage"
-	jscontext "github.com/aykutssert/inspector/internal/lang/javascript/context"
+	inspectctx "github.com/aykutssert/scout/internal/context"
+	"github.com/aykutssert/scout/internal/core"
+	"github.com/aykutssert/scout/internal/lang/javascript/analyzers/archhint"
+	"github.com/aykutssert/scout/internal/lang/javascript/analyzers/importcycle"
+	"github.com/aykutssert/scout/internal/lang/javascript/analyzers/jsquality"
+	"github.com/aykutssert/scout/internal/lang/javascript/analyzers/knip"
+	"github.com/aykutssert/scout/internal/lang/javascript/analyzers/nesthint"
+	"github.com/aykutssert/scout/internal/lang/javascript/analyzers/nexthint"
+	"github.com/aykutssert/scout/internal/lang/javascript/analyzers/oxlint"
+	"github.com/aykutssert/scout/internal/lang/javascript/analyzers/policycoverage"
+	"github.com/aykutssert/scout/internal/lang/javascript/analyzers/validationcoverage"
+	jscontext "github.com/aykutssert/scout/internal/lang/javascript/context"
 )
 
 type javascriptPack struct{}

@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/aykutssert/inspector/internal/core"
+	"github.com/aykutssert/scout/internal/core"
 )
 
 func TestGlobalDOMQueriesAreReported(t *testing.T) {

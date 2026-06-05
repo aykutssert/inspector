@@ -7,9 +7,9 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/aykutssert/inspector/internal/core"
-	"github.com/aykutssert/inspector/internal/execx"
-	"github.com/aykutssert/inspector/internal/lang/javascript/jsproject"
+	"github.com/aykutssert/scout/internal/core"
+	"github.com/aykutssert/scout/internal/execx"
+	"github.com/aykutssert/scout/internal/lang/javascript/jsproject"
 )
 
 type Analyzer struct{}
@@ -180,7 +180,7 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 		return nil, nil // diff mode with no JS files, or empty project
 	}
 
-	cfg, err := os.CreateTemp("", "inspector-oxlint-*.json")
+	cfg, err := os.CreateTemp("", "scout-oxlint-*.json")
 	if err != nil {
 		return nil, err
 	}

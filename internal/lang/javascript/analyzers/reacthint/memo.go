@@ -6,7 +6,7 @@ import (
 
 	sitter "github.com/smacker/go-tree-sitter"
 
-	"github.com/aykutssert/inspector/internal/core"
+	"github.com/aykutssert/scout/internal/core"
 )
 
 func detectMemoizedChildUnstableProp(root *sitter.Node, _ *sitter.Language, src []byte, file string, externalMemoized map[string]bool) []core.Finding {

@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/aykutssert/inspector/internal/app"
-	"github.com/aykutssert/inspector/internal/core"
+	"github.com/aykutssert/scout/internal/app"
+	"github.com/aykutssert/scout/internal/core"
 )
 
 func TestCorpusRegression(t *testing.T) {

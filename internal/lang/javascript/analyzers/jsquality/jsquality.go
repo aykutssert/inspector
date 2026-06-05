@@ -22,9 +22,9 @@ import (
 	"github.com/smacker/go-tree-sitter/typescript/tsx"
 	"github.com/smacker/go-tree-sitter/typescript/typescript"
 
-	"github.com/aykutssert/inspector/internal/architecture/duplication"
-	"github.com/aykutssert/inspector/internal/core"
-	"github.com/aykutssert/inspector/internal/lang/javascript/jsproject"
+	"github.com/aykutssert/scout/internal/architecture/duplication"
+	"github.com/aykutssert/scout/internal/core"
+	"github.com/aykutssert/scout/internal/lang/javascript/jsproject"
 )
 
 const (

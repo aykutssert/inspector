@@ -1,6 +1,6 @@
 package lang
 
-import "github.com/aykutssert/inspector/internal/core"
+import "github.com/aykutssert/scout/internal/core"
 
 type Registry struct {
 	adapters []core.LanguageAdapter

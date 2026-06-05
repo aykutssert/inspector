@@ -4,9 +4,9 @@ import (
 	"errors"
 	"path/filepath"
 
-	inspectctx "github.com/aykutssert/inspector/internal/context"
-	"github.com/aykutssert/inspector/internal/registry"
-	"github.com/aykutssert/inspector/internal/scan"
+	inspectctx "github.com/aykutssert/scout/internal/context"
+	"github.com/aykutssert/scout/internal/registry"
+	"github.com/aykutssert/scout/internal/scan"
 )
 
 type ContextOptions struct {

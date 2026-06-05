@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	inspectctx "github.com/aykutssert/inspector/internal/context"
+	inspectctx "github.com/aykutssert/scout/internal/context"
 )
 
 type Provider struct{}

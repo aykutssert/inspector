@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/aykutssert/inspector/internal/core"
+	"github.com/aykutssert/scout/internal/core"
 )
 
 // No JS/TS files → silent no-op (never builds a graph).

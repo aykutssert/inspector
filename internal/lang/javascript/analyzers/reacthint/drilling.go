@@ -3,7 +3,7 @@ package reacthint
 import (
 	"strings"
 
-	"github.com/aykutssert/inspector/internal/core"
+	"github.com/aykutssert/scout/internal/core"
 	sitter "github.com/smacker/go-tree-sitter"
 )
 

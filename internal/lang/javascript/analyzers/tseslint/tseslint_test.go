@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/aykutssert/inspector/internal/core"
+	"github.com/aykutssert/scout/internal/core"
 )
 
 // A sub-package tsconfig (no root tsconfig) must still register the project, so
@@ -123,7 +123,7 @@ func TestScanNoFloatingPromises(t *testing.T) {
 	if !ok {
 		t.Skip("typescript toolchain not installed")
 	}
-	t.Setenv("INSPECTOR_HOME", repoRoot)
+	t.Setenv("SCOUT_HOME", repoRoot)
 	dir := t.TempDir()
 	writeTSProjectFile(t, dir, "tsconfig.json", `{
   "compilerOptions": {

@@ -12,9 +12,9 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	"github.com/aykutssert/inspector/internal/core"
-	"github.com/aykutssert/inspector/internal/execx"
-	"github.com/aykutssert/inspector/internal/toolchain"
+	"github.com/aykutssert/scout/internal/core"
+	"github.com/aykutssert/scout/internal/execx"
+	"github.com/aykutssert/scout/internal/toolchain"
 )
 
 type Analyzer struct{}
@@ -134,7 +134,7 @@ func finding(analyzer, rule string, sev core.Severity, category, file string, li
 }
 
 // resolveKnip prefers a project-local knip (matching the project's knip config
-// and version), then inspector's managed toolchain.
+// and version), then scout's managed toolchain.
 func resolveKnip(root string) string {
 	local := filepath.Join(root, "node_modules", ".bin", "knip")
 	if exists(local) {

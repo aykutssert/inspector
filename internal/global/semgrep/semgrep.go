@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/aykutssert/inspector/internal/core"
-	"github.com/aykutssert/inspector/internal/execx"
+	"github.com/aykutssert/scout/internal/core"
+	"github.com/aykutssert/scout/internal/execx"
 )
 
 type Analyzer struct {

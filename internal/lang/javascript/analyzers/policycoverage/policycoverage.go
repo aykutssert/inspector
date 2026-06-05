@@ -13,8 +13,8 @@ import (
 	"github.com/smacker/go-tree-sitter/typescript/tsx"
 	"github.com/smacker/go-tree-sitter/typescript/typescript"
 
-	"github.com/aykutssert/inspector/internal/architecture/policy"
-	"github.com/aykutssert/inspector/internal/core"
+	"github.com/aykutssert/scout/internal/architecture/policy"
+	"github.com/aykutssert/scout/internal/core"
 )
 
 const (

@@ -11,9 +11,9 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/aykutssert/inspector/internal/core"
-	"github.com/aykutssert/inspector/internal/execx"
-	"github.com/aykutssert/inspector/internal/toolchain"
+	"github.com/aykutssert/scout/internal/core"
+	"github.com/aykutssert/scout/internal/execx"
+	"github.com/aykutssert/scout/internal/toolchain"
 )
 
 type Analyzer struct{}
@@ -196,7 +196,7 @@ func mapSeverity(s int) core.Severity {
 // isUnknownRuleNotice reports whether an eslint message is the core
 // "Definition for rule '<id>' was not found." notice. eslint emits this (with
 // severity 2 and a null nodeType) when project source carries an inline
-// `eslint-disable` directive for a plugin rule that inspector's curated config
+// `eslint-disable` directive for a plugin rule that scout's curated config
 // doesn't load (e.g. testing-library). It is the project's lint setup leaking,
 // not a defect we detected, so we drop it to keep output deterministic.
 func isUnknownRuleNotice(msg string) bool {

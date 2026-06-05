@@ -7,13 +7,13 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/aykutssert/inspector/internal/core"
-	"github.com/aykutssert/inspector/internal/execx"
-	"github.com/aykutssert/inspector/internal/toolchain"
+	"github.com/aykutssert/scout/internal/core"
+	"github.com/aykutssert/scout/internal/execx"
+	"github.com/aykutssert/scout/internal/toolchain"
 )
 
 // Analyzer wraps eslint + eslint-plugin-tailwindcss, the proven Tailwind linter,
-// run from a managed toolchain that inspector ships under _toolchains/tailwind.
+// run from a managed toolchain that scout ships under _toolchains/tailwind.
 // We do not author Tailwind rules ourselves; we wrap the ecosystem's linter,
 // which is config/version-aware in a way a hand-rolled regex can never be.
 type Analyzer struct{}

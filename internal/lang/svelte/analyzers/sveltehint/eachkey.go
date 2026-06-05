@@ -3,7 +3,7 @@ package sveltehint
 import (
 	"strings"
 
-	"github.com/aykutssert/inspector/internal/core"
+	"github.com/aykutssert/scout/internal/core"
 )
 
 // detectEachIndexAsKey flags `{#each items as item, i (i)}` — keying a keyed

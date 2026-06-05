@@ -1,6 +1,6 @@
 package core
 
-import inspectctx "github.com/aykutssert/inspector/internal/context"
+import inspectctx "github.com/aykutssert/scout/internal/context"
 
 // Pack describes one product capability slice: a language, framework, or domain
 // area that contributes adapters, analyzers, or context support. Concrete packs

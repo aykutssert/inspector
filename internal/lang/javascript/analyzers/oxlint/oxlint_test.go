@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/aykutssert/inspector/internal/core"
+	"github.com/aykutssert/scout/internal/core"
 )
 
 func TestBuildConfigGatesNextjs(t *testing.T) {
@@ -59,15 +59,15 @@ func TestBuildConfigDisablesCoreNoiseRules(t *testing.T) {
 }
 
 // TestOxlintRuleCoverage runs the real oxlint binary over fixtures and asserts
-// every rule the inspector explicitly enables for React still fires, and every
+// every rule the scout explicitly enables for React still fires, and every
 // rule it suppresses stays silent. The config-string tests above prove intent;
 // this proves behavior, catching an oxlint upgrade or rule rename that silently
 // drops a rule we depend on. Skips when oxlint is absent unless
-// INSPECTOR_REQUIRE_OXLINT=1 forces it.
+// SCOUT_REQUIRE_OXLINT=1 forces it.
 func TestOxlintRuleCoverage(t *testing.T) {
 	a := New()
 	if !a.Available() {
-		if os.Getenv("INSPECTOR_REQUIRE_OXLINT") == "1" {
+		if os.Getenv("SCOUT_REQUIRE_OXLINT") == "1" {
 			t.Fatal("oxlint is required but not installed")
 		}
 		t.Skip("oxlint not installed")
@@ -89,7 +89,7 @@ func TestOxlintRuleCoverage(t *testing.T) {
 		fired[f.RuleID] = true
 	}
 
-	// Enabled rules whose firing the inspector relies on (see reactRules).
+	// Enabled rules whose firing the scout relies on (see reactRules).
 	for _, rule := range []string{
 		"button-has-type",
 		"rules-of-hooks",

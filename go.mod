@@ -1,4 +1,4 @@
-module github.com/aykutssert/inspector
+module github.com/aykutssert/scout
 
 go 1.26
 

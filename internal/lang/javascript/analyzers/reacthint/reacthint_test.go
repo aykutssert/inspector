@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/aykutssert/inspector/internal/core"
+	"github.com/aykutssert/scout/internal/core"
 )
 
 // parseSrc writes src to a temp file with ext and runs the detectors.

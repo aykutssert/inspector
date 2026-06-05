@@ -4,7 +4,7 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/aykutssert/inspector/internal/toolchain"
+	"github.com/aykutssert/scout/internal/toolchain"
 )
 
 type DiagnosticStatus string

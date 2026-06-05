@@ -3,10 +3,10 @@ package app
 import (
 	"path/filepath"
 
-	"github.com/aykutssert/inspector/internal/core"
-	"github.com/aykutssert/inspector/internal/lang"
-	"github.com/aykutssert/inspector/internal/registry"
-	"github.com/aykutssert/inspector/internal/scan"
+	"github.com/aykutssert/scout/internal/core"
+	"github.com/aykutssert/scout/internal/lang"
+	"github.com/aykutssert/scout/internal/registry"
+	"github.com/aykutssert/scout/internal/scan"
 )
 
 type ScanOptions struct {

@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/aykutssert/inspector/internal/core"
-	"github.com/aykutssert/inspector/internal/lang/javascript"
+	"github.com/aykutssert/scout/internal/core"
+	"github.com/aykutssert/scout/internal/lang/javascript"
 )
 
 func TestDefaultRegistryProvidesScanSurface(t *testing.T) {

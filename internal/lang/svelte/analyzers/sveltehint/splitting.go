@@ -9,8 +9,8 @@ import (
 	"github.com/smacker/go-tree-sitter/javascript"
 	"github.com/smacker/go-tree-sitter/typescript/typescript"
 
-	"github.com/aykutssert/inspector/internal/architecture/splitting"
-	"github.com/aykutssert/inspector/internal/core"
+	"github.com/aykutssert/scout/internal/architecture/splitting"
+	"github.com/aykutssert/scout/internal/core"
 )
 
 const componentQuery = `

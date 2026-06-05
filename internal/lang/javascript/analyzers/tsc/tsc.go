@@ -11,9 +11,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/aykutssert/inspector/internal/core"
-	"github.com/aykutssert/inspector/internal/execx"
-	"github.com/aykutssert/inspector/internal/toolchain"
+	"github.com/aykutssert/scout/internal/core"
+	"github.com/aykutssert/scout/internal/execx"
+	"github.com/aykutssert/scout/internal/toolchain"
 )
 
 type Analyzer struct{}
@@ -241,7 +241,7 @@ func tscSeverity(raw string) core.Severity {
 }
 
 // resolveTSC prefers a project-local tsc (matching the project's TS version),
-// then the workspace root's hoisted tsc, then inspector's managed toolchain.
+// then the workspace root's hoisted tsc, then scout's managed toolchain.
 func resolveTSC(dir, root string) string {
 	for _, base := range []string{dir, root} {
 		local := filepath.Join(base, "node_modules", ".bin", "tsc")
@@ -283,7 +283,7 @@ func unparsedOutputNotice(analyzer, output string) core.Finding {
 		Level:      core.SeverityWarning.String(),
 		Category:   "quality",
 		Confidence: core.ConfidenceHint,
-		Message:    "TypeScript type checking produced output inspector could not parse: " + firstLine(msg),
+		Message:    "TypeScript type checking produced output scout could not parse: " + firstLine(msg),
 		Fix:        "Run `tsc --noEmit --pretty false -p tsconfig.json` and fix the reported config/parser problem.",
 	}
 }

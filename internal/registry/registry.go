@@ -7,14 +7,14 @@ package registry
 import (
 	"strings"
 
-	inspectctx "github.com/aykutssert/inspector/internal/context"
-	"github.com/aykutssert/inspector/internal/core"
-	"github.com/aykutssert/inspector/internal/global/gitlog"
-	"github.com/aykutssert/inspector/internal/global/osv"
-	"github.com/aykutssert/inspector/internal/global/semgrep"
-	"github.com/aykutssert/inspector/internal/lang/javascript"
-	"github.com/aykutssert/inspector/internal/lang/javascript/jsproject"
-	"github.com/aykutssert/inspector/internal/lang/svelte"
+	inspectctx "github.com/aykutssert/scout/internal/context"
+	"github.com/aykutssert/scout/internal/core"
+	"github.com/aykutssert/scout/internal/global/gitlog"
+	"github.com/aykutssert/scout/internal/global/osv"
+	"github.com/aykutssert/scout/internal/global/semgrep"
+	"github.com/aykutssert/scout/internal/lang/javascript"
+	"github.com/aykutssert/scout/internal/lang/javascript/jsproject"
+	"github.com/aykutssert/scout/internal/lang/svelte"
 )
 
 type Registry struct {

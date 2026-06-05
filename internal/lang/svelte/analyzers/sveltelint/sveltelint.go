@@ -6,13 +6,13 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/aykutssert/inspector/internal/core"
-	"github.com/aykutssert/inspector/internal/execx"
-	"github.com/aykutssert/inspector/internal/toolchain"
+	"github.com/aykutssert/scout/internal/core"
+	"github.com/aykutssert/scout/internal/execx"
+	"github.com/aykutssert/scout/internal/toolchain"
 )
 
 // Analyzer wraps eslint + eslint-plugin-svelte, the proven Svelte linter, run
-// from a managed toolchain that inspector ships under _toolchains/svelte. We do not
+// from a managed toolchain that scout ships under _toolchains/svelte. We do not
 // author Svelte rules ourselves; we wrap the ecosystem's linter.
 type Analyzer struct{}
 
@@ -118,7 +118,7 @@ type eslintFile struct {
 // isUnknownRuleNotice reports whether an eslint message is the core
 // "Definition for rule '<id>' was not found." notice. eslint emits this when
 // project source carries an inline `eslint-disable` directive for a rule that
-// inspector's curated config doesn't load. It is the project's lint setup
+// scout's curated config doesn't load. It is the project's lint setup
 // leaking, not a defect we detected, so we drop it to stay deterministic.
 func isUnknownRuleNotice(msg string) bool {
 	return strings.HasPrefix(msg, "Definition for rule ") && strings.HasSuffix(msg, "was not found.")

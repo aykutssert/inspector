@@ -7,9 +7,9 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/aykutssert/inspector/internal/architecture/boundary"
-	"github.com/aykutssert/inspector/internal/core"
-	jscontext "github.com/aykutssert/inspector/internal/lang/javascript/context"
+	"github.com/aykutssert/scout/internal/architecture/boundary"
+	"github.com/aykutssert/scout/internal/core"
+	jscontext "github.com/aykutssert/scout/internal/lang/javascript/context"
 )
 
 type Analyzer struct{}

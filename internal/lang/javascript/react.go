@@ -1,10 +1,10 @@
 package javascript
 
 import (
-	inspectctx "github.com/aykutssert/inspector/internal/context"
-	"github.com/aykutssert/inspector/internal/core"
-	"github.com/aykutssert/inspector/internal/lang/javascript/analyzers/reacthint"
-	"github.com/aykutssert/inspector/internal/lang/javascript/jsproject"
+	inspectctx "github.com/aykutssert/scout/internal/context"
+	"github.com/aykutssert/scout/internal/core"
+	"github.com/aykutssert/scout/internal/lang/javascript/analyzers/reacthint"
+	"github.com/aykutssert/scout/internal/lang/javascript/jsproject"
 )
 
 type reactPack struct{}

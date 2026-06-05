@@ -1,10 +1,10 @@
 package svelte
 
 import (
-	inspectctx "github.com/aykutssert/inspector/internal/context"
-	"github.com/aykutssert/inspector/internal/core"
-	"github.com/aykutssert/inspector/internal/lang/svelte/analyzers/sveltehint"
-	"github.com/aykutssert/inspector/internal/lang/svelte/analyzers/sveltelint"
+	inspectctx "github.com/aykutssert/scout/internal/context"
+	"github.com/aykutssert/scout/internal/core"
+	"github.com/aykutssert/scout/internal/lang/svelte/analyzers/sveltehint"
+	"github.com/aykutssert/scout/internal/lang/svelte/analyzers/sveltelint"
 )
 
 type sveltePack struct{}

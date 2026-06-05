@@ -3,7 +3,7 @@ package nesthint
 import (
 	"sort"
 
-	"github.com/aykutssert/inspector/internal/core"
+	"github.com/aykutssert/scout/internal/core"
 )
 
 func (p *project) findMissingProviders() []core.Finding {

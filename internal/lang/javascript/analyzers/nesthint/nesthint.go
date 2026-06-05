@@ -9,7 +9,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/aykutssert/inspector/internal/core"
+	"github.com/aykutssert/scout/internal/core"
 )
 
 type Analyzer struct{}

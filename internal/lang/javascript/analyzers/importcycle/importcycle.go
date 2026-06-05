@@ -4,7 +4,7 @@
 // used before the cycle finishes initializing, and they signal tight coupling
 // that makes the involved modules hard to test or reuse in isolation.
 //
-// Detection runs entirely on inspector's own import graph (jscontext.Build) —
+// Detection runs entirely on scout's own import graph (jscontext.Build) —
 // pure Go, no external tool — using Tarjan's strongly-connected-components
 // algorithm: any component with more than one file, or a single file that
 // imports itself, is a cycle.
@@ -15,9 +15,9 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/aykutssert/inspector/internal/architecture/cycle"
-	"github.com/aykutssert/inspector/internal/core"
-	jscontext "github.com/aykutssert/inspector/internal/lang/javascript/context"
+	"github.com/aykutssert/scout/internal/architecture/cycle"
+	"github.com/aykutssert/scout/internal/core"
+	jscontext "github.com/aykutssert/scout/internal/lang/javascript/context"
 )
 
 type Analyzer struct{}

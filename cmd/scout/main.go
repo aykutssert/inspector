@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/aykutssert/inspector/internal/app"
-	"github.com/aykutssert/inspector/internal/core"
-	"github.com/aykutssert/inspector/internal/report"
+	"github.com/aykutssert/scout/internal/app"
+	"github.com/aykutssert/scout/internal/core"
+	"github.com/aykutssert/scout/internal/report"
 )
 
 func main() {
@@ -30,11 +30,11 @@ func main() {
 }
 
 func usage() {
-	fmt.Fprintln(os.Stderr, "inspector — deterministic code security/quality scanner")
+	fmt.Fprintln(os.Stderr, "scout — deterministic code security/quality scanner")
 	fmt.Fprintln(os.Stderr, "usage:")
-	fmt.Fprintln(os.Stderr, "  inspector scan [--diff] [path]")
-	fmt.Fprintln(os.Stderr, "  inspector context [--root dir] <file | file:symbol | symbol>")
-	fmt.Fprintln(os.Stderr, "  inspector doctor [--json]")
+	fmt.Fprintln(os.Stderr, "  scout scan [--diff] [path]")
+	fmt.Fprintln(os.Stderr, "  scout context [--root dir] <file | file:symbol | symbol>")
+	fmt.Fprintln(os.Stderr, "  scout doctor [--json]")
 }
 
 func runScan(args []string) {
@@ -127,8 +127,8 @@ func runDoctor(args []string) {
 		}
 	} else {
 		useColor := isTTY(os.Stdout)
-		fmt.Println("Inspector Diagnostic Report")
-		fmt.Println("===========================")
+		fmt.Println("Scout Diagnostic Report")
+		fmt.Println("=======================")
 		for _, res := range diag.Results {
 			statusStr := string(res.Status)
 			if useColor {

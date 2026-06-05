@@ -6,8 +6,8 @@ import (
 
 	sitter "github.com/smacker/go-tree-sitter"
 
-	"github.com/aykutssert/inspector/internal/architecture/complexity"
-	"github.com/aykutssert/inspector/internal/core"
+	"github.com/aykutssert/scout/internal/architecture/complexity"
+	"github.com/aykutssert/scout/internal/core"
 )
 
 const classQuery = `(class_declaration name: (_) @name) @class`
