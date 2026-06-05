@@ -22,3 +22,7 @@ rules:
               import * as $NS from $MOD;
               ...
       - pattern: require(...)
+      # Asset require() is idiomatic in React Native / Metro (fonts, images,
+      # media have no ESM equivalent) and is NOT module-system mixing. Excluding
+      # it stops a false-positive flood on Expo/RN files.
+      - pattern-not-regex: require\(\s*['"`][^'"`]*\.(png|jpe?g|gif|svg|webp|avif|bmp|ico|ttf|otf|woff2?|eot|mp4|webm|mov|mp3|wav|ogg|m4a|aac|lottie|json)['"`]\s*\)
