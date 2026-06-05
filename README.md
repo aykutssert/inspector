@@ -13,12 +13,12 @@ Needs Node ≥18. Installs the prebuilt binary for your OS/arch and drops the
 
 **npm (recommended):**
 ```bash
-npm install -g @aykutssert/scout
+npm install -g @aykutss/scout
 ```
 
 **npx (no global install):**
 ```bash
-npx @aykutssert/scout install
+npx @aykutss/scout install
 ```
 
 **One-line script (optional):**

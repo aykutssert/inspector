@@ -1,14 +1,19 @@
 {
-  "name": "@aykutssert/scout",
+  "name": "@aykutss/scout",
   "version": "1.0.0",
   "description": "Scout — autonomous code security & quality scanning agent assistant",
-  "main": "./bin/scout.js",
+  "main": "bin/scout.js",
   "bin": {
-    "scout": "./bin/scout.js"
+    "scout": "bin/scout.js"
   },
   "scripts": {
     "postinstall": "node ./scripts/install.js"
   },
+  "files": [
+    "bin/scout.js",
+    "scripts/",
+    "skills/"
+  ],
   "keywords": [
     "scout",
     "security",
