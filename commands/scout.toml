@@ -1,0 +1,14 @@
+description = "Scan the codebase with scout: security, performance, correctness, architecture + a 0-100 health score."
+prompt = """
+Run the scout workflow on this repository.
+
+1. Run `scout doctor --json` and parse it. If a `system` dependency (node, git) is
+   ERROR, tell the user to install it and stop. If `semgrep`/`oxlint`/`osv-scanner`
+   are WARNING (missing), ask permission then install them (e.g. `pipx install semgrep`,
+   `npm i -g oxlint`), and warn that coverage is reduced if the user declines.
+2. Run `scout scan --json` (add `--diff` if the user only wants changed files).
+3. Report the health score and findings grouped by severity (error/warning/hint),
+   with file:line and the fix. Do not invent findings; only report scout output.
+
+Extra arguments: {{args}}
+"""

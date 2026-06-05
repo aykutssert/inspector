@@ -3,6 +3,8 @@
 /inspector
 /bin/
 *.exe
+/npm/bin/scout-bin
+
 
 # go
 *.test
@@ -28,3 +30,11 @@ review-report.md
 tasks.md
 structure.md
 /agent-chats
+
+# local agent skill folders created during dev testing
+/.agents/
+/.antigravity/
+/.claude/
+/.cursor/
+/.devin/
+

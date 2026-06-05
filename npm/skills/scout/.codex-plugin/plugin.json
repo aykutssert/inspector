@@ -1,0 +1,37 @@
+{
+  "name": "scout",
+  "version": "1.0.0",
+  "description": "Scans multi-language codebases for security, performance, correctness, and architecture issues.",
+  "author": {
+    "name": "Aykut",
+    "url": "https://github.com/aykutssert"
+  },
+  "homepage": "https://github.com/aykutssert/inspector",
+  "repository": "https://github.com/aykutssert/inspector",
+  "license": "MIT",
+  "keywords": [
+    "security",
+    "quality",
+    "lint",
+    "static-analysis"
+  ],
+  "skills": "./",
+  "interface": {
+    "displayName": "Scout",
+    "shortDescription": "Scan codebase for security and quality issues.",
+    "longDescription": "Scans multi-language codebases for security, performance, correctness, and architecture issues, producing a 0–100 health score.",
+    "developerName": "Aykut",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Write"
+    ],
+    "websiteURL": "https://github.com/aykutssert/inspector",
+    "privacyPolicyURL": "https://github.com/aykutssert/inspector",
+    "termsOfServiceURL": "https://github.com/aykutssert/inspector",
+    "defaultPrompt": [
+      "Run scout scan"
+    ],
+    "screenshots": [],
+    "brandColor": "#3B82F6"
+  }
+}

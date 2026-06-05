@@ -1,0 +1,22 @@
+{
+  "name": "@aykutssert/scout",
+  "version": "1.0.0",
+  "description": "Scout — autonomous code security & quality scanning agent assistant",
+  "main": "./bin/scout.js",
+  "bin": {
+    "scout": "./bin/scout.js"
+  },
+  "scripts": {
+    "postinstall": "node ./scripts/install.js"
+  },
+  "keywords": [
+    "scout",
+    "security",
+    "linter",
+    "agentic",
+    "claude",
+    "cursor"
+  ],
+  "author": "Aykut Sert",
+  "license": "MIT"
+}
