@@ -40,14 +40,30 @@ func Analyze(filePath string, entities []Entity, rules []Rule) []Violation {
 
 			violation := false
 
-			// Structural fan-in/out is a standalone smell: too many inputs
-			// (params/props/fields) or too many dependencies (calls/hooks/
-			// injections) is hard to maintain regardless of length.
+			// Structural fan-in is a standalone smell: too many inputs
+			// (params/props/fields) is hard to maintain regardless of length
+			// (god parameter list, god object).
 			if rule.MaxInputs > 0 && ent.Inputs >= rule.MaxInputs {
 				violation = true
 			}
+			// Dependency fan-out standalone: for a class/struct, dep count =
+			// injected-service count, a real fan-out smell at any size (fat
+			// controller). But for a function/component, "deps" = external
+			// calls/hooks, and a SHORT body with many calls is normal — that is
+			// what functions do. Corpus firing showed every tiny Express handler
+			// (logout: 9 lines, 6 deps) flagged as a false positive. So gate
+			// deps-alone for functions/components behind a minimum body size;
+			// below it, only the corroborated path (moderately-large + busy) can
+			// fire.
 			if rule.MaxDeps > 0 && ent.Deps >= rule.MaxDeps {
-				violation = true
+				depsFloorOK := true
+				if ent.Type == "function" || ent.Type == "component" {
+					depsFloor := int(float64(rule.MaxLines) * 0.25)
+					depsFloorOK = rule.MaxLines == 0 || ent.LineCount >= depsFloor
+				}
+				if depsFloorOK {
+					violation = true
+				}
 			}
 
 			// Size alone is NOT a violation. A long but simple entity (a big
