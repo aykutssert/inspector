@@ -21,6 +21,8 @@ func main() {
 		runScan(os.Args[2:])
 	case "context":
 		runContext(os.Args[2:])
+	case "doctor":
+		runDoctor(os.Args[2:])
 	default:
 		usage()
 		os.Exit(2)
@@ -32,6 +34,7 @@ func usage() {
 	fmt.Fprintln(os.Stderr, "usage:")
 	fmt.Fprintln(os.Stderr, "  inspector scan [--diff] [path]")
 	fmt.Fprintln(os.Stderr, "  inspector context [--root dir] <file | file:symbol | symbol>")
+	fmt.Fprintln(os.Stderr, "  inspector doctor [--json]")
 }
 
 func runScan(args []string) {
@@ -104,6 +107,66 @@ func runContext(args []string) {
 	enc.SetIndent("", "  ")
 	if err := enc.Encode(ctx); err != nil {
 		fmt.Fprintln(os.Stderr, "error:", err)
+		os.Exit(1)
+	}
+}
+
+func runDoctor(args []string) {
+	fs := flag.NewFlagSet("doctor", flag.ExitOnError)
+	jsonFlag := fs.Bool("json", false, "output in JSON format")
+	_ = fs.Parse(args)
+
+	diag := app.Diagnose()
+
+	if *jsonFlag {
+		enc := json.NewEncoder(os.Stdout)
+		enc.SetIndent("", "  ")
+		if err := enc.Encode(diag); err != nil {
+			fmt.Fprintln(os.Stderr, "error:", err)
+			os.Exit(1)
+		}
+	} else {
+		useColor := isTTY(os.Stdout)
+		fmt.Println("Inspector Diagnostic Report")
+		fmt.Println("===========================")
+		for _, res := range diag.Results {
+			statusStr := string(res.Status)
+			if useColor {
+				switch res.Status {
+				case app.StatusOk:
+					statusStr = "\033[32mOK\033[0m"
+				case app.StatusWarning:
+					statusStr = "\033[33mWARNING\033[0m"
+				case app.StatusError:
+					statusStr = "\033[31mERROR\033[0m"
+				}
+			}
+
+			if res.Status == app.StatusOk {
+				fmt.Printf("[%s] %s (%s)\n", statusStr, res.Name, res.Version)
+			} else {
+				fmt.Printf("[%s] %s: %s\n", statusStr, res.Name, res.Error)
+				if res.InstallHint != "" {
+					fmt.Printf("      Fix: %s\n", res.InstallHint)
+				}
+			}
+		}
+
+		overallStr := string(diag.OverallStatus)
+		if useColor {
+			switch diag.OverallStatus {
+			case app.StatusOk:
+				overallStr = "\033[32mOK\033[0m"
+			case app.StatusWarning:
+				overallStr = "\033[33mWARNING\033[0m"
+			case app.StatusError:
+				overallStr = "\033[31mERROR\033[0m"
+			}
+		}
+		fmt.Printf("\nOverall Status: %s\n", overallStr)
+	}
+
+	if diag.OverallStatus == app.StatusError {
 		os.Exit(1)
 	}
 }
