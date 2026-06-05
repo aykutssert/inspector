@@ -43,8 +43,12 @@ const baseConfig = `{
 // reactRules are the per-rule tweaks that only make sense with the React plugins
 // loaded:
 //   - react-in-jsx-scope OFF: noise under the modern JSX transform.
-//   - jsx-no-new-function-as-prop OFF: inline handlers are idiomatic React and
-//     this rule fires on nearly every component, so it buries the signal.
+//   - jsx-no-new-{function,object,array,jsx}-as-prop OFF: a new inline
+//     object/array/handler/JSX as a prop only costs a re-render when the child
+//     is memoized; otherwise it is harmless and idiomatic. Corpus firing showed
+//     this family is high-volume + low-actionable (object 27, render-alloc-class
+//     spread across real apps), so it buries the signal. Same call as the
+//     already-off function-as-prop.
 //   - button-has-type ON: a <button> defaults to type="submit" and silently
 //     submits forms; a real bug the default config misses.
 //   - rules-of-hooks ON (error): conditional/loop hook calls break React's hook
@@ -56,6 +60,9 @@ const baseConfig = `{
 const reactRules = `
     "react/react-in-jsx-scope": "off",
     "react-perf/jsx-no-new-function-as-prop": "off",
+    "react-perf/jsx-no-new-object-as-prop": "off",
+    "react-perf/jsx-no-new-array-as-prop": "off",
+    "react-perf/jsx-no-jsx-as-prop": "off",
     "react/button-has-type": "warn",
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
