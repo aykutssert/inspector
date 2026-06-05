@@ -15,11 +15,12 @@ func JSON(w io.Writer, r core.Report) error {
 }
 
 func Terminal(w io.Writer, r core.Report) {
+	s := r.Summary
+	fmt.Fprintf(w, "Health Score: %d/100\n\n", s.Score)
 	if len(r.Findings) == 0 {
 		fmt.Fprintln(w, "No findings.")
 		return
 	}
-	s := r.Summary
 	fmt.Fprintf(w, "%d finding(s): %d error, %d warning, %d info\n",
 		s.Total, s.Counts["error"], s.Counts["warning"], s.Counts["info"])
 	if len(s.TopFiles) > 0 {

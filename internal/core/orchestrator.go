@@ -24,6 +24,7 @@ type Summary struct {
 	Total    int            `json:"total"`
 	Counts   map[string]int `json:"counts"`
 	TopFiles []FileCount    `json:"top_files,omitempty"`
+	Score    int            `json:"score"`
 }
 
 type Report struct {
@@ -67,17 +68,26 @@ func (o *Orchestrator) Run(ctx ProjectContext) Report {
 	}
 	o.sortFindings(report.Findings)
 	enrichSnippets(ctx.Root, report.Findings)
-	report.Summary = buildSummary(report.Findings)
+	report.Summary = buildSummary(report.Findings, len(ctx.Files))
 	return report
 }
 
-func buildSummary(findings []Finding) Summary {
+func buildSummary(findings []Finding, fileCount int) Summary {
 	s := Summary{Total: len(findings), Counts: map[string]int{}}
 	perFile := map[string]int{}
+	var e, w, h float64
 	for _, f := range findings {
 		s.Counts[f.Level]++
 		if f.File != "" {
 			perFile[f.File]++
+		}
+		switch f.Level {
+		case "error":
+			e++
+		case "warning":
+			w++
+		default:
+			h++
 		}
 	}
 	for file, n := range perFile {
@@ -92,6 +102,18 @@ func buildSummary(findings []Finding) Summary {
 	if len(s.TopFiles) > 5 {
 		s.TopFiles = s.TopFiles[:5]
 	}
+
+	// Calculate Health Score
+	if fileCount == 0 {
+		s.Score = 100
+	} else {
+		val := (5*e + 2*w + 0.5*h) / (float64(fileCount) * 10.0)
+		if val > 1.0 {
+			val = 1.0
+		}
+		s.Score = int((1.0-val)*100.0 + 0.5)
+	}
+
 	return s
 }
 
