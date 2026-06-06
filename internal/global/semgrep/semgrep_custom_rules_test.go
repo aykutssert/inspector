@@ -35,7 +35,7 @@ func TestJavaScriptCustomRulesGolden(t *testing.T) {
 	a := &Analyzer{customDirs: []string{ruleDir}}
 	got, err := a.Scan(core.ProjectContext{
 		Root:  root,
-		Files: []string{"bun.ts", "case.tsx", "client.tsx", "client_data_fetch.tsx", "express.ts", "express_sensitive_route_no_auth.ts", "heavy_import_no_dynamic.tsx", "incomplete.ts", "next_async_client_component.tsx", "next_no_redirect_in_try_catch.tsx", "nextjs_no_use_search_params_without_suspense.tsx", "page.tsx", "regex_dos_candidate.ts", "rn.tsx", "route.ts", "server_api_hop.tsx", "server_auth_actions.tsx", "server_no_mutable_module_state.tsx", "tanstack_start_redirect_in_try_catch.tsx", "unnecessary_client.tsx"},
+		Files: []string{"bun.ts", "case.tsx", "client.tsx", "client_data_fetch.tsx", "express.ts", "express_sensitive_route_no_auth.ts", "heavy_import_no_dynamic.tsx", "incomplete.ts", "next_async_client_component.tsx", "next_no_redirect_in_try_catch.tsx", "nextjs_no_use_search_params_without_suspense.tsx", "node_promise.ts", "page.tsx", "react19.tsx", "regex_dos_candidate.ts", "rn.tsx", "route.ts", "server_api_hop.tsx", "server_auth_actions.tsx", "server_no_mutable_module_state.tsx", "tanstack_start_redirect_in_try_catch.tsx", "tanstack_writes.tsx", "unnecessary_client.tsx"},
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -48,7 +48,20 @@ func TestJavaScriptCustomRulesGolden(t *testing.T) {
 	}
 	actual = append(actual, '\n')
 
-	want, err := os.ReadFile(filepath.Join(root, "expected.json"))
+	expectedPath := filepath.Join(root, "expected.json")
+	// UPDATE_EXPECTED=true regenerates the golden instead of hand-editing it.
+	// Adding/changing a rule shifts line numbers of every later finding in a
+	// shared fixture, so manual edits are churn-prone; this writes the canonical
+	// output (same flag the corpus regression test uses).
+	if os.Getenv("UPDATE_EXPECTED") == "true" {
+		if err := os.WriteFile(expectedPath, actual, 0o644); err != nil {
+			t.Fatalf("failed to update golden: %v", err)
+		}
+		t.Logf("updated golden %s", expectedPath)
+		return
+	}
+
+	want, err := os.ReadFile(expectedPath)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -107,6 +107,28 @@ func TestDropInapplicableRulesGatesBun(t *testing.T) {
 	}
 }
 
+func TestDropInapplicableRulesGatesReact19(t *testing.T) {
+	finding := core.Finding{RuleID: "react.no-react19-deprecated-apis", File: "src/Button.tsx"}
+
+	react18 := t.TempDir()
+	if err := os.WriteFile(filepath.Join(react18, "package.json"),
+		[]byte(`{"dependencies":{"react":"^18.3.0"}}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if !dropInapplicableRules(core.ProjectContext{Root: react18})(finding) {
+		t.Fatal("React 18 must suppress React 19 migration findings")
+	}
+
+	react19 := t.TempDir()
+	if err := os.WriteFile(filepath.Join(react19, "package.json"),
+		[]byte(`{"dependencies":{"react":"^19.1.0"}}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if dropInapplicableRules(core.ProjectContext{Root: react19})(finding) {
+		t.Fatal("React 19 must keep React 19 migration findings")
+	}
+}
+
 func hasAnalyzer(analyzers []core.Analyzer, name string) bool {
 	for _, a := range analyzers {
 		if a.Name() == name {

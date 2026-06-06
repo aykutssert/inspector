@@ -1,0 +1,37 @@
+rules:
+  - id: no-react-dom-deprecated-apis
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: >
+      This legacy ReactDOM API is removed or unsupported by modern React roots.
+      Use createRoot(...).render(...), hydrateRoot(...), root.unmount(), or a
+      ref-based alternative instead.
+    metadata:
+      category: compatibility
+      confidence: rule
+    pattern-either:
+      - pattern: ReactDOM.render(...)
+      - pattern: ReactDOM.hydrate(...)
+      - pattern: ReactDOM.findDOMNode(...)
+      - pattern: ReactDOM.unmountComponentAtNode(...)
+      - pattern: ReactDOM.renderSubtreeIntoContainer(...)
+      - patterns:
+          - pattern-inside: |
+              import { ..., render, ... } from "react-dom";
+              ...
+          - pattern: render(...)
+      - patterns:
+          - pattern-inside: |
+              import { ..., hydrate, ... } from "react-dom";
+              ...
+          - pattern: hydrate(...)
+      - patterns:
+          - pattern-inside: |
+              import { ..., findDOMNode, ... } from "react-dom";
+              ...
+          - pattern: findDOMNode(...)
+      - patterns:
+          - pattern-inside: |
+              import { ..., unmountComponentAtNode, ... } from "react-dom";
+              ...
+          - pattern: unmountComponentAtNode(...)

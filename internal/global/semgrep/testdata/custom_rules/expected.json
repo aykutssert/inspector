@@ -878,6 +878,33 @@
     "message": "The faker mock-data library is imported in non-test code, so fake/random data can be shipped into a production path instead of real data. Move faker behind tests/fixtures/seed scripts, or replace it with a real data source.\n"
   },
   {
+    "rule_id": "general.node-unhandled-promise-rejection",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "node_promise.ts",
+    "line": 4,
+    "message": "A promise is started as a standalone statement without await, return, or a rejection handler. If it rejects, Node reports an unhandled rejection and modern runtimes may terminate the process. Await/return it, or attach an explicit catch handler.\n"
+  },
+  {
+    "rule_id": "general.node-unhandled-promise-rejection",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "node_promise.ts",
+    "line": 5,
+    "message": "A promise is started as a standalone statement without await, return, or a rejection handler. If it rejects, Node reports an unhandled rejection and modern runtimes may terminate the process. Await/return it, or attach an explicit catch handler.\n"
+  },
+  {
+    "rule_id": "general.node-unhandled-promise-rejection",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "node_promise.ts",
+    "line": 6,
+    "message": "A promise is started as a standalone statement without await, return, or a rejection handler. If it rejects, Node reports an unhandled rejection and modern runtimes may terminate the process. Await/return it, or attach an explicit catch handler.\n"
+  },
+  {
     "rule_id": "general.open-redirect-dynamic-url",
     "severity": "warning",
     "category": "security",
@@ -1980,6 +2007,78 @@
     "message": "Direct DOM manipulation call detected in React file. Accessing or modifying the DOM directly (using document.getElementById, querySelector, etc.) bypasses the Virtual DOM, causing state inconsistencies and rendering issues. Use React refs (useRef) or state binding instead.\n"
   },
   {
+    "rule_id": "react.no-default-props",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "rule",
+    "file": "react19.tsx",
+    "line": 9,
+    "message": "A function component defines defaultProps. React 19 removed defaultProps support for function components. Use JavaScript default parameters or destructuring defaults so the fallback still applies after upgrading.\n"
+  },
+  {
+    "rule_id": "react.no-prop-types",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "rule",
+    "file": "react19.tsx",
+    "line": 10,
+    "message": "A function component defines propTypes. React 19 ignores propTypes on function components, so this runtime validation no longer protects the component contract. Move the contract to TypeScript types or validate untrusted data at the application boundary with a schema.\n"
+  },
+  {
+    "rule_id": "react.no-react-dom-deprecated-apis",
+    "severity": "error",
+    "category": "quality",
+    "confidence": "rule",
+    "file": "react19.tsx",
+    "line": 15,
+    "message": "This legacy ReactDOM API is removed or unsupported by modern React roots. Use createRoot(...).render(...), hydrateRoot(...), root.unmount(), or a ref-based alternative instead.\n"
+  },
+  {
+    "rule_id": "react.no-react-dom-deprecated-apis",
+    "severity": "error",
+    "category": "quality",
+    "confidence": "rule",
+    "file": "react19.tsx",
+    "line": 16,
+    "message": "This legacy ReactDOM API is removed or unsupported by modern React roots. Use createRoot(...).render(...), hydrateRoot(...), root.unmount(), or a ref-based alternative instead.\n"
+  },
+  {
+    "rule_id": "react.no-react-dom-deprecated-apis",
+    "severity": "error",
+    "category": "quality",
+    "confidence": "rule",
+    "file": "react19.tsx",
+    "line": 17,
+    "message": "This legacy ReactDOM API is removed or unsupported by modern React roots. Use createRoot(...).render(...), hydrateRoot(...), root.unmount(), or a ref-based alternative instead.\n"
+  },
+  {
+    "rule_id": "react.no-react-dom-deprecated-apis",
+    "severity": "error",
+    "category": "quality",
+    "confidence": "rule",
+    "file": "react19.tsx",
+    "line": 18,
+    "message": "This legacy ReactDOM API is removed or unsupported by modern React roots. Use createRoot(...).render(...), hydrateRoot(...), root.unmount(), or a ref-based alternative instead.\n"
+  },
+  {
+    "rule_id": "react.no-react19-deprecated-apis",
+    "severity": "info",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "react19.tsx",
+    "line": 12,
+    "message": "forwardRef is no longer necessary in React 19 because function components can receive ref as a normal prop. React documents forwardRef for future deprecation. Prefer a ref prop for new React 19 code and migrate when the component API can change safely.\n"
+  },
+  {
+    "rule_id": "react.no-react19-deprecated-apis",
+    "severity": "info",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "react19.tsx",
+    "line": 13,
+    "message": "forwardRef is no longer necessary in React 19 because function components can receive ref as a normal prop. React documents forwardRef for future deprecation. Prefer a ref prop for new React 19 code and migrate when the component API can change safely.\n"
+  },
+  {
     "rule_id": "react.random-value-as-react-key",
     "severity": "error",
     "category": "bug",
@@ -2203,6 +2302,42 @@
     "file": "tanstack_start_redirect_in_try_catch.tsx",
     "line": 13,
     "message": "Calling 'redirect()' or 'notFound()' inside a try-catch block can prevent the navigation from working correctly because TanStack Router uses thrown errors internally to redirect or show a 404 page. Call redirect() outside the try-catch block or rethrow the exception.\n"
+  },
+  {
+    "rule_id": "tanstack.query-no-usequery-for-mutation",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "tanstack_writes.tsx",
+    "line": 18,
+    "message": "useQuery is executing an HTTP write operation. Queries are designed for idempotent reads and may refetch automatically; POST, PUT, PATCH, and DELETE belong in useMutation so retries, pending state, and cache updates follow mutation semantics.\n"
+  },
+  {
+    "rule_id": "tanstack.query-no-usequery-for-mutation",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "tanstack_writes.tsx",
+    "line": 24,
+    "message": "useQuery is executing an HTTP write operation. Queries are designed for idempotent reads and may refetch automatically; POST, PUT, PATCH, and DELETE belong in useMutation so retries, pending state, and cache updates follow mutation semantics.\n"
+  },
+  {
+    "rule_id": "tanstack.query-no-void-query-fn",
+    "severity": "error",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "tanstack_writes.tsx",
+    "line": 28,
+    "message": "This TanStack Query queryFn has a block body but returns no value. Query functions must resolve data; resolving undefined breaks the cache contract and is rejected by current TanStack Query versions. Return the fetched value or throw an error.\n"
+  },
+  {
+    "rule_id": "tanstack.query-stable-query-client",
+    "severity": "error",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "tanstack_writes.tsx",
+    "line": 15,
+    "message": "QueryClient is created inside a React component or hook, so a new cache can be created on each render. Create it once at module scope, or lazily store it in useState/useRef before passing it to QueryClientProvider.\n"
   },
   {
     "rule_id": "tanstack.tanstack-mutation-without-invalidation",

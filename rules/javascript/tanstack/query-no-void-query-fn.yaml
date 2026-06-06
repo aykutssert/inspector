@@ -1,0 +1,50 @@
+rules:
+  - id: query-no-void-query-fn
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: >
+      This TanStack Query queryFn has a block body but returns no value. Query
+      functions must resolve data; resolving undefined breaks the cache contract
+      and is rejected by current TanStack Query versions. Return the fetched
+      value or throw an error.
+    metadata:
+      category: correctness
+      confidence: rule
+    patterns:
+      - pattern-either:
+          - pattern: |
+              useQuery({ ..., queryFn: (...) => { ... }, ... })
+          - pattern: |
+              useQuery({ ..., queryFn: async (...) => { ... }, ... })
+          - pattern: |
+              useInfiniteQuery({ ..., queryFn: (...) => { ... }, ... })
+          - pattern: |
+              useInfiniteQuery({ ..., queryFn: async (...) => { ... }, ... })
+          - pattern: |
+              useSuspenseQuery({ ..., queryFn: (...) => { ... }, ... })
+          - pattern: |
+              useSuspenseQuery({ ..., queryFn: async (...) => { ... }, ... })
+      - pattern-not: |
+          useQuery({ ..., queryFn: (...) => { ... return ...; ... }, ... })
+      - pattern-not: |
+          useQuery({ ..., queryFn: async (...) => { ... return ...; ... }, ... })
+      - pattern-not: |
+          useQuery({ ..., queryFn: (...) => { ... throw ...; ... }, ... })
+      - pattern-not: |
+          useQuery({ ..., queryFn: async (...) => { ... throw ...; ... }, ... })
+      - pattern-not: |
+          useInfiniteQuery({ ..., queryFn: (...) => { ... return ...; ... }, ... })
+      - pattern-not: |
+          useInfiniteQuery({ ..., queryFn: async (...) => { ... return ...; ... }, ... })
+      - pattern-not: |
+          useInfiniteQuery({ ..., queryFn: (...) => { ... throw ...; ... }, ... })
+      - pattern-not: |
+          useInfiniteQuery({ ..., queryFn: async (...) => { ... throw ...; ... }, ... })
+      - pattern-not: |
+          useSuspenseQuery({ ..., queryFn: (...) => { ... return ...; ... }, ... })
+      - pattern-not: |
+          useSuspenseQuery({ ..., queryFn: async (...) => { ... return ...; ... }, ... })
+      - pattern-not: |
+          useSuspenseQuery({ ..., queryFn: (...) => { ... throw ...; ... }, ... })
+      - pattern-not: |
+          useSuspenseQuery({ ..., queryFn: async (...) => { ... throw ...; ... }, ... })

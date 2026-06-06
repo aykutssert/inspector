@@ -93,6 +93,31 @@ func TestIsReactByWorkspaceDependency(t *testing.T) {
 	}
 }
 
+func TestReactMajorAtLeastUsesNearestPackage(t *testing.T) {
+	root := t.TempDir()
+	writePkg(t, root, `{"dependencies":{"react":"^18.3.0"}}`)
+	app := filepath.Join(root, "apps", "web")
+	if err := os.MkdirAll(filepath.Join(app, "src"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	writePkg(t, app, `{"dependencies":{"react":"^19.1.0"}}`)
+	ctx := core.ProjectContext{Root: root}
+	if !ReactMajorAtLeast(ctx, "apps/web/src/Button.tsx", 19) {
+		t.Fatal("nearest React 19 package should enable React 19 rules")
+	}
+	if ReactMajorAtLeast(ctx, "src/Legacy.tsx", 19) {
+		t.Fatal("root React 18 package must not enable React 19 rules")
+	}
+}
+
+func TestReactMajorAtLeastRejectsUnknownRange(t *testing.T) {
+	dir := t.TempDir()
+	writePkg(t, dir, `{"dependencies":{"react":"workspace:*"}}`)
+	if ReactMajorAtLeast(core.ProjectContext{Root: dir}, "src/App.tsx", 19) {
+		t.Fatal("unknown React range must fail closed")
+	}
+}
+
 func TestIsNextByConfigAndDependency(t *testing.T) {
 	if !IsNext(core.ProjectContext{Root: t.TempDir(), Files: []string{"next.config.mjs"}}) {
 		t.Fatal("next.config.* should signal a Next.js project")

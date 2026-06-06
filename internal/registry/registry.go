@@ -84,15 +84,20 @@ func (r *Registry) Analyzers(ctx core.ProjectContext, customRuleDirs []string) [
 func dropInapplicableRules(ctx core.ProjectContext) func(core.Finding) bool {
 	bun := jsproject.IsBun(ctx)
 	vite := jsproject.IsVite(ctx)
-	if bun && vite {
-		return nil
-	}
 	return func(f core.Finding) bool {
 		if !bun && strings.HasPrefix(f.RuleID, "bun.") {
 			return true
 		}
 		if !vite && strings.HasPrefix(f.RuleID, "vite.") {
 			return true
+		}
+		switch f.RuleID {
+		case "react.no-default-props", "react.no-prop-types",
+			"react.no-react19-deprecated-apis", "react.no-react-dom-deprecated-apis":
+			// These APIs/props are only an error once React 19 removed them; on
+			// React 17/18 they are valid-or-deprecated, so flagging them (ERROR)
+			// there is a false positive. Gate to React >= 19.
+			return !jsproject.ReactMajorAtLeast(ctx, f.File, 19)
 		}
 		return false
 	}

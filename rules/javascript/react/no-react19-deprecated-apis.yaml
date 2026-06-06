@@ -1,0 +1,19 @@
+rules:
+  - id: no-react19-deprecated-apis
+    languages: [typescript, javascript]
+    severity: INFO
+    message: >
+      forwardRef is no longer necessary in React 19 because function components
+      can receive ref as a normal prop. React documents forwardRef for future
+      deprecation. Prefer a ref prop for new React 19 code and migrate when the
+      component API can change safely.
+    metadata:
+      category: compatibility
+      confidence: hint
+    pattern-either:
+      - pattern: React.forwardRef(...)
+      - patterns:
+          - pattern-inside: |
+              import { ..., forwardRef, ... } from "react";
+              ...
+          - pattern: forwardRef(...)

@@ -1,0 +1,36 @@
+rules:
+  - id: query-no-usequery-for-mutation
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      useQuery is executing an HTTP write operation. Queries are designed for
+      idempotent reads and may refetch automatically; POST, PUT, PATCH, and
+      DELETE belong in useMutation so retries, pending state, and cache updates
+      follow mutation semantics.
+    metadata:
+      category: correctness
+      confidence: rule
+    patterns:
+      - pattern-either:
+          - pattern-inside: |
+              useQuery({ ..., queryFn: (...) => { ... }, ... })
+          - pattern-inside: |
+              useQuery({ ..., queryFn: async (...) => { ... }, ... })
+          - pattern-inside: |
+              useQuery({ ..., queryFn: (...) => ..., ... })
+          - pattern-inside: |
+              useQuery({ ..., queryFn: async (...) => ..., ... })
+          - pattern-inside: |
+              useSuspenseQuery({ ..., queryFn: (...) => { ... }, ... })
+          - pattern-inside: |
+              useSuspenseQuery({ ..., queryFn: async (...) => { ... }, ... })
+      - pattern-either:
+          - patterns:
+              - pattern: "fetch(..., { ..., method: $METHOD, ... })"
+              - metavariable-regex:
+                  metavariable: $METHOD
+                  regex: "^['\"](POST|PUT|PATCH|DELETE)['\"]$"
+          - pattern: "$CLIENT.post(...)"
+          - pattern: "$CLIENT.put(...)"
+          - pattern: "$CLIENT.patch(...)"
+          - pattern: "$CLIENT.delete(...)"

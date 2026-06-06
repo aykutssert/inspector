@@ -101,6 +101,7 @@ func scanFile(abs, rel string) ([]core.Finding, error) {
 		findings = append(findings, detectNonNullAssertionSpam(tree.RootNode(), lang, src, rel)...)
 	}
 	findings = append(findings, detectSequentialAwaits(tree.RootNode(), lang, src, rel)...)
+	findings = append(findings, detectPerformancePatterns(tree.RootNode(), lang, src, rel)...)
 	return findings, nil
 }
 

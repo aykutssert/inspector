@@ -221,3 +221,131 @@ func TestSequentialAwaitsNonConsecutive(t *testing.T) {
 		t.Fatalf("did not expect sequential-awaits-independent, got %#v", findings)
 	}
 }
+
+func TestHoistStaticIntlAndRegexpInComponent(t *testing.T) {
+	src := `
+		function PriceCard() {
+			const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
+			const matcher = new RegExp("^admin$", "i");
+			return money.format(10) + matcher.test("admin");
+		}
+	`
+	findings := scanSrc(t, "card.tsx", src)
+	if !hasRule(findings, "js-hoist-intl") || !hasRule(findings, "js-hoist-regexp") {
+		t.Fatalf("expected static Intl and RegExp hoist findings, got %#v", findings)
+	}
+}
+
+func TestDynamicIntlAndRegexpNotFlagged(t *testing.T) {
+	src := `
+		function PriceCard({ locale, pattern }) {
+			const money = new Intl.NumberFormat(locale);
+			const matcher = new RegExp(pattern);
+			return money.format(10) + matcher.test("admin");
+		}
+	`
+	findings := scanSrc(t, "card.tsx", src)
+	if hasRule(findings, "js-hoist-intl") || hasRule(findings, "js-hoist-regexp") {
+		t.Fatalf("dynamic constructors must not be hoisted, got %#v", findings)
+	}
+}
+
+func TestModuleScopeStaticValueAndPureFunction(t *testing.T) {
+	src := `
+		function Dashboard({ user }) {
+			const options = { dense: true, roles: ["admin"] };
+			function normalize(value) {
+				return value.trim().toLowerCase();
+			}
+			function greeting() {
+				return user.name;
+			}
+			return render(normalize(user.name), greeting(), options);
+		}
+	`
+	findings := scanSrc(t, "dashboard.tsx", src)
+	if !hasRule(findings, "prefer-module-scope-static-value") {
+		t.Fatalf("expected static value finding, got %#v", findings)
+	}
+	if !hasRule(findings, "prefer-module-scope-pure-function") {
+		t.Fatalf("expected pure helper finding, got %#v", findings)
+	}
+	count := 0
+	for _, finding := range findings {
+		if finding.RuleID == "prefer-module-scope-pure-function" {
+			count++
+		}
+	}
+	if count != 1 {
+		t.Fatalf("capturing helper must stay quiet; got %d pure helper findings: %#v", count, findings)
+	}
+}
+
+func TestArrowPureFunctionCanBeHoisted(t *testing.T) {
+	src := `
+		function Dashboard({ user }) {
+			const normalize = (value) => value.trim().toLowerCase();
+			return normalize(user.name);
+		}
+	`
+	if findings := scanSrc(t, "dashboard.tsx", src); !hasRule(findings, "prefer-module-scope-pure-function") {
+		t.Fatalf("expected arrow helper finding, got %#v", findings)
+	}
+}
+
+func TestRepeatedFindAndIncludes(t *testing.T) {
+	src := `
+		function joinRows(rows: Row[], users: User[]) {
+			const allowedIds = ["a", "b"];
+			for (const row of rows) {
+				const user = users.find((candidate) => candidate.id === row.userId);
+				if (allowedIds.includes(row.userId)) consume(user);
+			}
+		}
+	`
+	findings := scanSrc(t, "lookup.ts", src)
+	if !hasRule(findings, "js-index-maps") || !hasRule(findings, "js-set-map-lookups") {
+		t.Fatalf("expected repeated lookup findings, got %#v", findings)
+	}
+}
+
+func TestStringIncludesAndNestedHandlerNotFlagged(t *testing.T) {
+	src := `
+		function SearchInput({ rows, pathname }) {
+			const onSearch = () => rows.find((row) => row.name === pathname);
+			return links.map((link) => pathname.includes(link.route));
+		}
+		function transform(root, replacements) {
+			replacements.forEach(() => root.find("CallExpression"));
+		}
+	`
+	findings := scanSrc(t, "search.tsx", src)
+	if hasRule(findings, "js-index-maps") || hasRule(findings, "js-set-map-lookups") {
+		t.Fatalf("string includes and event-time lookup must stay quiet, got %#v", findings)
+	}
+}
+
+func TestPerformanceHintsSkipTestFixtures(t *testing.T) {
+	src := `
+		function Widget() {
+			const options = { dense: true };
+			return rows.map(() => values.find((value) => value.id));
+		}
+	`
+	findings := scanSrc(t, "widget.test.tsx", src)
+	if hasRule(findings, "prefer-module-scope-static-value") || hasRule(findings, "js-index-maps") {
+		t.Fatalf("production performance hints must skip test fixtures, got %#v", findings)
+	}
+}
+
+func TestSingleFindAndIncludesNotFlagged(t *testing.T) {
+	src := `
+		function lookup(users, allowedIds, id) {
+			return users.find((user) => user.id === id) && allowedIds.includes(id);
+		}
+	`
+	findings := scanSrc(t, "lookup.ts", src)
+	if hasRule(findings, "js-index-maps") || hasRule(findings, "js-set-map-lookups") {
+		t.Fatalf("single lookups must stay quiet, got %#v", findings)
+	}
+}

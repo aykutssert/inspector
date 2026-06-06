@@ -1,0 +1,39 @@
+rules:
+  - id: no-default-props
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      A function component defines defaultProps. React 19 removed defaultProps
+      support for function components. Use JavaScript default parameters or
+      destructuring defaults so the fallback still applies after upgrading.
+    metadata:
+      category: compatibility
+      confidence: rule
+    pattern-either:
+      - patterns:
+          - pattern-inside: |
+              function $COMP(...) { ... }
+              ...
+              $COMP.defaultProps = $DEFAULTS;
+          - pattern: $COMP.defaultProps = $DEFAULTS
+          - metavariable-regex:
+              metavariable: $COMP
+              regex: "^[A-Z]"
+      - patterns:
+          - pattern-inside: |
+              const $COMP = (...) => { ... };
+              ...
+              $COMP.defaultProps = $DEFAULTS;
+          - pattern: $COMP.defaultProps = $DEFAULTS
+          - metavariable-regex:
+              metavariable: $COMP
+              regex: "^[A-Z]"
+      - patterns:
+          - pattern-inside: |
+              const $COMP = function (...) { ... };
+              ...
+              $COMP.defaultProps = $DEFAULTS;
+          - pattern: $COMP.defaultProps = $DEFAULTS
+          - metavariable-regex:
+              metavariable: $COMP
+              regex: "^[A-Z]"

@@ -1,0 +1,40 @@
+rules:
+  - id: no-prop-types
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      A function component defines propTypes. React 19 ignores propTypes on
+      function components, so this runtime validation no longer protects the
+      component contract. Move the contract to TypeScript types or validate
+      untrusted data at the application boundary with a schema.
+    metadata:
+      category: compatibility
+      confidence: rule
+    pattern-either:
+      - patterns:
+          - pattern-inside: |
+              function $COMP(...) { ... }
+              ...
+              $COMP.propTypes = $TYPES;
+          - pattern: $COMP.propTypes = $TYPES
+          - metavariable-regex:
+              metavariable: $COMP
+              regex: "^[A-Z]"
+      - patterns:
+          - pattern-inside: |
+              const $COMP = (...) => { ... };
+              ...
+              $COMP.propTypes = $TYPES;
+          - pattern: $COMP.propTypes = $TYPES
+          - metavariable-regex:
+              metavariable: $COMP
+              regex: "^[A-Z]"
+      - patterns:
+          - pattern-inside: |
+              const $COMP = function (...) { ... };
+              ...
+              $COMP.propTypes = $TYPES;
+          - pattern: $COMP.propTypes = $TYPES
+          - metavariable-regex:
+              metavariable: $COMP
+              regex: "^[A-Z]"

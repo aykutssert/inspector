@@ -10,6 +10,8 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/aykutssert/scout/internal/core"
@@ -129,6 +131,62 @@ func PkgHasDep(path, dep string) bool {
 	}
 	_, ok := pkg.DevDependencies[dep]
 	return ok
+}
+
+// ReactMajorAtLeast reports whether file belongs to a package tree that
+// explicitly declares React at or above minMajor.
+func ReactMajorAtLeast(ctx core.ProjectContext, file string, minMajor int) bool {
+	dir := filepath.Dir(file)
+	if !filepath.IsAbs(dir) {
+		dir = filepath.Join(ctx.Root, dir)
+	}
+	root := filepath.Clean(ctx.Root)
+	for {
+		if version, ok := pkgDepVersion(filepath.Join(dir, "package.json"), "react"); ok {
+			return dependencyMajor(version) >= minMajor
+		}
+		if dir == root || !strings.HasPrefix(dir, root+string(filepath.Separator)) {
+			return false
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			return false
+		}
+		dir = parent
+	}
+}
+
+func pkgDepVersion(path, dep string) (string, bool) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return "", false
+	}
+	var pkg struct {
+		Dependencies     map[string]string `json:"dependencies"`
+		DevDependencies  map[string]string `json:"devDependencies"`
+		PeerDependencies map[string]string `json:"peerDependencies"`
+	}
+	if json.Unmarshal(data, &pkg) != nil {
+		return "", false
+	}
+	for _, deps := range []map[string]string{pkg.Dependencies, pkg.DevDependencies, pkg.PeerDependencies} {
+		if version, ok := deps[dep]; ok {
+			return version, true
+		}
+	}
+	return "", false
+}
+
+func dependencyMajor(version string) int {
+	match := regexp.MustCompile(`(?:^|[^0-9])([0-9]+)(?:\.|$)`).FindStringSubmatch(version)
+	if len(match) != 2 {
+		return -1
+	}
+	major, err := strconv.Atoi(match[1])
+	if err != nil {
+		return -1
+	}
+	return major
 }
 
 // RelevantPkgDirs returns the repo root plus every directory on the path from

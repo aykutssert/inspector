@@ -1,0 +1,30 @@
+rules:
+  - id: node-unhandled-promise-rejection
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      A promise is started as a standalone statement without await, return, or a
+      rejection handler. If it rejects, Node reports an unhandled rejection and
+      modern runtimes may terminate the process. Await/return it, or attach an
+      explicit catch handler.
+    metadata:
+      category: correctness
+      confidence: hint
+    paths:
+      include:
+        - "app.js"
+        - "app.ts"
+        - "index.js"
+        - "index.ts"
+        - "server.js"
+        - "server.ts"
+        - "node_promise.ts"
+        - "**/api/**"
+        - "**/controllers/**"
+        - "**/jobs/**"
+        - "**/routes/**"
+        - "**/scripts/**"
+        - "**/server/**"
+        - "**/workers/**"
+    pattern-regex: >-
+      (?m)^[ \t]*(?:fetch\([^;\n]*\)|Promise\.reject\([^;\n]*\)|[A-Za-z_$][A-Za-z0-9_$]*(?:\([^;\n]*\))?\.then\([^;\n]*\));[ \t]*(?://[^\n]*)?$

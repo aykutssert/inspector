@@ -30,6 +30,9 @@ func detectRenderTimeAllocation(root *sitter.Node, lang *sitter.Language, src []
 		if isDangerouslySetInnerHTMLValue(node, src) {
 			return
 		}
+		if isContextProviderValue(node, src) {
+			return
+		}
 		if isMemoizedChildPropExpression(node, memoized, src) {
 			return
 		}

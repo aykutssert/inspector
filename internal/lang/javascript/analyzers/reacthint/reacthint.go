@@ -54,6 +54,7 @@ var detectors = []detector{
 	detectGodComponent,
 	detectComponentSplitting,
 	detectUseEffectFetchSuggestQuery,
+	detectUseEffectMissingCleanup,
 }
 
 // jsxDetectors need JSX grammar (text/elements) and only run on js/jsx/tsx.

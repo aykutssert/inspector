@@ -1,0 +1,40 @@
+rules:
+  - id: query-stable-query-client
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: >
+      QueryClient is created inside a React component or hook, so a new cache can
+      be created on each render. Create it once at module scope, or lazily store
+      it in useState/useRef before passing it to QueryClientProvider.
+    metadata:
+      category: correctness
+      confidence: rule
+    patterns:
+      - pattern-either:
+          - patterns:
+              - pattern-inside: |
+                  function $COMP(...) { ... }
+              - pattern: new QueryClient(...)
+              - metavariable-regex:
+                  metavariable: $COMP
+                  regex: "^(?:[A-Z]|use[A-Z])"
+          - patterns:
+              - pattern-inside: |
+                  const $COMP = (...) => { ... };
+              - pattern: new QueryClient(...)
+              - metavariable-regex:
+                  metavariable: $COMP
+                  regex: "^(?:[A-Z]|use[A-Z])"
+          - patterns:
+              - pattern-inside: |
+                  const $COMP = function (...) { ... };
+              - pattern: new QueryClient(...)
+              - metavariable-regex:
+                  metavariable: $COMP
+                  regex: "^(?:[A-Z]|use[A-Z])"
+      # Lazy/stable creation is the recommended fix, not the bug: a lazy state
+      # initializer, a memo, or a ref each create the client once. Excluding them
+      # stops the rule firing on the exact pattern its own message recommends.
+      - pattern-not-inside: useState(() => ...)
+      - pattern-not-inside: useMemo(...)
+      - pattern-not-inside: useRef(...)

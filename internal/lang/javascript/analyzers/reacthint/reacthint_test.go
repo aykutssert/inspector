@@ -121,6 +121,44 @@ func TestEffectWithDepsNotFlagged(t *testing.T) {
 	}
 }
 
+func TestUseEffectMissingCleanup(t *testing.T) {
+	src := `function Feed() {
+  useEffect(() => {
+    window.addEventListener("resize", refresh);
+  }, []);
+  return null;
+}`
+	if ids := parseSrc(t, ".tsx", src); !has(ids, "react-useeffect-missing-cleanup") {
+		t.Fatalf("expected react-useeffect-missing-cleanup, got %v", ids)
+	}
+}
+
+func TestUseEffectCleanupNotFlagged(t *testing.T) {
+	src := `function Feed() {
+  useEffect(() => {
+    const timer = setInterval(refresh, 1000);
+    return () => clearInterval(timer);
+  }, []);
+  return null;
+}`
+	if ids := parseSrc(t, ".tsx", src); has(ids, "react-useeffect-missing-cleanup") {
+		t.Fatalf("effect cleanup must stay quiet, got %v", ids)
+	}
+}
+
+func TestNestedResourceRegistrationNotFlagged(t *testing.T) {
+	src := `function Feed() {
+  useEffect(() => {
+    const start = () => store.subscribe(refresh);
+    start();
+  }, []);
+  return null;
+}`
+	if ids := parseSrc(t, ".tsx", src); has(ids, "react-useeffect-missing-cleanup") {
+		t.Fatalf("nested function registration is not effect setup, got %v", ids)
+	}
+}
+
 func TestPreferUseReducer(t *testing.T) {
 	src := `function Form() {
   const [a, setA] = useState(0);
@@ -225,6 +263,31 @@ func TestDangerouslySetInnerHTMLNotRenderAllocation(t *testing.T) {
 }`
 	if ids := parseSrc(t, ".tsx", src); has(ids, "render-time-allocation") {
 		t.Fatalf("dangerouslySetInnerHTML wrapper must not be flagged as render-time-allocation, got %v", ids)
+	}
+}
+
+func TestEffectPerformanceHintsSkipTests(t *testing.T) {
+	src := `
+		function Provider() {
+			useEffect(() => {
+				window.addEventListener("resize", resize);
+			}, []);
+			return <ThemeContext.Provider value={{ dark: true }} />;
+		}
+	`
+	dir := t.TempDir()
+	abs := filepath.Join(dir, "provider.test.tsx")
+	if err := os.WriteFile(abs, []byte(src), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	findings, err := scanFile(abs, "src/__tests__/provider.test.tsx")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, finding := range findings {
+		if finding.RuleID == "react-useeffect-missing-cleanup" {
+			t.Fatalf("production performance hints must skip tests, got %#v", findings)
+		}
 	}
 }
 
