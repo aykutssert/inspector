@@ -8,31 +8,18 @@ findings are deterministic; the agent reads them and fixes.
 
 ## Install
 
-Needs Node ≥18. Installs the prebuilt binary for your OS/arch and drops the
-`scout` skill into every AI agent it detects (Claude Code, Codex, …).
-
-**npm (recommended):**
 ```bash
 npm install -g @aykutss/scout
 ```
 
-**npx (no global install):**
-```bash
-npx @aykutss/scout install
-```
+Needs Node ≥18. On install scout downloads the prebuilt binary for your OS/arch
+and drops the `scout` skill into every AI agent it detects (Claude Code, Codex,
+Cursor, …). One global install; the `scout` command and the `/scout` skill then
+persist across sessions. Re-run `scout install` to repair or re-copy skills.
 
-**One-line script (optional):**
-```bash
-# macOS / Linux / WSL
-curl -fsSL https://raw.githubusercontent.com/aykutssert/scout/main/install.sh | bash
-# Windows (PowerShell)
-irm https://raw.githubusercontent.com/aykutssert/scout/main/install.ps1 | iex
-```
-
-**Manual (most transparent):** download `scout-<os>-<arch>` from
-[Releases](https://github.com/aykutssert/scout/releases), verify its checksum,
-put it on your `PATH`. Re-run `scout install` any time to repair or re-copy
-skills.
+The analysis tools scout wraps (semgrep, oxlint, osv-scanner) are installed by
+the agent on demand: type `/scout`, it runs `scout doctor`, and installs
+anything missing with your permission before scanning.
 
 ## Use
 
