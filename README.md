@@ -36,10 +36,10 @@ starts editing.
 
 Directly in a terminal:
 ```bash
-scout scan              # scan current directory
-scout scan --diff       # only files changed in git
-scout doctor            # check system deps and toolchains
-scout context <target>  # cross-file context for a symbol or file
+scout scan        # scan current directory
+scout scan --diff # only files changed in git
+scout doctor      # check system deps and toolchains
+scout context     # map the whole project structure
 ```
 
 `scan` prints a human-readable table on a terminal and JSON when piped (so an
