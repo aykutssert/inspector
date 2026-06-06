@@ -2,6 +2,11 @@
 // this repo, so type-checking is intentionally disabled. semgrep ignores this.
 type Item = { id: string; label: string };
 
+import moment from "moment"; // should trigger no-moment
+import * as mom from "moment"; // should trigger no-moment
+import "moment"; // should trigger no-moment
+const m = require("moment"); // should trigger no-moment
+
 type Props = {
   html: string;
   token: string;

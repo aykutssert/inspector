@@ -93,6 +93,20 @@ func TestIsReactByWorkspaceDependency(t *testing.T) {
 	}
 }
 
+func TestIsReactNativeByDependency(t *testing.T) {
+	dir := t.TempDir()
+	writePkg(t, dir, `{"dependencies":{"react-native":"0.80.0"}}`)
+	if !IsReactNative(core.ProjectContext{Root: dir, Files: []string{"src/App.tsx"}}) {
+		t.Fatal("react-native dependency should signal a React Native project")
+	}
+
+	web := t.TempDir()
+	writePkg(t, web, `{"dependencies":{"react":"^19.0.0"}}`)
+	if IsReactNative(core.ProjectContext{Root: web, Files: []string{"src/App.tsx"}}) {
+		t.Fatal("web React project must not match React Native")
+	}
+}
+
 func TestReactMajorAtLeastUsesNearestPackage(t *testing.T) {
 	root := t.TempDir()
 	writePkg(t, root, `{"dependencies":{"react":"^18.3.0"}}`)

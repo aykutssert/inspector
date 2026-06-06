@@ -1,0 +1,27 @@
+rules:
+  - id: nextjs-no-client-side-redirect
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      A redirect runs inside useEffect (router.push/replace). The page renders
+      first and then navigates away, so the user sees a flash of the wrong screen,
+      and it costs an extra client render. Prefer middleware or a Server Component
+      redirect() for auth/routing gates; keep router.push for user-triggered events.
+    metadata:
+      category: performance
+      # hint, not rule: a client-only redirect (e.g. gating on client auth state)
+      # is sometimes unavoidable; the agent decides if it can move server-side.
+      confidence: hint
+    patterns:
+      - pattern-inside: |
+          useEffect(() => { ... }, ...)
+      # Only a STATIC string-literal path — that is the auth/routing-gate redirect
+      # that belongs in middleware. A template path (router.push(`/x?q=${q}`)) is
+      # usually reactive URL/query sync (debounced search, filters), which
+      # legitimately lives in an effect, so it must NOT be flagged.
+      - pattern-either:
+          - pattern: '$R.push("...")'
+          - pattern: '$R.replace("...")'
+      - metavariable-regex:
+          metavariable: $R
+          regex: "^(router|navigation)$"

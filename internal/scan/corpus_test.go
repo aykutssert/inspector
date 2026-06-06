@@ -11,6 +11,10 @@ import (
 )
 
 func TestCorpusRegression(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping corpus regression tests in short mode")
+	}
+
 	// Determine paths relative to this test file
 	wd, err := os.Getwd()
 	if err != nil {

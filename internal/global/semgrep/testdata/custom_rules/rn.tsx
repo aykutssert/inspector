@@ -1,6 +1,8 @@
 // @ts-nocheck — semgrep React Native golden fixture
 import React from "react";
-import { FlatList, Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { Dimensions, FlatList, Pressable, ScrollView, Text, TextInput, View, useWindowDimensions } from "react-native";
+import { Dimensions as RNDimensions } from "react-native";
+import * as RN from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export function NativeDomElements() {
@@ -64,3 +66,31 @@ export function NativeFalsyAndRender({ items, count, isOpen }: any) {
     </View>
   );
 }
+
+const initialWindow = Dimensions.get("window");
+
+export function NativeResponsiveLayout() {
+  const staleWindow = Dimensions.get("window");
+  const aliasedWindow = RNDimensions.get("window");
+  const namespacedWindow = RN.Dimensions.get("window");
+  const currentWindow = useWindowDimensions();
+  return <View style={{ width: currentWindow.width }}>{staleWindow.width + aliasedWindow.width + namespacedWindow.width + initialWindow.width}</View>;
+}
+
+export function ExpoEnvTest(key: string) {
+  const a = process.env[key]; // should trigger expo-no-non-inlined-env
+  const b = process.env.EXPO_PUBLIC_API_URL; // ok
+  const c = process.env["EXPO_PUBLIC_API_URL"]; // ok
+}
+
+import { FlashList } from "@shopify/flash-list";
+
+export function NativeFlashList({ data, renderRow }: any) {
+  return (
+    <View>
+      <FlashList data={data} renderItem={renderRow} />{/* triggers rn-list-missing-estimated-item-size */}
+      <FlashList data={data} renderItem={renderRow} estimatedItemSize={64} />{/* ok */}
+    </View>
+  );
+}
+

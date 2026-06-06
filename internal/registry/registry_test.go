@@ -129,6 +129,28 @@ func TestDropInapplicableRulesGatesReact19(t *testing.T) {
 	}
 }
 
+func TestDropInapplicableRulesGatesReactNative(t *testing.T) {
+	finding := core.Finding{RuleID: "rn.rn-no-dimensions-get", File: "src/App.tsx"}
+
+	web := t.TempDir()
+	if err := os.WriteFile(filepath.Join(web, "package.json"),
+		[]byte(`{"dependencies":{"react":"^19.0.0"}}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if !dropInapplicableRules(core.ProjectContext{Root: web})(finding) {
+		t.Fatal("web React project must suppress React Native rules")
+	}
+
+	native := t.TempDir()
+	if err := os.WriteFile(filepath.Join(native, "package.json"),
+		[]byte(`{"dependencies":{"react-native":"0.80.0"}}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if dropInapplicableRules(core.ProjectContext{Root: native})(finding) {
+		t.Fatal("React Native project must keep React Native rules")
+	}
+}
+
 func hasAnalyzer(analyzers []core.Analyzer, name string) bool {
 	for _, a := range analyzers {
 		if a.Name() == name {

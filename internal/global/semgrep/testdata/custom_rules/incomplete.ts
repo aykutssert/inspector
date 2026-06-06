@@ -72,3 +72,11 @@ export class CreateUserDto {
   bio: string; // triggers nestjs-dto-without-validators
 }
 
+export function anyEscapes(input: unknown) {
+  const a = input as any; // triggers ts-as-any-escape
+  const b: Record<string, any> = {}; // triggers ts-as-any-escape
+  const c = input as unknown; // ok
+  const d: Record<string, unknown> = {}; // ok
+  return [a, b, c, d];
+}
+

@@ -5,7 +5,7 @@
     "category": "performance",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 284,
+    "line": 289,
     "message": "This code uses Node.js 'fs' APIs to read files. If you are running on the Bun runtime, prefer using the faster, optimized native API 'Bun.file(path)' which provides '.text()', '.json()', and stream interfaces directly.\n"
   },
   {
@@ -22,7 +22,7 @@
     "severity": "warning",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 288,
+    "line": 293,
     "message": "This code uses external hashing libraries (bcrypt, bcryptjs, argon2) or Node.js crypto.pbkdf2 for password hashing. If you are running on the Bun runtime, prefer using the optimized native APIs 'Bun.password.hash(...)' and 'Bun.password.verify(...)'.\n"
   },
   {
@@ -55,7 +55,7 @@
     "category": "performance",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 291,
+    "line": 296,
     "message": "This code builds an HTTP server using Node's 'http.createServer'. If you are running on the Bun runtime, prefer using the optimized native API 'Bun.serve(...)' for significantly higher performance.\n"
   },
   {
@@ -64,7 +64,7 @@
     "category": "performance",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 285,
+    "line": 290,
     "message": "This code uses Node.js 'fs' APIs to write files. If you are running on the Bun runtime, prefer using the faster, optimized native API 'Bun.write(path, data)' for better performance.\n"
   },
   {
@@ -109,7 +109,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 174,
+    "line": 179,
     "message": "An asynchronous Express route handler does not wrap its execution in a try/catch block or use an async error handler wrapper. Unhandled async rejections in Express can crash the Node.js process or cause requests to hang. Wrap the body in try/catch and pass the error to next(err).\n"
   },
   {
@@ -118,7 +118,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 179,
+    "line": 184,
     "message": "An asynchronous Express route handler does not wrap its execution in a try/catch block or use an async error handler wrapper. Unhandled async rejections in Express can crash the Node.js process or cause requests to hang. Wrap the body in try/catch and pass the error to next(err).\n"
   },
   {
@@ -199,7 +199,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 172,
+    "line": 177,
     "message": "The Express application is initialized but does not appear to use the 'helmet' middleware. Helmet sets critical security headers to protect the app from common web vulnerabilities (XSS, Clickjacking, MIME-sniffing, etc.). Add app.use(helmet()) to secure HTTP headers.\n"
   },
   {
@@ -226,15 +226,6 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 174,
-    "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
-  },
-  {
-    "rule_id": "express.express-missing-rate-limit",
-    "severity": "warning",
-    "category": "security",
-    "confidence": "hint",
-    "file": "case.tsx",
     "line": 179,
     "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
   },
@@ -244,7 +235,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 191,
+    "line": 184,
     "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
   },
   {
@@ -253,7 +244,16 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 200,
+    "line": 196,
+    "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
+  },
+  {
+    "rule_id": "express.express-missing-rate-limit",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 205,
     "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
   },
   {
@@ -397,7 +397,7 @@
     "category": "performance",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 40,
+    "line": 45,
     "message": "An await sits directly inside a loop, so the iterations run strictly one after another: each waits for the previous to finish. When the operations are independent (e.g. fetching N urls), this is needlessly slow and should be parallelized with Promise.all(items.map(...)). If each iteration genuinely depends on the previous, or you are intentionally rate-limiting, the serial form is correct.\n"
   },
   {
@@ -460,7 +460,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 51,
+    "line": 56,
     "message": "innerHTML is assigned a dynamic value. If that value contains user-controlled data, this is a DOM XSS sink. Prefer textContent for plain text, or sanitize trusted HTML before assigning it.\n"
   },
   {
@@ -469,7 +469,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 421,
+    "line": 426,
     "message": "innerHTML is assigned a dynamic value. If that value contains user-controlled data, this is a DOM XSS sink. Prefer textContent for plain text, or sanitize trusted HTML before assigning it.\n"
   },
   {
@@ -478,7 +478,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 454,
+    "line": 459,
     "message": "innerHTML is assigned a dynamic value. If that value contains user-controlled data, this is a DOM XSS sink. Prefer textContent for plain text, or sanitize trusted HTML before assigning it.\n"
   },
   {
@@ -487,7 +487,7 @@
     "category": "security",
     "confidence": "rule",
     "file": "case.tsx",
-    "line": 14,
+    "line": 19,
     "message": "Dynamic code execution through eval()/Function() can execute attacker-controlled input as JavaScript. Avoid interpreting strings as code; use explicit parsing or a constrained dispatch table instead.\n"
   },
   {
@@ -496,7 +496,7 @@
     "category": "bug",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 17,
+    "line": 22,
     "message": "This catch block is empty, so the error is silently swallowed: failures vanish with no log, no rethrow, and no recovery, which hides bugs and makes incidents undebuggable. Handle the error, log it, or rethrow. If ignoring is truly intentional, leave a comment explaining why.\n"
   },
   {
@@ -505,7 +505,7 @@
     "category": "performance",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 40,
+    "line": 45,
     "message": "fetch() is called from inside a loop. This often creates an N+1 network pattern or forces requests to run one by one when combined with await. Prefer batching, a backend bulk endpoint, or Promise.all over a mapped collection when the requests are independent.\n"
   },
   {
@@ -514,7 +514,7 @@
     "category": "quality",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 315,
+    "line": 320,
     "message": "A hardcoded HTTP/HTTPS URL is used directly in a network request. To ensure flexibility across different environments (development, staging, production), avoid hardcoding base URLs. Load the base URL from an environment variable or use an API client with a configured baseURL.\n"
   },
   {
@@ -523,7 +523,7 @@
     "category": "quality",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 316,
+    "line": 321,
     "message": "A hardcoded HTTP/HTTPS URL is used directly in a network request. To ensure flexibility across different environments (development, staging, production), avoid hardcoding base URLs. Load the base URL from an environment variable or use an API client with a configured baseURL.\n"
   },
   {
@@ -532,7 +532,7 @@
     "category": "quality",
     "confidence": "hint",
     "file": "client_data_fetch.tsx",
-    "line": 48,
+    "line": 56,
     "message": "A hardcoded HTTP/HTTPS URL is used directly in a network request. To ensure flexibility across different environments (development, staging, production), avoid hardcoding base URLs. Load the base URL from an environment variable or use an API client with a configured baseURL.\n"
   },
   {
@@ -577,51 +577,6 @@
     "category": "security",
     "confidence": "rule",
     "file": "case.tsx",
-    "line": 138,
-    "message": "A hardcoded secret or credential appears in the source (an AWS access key, a GitHub/Slack/Stripe token, a Google API key, or a PEM private key). Committed secrets are exposed to everyone with repository access and stay in git history even after the line is deleted. Move the value to an environment variable or a secret manager, rotate the leaked credential immediately, and purge it from git history.\n"
-  },
-  {
-    "rule_id": "general.hardcoded-secret",
-    "severity": "error",
-    "category": "security",
-    "confidence": "rule",
-    "file": "case.tsx",
-    "line": 139,
-    "message": "A hardcoded secret or credential appears in the source (an AWS access key, a GitHub/Slack/Stripe token, a Google API key, or a PEM private key). Committed secrets are exposed to everyone with repository access and stay in git history even after the line is deleted. Move the value to an environment variable or a secret manager, rotate the leaked credential immediately, and purge it from git history.\n"
-  },
-  {
-    "rule_id": "general.hardcoded-secret",
-    "severity": "error",
-    "category": "security",
-    "confidence": "rule",
-    "file": "case.tsx",
-    "line": 140,
-    "message": "A hardcoded secret or credential appears in the source (an AWS access key, a GitHub/Slack/Stripe token, a Google API key, or a PEM private key). Committed secrets are exposed to everyone with repository access and stay in git history even after the line is deleted. Move the value to an environment variable or a secret manager, rotate the leaked credential immediately, and purge it from git history.\n"
-  },
-  {
-    "rule_id": "general.hardcoded-secret",
-    "severity": "error",
-    "category": "security",
-    "confidence": "rule",
-    "file": "case.tsx",
-    "line": 141,
-    "message": "A hardcoded secret or credential appears in the source (an AWS access key, a GitHub/Slack/Stripe token, a Google API key, or a PEM private key). Committed secrets are exposed to everyone with repository access and stay in git history even after the line is deleted. Move the value to an environment variable or a secret manager, rotate the leaked credential immediately, and purge it from git history.\n"
-  },
-  {
-    "rule_id": "general.hardcoded-secret",
-    "severity": "error",
-    "category": "security",
-    "confidence": "rule",
-    "file": "case.tsx",
-    "line": 142,
-    "message": "A hardcoded secret or credential appears in the source (an AWS access key, a GitHub/Slack/Stripe token, a Google API key, or a PEM private key). Committed secrets are exposed to everyone with repository access and stay in git history even after the line is deleted. Move the value to an environment variable or a secret manager, rotate the leaked credential immediately, and purge it from git history.\n"
-  },
-  {
-    "rule_id": "general.hardcoded-secret",
-    "severity": "error",
-    "category": "security",
-    "confidence": "rule",
-    "file": "case.tsx",
     "line": 143,
     "message": "A hardcoded secret or credential appears in the source (an AWS access key, a GitHub/Slack/Stripe token, a Google API key, or a PEM private key). Committed secrets are exposed to everyone with repository access and stay in git history even after the line is deleted. Move the value to an environment variable or a secret manager, rotate the leaked credential immediately, and purge it from git history.\n"
   },
@@ -631,7 +586,43 @@
     "category": "security",
     "confidence": "rule",
     "file": "case.tsx",
-    "line": 470,
+    "line": 144,
+    "message": "A hardcoded secret or credential appears in the source (an AWS access key, a GitHub/Slack/Stripe token, a Google API key, or a PEM private key). Committed secrets are exposed to everyone with repository access and stay in git history even after the line is deleted. Move the value to an environment variable or a secret manager, rotate the leaked credential immediately, and purge it from git history.\n"
+  },
+  {
+    "rule_id": "general.hardcoded-secret",
+    "severity": "error",
+    "category": "security",
+    "confidence": "rule",
+    "file": "case.tsx",
+    "line": 145,
+    "message": "A hardcoded secret or credential appears in the source (an AWS access key, a GitHub/Slack/Stripe token, a Google API key, or a PEM private key). Committed secrets are exposed to everyone with repository access and stay in git history even after the line is deleted. Move the value to an environment variable or a secret manager, rotate the leaked credential immediately, and purge it from git history.\n"
+  },
+  {
+    "rule_id": "general.hardcoded-secret",
+    "severity": "error",
+    "category": "security",
+    "confidence": "rule",
+    "file": "case.tsx",
+    "line": 146,
+    "message": "A hardcoded secret or credential appears in the source (an AWS access key, a GitHub/Slack/Stripe token, a Google API key, or a PEM private key). Committed secrets are exposed to everyone with repository access and stay in git history even after the line is deleted. Move the value to an environment variable or a secret manager, rotate the leaked credential immediately, and purge it from git history.\n"
+  },
+  {
+    "rule_id": "general.hardcoded-secret",
+    "severity": "error",
+    "category": "security",
+    "confidence": "rule",
+    "file": "case.tsx",
+    "line": 147,
+    "message": "A hardcoded secret or credential appears in the source (an AWS access key, a GitHub/Slack/Stripe token, a Google API key, or a PEM private key). Committed secrets are exposed to everyone with repository access and stay in git history even after the line is deleted. Move the value to an environment variable or a secret manager, rotate the leaked credential immediately, and purge it from git history.\n"
+  },
+  {
+    "rule_id": "general.hardcoded-secret",
+    "severity": "error",
+    "category": "security",
+    "confidence": "rule",
+    "file": "case.tsx",
+    "line": 148,
     "message": "A hardcoded secret or credential appears in the source (an AWS access key, a GitHub/Slack/Stripe token, a Google API key, or a PEM private key). Committed secrets are exposed to everyone with repository access and stay in git history even after the line is deleted. Move the value to an environment variable or a secret manager, rotate the leaked credential immediately, and purge it from git history.\n"
   },
   {
@@ -649,7 +640,16 @@
     "category": "security",
     "confidence": "rule",
     "file": "case.tsx",
-    "line": 482,
+    "line": 480,
+    "message": "A hardcoded secret or credential appears in the source (an AWS access key, a GitHub/Slack/Stripe token, a Google API key, or a PEM private key). Committed secrets are exposed to everyone with repository access and stay in git history even after the line is deleted. Move the value to an environment variable or a secret manager, rotate the leaked credential immediately, and purge it from git history.\n"
+  },
+  {
+    "rule_id": "general.hardcoded-secret",
+    "severity": "error",
+    "category": "security",
+    "confidence": "rule",
+    "file": "case.tsx",
+    "line": 487,
     "message": "A hardcoded secret or credential appears in the source (an AWS access key, a GitHub/Slack/Stripe token, a Google API key, or a PEM private key). Committed secrets are exposed to everyone with repository access and stay in git history even after the line is deleted. Move the value to an environment variable or a secret manager, rotate the leaked credential immediately, and purge it from git history.\n"
   },
   {
@@ -685,7 +685,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 90,
+    "line": 95,
     "message": "document.cookie is assigned without an obvious Secure attribute. Client-set cookies are also readable from JavaScript, so auth material should normally be set server-side with HttpOnly, Secure, and SameSite. If this is not auth material, still confirm the cookie is intentionally accessible to scripts.\n"
   },
   {
@@ -694,7 +694,7 @@
     "category": "security",
     "confidence": "rule",
     "file": "case.tsx",
-    "line": 24,
+    "line": 29,
     "message": "A javascript: URL executes code when the link is activated. Use a real route, button handler, or safe URL instead.\n"
   },
   {
@@ -712,7 +712,7 @@
     "category": "performance",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 58,
+    "line": 63,
     "message": "JSON.parse(JSON.stringify(...)) is used as a deep clone. This is slow on large objects and silently changes values such as Date, Map, Set, undefined, NaN, Infinity, RegExp, functions, and class instances. Prefer structuredClone where available, or use a clone strategy that preserves the data shape you actually need.\n"
   },
   {
@@ -730,7 +730,7 @@
     "category": "quality",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 15,
+    "line": 20,
     "message": "A console.log/console.debug call was left in the source. These are typically debugging leftovers (a common artifact of AI-generated or rushed code) that leak data to the browser console and add noise in production. Remove it, or route it through an intentional logger. console.warn/console.error are not flagged, since those are usually deliberate.\n"
   },
   {
@@ -739,7 +739,7 @@
     "category": "quality",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 16,
+    "line": 21,
     "message": "A console.log/console.debug call was left in the source. These are typically debugging leftovers (a common artifact of AI-generated or rushed code) that leak data to the browser console and add noise in production. Remove it, or route it through an intentional logger. console.warn/console.error are not flagged, since those are usually deliberate.\n"
   },
   {
@@ -829,7 +829,7 @@
     "category": "performance",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 73,
+    "line": 78,
     "message": "Lodash is imported from the top-level package, which can pull a much larger bundle than the one helper this file needs. Prefer a per-method import such as lodash/debounce, or use lodash-es with a bundler that tree-shakes it correctly.\n"
   },
   {
@@ -847,7 +847,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 83,
+    "line": 88,
     "message": "Math.random() is used to create a token, nonce, secret, session value, or other security-sensitive identifier. Math.random() is not cryptographically secure and can be predictable. Use crypto.getRandomValues(), crypto.randomUUID(), or a server-side CSPRNG instead.\n"
   },
   {
@@ -856,8 +856,89 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 102,
+    "line": 107,
     "message": "A message event handler does not appear to check event.origin. postMessage data can come from untrusted origins, so handlers should verify the sender against a strict allowlist before trusting event.data.\n"
+  },
+  {
+    "rule_id": "general.mixed-esm-cjs",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 8,
+    "message": "This file mixes ESM imports with CommonJS require(). Mixed module systems often behave differently across Node, bundlers, and test runners, especially under \"type\": \"module\". Use one module system consistently in a file, or isolate interop behind a small adapter.\n"
+  },
+  {
+    "rule_id": "general.mixed-esm-cjs",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 78,
+    "message": "This file mixes ESM imports with CommonJS require(). Mixed module systems often behave differently across Node, bundlers, and test runners, especially under \"type\": \"module\". Use one module system consistently in a file, or isolate interop behind a small adapter.\n"
+  },
+  {
+    "rule_id": "general.mixed-esm-cjs",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 83,
+    "message": "This file mixes ESM imports with CommonJS require(). Mixed module systems often behave differently across Node, bundlers, and test runners, especially under \"type\": \"module\". Use one module system consistently in a file, or isolate interop behind a small adapter.\n"
+  },
+  {
+    "rule_id": "general.mixed-esm-cjs",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 176,
+    "message": "This file mixes ESM imports with CommonJS require(). Mixed module systems often behave differently across Node, bundlers, and test runners, especially under \"type\": \"module\". Use one module system consistently in a file, or isolate interop behind a small adapter.\n"
+  },
+  {
+    "rule_id": "general.mixed-esm-cjs",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 191,
+    "message": "This file mixes ESM imports with CommonJS require(). Mixed module systems often behave differently across Node, bundlers, and test runners, especially under \"type\": \"module\". Use one module system consistently in a file, or isolate interop behind a small adapter.\n"
+  },
+  {
+    "rule_id": "general.mixed-esm-cjs",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 192,
+    "message": "This file mixes ESM imports with CommonJS require(). Mixed module systems often behave differently across Node, bundlers, and test runners, especially under \"type\": \"module\". Use one module system consistently in a file, or isolate interop behind a small adapter.\n"
+  },
+  {
+    "rule_id": "general.mixed-esm-cjs",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 288,
+    "message": "This file mixes ESM imports with CommonJS require(). Mixed module systems often behave differently across Node, bundlers, and test runners, especially under \"type\": \"module\". Use one module system consistently in a file, or isolate interop behind a small adapter.\n"
+  },
+  {
+    "rule_id": "general.mixed-esm-cjs",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 292,
+    "message": "This file mixes ESM imports with CommonJS require(). Mixed module systems often behave differently across Node, bundlers, and test runners, especially under \"type\": \"module\". Use one module system consistently in a file, or isolate interop behind a small adapter.\n"
+  },
+  {
+    "rule_id": "general.mixed-esm-cjs",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 295,
+    "message": "This file mixes ESM imports with CommonJS require(). Mixed module systems often behave differently across Node, bundlers, and test runners, especially under \"type\": \"module\". Use one module system consistently in a file, or isolate interop behind a small adapter.\n"
   },
   {
     "rule_id": "general.mixed-esm-cjs",
@@ -876,6 +957,51 @@
     "file": "incomplete.ts",
     "line": 2,
     "message": "The faker mock-data library is imported in non-test code, so fake/random data can be shipped into a production path instead of real data. Move faker behind tests/fixtures/seed scripts, or replace it with a real data source.\n"
+  },
+  {
+    "rule_id": "general.no-moment",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "case.tsx",
+    "line": 5,
+    "message": "Import of legacy library 'moment' detected. Moment.js is a heavy library that lacks tree-shaking support and can lead to bundle bloat. Use modern, lightweight date libraries like 'date-fns', 'dayjs', or 'luxon' instead.\n"
+  },
+  {
+    "rule_id": "general.no-moment",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "case.tsx",
+    "line": 6,
+    "message": "Import of legacy library 'moment' detected. Moment.js is a heavy library that lacks tree-shaking support and can lead to bundle bloat. Use modern, lightweight date libraries like 'date-fns', 'dayjs', or 'luxon' instead.\n"
+  },
+  {
+    "rule_id": "general.no-moment",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "case.tsx",
+    "line": 7,
+    "message": "Import of legacy library 'moment' detected. Moment.js is a heavy library that lacks tree-shaking support and can lead to bundle bloat. Use modern, lightweight date libraries like 'date-fns', 'dayjs', or 'luxon' instead.\n"
+  },
+  {
+    "rule_id": "general.no-moment",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "case.tsx",
+    "line": 8,
+    "message": "Import of legacy library 'moment' detected. Moment.js is a heavy library that lacks tree-shaking support and can lead to bundle bloat. Use modern, lightweight date libraries like 'date-fns', 'dayjs', or 'luxon' instead.\n"
+  },
+  {
+    "rule_id": "general.no-moment",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "case.tsx",
+    "line": 8,
+    "message": "Import of legacy library 'moment' detected. Moment.js is a heavy library that lacks tree-shaking support and can lead to bundle bloat. Use modern, lightweight date libraries like 'date-fns', 'dayjs', or 'luxon' instead.\n"
   },
   {
     "rule_id": "general.node-unhandled-promise-rejection",
@@ -910,7 +1036,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 96,
+    "line": 101,
     "message": "A redirect/navigation target is built from a dynamic value. If this value can be influenced by a user, the app may redirect to an attacker-controlled URL. Validate against an allowlist, resolve only internal paths, or build the destination from trusted route names.\n"
   },
   {
@@ -919,7 +1045,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 120,
+    "line": 125,
     "message": "A redirect/navigation target is built from a dynamic value. If this value can be influenced by a user, the app may redirect to an attacker-controlled URL. Validate against an allowlist, resolve only internal paths, or build the destination from trusted route names.\n"
   },
   {
@@ -928,7 +1054,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 122,
+    "line": 127,
     "message": "A redirect/navigation target is built from a dynamic value. If this value can be influenced by a user, the app may redirect to an attacker-controlled URL. Validate against an allowlist, resolve only internal paths, or build the destination from trusted route names.\n"
   },
   {
@@ -937,44 +1063,8 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 126,
+    "line": 131,
     "message": "A redirect/navigation target is built from a dynamic value. If this value can be influenced by a user, the app may redirect to an attacker-controlled URL. Validate against an allowlist, resolve only internal paths, or build the destination from trusted route names.\n"
-  },
-  {
-    "rule_id": "general.orm-unsafe-raw-query",
-    "severity": "error",
-    "category": "security",
-    "confidence": "rule",
-    "file": "case.tsx",
-    "line": 329,
-    "message": "Unsafe raw SQL query detected. Using string interpolation or concatenation inside Prisma ($queryRaw, $executeRaw, $queryRawUnsafe, $executeRawUnsafe) or TypeORM (query) bypasses parameterized query generation, risking SQL injection. Use safe tagged templates (e.g. prisma.$queryRaw`...`) or pass parameters as a separate argument/binding.\n"
-  },
-  {
-    "rule_id": "general.orm-unsafe-raw-query",
-    "severity": "error",
-    "category": "security",
-    "confidence": "rule",
-    "file": "case.tsx",
-    "line": 330,
-    "message": "Unsafe raw SQL query detected. Using string interpolation or concatenation inside Prisma ($queryRaw, $executeRaw, $queryRawUnsafe, $executeRawUnsafe) or TypeORM (query) bypasses parameterized query generation, risking SQL injection. Use safe tagged templates (e.g. prisma.$queryRaw`...`) or pass parameters as a separate argument/binding.\n"
-  },
-  {
-    "rule_id": "general.orm-unsafe-raw-query",
-    "severity": "error",
-    "category": "security",
-    "confidence": "rule",
-    "file": "case.tsx",
-    "line": 331,
-    "message": "Unsafe raw SQL query detected. Using string interpolation or concatenation inside Prisma ($queryRaw, $executeRaw, $queryRawUnsafe, $executeRawUnsafe) or TypeORM (query) bypasses parameterized query generation, risking SQL injection. Use safe tagged templates (e.g. prisma.$queryRaw`...`) or pass parameters as a separate argument/binding.\n"
-  },
-  {
-    "rule_id": "general.orm-unsafe-raw-query",
-    "severity": "error",
-    "category": "security",
-    "confidence": "rule",
-    "file": "case.tsx",
-    "line": 332,
-    "message": "Unsafe raw SQL query detected. Using string interpolation or concatenation inside Prisma ($queryRaw, $executeRaw, $queryRawUnsafe, $executeRawUnsafe) or TypeORM (query) bypasses parameterized query generation, risking SQL injection. Use safe tagged templates (e.g. prisma.$queryRaw`...`) or pass parameters as a separate argument/binding.\n"
   },
   {
     "rule_id": "general.orm-unsafe-raw-query",
@@ -1000,7 +1090,7 @@
     "category": "security",
     "confidence": "rule",
     "file": "case.tsx",
-    "line": 437,
+    "line": 336,
     "message": "Unsafe raw SQL query detected. Using string interpolation or concatenation inside Prisma ($queryRaw, $executeRaw, $queryRawUnsafe, $executeRawUnsafe) or TypeORM (query) bypasses parameterized query generation, risking SQL injection. Use safe tagged templates (e.g. prisma.$queryRaw`...`) or pass parameters as a separate argument/binding.\n"
   },
   {
@@ -1009,7 +1099,43 @@
     "category": "security",
     "confidence": "rule",
     "file": "case.tsx",
-    "line": 461,
+    "line": 337,
+    "message": "Unsafe raw SQL query detected. Using string interpolation or concatenation inside Prisma ($queryRaw, $executeRaw, $queryRawUnsafe, $executeRawUnsafe) or TypeORM (query) bypasses parameterized query generation, risking SQL injection. Use safe tagged templates (e.g. prisma.$queryRaw`...`) or pass parameters as a separate argument/binding.\n"
+  },
+  {
+    "rule_id": "general.orm-unsafe-raw-query",
+    "severity": "error",
+    "category": "security",
+    "confidence": "rule",
+    "file": "case.tsx",
+    "line": 339,
+    "message": "Unsafe raw SQL query detected. Using string interpolation or concatenation inside Prisma ($queryRaw, $executeRaw, $queryRawUnsafe, $executeRawUnsafe) or TypeORM (query) bypasses parameterized query generation, risking SQL injection. Use safe tagged templates (e.g. prisma.$queryRaw`...`) or pass parameters as a separate argument/binding.\n"
+  },
+  {
+    "rule_id": "general.orm-unsafe-raw-query",
+    "severity": "error",
+    "category": "security",
+    "confidence": "rule",
+    "file": "case.tsx",
+    "line": 340,
+    "message": "Unsafe raw SQL query detected. Using string interpolation or concatenation inside Prisma ($queryRaw, $executeRaw, $queryRawUnsafe, $executeRawUnsafe) or TypeORM (query) bypasses parameterized query generation, risking SQL injection. Use safe tagged templates (e.g. prisma.$queryRaw`...`) or pass parameters as a separate argument/binding.\n"
+  },
+  {
+    "rule_id": "general.orm-unsafe-raw-query",
+    "severity": "error",
+    "category": "security",
+    "confidence": "rule",
+    "file": "case.tsx",
+    "line": 442,
+    "message": "Unsafe raw SQL query detected. Using string interpolation or concatenation inside Prisma ($queryRaw, $executeRaw, $queryRawUnsafe, $executeRawUnsafe) or TypeORM (query) bypasses parameterized query generation, risking SQL injection. Use safe tagged templates (e.g. prisma.$queryRaw`...`) or pass parameters as a separate argument/binding.\n"
+  },
+  {
+    "rule_id": "general.orm-unsafe-raw-query",
+    "severity": "error",
+    "category": "security",
+    "confidence": "rule",
+    "file": "case.tsx",
+    "line": 466,
     "message": "Unsafe raw SQL query detected. Using string interpolation or concatenation inside Prisma ($queryRaw, $executeRaw, $queryRawUnsafe, $executeRawUnsafe) or TypeORM (query) bypasses parameterized query generation, risking SQL injection. Use safe tagged templates (e.g. prisma.$queryRaw`...`) or pass parameters as a separate argument/binding.\n"
   },
   {
@@ -1027,7 +1153,7 @@
     "category": "quality",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 46,
+    "line": 51,
     "message": "This comment looks like an unfinished placeholder or AI-generation artifact (e.g. \"your code here\", \"rest of the implementation\", \"TODO: implement\", \"as an AI ...\"). It usually means code was elided or never written, so the surrounding function may be incomplete or non-functional. Replace it with the real implementation, or remove the comment if the code is actually complete.\n"
   },
   {
@@ -1036,7 +1162,7 @@
     "category": "quality",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 47,
+    "line": 52,
     "message": "This comment looks like an unfinished placeholder or AI-generation artifact (e.g. \"your code here\", \"rest of the implementation\", \"TODO: implement\", \"as an AI ...\"). It usually means code was elided or never written, so the surrounding function may be incomplete or non-functional. Replace it with the real implementation, or remove the comment if the code is actually complete.\n"
   },
   {
@@ -1045,7 +1171,7 @@
     "category": "quality",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 130,
+    "line": 135,
     "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
   },
   {
@@ -1054,7 +1180,7 @@
     "category": "quality",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 131,
+    "line": 136,
     "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
   },
   {
@@ -1063,7 +1189,7 @@
     "category": "quality",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 132,
+    "line": 137,
     "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
   },
   {
@@ -1072,7 +1198,7 @@
     "category": "quality",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 133,
+    "line": 138,
     "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
   },
   {
@@ -1081,7 +1207,7 @@
     "category": "quality",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 312,
+    "line": 317,
     "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
   },
   {
@@ -1090,7 +1216,7 @@
     "category": "quality",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 313,
+    "line": 318,
     "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
   },
   {
@@ -1112,12 +1238,39 @@
     "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
   },
   {
+    "rule_id": "general.process-env-dispersed-access",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 81,
+    "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
+  },
+  {
+    "rule_id": "general.process-env-dispersed-access",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 82,
+    "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
+  },
+  {
+    "rule_id": "general.process-env-dispersed-access",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 83,
+    "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
+  },
+  {
     "rule_id": "general.reduce-spread-accumulator",
     "severity": "warning",
     "category": "performance",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 62,
+    "line": 67,
     "message": "This reduce callback rebuilds the accumulator with [...acc, ...] on every iteration, which copies the growing array repeatedly and turns a linear collection step into O(n²) work. Prefer map/filter, or mutate a local accumulator inside the reduce callback when reduce is genuinely needed.\n"
   },
   {
@@ -1153,7 +1306,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 12,
+    "line": 17,
     "message": "A token/secret/credential is written to localStorage or sessionStorage. Web storage is readable by any script on the page, so any XSS can exfiltrate it; unlike an httpOnly cookie it is not protected from JavaScript. Prefer an httpOnly, Secure, SameSite cookie for auth material, or keep it in memory.\n"
   },
   {
@@ -1180,25 +1333,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 399,
-    "message": "User-controlled request data reaches an OS command execution sink. An attacker can inject shell metacharacters to run arbitrary commands on the server. Avoid passing request data into a shell; use a fixed command with an argument array (no shell), or validate the input against a strict allowlist before execution.\n"
-  },
-  {
-    "rule_id": "general.tainted-command-injection",
-    "severity": "warning",
-    "category": "security",
-    "confidence": "hint",
-    "file": "case.tsx",
-    "line": 402,
-    "message": "User-controlled request data reaches an OS command execution sink. An attacker can inject shell metacharacters to run arbitrary commands on the server. Avoid passing request data into a shell; use a fixed command with an argument array (no shell), or validate the input against a strict allowlist before execution.\n"
-  },
-  {
-    "rule_id": "general.tainted-command-injection",
-    "severity": "warning",
-    "category": "security",
-    "confidence": "hint",
-    "file": "case.tsx",
-    "line": 405,
+    "line": 404,
     "message": "User-controlled request data reaches an OS command execution sink. An attacker can inject shell metacharacters to run arbitrary commands on the server. Avoid passing request data into a shell; use a fixed command with an argument array (no shell), or validate the input against a strict allowlist before execution.\n"
   },
   {
@@ -1216,7 +1351,25 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 447,
+    "line": 410,
+    "message": "User-controlled request data reaches an OS command execution sink. An attacker can inject shell metacharacters to run arbitrary commands on the server. Avoid passing request data into a shell; use a fixed command with an argument array (no shell), or validate the input against a strict allowlist before execution.\n"
+  },
+  {
+    "rule_id": "general.tainted-command-injection",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 412,
+    "message": "User-controlled request data reaches an OS command execution sink. An attacker can inject shell metacharacters to run arbitrary commands on the server. Avoid passing request data into a shell; use a fixed command with an argument array (no shell), or validate the input against a strict allowlist before execution.\n"
+  },
+  {
+    "rule_id": "general.tainted-command-injection",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 452,
     "message": "User-controlled request data reaches an OS command execution sink. An attacker can inject shell metacharacters to run arbitrary commands on the server. Avoid passing request data into a shell; use a fixed command with an argument array (no shell), or validate the input against a strict allowlist before execution.\n"
   },
   {
@@ -1225,7 +1378,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 421,
+    "line": 426,
     "message": "Browser-controlled input reaches an HTML-injection sink without sanitization, leading to DOM-based Cross-Site Scripting (XSS). An attacker can craft a URL, fragment, or request field that injects script into the page. Render untrusted data as text (textContent), or sanitize it with a trusted library (e.g. DOMPurify.sanitize) before assigning it to an HTML sink.\n"
   },
   {
@@ -1234,7 +1387,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 425,
+    "line": 430,
     "message": "Browser-controlled input reaches an HTML-injection sink without sanitization, leading to DOM-based Cross-Site Scripting (XSS). An attacker can craft a URL, fragment, or request field that injects script into the page. Render untrusted data as text (textContent), or sanitize it with a trusted library (e.g. DOMPurify.sanitize) before assigning it to an HTML sink.\n"
   },
   {
@@ -1243,7 +1396,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 454,
+    "line": 459,
     "message": "Browser-controlled input reaches an HTML-injection sink without sanitization, leading to DOM-based Cross-Site Scripting (XSS). An attacker can craft a URL, fragment, or request field that injects script into the page. Render untrusted data as text (textContent), or sanitize it with a trusted library (e.g. DOMPurify.sanitize) before assigning it to an HTML sink.\n"
   },
   {
@@ -1252,16 +1405,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 471,
-    "message": "A hardcoded secret or credential (an AWS access key, a GitHub/Slack/Stripe token, a Google API key, or a PEM private key) is assigned to a variable or object property and then flows into a function call. Unlike the regex rule, this catches indirect usage where the literal is stored first and consumed elsewhere. Committed secrets are exposed to everyone with repository access and remain in git history even after deletion. Move the value to an environment variable or a secret manager, rotate the leaked credential immediately, and purge it from git history.\n"
-  },
-  {
-    "rule_id": "general.tainted-hardcoded-secret",
-    "severity": "warning",
-    "category": "security",
-    "confidence": "hint",
-    "file": "case.tsx",
-    "line": 478,
+    "line": 476,
     "message": "A hardcoded secret or credential (an AWS access key, a GitHub/Slack/Stripe token, a Google API key, or a PEM private key) is assigned to a variable or object property and then flows into a function call. Unlike the regex rule, this catches indirect usage where the literal is stored first and consumed elsewhere. Committed secrets are exposed to everyone with repository access and remain in git history even after deletion. Move the value to an environment variable or a secret manager, rotate the leaked credential immediately, and purge it from git history.\n"
   },
   {
@@ -1274,12 +1418,21 @@
     "message": "A hardcoded secret or credential (an AWS access key, a GitHub/Slack/Stripe token, a Google API key, or a PEM private key) is assigned to a variable or object property and then flows into a function call. Unlike the regex rule, this catches indirect usage where the literal is stored first and consumed elsewhere. Committed secrets are exposed to everyone with repository access and remain in git history even after deletion. Move the value to an environment variable or a secret manager, rotate the leaked credential immediately, and purge it from git history.\n"
   },
   {
+    "rule_id": "general.tainted-hardcoded-secret",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 488,
+    "message": "A hardcoded secret or credential (an AWS access key, a GitHub/Slack/Stripe token, a Google API key, or a PEM private key) is assigned to a variable or object property and then flows into a function call. Unlike the regex rule, this catches indirect usage where the literal is stored first and consumed elsewhere. Committed secrets are exposed to everyone with repository access and remain in git history even after deletion. Move the value to an environment variable or a secret manager, rotate the leaked credential immediately, and purge it from git history.\n"
+  },
+  {
     "rule_id": "general.tainted-sql-query",
     "severity": "warning",
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 367,
+    "line": 372,
     "message": "User-controlled request data reaches a raw SQL query sink. Build SQL with parameterized placeholders or trusted query-builder APIs instead of concatenating request data into the SQL text.\n"
   },
   {
@@ -1288,7 +1441,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 371,
+    "line": 376,
     "message": "User-controlled request data reaches a raw SQL query sink. Build SQL with parameterized placeholders or trusted query-builder APIs instead of concatenating request data into the SQL text.\n"
   },
   {
@@ -1297,7 +1450,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 383,
+    "line": 388,
     "message": "User-controlled request data reaches a raw SQL query sink. Build SQL with parameterized placeholders or trusted query-builder APIs instead of concatenating request data into the SQL text.\n"
   },
   {
@@ -1306,7 +1459,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 385,
+    "line": 390,
     "message": "User-controlled request data reaches a raw SQL query sink. Build SQL with parameterized placeholders or trusted query-builder APIs instead of concatenating request data into the SQL text.\n"
   },
   {
@@ -1315,7 +1468,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 437,
+    "line": 442,
     "message": "User-controlled request data reaches a raw SQL query sink. Build SQL with parameterized placeholders or trusted query-builder APIs instead of concatenating request data into the SQL text.\n"
   },
   {
@@ -1324,26 +1477,8 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 461,
+    "line": 466,
     "message": "User-controlled request data reaches a raw SQL query sink. Build SQL with parameterized placeholders or trusted query-builder APIs instead of concatenating request data into the SQL text.\n"
-  },
-  {
-    "rule_id": "general.tainted-ssrf-request",
-    "severity": "warning",
-    "category": "security",
-    "confidence": "hint",
-    "file": "case.tsx",
-    "line": 381,
-    "message": "User-controlled request data reaches an outbound HTTP request URL. This can lead to Server-Side Request Forgery (SSRF), where attackers make the server call internal services or attacker-controlled hosts. Resolve the destination from trusted route names or validate it against a strict allowlist before making the request.\n"
-  },
-  {
-    "rule_id": "general.tainted-ssrf-request",
-    "severity": "warning",
-    "category": "security",
-    "confidence": "hint",
-    "file": "case.tsx",
-    "line": 383,
-    "message": "User-controlled request data reaches an outbound HTTP request URL. This can lead to Server-Side Request Forgery (SSRF), where attackers make the server call internal services or attacker-controlled hosts. Resolve the destination from trusted route names or validate it against a strict allowlist before making the request.\n"
   },
   {
     "rule_id": "general.tainted-ssrf-request",
@@ -1360,7 +1495,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 442,
+    "line": 388,
     "message": "User-controlled request data reaches an outbound HTTP request URL. This can lead to Server-Side Request Forgery (SSRF), where attackers make the server call internal services or attacker-controlled hosts. Resolve the destination from trusted route names or validate it against a strict allowlist before making the request.\n"
   },
   {
@@ -1369,8 +1504,44 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 466,
+    "line": 391,
     "message": "User-controlled request data reaches an outbound HTTP request URL. This can lead to Server-Side Request Forgery (SSRF), where attackers make the server call internal services or attacker-controlled hosts. Resolve the destination from trusted route names or validate it against a strict allowlist before making the request.\n"
+  },
+  {
+    "rule_id": "general.tainted-ssrf-request",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 447,
+    "message": "User-controlled request data reaches an outbound HTTP request URL. This can lead to Server-Side Request Forgery (SSRF), where attackers make the server call internal services or attacker-controlled hosts. Resolve the destination from trusted route names or validate it against a strict allowlist before making the request.\n"
+  },
+  {
+    "rule_id": "general.tainted-ssrf-request",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 471,
+    "message": "User-controlled request data reaches an outbound HTTP request URL. This can lead to Server-Side Request Forgery (SSRF), where attackers make the server call internal services or attacker-controlled hosts. Resolve the destination from trusted route names or validate it against a strict allowlist before making the request.\n"
+  },
+  {
+    "rule_id": "general.ts-as-any-escape",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "incomplete.ts",
+    "line": 76,
+    "message": "`as any` (and `Record\u003c_, any\u003e`) disables type checking at this point, so the compiler stops catching real bugs flowing through here. Unlike an incidental `: any`, this is an explicit escape hatch. Prefer `unknown` with a narrowing check, a precise generic, or a typed shape.\n"
+  },
+  {
+    "rule_id": "general.ts-as-any-escape",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "incomplete.ts",
+    "line": 77,
+    "message": "`as any` (and `Record\u003c_, any\u003e`) disables type checking at this point, so the compiler stops catching real bugs flowing through here. Unlike an incidental `: any`, this is an explicit escape hatch. Prefer `unknown` with a narrowing check, a precise generic, or a typed shape.\n"
   },
   {
     "rule_id": "general.ts-ignore-without-reason",
@@ -1405,15 +1576,6 @@
     "category": "quality",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 233,
-    "message": "A NestJS controller directly performs database or ORM operations. NestJS architecture mandates that controllers only handle HTTP routing and delegate business logic and data access to services. Move this database operation into a service class.\n"
-  },
-  {
-    "rule_id": "nestjs.nestjs-fat-controller",
-    "severity": "warning",
-    "category": "quality",
-    "confidence": "hint",
-    "file": "case.tsx",
     "line": 238,
     "message": "A NestJS controller directly performs database or ORM operations. NestJS architecture mandates that controllers only handle HTTP routing and delegate business logic and data access to services. Move this database operation into a service class.\n"
   },
@@ -1432,8 +1594,35 @@
     "category": "quality",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 437,
+    "line": 248,
     "message": "A NestJS controller directly performs database or ORM operations. NestJS architecture mandates that controllers only handle HTTP routing and delegate business logic and data access to services. Move this database operation into a service class.\n"
+  },
+  {
+    "rule_id": "nestjs.nestjs-fat-controller",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 442,
+    "message": "A NestJS controller directly performs database or ORM operations. NestJS architecture mandates that controllers only handle HTTP routing and delegate business logic and data access to services. Move this database operation into a service class.\n"
+  },
+  {
+    "rule_id": "nextjs.heavy-import-no-dynamic",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 5,
+    "message": "Heavy library is statically imported. Statically importing large libraries (like monaco-editor, three, lodash, or chart.js) increases the initial client bundle size and slows down page loads. Consider using dynamic imports (e.g., Next.js dynamic() or dynamic import()) to load this library lazily.\n"
+  },
+  {
+    "rule_id": "nextjs.heavy-import-no-dynamic",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 6,
+    "message": "Heavy library is statically imported. Statically importing large libraries (like monaco-editor, three, lodash, or chart.js) increases the initial client bundle size and slows down page loads. Consider using dynamic imports (e.g., Next.js dynamic() or dynamic import()) to load this library lazily.\n"
   },
   {
     "rule_id": "nextjs.heavy-import-no-dynamic",
@@ -1468,7 +1657,7 @@
     "category": "bug",
     "confidence": "rule",
     "file": "client_data_fetch.tsx",
-    "line": 47,
+    "line": 55,
     "message": "Client Components cannot be async functions. Making a Client Component async results in runtime errors and prevents proper client-side rendering. Convert the component to a synchronous function and use hooks like useEffect or useSWR/TanStack Query for data fetching, or keep it as a Server Component.\n"
   },
   {
@@ -1540,7 +1729,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 164,
+    "line": 169,
     "message": "A cookie is set via cookies().set() without explicitly enabling the secure flag. Sensitive cookies (like session tokens) should always be set with 'secure: true' in production to prevent them from being transmitted over unencrypted HTTP connections.\n"
   },
   {
@@ -1549,7 +1738,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 166,
+    "line": 171,
     "message": "A cookie is set via cookies().set() without explicitly enabling the secure flag. Sensitive cookies (like session tokens) should always be set with 'secure: true' in production to prevent them from being transmitted over unencrypted HTTP connections.\n"
   },
   {
@@ -1585,7 +1774,7 @@
     "category": "performance",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 213,
+    "line": 218,
     "message": "A standard HTML \u003cimg\u003e tag is used. In Next.js, using \u003cimg\u003e bypasses automatic image optimization (lazy loading, responsive sizing, and modern format conversion). Use the '\u003cImage\u003e' component from 'next/image' instead.\n"
   },
   {
@@ -1594,7 +1783,7 @@
     "category": "performance",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 25,
+    "line": 30,
     "message": "A standard HTML \u003ca\u003e tag is used with an internal route. In Next.js, using \u003ca\u003e for internal navigation causes a full page reload, losing client-side routing benefits. Use the '\u003cLink\u003e' component from 'next/link' instead.\n"
   },
   {
@@ -1603,7 +1792,7 @@
     "category": "performance",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 207,
+    "line": 212,
     "message": "A standard HTML \u003ca\u003e tag is used with an internal route. In Next.js, using \u003ca\u003e for internal navigation causes a full page reload, losing client-side routing benefits. Use the '\u003cLink\u003e' component from 'next/link' instead.\n"
   },
   {
@@ -1612,7 +1801,7 @@
     "category": "performance",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 208,
+    "line": 213,
     "message": "A standard HTML \u003ca\u003e tag is used with an internal route. In Next.js, using \u003ca\u003e for internal navigation causes a full page reload, losing client-side routing benefits. Use the '\u003cLink\u003e' component from 'next/link' instead.\n"
   },
   {
@@ -1621,7 +1810,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 130,
+    "line": 135,
     "message": "A NEXT_PUBLIC_* environment variable named like a secret (secret, token, password, credential, private/api key) is read here. Next.js inlines every NEXT_PUBLIC_* value into the client JavaScript bundle, so this value is shipped to the browser and readable by anyone. If it is a real secret, drop the NEXT_PUBLIC_ prefix and read it only in server code (route handlers, server components, getServerSideProps). If the value is genuinely public (e.g. a publishable key), rename it so it no longer looks like a secret.\n"
   },
   {
@@ -1630,7 +1819,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 131,
+    "line": 136,
     "message": "A NEXT_PUBLIC_* environment variable named like a secret (secret, token, password, credential, private/api key) is read here. Next.js inlines every NEXT_PUBLIC_* value into the client JavaScript bundle, so this value is shipped to the browser and readable by anyone. If it is a real secret, drop the NEXT_PUBLIC_ prefix and read it only in server code (route handlers, server components, getServerSideProps). If the value is genuinely public (e.g. a publishable key), rename it so it no longer looks like a secret.\n"
   },
   {
@@ -1684,16 +1873,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 347,
-    "message": "A Next.js Server Action accepts input but does not appear to validate it with a schema parser. Server Actions are callable from the client, so unvalidated parameters can become authorization, injection, or data integrity bugs. Validate the input with Zod, Valibot, or a similar schema before using it.\n"
-  },
-  {
-    "rule_id": "nextjs.next-server-action-missing-validation",
-    "severity": "warning",
-    "category": "security",
-    "confidence": "hint",
-    "file": "case.tsx",
-    "line": 459,
+    "line": 352,
     "message": "A Next.js Server Action accepts input but does not appear to validate it with a schema parser. Server Actions are callable from the client, so unvalidated parameters can become authorization, injection, or data integrity bugs. Validate the input with Zod, Valibot, or a similar schema before using it.\n"
   },
   {
@@ -1703,6 +1883,15 @@
     "confidence": "hint",
     "file": "case.tsx",
     "line": 464,
+    "message": "A Next.js Server Action accepts input but does not appear to validate it with a schema parser. Server Actions are callable from the client, so unvalidated parameters can become authorization, injection, or data integrity bugs. Validate the input with Zod, Valibot, or a similar schema before using it.\n"
+  },
+  {
+    "rule_id": "nextjs.next-server-action-missing-validation",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 469,
     "message": "A Next.js Server Action accepts input but does not appear to validate it with a schema parser. Server Actions are callable from the client, so unvalidated parameters can become authorization, injection, or data integrity bugs. Validate the input with Zod, Valibot, or a similar schema before using it.\n"
   },
   {
@@ -1738,7 +1927,7 @@
     "category": "performance",
     "confidence": "rule",
     "file": "case.tsx",
-    "line": 159,
+    "line": 164,
     "message": "Server Component fetches its own API route. Server Components can access databases, services, or internal APIs directly in Next.js. Fetching an internal /api/... route adds unnecessary HTTP request overhead (serialization, latency, network hop). Call the database or service function directly instead of performing an HTTP fetch.\n"
   },
   {
@@ -1747,7 +1936,7 @@
     "category": "performance",
     "confidence": "rule",
     "file": "case.tsx",
-    "line": 323,
+    "line": 328,
     "message": "Server Component fetches its own API route. Server Components can access databases, services, or internal APIs directly in Next.js. Fetching an internal /api/... route adds unnecessary HTTP request overhead (serialization, latency, network hop). Call the database or service function directly instead of performing an HTTP fetch.\n"
   },
   {
@@ -1791,7 +1980,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 41,
+    "line": 46,
     "message": "Server-side fetch() is called with a dynamic or unvalidated URL. If this URL is built from user-controlled input, it can lead to Server-Side Request Forgery (SSRF), allowing attackers to query internal services, bypass firewalls, or leak credentials. Validate the URL against a strict allowlist of allowed domains, or ensure the input is sanitized and mapped to safe endpoints.\n"
   },
   {
@@ -1800,7 +1989,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 116,
+    "line": 121,
     "message": "Server-side fetch() is called with a dynamic or unvalidated URL. If this URL is built from user-controlled input, it can lead to Server-Side Request Forgery (SSRF), allowing attackers to query internal services, bypass firewalls, or leak credentials. Validate the URL against a strict allowlist of allowed domains, or ensure the input is sanitized and mapped to safe endpoints.\n"
   },
   {
@@ -1809,7 +1998,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 158,
+    "line": 163,
     "message": "Server-side fetch() is called with a dynamic or unvalidated URL. If this URL is built from user-controlled input, it can lead to Server-Side Request Forgery (SSRF), allowing attackers to query internal services, bypass firewalls, or leak credentials. Validate the URL against a strict allowlist of allowed domains, or ensure the input is sanitized and mapped to safe endpoints.\n"
   },
   {
@@ -1818,7 +2007,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 160,
+    "line": 165,
     "message": "Server-side fetch() is called with a dynamic or unvalidated URL. If this URL is built from user-controlled input, it can lead to Server-Side Request Forgery (SSRF), allowing attackers to query internal services, bypass firewalls, or leak credentials. Validate the URL against a strict allowlist of allowed domains, or ensure the input is sanitized and mapped to safe endpoints.\n"
   },
   {
@@ -1827,7 +2016,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 325,
+    "line": 330,
     "message": "Server-side fetch() is called with a dynamic or unvalidated URL. If this URL is built from user-controlled input, it can lead to Server-Side Request Forgery (SSRF), allowing attackers to query internal services, bypass firewalls, or leak credentials. Validate the URL against a strict allowlist of allowed domains, or ensure the input is sanitized and mapped to safe endpoints.\n"
   },
   {
@@ -1836,7 +2025,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 381,
+    "line": 386,
     "message": "Server-side fetch() is called with a dynamic or unvalidated URL. If this URL is built from user-controlled input, it can lead to Server-Side Request Forgery (SSRF), allowing attackers to query internal services, bypass firewalls, or leak credentials. Validate the URL against a strict allowlist of allowed domains, or ensure the input is sanitized and mapped to safe endpoints.\n"
   },
   {
@@ -1845,7 +2034,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 391,
+    "line": 396,
     "message": "Server-side fetch() is called with a dynamic or unvalidated URL. If this URL is built from user-controlled input, it can lead to Server-Side Request Forgery (SSRF), allowing attackers to query internal services, bypass firewalls, or leak credentials. Validate the URL against a strict allowlist of allowed domains, or ensure the input is sanitized and mapped to safe endpoints.\n"
   },
   {
@@ -1854,7 +2043,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 394,
+    "line": 399,
     "message": "Server-side fetch() is called with a dynamic or unvalidated URL. If this URL is built from user-controlled input, it can lead to Server-Side Request Forgery (SSRF), allowing attackers to query internal services, bypass firewalls, or leak credentials. Validate the URL against a strict allowlist of allowed domains, or ensure the input is sanitized and mapped to safe endpoints.\n"
   },
   {
@@ -1863,7 +2052,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 442,
+    "line": 447,
     "message": "Server-side fetch() is called with a dynamic or unvalidated URL. If this URL is built from user-controlled input, it can lead to Server-Side Request Forgery (SSRF), allowing attackers to query internal services, bypass firewalls, or leak credentials. Validate the URL against a strict allowlist of allowed domains, or ensure the input is sanitized and mapped to safe endpoints.\n"
   },
   {
@@ -1872,7 +2061,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 466,
+    "line": 471,
     "message": "Server-side fetch() is called with a dynamic or unvalidated URL. If this URL is built from user-controlled input, it can lead to Server-Side Request Forgery (SSRF), allowing attackers to query internal services, bypass firewalls, or leak credentials. Validate the URL against a strict allowlist of allowed domains, or ensure the input is sanitized and mapped to safe endpoints.\n"
   },
   {
@@ -1899,7 +2088,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 151,
+    "line": 156,
     "message": "A Next.js redirect target is built from a dynamic value. If this value can be influenced by a user, the app may redirect to an attacker-controlled URL. Validate against an allowlist, resolve only internal paths, or build the destination from trusted route names.\n"
   },
   {
@@ -1908,7 +2097,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 153,
+    "line": 158,
     "message": "A Next.js redirect target is built from a dynamic value. If this value can be influenced by a user, the app may redirect to an attacker-controlled URL. Validate against an allowlist, resolve only internal paths, or build the destination from trusted route names.\n"
   },
   {
@@ -1939,6 +2128,15 @@
     "message": "A Next.js redirect target is built from a dynamic value. If this value can be influenced by a user, the app may redirect to an attacker-controlled URL. Validate against an allowlist, resolve only internal paths, or build the destination from trusted route names.\n"
   },
   {
+    "rule_id": "nextjs.nextjs-no-client-side-redirect",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "client_data_fetch.tsx",
+    "line": 30,
+    "message": "A redirect runs inside useEffect (router.push/replace). The page renders first and then navigates away, so the user sees a flash of the wrong screen, and it costs an extra client render. Prefer middleware or a Server Component redirect() for auth/routing gates; keep router.push for user-triggered events.\n"
+  },
+  {
     "rule_id": "nextjs.nextjs-no-use-search-params-without-suspense",
     "severity": "warning",
     "category": "performance",
@@ -1953,7 +2151,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 26,
+    "line": 31,
     "message": "dangerouslySetInnerHTML is fed a dynamic value (not a string literal). If that value contains any user-controlled data, this is a stored/reflected XSS sink. Confirm the HTML is sanitized (e.g. DOMPurify) before it reaches this prop, or render the value as text instead.\n"
   },
   {
@@ -1962,7 +2160,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 425,
+    "line": 430,
     "message": "dangerouslySetInnerHTML is fed a dynamic value (not a string literal). If that value contains any user-controlled data, this is a stored/reflected XSS sink. Confirm the HTML is sanitized (e.g. DOMPurify) before it reaches this prop, or render the value as text instead.\n"
   },
   {
@@ -1971,7 +2169,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 428,
+    "line": 433,
     "message": "dangerouslySetInnerHTML is fed a dynamic value (not a string literal). If that value contains any user-controlled data, this is a stored/reflected XSS sink. Confirm the HTML is sanitized (e.g. DOMPurify) before it reaches this prop, or render the value as text instead.\n"
   },
   {
@@ -1979,7 +2177,7 @@
     "severity": "warning",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 318,
+    "line": 323,
     "message": "Direct DOM manipulation call detected in React file. Accessing or modifying the DOM directly (using document.getElementById, querySelector, etc.) bypasses the Virtual DOM, causing state inconsistencies and rendering issues. Use React refs (useRef) or state binding instead.\n"
   },
   {
@@ -1987,7 +2185,7 @@
     "severity": "warning",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 319,
+    "line": 324,
     "message": "Direct DOM manipulation call detected in React file. Accessing or modifying the DOM directly (using document.getElementById, querySelector, etc.) bypasses the Virtual DOM, causing state inconsistencies and rendering issues. Use React refs (useRef) or state binding instead.\n"
   },
   {
@@ -1995,7 +2193,7 @@
     "severity": "warning",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 419,
+    "line": 424,
     "message": "Direct DOM manipulation call detected in React file. Accessing or modifying the DOM directly (using document.getElementById, querySelector, etc.) bypasses the Virtual DOM, causing state inconsistencies and rendering issues. Use React refs (useRef) or state binding instead.\n"
   },
   {
@@ -2003,7 +2201,7 @@
     "severity": "warning",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 452,
+    "line": 457,
     "message": "Direct DOM manipulation call detected in React file. Accessing or modifying the DOM directly (using document.getElementById, querySelector, etc.) bypasses the Virtual DOM, causing state inconsistencies and rendering issues. Use React refs (useRef) or state binding instead.\n"
   },
   {
@@ -2084,16 +2282,25 @@
     "category": "bug",
     "confidence": "rule",
     "file": "case.tsx",
-    "line": 29,
+    "line": 34,
     "message": "A React key derived from Math.random()/Date.now() changes on every render, so React remounts the element each time: local state is lost, inputs lose focus, and reconciliation degrades. Use a stable id from the data instead.\n"
   },
   {
+    "rule_id": "rn.expo-no-non-inlined-env",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "rn.tsx",
+    "line": 81,
+    "message": "Dynamic lookup of 'process.env[key]' detected in Expo project. Expo's compiler only inlines static property accesses (like 'process.env.EXPO_PUBLIC_VAR') at build time. Dynamic key lookups resolve to 'undefined' at runtime. Use explicit static property access instead.\n"
+  },
+  {
     "rule_id": "rn.rn-anonymous-renderitem",
     "severity": "warning",
     "category": "performance",
     "confidence": "hint",
     "file": "rn.tsx",
-    "line": 25,
+    "line": 27,
     "message": "FlatList renderItem receives an inline function. This creates a new function on every render, which can defeat list item memoization and add avoidable work on large lists. Move renderItem to a stable function or wrap it in useCallback with correct dependencies.\n"
   },
   {
@@ -2102,7 +2309,7 @@
     "category": "performance",
     "confidence": "hint",
     "file": "rn.tsx",
-    "line": 26,
+    "line": 28,
     "message": "FlatList renderItem receives an inline function. This creates a new function on every render, which can defeat list item memoization and add avoidable work on large lists. Move renderItem to a stable function or wrap it in useCallback with correct dependencies.\n"
   },
   {
@@ -2111,7 +2318,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "rn.tsx",
-    "line": 52,
+    "line": 54,
     "message": "React Native AsyncStorage is used to persist a token, secret, credential, or auth value. AsyncStorage is not encrypted storage, so sensitive values can be recovered from device backups, rooted devices, or local compromise. Store auth material in SecureStore, Keychain, Keystore, or another platform-backed secure storage API.\n"
   },
   {
@@ -2120,7 +2327,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "rn.tsx",
-    "line": 53,
+    "line": 55,
     "message": "React Native AsyncStorage is used to persist a token, secret, credential, or auth value. AsyncStorage is not encrypted storage, so sensitive values can be recovered from device backups, rooted devices, or local compromise. Store auth material in SecureStore, Keychain, Keystore, or another platform-backed secure storage API.\n"
   },
   {
@@ -2129,7 +2336,7 @@
     "category": "bug",
     "confidence": "rule",
     "file": "rn.tsx",
-    "line": 9,
+    "line": 11,
     "message": "A DOM element is rendered inside a React Native component. React Native does not support HTML tags such as div, span, p, button, or input; this crashes or fails to render on native platforms. Use View, Text, Pressable, TextInput, or another React Native component instead.\n"
   },
   {
@@ -2138,8 +2345,53 @@
     "category": "bug",
     "confidence": "rule",
     "file": "rn.tsx",
-    "line": 10,
+    "line": 12,
     "message": "A DOM element is rendered inside a React Native component. React Native does not support HTML tags such as div, span, p, button, or input; this crashes or fails to render on native platforms. Use View, Text, Pressable, TextInput, or another React Native component instead.\n"
+  },
+  {
+    "rule_id": "rn.rn-list-missing-estimated-item-size",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 91,
+    "message": "A Shopify FlashList is rendered without estimatedItemSize. FlashList uses it to size the recycle pool up front; without it the first scroll janks and blanks while it measures. Set estimatedItemSize to the average row height.\n"
+  },
+  {
+    "rule_id": "rn.rn-no-dimensions-get",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 70,
+    "message": "Dimensions.get(...) reads a snapshot that can become stale after device rotation, split-screen resizing, or foldable-window changes. In a component, use useWindowDimensions() so layout follows current dimensions. Outside React render code, subscribe to Dimensions change events and clean up the listener.\n"
+  },
+  {
+    "rule_id": "rn.rn-no-dimensions-get",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 73,
+    "message": "Dimensions.get(...) reads a snapshot that can become stale after device rotation, split-screen resizing, or foldable-window changes. In a component, use useWindowDimensions() so layout follows current dimensions. Outside React render code, subscribe to Dimensions change events and clean up the listener.\n"
+  },
+  {
+    "rule_id": "rn.rn-no-dimensions-get",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 74,
+    "message": "Dimensions.get(...) reads a snapshot that can become stale after device rotation, split-screen resizing, or foldable-window changes. In a component, use useWindowDimensions() so layout follows current dimensions. Outside React render code, subscribe to Dimensions change events and clean up the listener.\n"
+  },
+  {
+    "rule_id": "rn.rn-no-dimensions-get",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 75,
+    "message": "Dimensions.get(...) reads a snapshot that can become stale after device rotation, split-screen resizing, or foldable-window changes. In a component, use useWindowDimensions() so layout follows current dimensions. Outside React render code, subscribe to Dimensions change events and clean up the listener.\n"
   },
   {
     "rule_id": "rn.rn-no-falsy-and-render",
@@ -2147,7 +2399,7 @@
     "category": "bug",
     "confidence": "rule",
     "file": "rn.tsx",
-    "line": 60,
+    "line": 62,
     "message": "In React Native, `{value \u0026\u0026 \u003cJSX/\u003e}` renders a bare 0 when value is 0 — a text node outside \u003cText\u003e — which crashes the screen (\"Text strings must be rendered within a \u003cText\u003e component\"). A numeric left operand (.length or a count-like variable) hits this whenever the list/value is empty. Guard with `value \u003e 0 \u0026\u0026 ...`, `!!value \u0026\u0026 ...`, or a ternary returning null.\n"
   },
   {
@@ -2156,7 +2408,7 @@
     "category": "bug",
     "confidence": "rule",
     "file": "rn.tsx",
-    "line": 61,
+    "line": 63,
     "message": "In React Native, `{value \u0026\u0026 \u003cJSX/\u003e}` renders a bare 0 when value is 0 — a text node outside \u003cText\u003e — which crashes the screen (\"Text strings must be rendered within a \u003cText\u003e component\"). A numeric left operand (.length or a count-like variable) hits this whenever the list/value is empty. Guard with `value \u003e 0 \u0026\u0026 ...`, `!!value \u0026\u0026 ...`, or a ternary returning null.\n"
   },
   {
@@ -2165,7 +2417,7 @@
     "category": "performance",
     "confidence": "hint",
     "file": "rn.tsx",
-    "line": 33,
+    "line": 35,
     "message": "ScrollView renders every child eagerly while this code maps over a dynamic collection. Large or growing lists can cause memory pressure and jank on native devices. Use FlatList or SectionList so React Native can virtualize rows.\n"
   },
   {
@@ -2174,24 +2426,6 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 347,
-    "message": "Server Action accepts input but does not appear to perform any authorization or authentication check. Server Actions are publicly accessible POST endpoints. Always verify the user's session and permissions at the start of the action (e.g. using auth(), getServerSession(), or custom verification helpers) to prevent unauthorized access.\n"
-  },
-  {
-    "rule_id": "server.server-auth-actions",
-    "severity": "warning",
-    "category": "security",
-    "confidence": "hint",
-    "file": "case.tsx",
-    "line": 347,
-    "message": "Server Action accepts input but does not appear to perform any authorization or authentication check. Server Actions are publicly accessible POST endpoints. Always verify the user's session and permissions at the start of the action (e.g. using auth(), getServerSession(), or custom verification helpers) to prevent unauthorized access.\n"
-  },
-  {
-    "rule_id": "server.server-auth-actions",
-    "severity": "warning",
-    "category": "security",
-    "confidence": "hint",
-    "file": "case.tsx",
     "line": 352,
     "message": "Server Action accepts input but does not appear to perform any authorization or authentication check. Server Actions are publicly accessible POST endpoints. Always verify the user's session and permissions at the start of the action (e.g. using auth(), getServerSession(), or custom verification helpers) to prevent unauthorized access.\n"
   },
@@ -2210,7 +2444,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 358,
+    "line": 357,
     "message": "Server Action accepts input but does not appear to perform any authorization or authentication check. Server Actions are publicly accessible POST endpoints. Always verify the user's session and permissions at the start of the action (e.g. using auth(), getServerSession(), or custom verification helpers) to prevent unauthorized access.\n"
   },
   {
@@ -2219,7 +2453,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 358,
+    "line": 357,
     "message": "Server Action accepts input but does not appear to perform any authorization or authentication check. Server Actions are publicly accessible POST endpoints. Always verify the user's session and permissions at the start of the action (e.g. using auth(), getServerSession(), or custom verification helpers) to prevent unauthorized access.\n"
   },
   {
@@ -2228,7 +2462,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 459,
+    "line": 363,
     "message": "Server Action accepts input but does not appear to perform any authorization or authentication check. Server Actions are publicly accessible POST endpoints. Always verify the user's session and permissions at the start of the action (e.g. using auth(), getServerSession(), or custom verification helpers) to prevent unauthorized access.\n"
   },
   {
@@ -2237,7 +2471,16 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 459,
+    "line": 363,
+    "message": "Server Action accepts input but does not appear to perform any authorization or authentication check. Server Actions are publicly accessible POST endpoints. Always verify the user's session and permissions at the start of the action (e.g. using auth(), getServerSession(), or custom verification helpers) to prevent unauthorized access.\n"
+  },
+  {
+    "rule_id": "server.server-auth-actions",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 464,
     "message": "Server Action accepts input but does not appear to perform any authorization or authentication check. Server Actions are publicly accessible POST endpoints. Always verify the user's session and permissions at the start of the action (e.g. using auth(), getServerSession(), or custom verification helpers) to prevent unauthorized access.\n"
   },
   {
@@ -2255,7 +2498,16 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 464,
+    "line": 469,
+    "message": "Server Action accepts input but does not appear to perform any authorization or authentication check. Server Actions are publicly accessible POST endpoints. Always verify the user's session and permissions at the start of the action (e.g. using auth(), getServerSession(), or custom verification helpers) to prevent unauthorized access.\n"
+  },
+  {
+    "rule_id": "server.server-auth-actions",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 469,
     "message": "Server Action accepts input but does not appear to perform any authorization or authentication check. Server Actions are publicly accessible POST endpoints. Always verify the user's session and permissions at the start of the action (e.g. using auth(), getServerSession(), or custom verification helpers) to prevent unauthorized access.\n"
   },
   {
@@ -2390,7 +2642,7 @@
     "category": "bug",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 515,
+    "line": 520,
     "message": "TanStack Query key contains a non-serializable value. Functions, Date, Map, Set, or class instances can make cache identity unstable or hard to invalidate consistently. Use primitive values or plain serializable objects in query keys.\n"
   },
   {
@@ -2399,7 +2651,7 @@
     "category": "bug",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 516,
+    "line": 521,
     "message": "TanStack Query key contains a non-serializable value. Functions, Date, Map, Set, or class instances can make cache identity unstable or hard to invalidate consistently. Use primitive values or plain serializable objects in query keys.\n"
   },
   {
@@ -2408,7 +2660,7 @@
     "category": "quality",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 512,
+    "line": 517,
     "message": "TanStack Query key uses an inline string literal. Repeating raw strings across useQuery, setQueryData, and invalidateQueries makes cache updates easy to mistype or drift. Prefer a query-key factory or shared constant so reads and invalidations use the same key shape.\n"
   },
   {
@@ -2417,7 +2669,7 @@
     "category": "quality",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 513,
+    "line": 518,
     "message": "TanStack Query key uses an inline string literal. Repeating raw strings across useQuery, setQueryData, and invalidateQueries makes cache updates easy to mistype or drift. Prefer a query-key factory or shared constant so reads and invalidations use the same key shape.\n"
   },
   {
@@ -2462,7 +2714,7 @@
     "category": "quality",
     "confidence": "hint",
     "file": "client_data_fetch.tsx",
-    "line": 34,
+    "line": 42,
     "message": "TanStack Query key uses an inline string literal. Repeating raw strings across useQuery, setQueryData, and invalidateQueries makes cache updates easy to mistype or drift. Prefer a query-key factory or shared constant so reads and invalidations use the same key shape.\n"
   },
   {
@@ -2471,7 +2723,7 @@
     "category": "performance",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 512,
+    "line": 517,
     "message": "useQuery is called without specifying a staleTime. By default, staleTime is 0, which means queries are instantly considered stale. For server-side rendered (SSR) or prefetched data, this causes an immediate client-side refetch upon hydration, resulting in duplicate network requests and potential screen flickering. Set a staleTime (e.g. staleTime: 1000 * 60 * 5) to cache and reuse the hydrated data.\n"
   },
   {
@@ -2480,7 +2732,7 @@
     "category": "performance",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 514,
+    "line": 519,
     "message": "useQuery is called without specifying a staleTime. By default, staleTime is 0, which means queries are instantly considered stale. For server-side rendered (SSR) or prefetched data, this causes an immediate client-side refetch upon hydration, resulting in duplicate network requests and potential screen flickering. Set a staleTime (e.g. staleTime: 1000 * 60 * 5) to cache and reuse the hydrated data.\n"
   },
   {
@@ -2489,7 +2741,7 @@
     "category": "performance",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 515,
+    "line": 520,
     "message": "useQuery is called without specifying a staleTime. By default, staleTime is 0, which means queries are instantly considered stale. For server-side rendered (SSR) or prefetched data, this causes an immediate client-side refetch upon hydration, resulting in duplicate network requests and potential screen flickering. Set a staleTime (e.g. staleTime: 1000 * 60 * 5) to cache and reuse the hydrated data.\n"
   },
   {
@@ -2498,7 +2750,7 @@
     "category": "performance",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 516,
+    "line": 521,
     "message": "useQuery is called without specifying a staleTime. By default, staleTime is 0, which means queries are instantly considered stale. For server-side rendered (SSR) or prefetched data, this causes an immediate client-side refetch upon hydration, resulting in duplicate network requests and potential screen flickering. Set a staleTime (e.g. staleTime: 1000 * 60 * 5) to cache and reuse the hydrated data.\n"
   },
   {
@@ -2525,7 +2777,7 @@
     "category": "performance",
     "confidence": "hint",
     "file": "client_data_fetch.tsx",
-    "line": 34,
+    "line": 42,
     "message": "useQuery is called without specifying a staleTime. By default, staleTime is 0, which means queries are instantly considered stale. For server-side rendered (SSR) or prefetched data, this causes an immediate client-side refetch upon hydration, resulting in duplicate network requests and potential screen flickering. Set a staleTime (e.g. staleTime: 1000 * 60 * 5) to cache and reuse the hydrated data.\n"
   },
   {
@@ -2534,7 +2786,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 495,
+    "line": 500,
     "message": "Vite dev server is configured to listen on all interfaces. This can expose local development services to the LAN or container network. Bind to localhost unless remote device testing is intentional, and document the reason when host: true is required.\n"
   },
   {
@@ -2543,7 +2795,7 @@
     "category": "bug",
     "confidence": "rule",
     "file": "case.tsx",
-    "line": 130,
+    "line": 135,
     "message": "process.env should not be used in a Vite project. Vite does not inject process.env by default, which can cause runtime ReferenceErrors (process is not defined) in the browser. Use import.meta.env instead.\n"
   },
   {
@@ -2552,7 +2804,7 @@
     "category": "bug",
     "confidence": "rule",
     "file": "case.tsx",
-    "line": 132,
+    "line": 137,
     "message": "process.env should not be used in a Vite project. Vite does not inject process.env by default, which can cause runtime ReferenceErrors (process is not defined) in the browser. Use import.meta.env instead.\n"
   },
   {
@@ -2561,7 +2813,7 @@
     "category": "bug",
     "confidence": "rule",
     "file": "case.tsx",
-    "line": 133,
+    "line": 138,
     "message": "process.env should not be used in a Vite project. Vite does not inject process.env by default, which can cause runtime ReferenceErrors (process is not defined) in the browser. Use import.meta.env instead.\n"
   },
   {
@@ -2570,7 +2822,7 @@
     "category": "bug",
     "confidence": "rule",
     "file": "case.tsx",
-    "line": 312,
+    "line": 317,
     "message": "process.env should not be used in a Vite project. Vite does not inject process.env by default, which can cause runtime ReferenceErrors (process is not defined) in the browser. Use import.meta.env instead.\n"
   },
   {
@@ -2583,12 +2835,21 @@
     "message": "process.env should not be used in a Vite project. Vite does not inject process.env by default, which can cause runtime ReferenceErrors (process is not defined) in the browser. Use import.meta.env instead.\n"
   },
   {
+    "rule_id": "vite.vite-process-env-usage",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "rn.tsx",
+    "line": 82,
+    "message": "process.env should not be used in a Vite project. Vite does not inject process.env by default, which can cause runtime ReferenceErrors (process is not defined) in the browser. Use import.meta.env instead.\n"
+  },
+  {
     "rule_id": "vite.vite-public-secret-prefix",
     "severity": "warning",
     "category": "security",
     "confidence": "hint",
     "file": "case.tsx",
-    "line": 490,
+    "line": 495,
     "message": "A VITE_* environment variable is named like a secret. Vite exposes every VITE_* value to client-side code, so tokens, passwords, private keys, and credentials with this prefix are shipped to the browser. Rename real secrets without the VITE_ prefix and read them only on the server.\n"
   }
 ]

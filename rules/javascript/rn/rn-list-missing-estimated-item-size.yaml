@@ -1,0 +1,19 @@
+rules:
+  - id: rn-list-missing-estimated-item-size
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      A Shopify FlashList is rendered without estimatedItemSize. FlashList uses it
+      to size the recycle pool up front; without it the first scroll janks and
+      blanks while it measures. Set estimatedItemSize to the average row height.
+    metadata:
+      category: performance
+      # hint, not rule: FlashList v2 can auto-measure, so a missing prop is only a
+      # likely perf issue on v1 — the agent confirms the installed version.
+      confidence: hint
+    patterns:
+      - pattern-inside: |
+          import { ..., FlashList, ... } from "@shopify/flash-list";
+          ...
+      - pattern: "<FlashList ... />"
+      - pattern-not: "<FlashList ... estimatedItemSize={...} ... />"

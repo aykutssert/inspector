@@ -29,6 +29,7 @@ func Default() *Registry {
 	return New(
 		javascript.JavaScript(),
 		javascript.React(),
+		javascript.ReactNative(),
 		svelte.Svelte(),
 		javascript.TypeScript(),
 		javascript.Tailwind(),
@@ -84,11 +85,15 @@ func (r *Registry) Analyzers(ctx core.ProjectContext, customRuleDirs []string) [
 func dropInapplicableRules(ctx core.ProjectContext) func(core.Finding) bool {
 	bun := jsproject.IsBun(ctx)
 	vite := jsproject.IsVite(ctx)
+	reactNative := jsproject.IsReactNative(ctx)
 	return func(f core.Finding) bool {
 		if !bun && strings.HasPrefix(f.RuleID, "bun.") {
 			return true
 		}
 		if !vite && strings.HasPrefix(f.RuleID, "vite.") {
+			return true
+		}
+		if !reactNative && strings.HasPrefix(f.RuleID, "rn.") {
 			return true
 		}
 		switch f.RuleID {

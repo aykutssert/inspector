@@ -86,6 +86,18 @@ func IsBun(ctx core.ProjectContext) bool {
 	return false
 }
 
+// IsReactNative reports whether the relevant package tree declares React
+// Native. Expo applications also install react-native, so one dependency signal
+// covers both bare and managed projects without guessing from JSX syntax.
+func IsReactNative(ctx core.ProjectContext) bool {
+	for dir := range RelevantPkgDirs(ctx) {
+		if PkgHasDep(filepath.Join(dir, "package.json"), "react-native") {
+			return true
+		}
+	}
+	return false
+}
+
 // IsTestOrExampleFile reports whether a path is test, example, fixture, or story
 // code. Quality/design smell analyzers (repeated literals, god-class, large
 // function, component splitting) skip these: repeated literals and long bodies

@@ -1,0 +1,19 @@
+rules:
+  - id: ts-as-any-escape
+    languages: [typescript]
+    severity: WARNING
+    message: >
+      `as any` (and `Record<_, any>`) disables type checking at this point, so
+      the compiler stops catching real bugs flowing through here. Unlike an
+      incidental `: any`, this is an explicit escape hatch. Prefer `unknown` with
+      a narrowing check, a precise generic, or a typed shape.
+    metadata:
+      category: maintainability
+      # hint, not rule: `as any` is sometimes a deliberate, reviewed escape
+      # (third-party gaps, test doubles). Narrow to the explicit-cast and
+      # Record<_, any> forms only — incidental `: any` is left to oxlint to avoid
+      # the no-explicit-any flood.
+      confidence: hint
+    pattern-either:
+      - pattern: "$X as any"
+      - pattern-regex: 'Record<\s*[A-Za-z0-9_$.]+\s*,\s*any\s*>'

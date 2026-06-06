@@ -1,0 +1,17 @@
+rules:
+  - id: no-moment
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Import of legacy library 'moment' detected. Moment.js is a heavy
+      library that lacks tree-shaking support and can lead to bundle bloat. Use
+      modern, lightweight date libraries like 'date-fns', 'dayjs', or 'luxon'
+      instead.
+    metadata:
+      category: performance
+      confidence: rule
+    pattern-either:
+      - pattern: "import $M from 'moment'"
+      - pattern: "import * as $M from 'moment'"
+      - pattern: "import 'moment'"
+      - pattern: "require('moment')"

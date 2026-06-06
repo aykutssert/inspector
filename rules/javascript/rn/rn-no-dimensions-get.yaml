@@ -1,0 +1,29 @@
+rules:
+  - id: rn-no-dimensions-get
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Dimensions.get(...) reads a snapshot that can become stale after device
+      rotation, split-screen resizing, or foldable-window changes. In a
+      component, use useWindowDimensions() so layout follows current dimensions.
+      Outside React render code, subscribe to Dimensions change events and clean
+      up the listener.
+    metadata:
+      category: correctness
+      confidence: hint
+    pattern-either:
+      - patterns:
+          - pattern-inside: |
+              import { ..., Dimensions, ... } from "react-native";
+              ...
+          - pattern: Dimensions.get(...)
+      - patterns:
+          - pattern-inside: |
+              import { ..., Dimensions as $D, ... } from "react-native";
+              ...
+          - pattern: $D.get(...)
+      - patterns:
+          - pattern-inside: |
+              import * as $RN from "react-native";
+              ...
+          - pattern: $RN.Dimensions.get(...)

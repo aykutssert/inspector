@@ -25,10 +25,18 @@ export function ClientDataFetchComponent() {
     axios("/api/comments").then((res) => setData(res.data));
   }, []);
 
+  // Violation: client-side redirect inside useEffect
+  useEffect(() => {
+    if (!data) router.push("/login"); // triggers nextjs-no-client-side-redirect
+  }, [data]);
+
   // Safe Case: fetch inside event handler
   const handleRefresh = () => {
     fetch("/api/refresh");
   };
+
+  // Safe Case: redirect in an event handler, not an effect
+  const goHome = () => router.push("/home");
 
   // Safe Case: data fetching using TanStack Query (no direct fetch inside useEffect)
   const { data: queryData } = useQuery({

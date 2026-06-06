@@ -4,6 +4,7 @@ import (
 	inspectctx "github.com/aykutssert/scout/internal/context"
 	"github.com/aykutssert/scout/internal/core"
 	"github.com/aykutssert/scout/internal/lang/javascript/analyzers/tsc"
+	"github.com/aykutssert/scout/internal/lang/javascript/analyzers/tsconfig"
 	"github.com/aykutssert/scout/internal/lang/javascript/analyzers/tseslint"
 )
 
@@ -43,6 +44,7 @@ func (typescriptPack) ContextProviders() []inspectctx.Provider {
 func (typescriptPack) Analyzers() []core.Analyzer {
 	return []core.Analyzer{
 		tsc.New(),
+		tsconfig.New(),
 		tseslint.New(),
 	}
 }

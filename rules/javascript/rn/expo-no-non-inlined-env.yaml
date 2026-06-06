@@ -1,0 +1,22 @@
+rules:
+  - id: expo-no-non-inlined-env
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Dynamic lookup of 'process.env[key]' detected in Expo project. Expo's
+      compiler only inlines static property accesses (like
+      'process.env.EXPO_PUBLIC_VAR') at build time. Dynamic key lookups
+      resolve to 'undefined' at runtime. Use explicit static property access
+      instead.
+    metadata:
+      category: correctness
+      confidence: rule
+    paths:
+      include:
+        - "*.js"
+        - "*.jsx"
+        - "*.ts"
+        - "*.tsx"
+    patterns:
+      - pattern: "process.env[$KEY]"
+      - pattern-not-regex: 'process\.env\s*\[\s*["''`][a-zA-Z0-9_]+["''`]\s*\]'
