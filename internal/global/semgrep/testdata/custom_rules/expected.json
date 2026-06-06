@@ -2142,6 +2142,24 @@
     "message": "A DOM element is rendered inside a React Native component. React Native does not support HTML tags such as div, span, p, button, or input; this crashes or fails to render on native platforms. Use View, Text, Pressable, TextInput, or another React Native component instead.\n"
   },
   {
+    "rule_id": "rn.rn-no-falsy-and-render",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "rn.tsx",
+    "line": 60,
+    "message": "In React Native, `{value \u0026\u0026 \u003cJSX/\u003e}` renders a bare 0 when value is 0 — a text node outside \u003cText\u003e — which crashes the screen (\"Text strings must be rendered within a \u003cText\u003e component\"). A numeric left operand (.length or a count-like variable) hits this whenever the list/value is empty. Guard with `value \u003e 0 \u0026\u0026 ...`, `!!value \u0026\u0026 ...`, or a ternary returning null.\n"
+  },
+  {
+    "rule_id": "rn.rn-no-falsy-and-render",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "rn.tsx",
+    "line": 61,
+    "message": "In React Native, `{value \u0026\u0026 \u003cJSX/\u003e}` renders a bare 0 when value is 0 — a text node outside \u003cText\u003e — which crashes the screen (\"Text strings must be rendered within a \u003cText\u003e component\"). A numeric left operand (.length or a count-like variable) hits this whenever the list/value is empty. Guard with `value \u003e 0 \u0026\u0026 ...`, `!!value \u0026\u0026 ...`, or a ternary returning null.\n"
+  },
+  {
     "rule_id": "rn.rn-scrollview-over-flatlist",
     "severity": "warning",
     "category": "performance",

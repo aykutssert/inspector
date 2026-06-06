@@ -53,3 +53,14 @@ export async function NativeAsyncStorageSecrets(token: string) {
   await AsyncStorage.setItem("session_id", token);
   await AsyncStorage.setItem("theme", "dark");
 }
+
+export function NativeFalsyAndRender({ items, count, isOpen }: any) {
+  return (
+    <View>
+      {items.length && <Text>has items</Text>}{/* triggers rn-no-falsy-and-render */}
+      {count && <Text>{count}</Text>}{/* triggers rn-no-falsy-and-render */}
+      {items.length > 0 && <Text>ok</Text>}{/* ok — boolean comparison */}
+      {isOpen && <Text>ok</Text>}{/* ok — non-numeric name */}
+    </View>
+  );
+}

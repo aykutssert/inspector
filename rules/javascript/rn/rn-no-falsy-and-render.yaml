@@ -1,0 +1,34 @@
+rules:
+  - id: rn-no-falsy-and-render
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      In React Native, `{value && <JSX/>}` renders a bare 0 when value is 0 — a
+      text node outside <Text> — which crashes the screen ("Text strings must be
+      rendered within a <Text> component"). A numeric left operand (.length or a
+      count-like variable) hits this whenever the list/value is empty. Guard with
+      `value > 0 && ...`, `!!value && ...`, or a ternary returning null.
+    metadata:
+      category: correctness
+      # rule, not hint: a numeric left operand (.length / count) makes the
+      # empty-state crash near-certain; React web tolerates it, RN does not.
+      confidence: rule
+    patterns:
+      - pattern-inside: |
+          import { ... } from "react-native";
+          ...
+      - pattern-either:
+          - pattern: "$X.length && $JSX"
+          - patterns:
+              - pattern: "$N && $JSX"
+              - metavariable-regex:
+                  metavariable: $N
+                  regex: "(?i)^(count|size|total|num|qty|amount|index|length|len)[A-Za-z]*$"
+      # Only flag when the right side is actually JSX (rendering); a numeric
+      # left guarding a non-JSX value is a normal short-circuit, not a crash.
+      - metavariable-pattern:
+          metavariable: $JSX
+          patterns:
+            - pattern-either:
+                - pattern: "<$TAG>...</$TAG>"
+                - pattern: "<$TAG ... />"
