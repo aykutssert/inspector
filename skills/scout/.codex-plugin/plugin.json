@@ -6,8 +6,8 @@
     "name": "Aykut",
     "url": "https://github.com/aykutssert"
   },
-  "homepage": "https://github.com/aykutssert/inspector",
-  "repository": "https://github.com/aykutssert/inspector",
+  "homepage": "https://github.com/aykutssert/scout",
+  "repository": "https://github.com/aykutssert/scout",
   "license": "MIT",
   "keywords": [
     "security",
@@ -25,9 +25,9 @@
     "capabilities": [
       "Write"
     ],
-    "websiteURL": "https://github.com/aykutssert/inspector",
-    "privacyPolicyURL": "https://github.com/aykutssert/inspector",
-    "termsOfServiceURL": "https://github.com/aykutssert/inspector",
+    "websiteURL": "https://scout-skill.vercel.app",
+    "privacyPolicyURL": "https://github.com/aykutssert/scout",
+    "termsOfServiceURL": "https://github.com/aykutssert/scout",
     "defaultPrompt": [
       "Run scout scan"
     ],
