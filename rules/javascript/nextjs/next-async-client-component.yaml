@@ -13,10 +13,7 @@ rules:
       - pattern-inside: |
           "use client";
           ...
-      - pattern-either:
-          - pattern: async function $COMP(...) { ... }
-          - pattern: const $COMP = async (...) => { ... }
-          - pattern: const $COMP = async function(...) { ... }
-      - metavariable-regex:
-          metavariable: $COMP
-          regex: ^[A-Z]
+      # A literal `async` in the AST arrow pattern is not enforced by semgrep
+      # (it matches sync arrows too — a false positive on every client
+      # component), so require `async` next to a capitalized component name.
+      - pattern-regex: '(?:async\s+function\s+[A-Z]\w*\s*\(|\b(?:const|let|var)\s+[A-Z]\w*\b[^=\n]*=\s*async\b)'
