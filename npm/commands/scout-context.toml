@@ -1,0 +1,13 @@
+description = "Map the whole project structure with scout context before editing."
+prompt = """
+Build a structural map of this project so you can orient before changing code.
+
+1. Run `scout context` at the repo root (add `--root <dir>` if needed); it emits the
+   project structure (JSON when piped). If `scout` is missing, run `scout doctor` and
+   install it first.
+2. Use the map: orient from the entry points and module boundaries, then read only the
+   files relevant to the task. Do not load the whole repo into context.
+
+Note: this command takes no target — it maps the entire project. The CLI surface is
+still being built out; treat the output as a high-level map.
+"""

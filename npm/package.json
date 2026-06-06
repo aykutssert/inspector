@@ -1,7 +1,7 @@
 {
   "name": "@aykutss/scout",
   "version": "1.0.0",
-  "description": "Scout — autonomous code security & quality scanning agent assistant",
+  "description": "Scout \u2014 autonomous code security & quality scanning agent assistant",
   "main": "bin/scout.js",
   "bin": {
     "scout": "bin/scout.js"
@@ -12,7 +12,8 @@
   "files": [
     "bin/scout.js",
     "scripts/",
-    "skills/"
+    "skills/",
+    "commands/"
   ],
   "keywords": [
     "scout",
