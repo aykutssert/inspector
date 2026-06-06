@@ -1,0 +1,37 @@
+{
+  "name": "scout-context",
+  "version": "0.1.0",
+  "description": "Maps the whole project structure so an AI agent can orient before editing.",
+  "author": {
+    "name": "Aykut",
+    "url": "https://github.com/aykutssert"
+  },
+  "homepage": "https://github.com/aykutssert/scout",
+  "repository": "https://github.com/aykutssert/scout",
+  "license": "MIT",
+  "keywords": [
+    "context",
+    "codebase-map",
+    "static-analysis",
+    "architecture"
+  ],
+  "skills": "./",
+  "interface": {
+    "displayName": "Scout Context",
+    "shortDescription": "Map the whole project structure.",
+    "longDescription": "Produces a structural map of the entire project — modules, entry points, key files, and how they connect — so an AI agent understands the codebase shape before editing.",
+    "developerName": "Aykut",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Write"
+    ],
+    "websiteURL": "https://github.com/aykutssert/scout",
+    "privacyPolicyURL": "https://github.com/aykutssert/scout",
+    "termsOfServiceURL": "https://github.com/aykutssert/scout",
+    "defaultPrompt": [
+      "Map this project with scout context"
+    ],
+    "screenshots": [],
+    "brandColor": "#3B82F6"
+  }
+}

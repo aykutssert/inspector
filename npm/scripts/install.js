@@ -199,48 +199,45 @@ function installRules() {
   // Current working directory (where the user is installing the CLI)
   const projectRoot = process.env.INIT_CWD || process.cwd();
 
-  const skillMdPath = path.join(SKILLS_DIR, 'SKILL.md');
-  const scoutMdcPath = path.join(SKILLS_DIR, 'scout.mdc');
-
-  const scoutMd = fs.readFileSync(skillMdPath, 'utf8');
-
-  // Unified global agent config paths (matching vercel-labs/skills detection)
-  const configHome = process.env.XDG_CONFIG_HOME || path.join(home, '.config');
   const claudeHome = process.env.CLAUDE_CONFIG_DIR || path.join(home, '.claude');
 
-  // Agent installation targets
+  // Every skill directory shipped under skills/ (scout, scout-context, ...).
+  const skillsRoot = path.dirname(SKILLS_DIR);
+  const skillNames = fs.readdirSync(skillsRoot).filter(
+    (name) => fs.existsSync(path.join(skillsRoot, name, 'SKILL.md'))
+  );
+
+  // Agent installation targets. globalSkills/localSkills are the skills/ parent
+  // directory; each shipped skill is copied into <skillsDir>/<skillName>.
   const agentsList = [
     {
       name: 'Claude Code',
       detectDir: claudeHome,
-      globalPath: path.join(claudeHome, 'skills', 'scout'),
-      localPath: path.join(projectRoot, '.claude', 'skills', 'scout'),
-      source: SKILLS_DIR,
+      globalSkills: path.join(claudeHome, 'skills'),
+      localSkills: path.join(projectRoot, '.claude', 'skills'),
       forceCopy: false
     },
     {
       name: 'Codex',
       detectDir: path.join(home, '.codex'),
-      globalPath: path.join(home, '.codex', 'skills', 'scout'),
-      localPath: path.join(projectRoot, '.agents', 'skills', 'scout'),
-      source: SKILLS_DIR,
+      globalSkills: path.join(home, '.codex', 'skills'),
+      localSkills: path.join(projectRoot, '.agents', 'skills'),
       forceCopy: true
     }
   ];
 
-  // Process global/local installations based on detected agent roots
-  agentsList.forEach(agent => {
-    if (fs.existsSync(agent.detectDir)) {
-      console.log(`Detected agent setup directory for ${agent.name} at: ${agent.detectDir}`);
-      // Deploy global skill
-      if (agent.globalPath) {
-        linkOrCopyDir(agent.source, agent.globalPath, agent.forceCopy);
+  agentsList.forEach((agent) => {
+    if (!fs.existsSync(agent.detectDir)) return;
+    console.log(`Detected agent setup directory for ${agent.name} at: ${agent.detectDir}`);
+    skillNames.forEach((skill) => {
+      const src = path.join(skillsRoot, skill);
+      if (agent.globalSkills) {
+        linkOrCopyDir(src, path.join(agent.globalSkills, skill), agent.forceCopy);
       }
-      // Deploy project-local skill
-      if (agent.localPath) {
-        linkOrCopyDir(agent.source, agent.localPath, agent.forceCopy);
+      if (agent.localSkills) {
+        linkOrCopyDir(src, path.join(agent.localSkills, skill), agent.forceCopy);
       }
-    }
+    });
   });
 }
 

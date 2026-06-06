@@ -3,6 +3,8 @@
 [![version](https://img.shields.io/npm/v/@aykutss/scout?style=flat&colorA=000000&colorB=000000)](https://npmjs.com/package/@aykutss/scout)
 [![downloads](https://img.shields.io/npm/dt/@aykutss/scout.svg?style=flat&colorA=000000&colorB=000000)](https://npmjs.com/package/@aykutss/scout)
 
+**[scout-skill.vercel.app](https://scout-skill.vercel.app/)**
+
 Deterministic code security & quality scanner for AI coding agents. Scans a
 repo for **security, performance, correctness, and architecture** issues across
 JS/TS frameworks (React, Next, Vite, TanStack, React Native, Node, Express,
@@ -28,7 +30,9 @@ anything missing with your permission before scanning.
 
 In an AI agent — type **`/scout`** (or "scan this repo", "check health"). The
 agent runs `scout doctor` to check tools, installs anything missing with your
-permission, then runs the scan and reports findings with fixes.
+permission, then runs the scan and reports findings with fixes. Type
+**`/scout-context`** to have the agent map the whole project structure before it
+starts editing.
 
 Directly in a terminal:
 ```bash
