@@ -1,4 +1,7 @@
-# scout
+<img alt="scout" src="./readme.svg" width="180">
+
+[![version](https://img.shields.io/npm/v/@aykutss/scout?style=flat&colorA=000000&colorB=000000)](https://npmjs.com/package/@aykutss/scout)
+[![downloads](https://img.shields.io/npm/dt/@aykutss/scout.svg?style=flat&colorA=000000&colorB=000000)](https://npmjs.com/package/@aykutss/scout)
 
 Deterministic code security & quality scanner for AI coding agents. Scans a
 repo for **security, performance, correctness, and architecture** issues across
