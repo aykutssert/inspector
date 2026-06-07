@@ -8,7 +8,7 @@
 Deterministic code security & quality scanner for AI coding agents. Scans a
 repo for **security, performance, correctness, and architecture** issues across
 JS/TS frameworks (React, Next, Vite, TanStack, React Native, Node, Express,
-NestJS, Bun, Svelte) and produces a **0–100 health score**. No LLM inside —
+NestJS, Bun, Svelte) and produces a **0–100 health score**. No LLM inside -
 findings are deterministic; the agent reads them and fixes.
 
 ## Install
@@ -28,7 +28,7 @@ anything missing with your permission before scanning.
 
 ## Use
 
-In an AI agent — type **`/scout`** (or "scan this repo", "check health"). The
+In an AI agent - type **`/scout`** (or "scan this repo", "check health"). The
 agent runs `scout doctor` to check tools, installs anything missing with your
 permission, then runs the scan and reports findings with fixes. Type
 **`/scout-context`** to have the agent map the whole project structure before it

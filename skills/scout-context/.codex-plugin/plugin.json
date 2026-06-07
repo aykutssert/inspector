@@ -19,7 +19,7 @@
   "interface": {
     "displayName": "Scout Context",
     "shortDescription": "Map the whole project structure.",
-    "longDescription": "Produces a structural map of the entire project — modules, entry points, key files, and how they connect — so an AI agent understands the codebase shape before editing.",
+    "longDescription": "Produces a structural map of the entire project - modules, entry points, key files, and how they connect - so an AI agent understands the codebase shape before editing.",
     "developerName": "Aykut",
     "category": "Developer Tools",
     "capabilities": [
