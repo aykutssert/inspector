@@ -66,12 +66,23 @@ var detectors = []detector{
 	detectAdjustStateOnPropChange,
 	detectEffectEventInDeps,
 	detectPassDataToParent,
+	// remaining P1 effect/render hints (#79, #80, #81, #83, #84, #88, #89, #90, #48, #50, #52)
+	detectChainStateUpdates,
+	detectEffectChain,
+	detectEffectEventHandler,
+	detectNoEventHandler,
+	detectEventTriggerState,
+	detectPassLiveStateToParent,
+	detectPropCallbackInEffect,
+	detectResetAllStateOnPropChange,
+	detectHoistJSX,
+	detectUseTransitionLoading,
+	detectMemoBeforeEarlyReturn,
 	// render hints (#49, #53, #76)
 	detectHydrationNoFlicker,
 	detectTransitionsScroll,
 	detectEventHandlerRefs,
 }
-
 
 // jsxDetectors need JSX grammar (text/elements) and only run on js/jsx/tsx.
 var jsxDetectors = []jsxDetector{

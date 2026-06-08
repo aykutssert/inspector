@@ -33,6 +33,7 @@ func usage() {
 	fmt.Fprintln(os.Stderr, "scout — deterministic code security/quality scanner")
 	fmt.Fprintln(os.Stderr, "usage:")
 	fmt.Fprintln(os.Stderr, "  scout scan [--diff] [path]")
+	fmt.Fprintln(os.Stderr, "  scout context [--root dir]                  # repo map")
 	fmt.Fprintln(os.Stderr, "  scout context [--root dir] <file | file:symbol | symbol>")
 	fmt.Fprintln(os.Stderr, "  scout doctor [--json]")
 }
@@ -88,23 +89,33 @@ func runContext(args []string) {
 	fs := flag.NewFlagSet("context", flag.ExitOnError)
 	rootFlag := fs.String("root", ".", "project root to index")
 	_ = fs.Parse(args)
-	if fs.NArg() == 0 {
-		fmt.Fprintln(os.Stderr, "error: missing target (file, file:symbol, or symbol)")
-		os.Exit(2)
-	}
-	target := fs.Arg(0)
 
+	enc := json.NewEncoder(os.Stdout)
+	enc.SetIndent("", "  ")
+
+	// No target → repo map mode.
+	if fs.NArg() == 0 {
+		m, err := app.Map(app.MapOptions{Root: *rootFlag}, nil)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "error:", err)
+			os.Exit(1)
+		}
+		if err := enc.Encode(m); err != nil {
+			fmt.Fprintln(os.Stderr, "error:", err)
+			os.Exit(1)
+		}
+		return
+	}
+
+	// With target → symbol / file context.
 	ctx, err := app.Context(app.ContextOptions{
 		Root:   *rootFlag,
-		Target: target,
+		Target: fs.Arg(0),
 	}, nil)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "error:", err)
 		os.Exit(1)
 	}
-
-	enc := json.NewEncoder(os.Stdout)
-	enc.SetIndent("", "  ")
 	if err := enc.Encode(ctx); err != nil {
 		fmt.Fprintln(os.Stderr, "error:", err)
 		os.Exit(1)

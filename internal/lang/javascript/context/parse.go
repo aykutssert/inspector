@@ -98,6 +98,27 @@ const defsQuery = `
 (assignment_expression
   left: (member_expression property: (property_identifier))
   right: (arrow_function)) @assign
+(variable_declarator name: (identifier)) @constdecl
+`
+
+// tsExtraDefsQuery captures TypeScript-only constructs not present in plain JS.
+// Compiled only against TS/TSX grammars.
+const tsExtraDefsQuery = `
+(type_alias_declaration name: (type_identifier) @typename) @typedef
+(interface_declaration name: (type_identifier) @ifacename) @interface
+(enum_declaration name: (identifier) @enumname) @enum
+`
+
+// reExportsQuery captures named re-exports from other modules — barrel-file
+// entries that have no local definition but are part of the public surface.
+//
+//	export { foo, bar } from './other'
+//	export { default as Baz } from './other'
+const reExportsQuery = `
+(export_statement
+  (export_clause
+    (export_specifier name: (identifier) @rexname))
+  source: (string) @rexsrc)
 `
 
 const callsQuery = `
@@ -184,6 +205,17 @@ func ParseJS(path string) (*FileParse, error) {
 			return nil, err
 		}
 	}
+	// TypeScript-specific constructs (types, interfaces, enums).
+	ext := strings.ToLower(filepath.Ext(path))
+	if ext == ".ts" || ext == ".tsx" || ext == ".mts" || ext == ".cts" {
+		if err := collectTSDefs(fp, root, lang, src); err != nil {
+			return nil, err
+		}
+	}
+	// Barrel-file re-exports: export { x } from './other'
+	if err := collectReExports(fp, root, lang, src); err != nil {
+		return nil, err
+	}
 	markExported(fp, root, lang, src)
 	return fp, nil
 }
@@ -258,12 +290,87 @@ func collectDefs(fp *FileParse, root *sitter.Node, lang *sitter.Language, src []
 			if left := node.ChildByFieldName("left"); left != nil {
 				d.Name = fieldText(left, "property", src)
 			}
+		case "constdecl":
+			// Only track top-level exported constants. Use the strict boundary check
+			// so inner consts inside exported functions are not captured.
+			if !isTopLevelExport(node) {
+				return
+			}
+			val := node.ChildByFieldName("value")
+			if val != nil {
+				vt := val.Type()
+				if vt == "arrow_function" || vt == "function_expression" {
+					return // already handled by arrow/arrowfn patterns
+				}
+			}
+			d.Kind = "const"
+			d.Name = fieldText(node, "name", src)
 		}
 		if d.Name == "" {
 			return
 		}
 		d.Exported = hasExportAncestor(node)
 		fp.Defs = append(fp.Defs, d)
+	})
+}
+
+// collectTSDefs captures TypeScript-only top-level declarations: type aliases,
+// interfaces, and enums. Only called for .ts/.tsx files.
+func collectTSDefs(fp *FileParse, root *sitter.Node, lang *sitter.Language, src []byte) error {
+	return runQuery(tsExtraDefsQuery, root, lang, func(name string, node *sitter.Node) {
+		var d Def
+		d.Line = int(node.StartPoint().Row) + 1
+		d.EndLine = int(node.EndPoint().Row) + 1
+		switch name {
+		case "typename":
+			d.Kind = "type"
+			d.Name = node.Content(src)
+		case "ifacename":
+			d.Kind = "interface"
+			d.Name = node.Content(src)
+		case "enumname":
+			d.Kind = "enum"
+			d.Name = node.Content(src)
+		}
+		if d.Name == "" {
+			return
+		}
+		// Type/interface/enum declarations are always inside an export_statement
+		// when exported (export interface Foo ...). Check the parent.
+		d.Exported = hasExportAncestor(node)
+		fp.Defs = append(fp.Defs, d)
+	})
+}
+
+// collectReExports captures named re-exports from barrel files:
+//
+//	export { foo, bar } from './other'
+//
+// These become Def entries with Kind="reexport" and Exported=true so they
+// appear in the file's public surface even though no local definition exists.
+func collectReExports(fp *FileParse, root *sitter.Node, lang *sitter.Language, src []byte) error {
+	return runMatches(reExportsQuery, root, lang, func(caps map[string]*sitter.Node) {
+		nameNode := caps["rexname"]
+		if nameNode == nil {
+			return
+		}
+		n := nameNode.Content(src)
+		if n == "" {
+			return
+		}
+		// Skip if we already have a local def with this name (same-file export {x}).
+		for _, d := range fp.Defs {
+			if d.Name == n {
+				return
+			}
+		}
+		fp.Defs = append(fp.Defs, Def{
+			Name:     n,
+			Kind:     "reexport",
+			Line:     int(nameNode.StartPoint().Row) + 1,
+			EndLine:  int(nameNode.EndPoint().Row) + 1,
+			Exported: true,
+		})
 	})
 }
 
@@ -525,6 +632,25 @@ func hasExportAncestor(node *sitter.Node) bool {
 			return true
 		}
 		if t == "program" {
+			return false
+		}
+	}
+	return false
+}
+
+// isTopLevelExport is like hasExportAncestor but stops at any function/class
+// body boundary — ensuring nested declarations inside exported functions are
+// not mistaken for top-level exports.
+func isTopLevelExport(node *sitter.Node) bool {
+	for p := node.Parent(); p != nil; p = p.Parent() {
+		t := p.Type()
+		if t == "export_statement" {
+			return true
+		}
+		// Stop at any scope-introducing boundary.
+		if t == "statement_block" || t == "function_declaration" ||
+			t == "function_expression" || t == "arrow_function" ||
+			t == "class_body" || t == "program" {
 			return false
 		}
 	}

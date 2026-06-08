@@ -819,8 +819,6 @@ func TestStableEmptyFallbackSafe(t *testing.T) {
 	}
 }
 
-
-
 // ─── no-initialize-state (#85) ─────────────────────────────────────────────
 
 func TestInitializeState_Fires(t *testing.T) {
@@ -1178,5 +1176,155 @@ func TestEventHandlerRefs_NotInDeps_NotFlagged(t *testing.T) {
 }`
 	if ids := parseSrc(t, ".tsx", src); has(ids, "advanced-event-handler-refs") {
 		t.Fatalf("advanced-event-handler-refs should not fire when handler not in deps, got %v", ids)
+	}
+}
+
+func TestChainStateUpdates_Fires(t *testing.T) {
+	src := `function C() {
+  const [query, setQuery] = useState("");
+  const [request, setRequest] = useState("");
+  const [results, setResults] = useState([]);
+  useEffect(() => {
+    setRequest(query.trim());
+  }, [query]);
+  useEffect(() => {
+    setResults(search(request));
+  }, [request]);
+  return null;
+}`
+	if ids := parseSrc(t, ".tsx", src); !has(ids, "no-chain-state-updates") {
+		t.Fatalf("expected no-chain-state-updates, got %v", ids)
+	}
+}
+
+func TestEffectChain_Fires(t *testing.T) {
+	src := `function C() {
+  const [a, setA] = useState(0);
+  const [b, setB] = useState(0);
+  const [c, setC] = useState(0);
+  useEffect(() => { setB(a + 1); }, [a]);
+  useEffect(() => { setC(b + 1); }, [b]);
+  useEffect(() => { setA(c + 1); }, [c]);
+  return null;
+}`
+	if ids := parseSrc(t, ".tsx", src); !has(ids, "no-effect-chain") {
+		t.Fatalf("expected no-effect-chain, got %v", ids)
+	}
+}
+
+func TestEffectEventHandler_Fires(t *testing.T) {
+	src := `function Child({ onSave }) {
+  const [submitted, setSubmitted] = useState(false);
+  useEffect(() => {
+    if (!submitted) return;
+    onSave();
+  }, [submitted, onSave]);
+  return <button onClick={() => setSubmitted(true)}>Save</button>;
+}`
+	if ids := parseSrc(t, ".tsx", src); !has(ids, "no-effect-event-handler") {
+		t.Fatalf("expected no-effect-event-handler, got %v", ids)
+	}
+}
+
+func TestNoEventHandler_Fires(t *testing.T) {
+	src := `function Child() {
+  const [submitted, setSubmitted] = useState(false);
+  useEffect(() => {
+    if (!submitted) return;
+    fetch('/api/save');
+  }, [submitted]);
+  return <button onClick={() => setSubmitted(true)}>Save</button>;
+}`
+	if ids := parseSrc(t, ".tsx", src); !has(ids, "no-event-handler") {
+		t.Fatalf("expected no-event-handler, got %v", ids)
+	}
+}
+
+func TestEventTriggerState_Fires(t *testing.T) {
+	src := `function Child() {
+  const [trigger, setTrigger] = useState(false);
+  useEffect(() => {
+    if (!trigger) return;
+    sendBeacon();
+  }, [trigger]);
+  return <button onClick={() => setTrigger(true)}>Send</button>;
+}`
+	if ids := parseSrc(t, ".tsx", src); !has(ids, "no-event-trigger-state") {
+		t.Fatalf("expected no-event-trigger-state, got %v", ids)
+	}
+}
+
+func TestPassLiveStateToParent_Fires(t *testing.T) {
+	src := `function Child({ onChange }) {
+  const [value, setValue] = useState("");
+  useEffect(() => {
+    onChange(value);
+  }, [value, onChange]);
+  return <input onChange={e => setValue(e.target.value)} />;
+}`
+	if ids := parseSrc(t, ".tsx", src); !has(ids, "no-pass-live-state-to-parent") {
+		t.Fatalf("expected no-pass-live-state-to-parent, got %v", ids)
+	}
+}
+
+func TestPropCallbackInEffect_Fires(t *testing.T) {
+	src := `function Child({ onReady }) {
+  useEffect(() => {
+    onReady();
+  }, [onReady]);
+  return null;
+}`
+	if ids := parseSrc(t, ".tsx", src); !has(ids, "no-prop-callback-in-effect") {
+		t.Fatalf("expected no-prop-callback-in-effect, got %v", ids)
+	}
+}
+
+func TestResetAllStateOnPropChange_Fires(t *testing.T) {
+	src := `function Child({ userId }) {
+  const [query, setQuery] = useState("");
+  const [page, setPage] = useState(0);
+  useEffect(() => {
+    setQuery("");
+    setPage(0);
+  }, [userId]);
+  return null;
+}`
+	if ids := parseSrc(t, ".tsx", src); !has(ids, "no-reset-all-state-on-prop-change") {
+		t.Fatalf("expected no-reset-all-state-on-prop-change, got %v", ids)
+	}
+}
+
+func TestHoistJSX_Fires(t *testing.T) {
+	src := `function Card() {
+  const icon = <svg><path d="M0 0h10v10z" /></svg>;
+  return <div>{icon}</div>;
+}`
+	if ids := parseSrc(t, ".tsx", src); !has(ids, "rendering-hoist-jsx") {
+		t.Fatalf("expected rendering-hoist-jsx, got %v", ids)
+	}
+}
+
+func TestUseTransitionLoading_Fires(t *testing.T) {
+	src := `function Form() {
+  const [loading, setLoading] = useState(false);
+  return <button onClick={async () => {
+    setLoading(true);
+    await save();
+    setLoading(false);
+  }}>Save</button>;
+}`
+	if ids := parseSrc(t, ".tsx", src); !has(ids, "rendering-usetransition-loading") {
+		t.Fatalf("expected rendering-usetransition-loading, got %v", ids)
+	}
+}
+
+func TestMemoBeforeEarlyReturn_Fires(t *testing.T) {
+	src := `function List({ items }) {
+  const visible = useMemo(() => items.slice(0, 5), [items]);
+  if (!items.length) return null;
+  return <ul>{visible.map(item => <li key={item}>{item}</li>)}</ul>;
+}`
+	if ids := parseSrc(t, ".tsx", src); !has(ids, "rerender-memo-before-early-return") {
+		t.Fatalf("expected rerender-memo-before-early-return, got %v", ids)
 	}
 }

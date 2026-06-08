@@ -19,6 +19,10 @@ type Graph struct {
 	importers     map[string][]string                   // file -> files that import it
 	bindings      map[string]map[string]resolvedBinding // file -> local name -> binding
 	reachCache    map[string]map[string]bool
+
+	// tsAliases holds tsconfig.json path alias prefixes (e.g. "@/", "components").
+	// Populated lazily by BuildMap; used to filter internal aliases from ext deps.
+	tsAliases map[string]bool
 }
 
 // resolvedBinding ties a local name to the file it resolves to and the original
