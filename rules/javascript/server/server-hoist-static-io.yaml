@@ -1,0 +1,34 @@
+rules:
+  - id: server-hoist-static-io
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Static file read inside a function body.
+      Reading a file that never changes (config, templates, etc.) on every invocation
+      is wasteful. Move the read to module scope so it runs once at startup.
+    metadata:
+      category: performance
+      confidence: hint
+    patterns:
+      - pattern-either:
+          - pattern: fs.readFileSync(...)
+          - pattern: fs.readFile($PATH, $CB)
+          - pattern: await readFile(...)
+          - pattern: await fs.promises.readFile(...)
+      - pattern-either:
+          - pattern-inside: |
+              async function $F(...) {
+                ...
+              }
+          - pattern-inside: |
+              async ($PARAMS) => {
+                ...
+              }
+          - pattern-inside: |
+              function $F(...) {
+                ...
+              }
+          - pattern-inside: |
+              const $F = async (...) => {
+                ...
+              }

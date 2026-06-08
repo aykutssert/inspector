@@ -1,0 +1,26 @@
+rules:
+  - id: query-no-query-in-effect
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Calling refetch() inside useEffect couples your query trigger to React's rendering
+      lifecycle. When the queryKey or 'enabled' option changes, TanStack Query re-fetches
+      automatically — useEffect + refetch() is rarely the right pattern and introduces
+      race conditions and double-fetching.
+    metadata:
+      category: correctness
+      confidence: rule
+    patterns:
+      - pattern-either:
+          - pattern: |
+              useEffect(() => {
+                ...
+                $Q.refetch();
+                ...
+              }, ...)
+          - pattern: |
+              useEffect(function() {
+                ...
+                $Q.refetch();
+                ...
+              }, ...)

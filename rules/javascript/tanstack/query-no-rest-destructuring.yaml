@@ -1,0 +1,14 @@
+rules:
+  - id: query-no-rest-destructuring
+    languages: [typescript, javascript]
+    severity: INFO
+    message: >
+      Rest/spread destructuring from useQuery subscribes to every query state field
+      (isFetching, isStale, dataUpdatedAt, ...), causing a re-render whenever any
+      of them changes. Destructure only what you use:
+      const { data, isLoading, error } = useQuery(...).
+    metadata:
+      category: performance
+      confidence: hint
+    pattern-regex: >-
+      const\s*\{[^}]*\.\.\.\s*[A-Za-z_$][A-Za-z0-9_$]*\s*\}\s*=\s*use(?:Query|InfiniteQuery|SuspenseQuery|SuspenseInfiniteQuery)\s*\(

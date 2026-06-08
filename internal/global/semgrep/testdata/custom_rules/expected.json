@@ -18,6 +18,24 @@
     "message": "This code uses Node.js 'fs' APIs to read files. If you are running on the Bun runtime, prefer using the faster, optimized native API 'Bun.file(path)' which provides '.text()', '.json()', and stream interfaces directly.\n"
   },
   {
+    "rule_id": "bun.bun-prefer-bun-file",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "server.tsx",
+    "line": 8,
+    "message": "This code uses Node.js 'fs' APIs to read files. If you are running on the Bun runtime, prefer using the faster, optimized native API 'Bun.file(path)' which provides '.text()', '.json()', and stream interfaces directly.\n"
+  },
+  {
+    "rule_id": "bun.bun-prefer-bun-file",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "server.tsx",
+    "line": 12,
+    "message": "This code uses Node.js 'fs' APIs to read files. If you are running on the Bun runtime, prefer using the faster, optimized native API 'Bun.file(path)' which provides '.text()', '.json()', and stream interfaces directly.\n"
+  },
+  {
     "rule_id": "bun.bun-prefer-bun-password",
     "severity": "warning",
     "confidence": "hint",
@@ -3205,6 +3223,60 @@
     "message": "React cache() or React.cache() called inside a function/class body. Calling cache() inside a component, hook, or function body recreates the cache instance on every invocation/render, completely defeating the memoization. Define the cached function at the module scope instead.\n"
   },
   {
+    "rule_id": "server.server-dedup-props",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "server.tsx",
+    "line": 30,
+    "message": "JSON.stringify() used as a JSX prop value. Passing serialized data as a string prop forces the client to JSON.parse() it manually. Pass the raw value directly — React serializes Server Component props automatically. If the raw prop is also passed alongside the JSON version, remove the duplicate.\n"
+  },
+  {
+    "rule_id": "server.server-dedup-props",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "server.tsx",
+    "line": 45,
+    "message": "JSON.stringify() used as a JSX prop value. Passing serialized data as a string prop forces the client to JSON.parse() it manually. Pass the raw value directly — React serializes Server Component props automatically. If the raw prop is also passed alongside the JSON version, remove the duplicate.\n"
+  },
+  {
+    "rule_id": "server.server-hoist-static-io",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 289,
+    "message": "Static file read inside a function body. Reading a file that never changes (config, templates, etc.) on every invocation is wasteful. Move the read to module scope so it runs once at startup.\n"
+  },
+  {
+    "rule_id": "server.server-hoist-static-io",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 13,
+    "message": "Static file read inside a function body. Reading a file that never changes (config, templates, etc.) on every invocation is wasteful. Move the read to module scope so it runs once at startup.\n"
+  },
+  {
+    "rule_id": "server.server-hoist-static-io",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "server.tsx",
+    "line": 12,
+    "message": "Static file read inside a function body. Reading a file that never changes (config, templates, etc.) on every invocation is wasteful. Move the read to module scope so it runs once at startup.\n"
+  },
+  {
+    "rule_id": "server.server-hoist-static-io",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "server.tsx",
+    "line": 18,
+    "message": "Static file read inside a function body. Reading a file that never changes (config, templates, etc.) on every invocation is wasteful. Move the read to module scope so it runs once at startup.\n"
+  },
+  {
     "rule_id": "tanstack-start.tanstack-start-redirect-in-try-catch",
     "severity": "warning",
     "category": "bug",
@@ -3232,12 +3304,30 @@
     "message": "Calling 'redirect()' or 'notFound()' inside a try-catch block can prevent the navigation from working correctly because TanStack Router uses thrown errors internally to redirect or show a 404 page. Call redirect() outside the try-catch block or rethrow the exception.\n"
   },
   {
+    "rule_id": "tanstack.query-no-query-in-effect",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "tanstack_writes.tsx",
+    "line": 59,
+    "message": "Calling refetch() inside useEffect couples your query trigger to React's rendering lifecycle. When the queryKey or 'enabled' option changes, TanStack Query re-fetches automatically — useEffect + refetch() is rarely the right pattern and introduces race conditions and double-fetching.\n"
+  },
+  {
+    "rule_id": "tanstack.query-no-rest-destructuring",
+    "severity": "info",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "tanstack_writes.tsx",
+    "line": 81,
+    "message": "Rest/spread destructuring from useQuery subscribes to every query state field (isFetching, isStale, dataUpdatedAt, ...), causing a re-render whenever any of them changes. Destructure only what you use: const { data, isLoading, error } = useQuery(...).\n"
+  },
+  {
     "rule_id": "tanstack.query-no-usequery-for-mutation",
     "severity": "warning",
     "category": "bug",
     "confidence": "rule",
     "file": "tanstack_writes.tsx",
-    "line": 18,
+    "line": 19,
     "message": "useQuery is executing an HTTP write operation. Queries are designed for idempotent reads and may refetch automatically; POST, PUT, PATCH, and DELETE belong in useMutation so retries, pending state, and cache updates follow mutation semantics.\n"
   },
   {
@@ -3246,7 +3336,7 @@
     "category": "bug",
     "confidence": "rule",
     "file": "tanstack_writes.tsx",
-    "line": 24,
+    "line": 25,
     "message": "useQuery is executing an HTTP write operation. Queries are designed for idempotent reads and may refetch automatically; POST, PUT, PATCH, and DELETE belong in useMutation so retries, pending state, and cache updates follow mutation semantics.\n"
   },
   {
@@ -3255,7 +3345,7 @@
     "category": "bug",
     "confidence": "rule",
     "file": "tanstack_writes.tsx",
-    "line": 28,
+    "line": 29,
     "message": "This TanStack Query queryFn has a block body but returns no value. Query functions must resolve data; resolving undefined breaks the cache contract and is rejected by current TanStack Query versions. Return the fetched value or throw an error.\n"
   },
   {
@@ -3264,7 +3354,7 @@
     "category": "bug",
     "confidence": "rule",
     "file": "tanstack_writes.tsx",
-    "line": 15,
+    "line": 16,
     "message": "QueryClient is created inside a React component or hook, so a new cache can be created on each render. Create it once at module scope, or lazily store it in useState/useRef before passing it to QueryClientProvider.\n"
   },
   {
@@ -3436,6 +3526,42 @@
     "confidence": "hint",
     "file": "client_data_fetch.tsx",
     "line": 42,
+    "message": "useQuery is called without specifying a staleTime. By default, staleTime is 0, which means queries are instantly considered stale. For server-side rendered (SSR) or prefetched data, this causes an immediate client-side refetch upon hydration, resulting in duplicate network requests and potential screen flickering. Set a staleTime (e.g. staleTime: 1000 * 60 * 5) to cache and reuse the hydrated data.\n"
+  },
+  {
+    "rule_id": "tanstack.tanstack-query-missing-staletime",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "tanstack_writes.tsx",
+    "line": 54,
+    "message": "useQuery is called without specifying a staleTime. By default, staleTime is 0, which means queries are instantly considered stale. For server-side rendered (SSR) or prefetched data, this causes an immediate client-side refetch upon hydration, resulting in duplicate network requests and potential screen flickering. Set a staleTime (e.g. staleTime: 1000 * 60 * 5) to cache and reuse the hydrated data.\n"
+  },
+  {
+    "rule_id": "tanstack.tanstack-query-missing-staletime",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "tanstack_writes.tsx",
+    "line": 68,
+    "message": "useQuery is called without specifying a staleTime. By default, staleTime is 0, which means queries are instantly considered stale. For server-side rendered (SSR) or prefetched data, this causes an immediate client-side refetch upon hydration, resulting in duplicate network requests and potential screen flickering. Set a staleTime (e.g. staleTime: 1000 * 60 * 5) to cache and reuse the hydrated data.\n"
+  },
+  {
+    "rule_id": "tanstack.tanstack-query-missing-staletime",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "tanstack_writes.tsx",
+    "line": 81,
+    "message": "useQuery is called without specifying a staleTime. By default, staleTime is 0, which means queries are instantly considered stale. For server-side rendered (SSR) or prefetched data, this causes an immediate client-side refetch upon hydration, resulting in duplicate network requests and potential screen flickering. Set a staleTime (e.g. staleTime: 1000 * 60 * 5) to cache and reuse the hydrated data.\n"
+  },
+  {
+    "rule_id": "tanstack.tanstack-query-missing-staletime",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "tanstack_writes.tsx",
+    "line": 90,
     "message": "useQuery is called without specifying a staleTime. By default, staleTime is 0, which means queries are instantly considered stale. For server-side rendered (SSR) or prefetched data, this causes an immediate client-side refetch upon hydration, resulting in duplicate network requests and potential screen flickering. Set a staleTime (e.g. staleTime: 1000 * 60 * 5) to cache and reuse the hydrated data.\n"
   },
   {

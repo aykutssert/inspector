@@ -1,0 +1,17 @@
+rules:
+  - id: server-dedup-props
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      JSON.stringify() used as a JSX prop value.
+      Passing serialized data as a string prop forces the client to JSON.parse() it manually.
+      Pass the raw value directly — React serializes Server Component props automatically.
+      If the raw prop is also passed alongside the JSON version, remove the duplicate.
+    metadata:
+      category: performance
+      confidence: hint
+    patterns:
+      - pattern-either:
+          - pattern: <$COMP ... $PROP={JSON.stringify($DATA)} ... />
+          - pattern: |
+              <$COMP ... $PROP={JSON.stringify($DATA)} ...>...</$COMP>
