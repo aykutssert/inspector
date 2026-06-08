@@ -1092,6 +1092,15 @@
     "message": "A console.log/console.debug call was left in the source. These are typically debugging leftovers (a common artifact of AI-generated or rushed code) that leak data to the browser console and add noise in production. Remove it, or route it through an intentional logger. console.warn/console.error are not flagged, since those are usually deliberate.\n"
   },
   {
+    "rule_id": "general.leftover-console-statement",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "zod.ts",
+    "line": 50,
+    "message": "A console.log/console.debug call was left in the source. These are typically debugging leftovers (a common artifact of AI-generated or rushed code) that leak data to the browser console and add noise in production. Remove it, or route it through an intentional logger. console.warn/console.error are not flagged, since those are usually deliberate.\n"
+  },
+  {
     "rule_id": "general.lodash-barrel-import",
     "severity": "warning",
     "category": "performance",
@@ -1984,6 +1993,24 @@
     "file": "heavy_import_no_dynamic.tsx",
     "line": 38,
     "message": "Eagerly imported 'motion' from 'framer-motion' detected. This pulls in the entire bundle of framer-motion. To reduce bundle size, import 'm' instead of 'motion', and wrap your motion elements in '\u003cLazyMotion features={domAnimation}\u003e'.\n"
+  },
+  {
+    "rule_id": "general.zod-v4-no-deprecated-error-apis",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "zod.ts",
+    "line": 50,
+    "message": "ZodError.errors is a deprecated alias in Zod v4. Use ZodError.issues instead. The .errors property will be removed in a future major version. Replace err.errors with err.issues everywhere.\n"
+  },
+  {
+    "rule_id": "general.zod-v4-no-deprecated-error-apis",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "zod.ts",
+    "line": 51,
+    "message": "ZodError.errors is a deprecated alias in Zod v4. Use ZodError.issues instead. The .errors property will be removed in a future major version. Replace err.errors with err.issues everywhere.\n"
   },
   {
     "rule_id": "general.zod-v4-no-deprecated-error-customization",
@@ -3241,6 +3268,24 @@
     "message": "FlatList renderItem receives an inline function. This creates a new function on every render, which can defeat list item memoization and add avoidable work on large lists. Move renderItem to a stable function or wrap it in useCallback with correct dependencies.\n"
   },
   {
+    "rule_id": "rn.rn-anonymous-renderitem",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 184,
+    "message": "FlatList renderItem receives an inline function. This creates a new function on every render, which can defeat list item memoization and add avoidable work on large lists. Move renderItem to a stable function or wrap it in useCallback with correct dependencies.\n"
+  },
+  {
+    "rule_id": "rn.rn-anonymous-renderitem",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 195,
+    "message": "FlatList renderItem receives an inline function. This creates a new function on every render, which can defeat list item memoization and add avoidable work on large lists. Move renderItem to a stable function or wrap it in useCallback with correct dependencies.\n"
+  },
+  {
     "rule_id": "rn.rn-async-storage-token",
     "severity": "warning",
     "category": "security",
@@ -3257,6 +3302,15 @@
     "file": "rn.tsx",
     "line": 55,
     "message": "React Native AsyncStorage is used to persist a token, secret, credential, or auth value. AsyncStorage is not encrypted storage, so sensitive values can be recovered from device backups, rooted devices, or local compromise. Store auth material in SecureStore, Keychain, Keystore, or another platform-backed secure storage API.\n"
+  },
+  {
+    "rule_id": "rn.rn-bottom-sheet-prefer-native",
+    "severity": "info",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 107,
+    "message": "JS-driven bottom sheet libraries (@gorhom/bottom-sheet, react-native-bottom-sheet) animate on the JS thread and require bridge calls for every frame. React Native 0.76+ / Expo SDK 52+ ships native Modal with presentationStyle=\"formSheet\" which runs entirely on the UI thread with zero JS overhead. Prefer the native approach for simple sheet use cases.\n"
   },
   {
     "rule_id": "rn.rn-detox-missing-await",
@@ -3309,7 +3363,7 @@
     "category": "quality",
     "confidence": "rule",
     "file": "rn.tsx",
-    "line": 122,
+    "line": 128,
     "message": "Importing from react-native internal Libraries/ paths is unsupported and breaks across React Native versions. Use the public top-level API: import { X } from 'react-native' instead of internal sub-paths.\n"
   },
   {
@@ -3399,7 +3453,7 @@
     "category": "quality",
     "confidence": "hint",
     "file": "rn.tsx",
-    "line": 145,
+    "line": 151,
     "message": "The iOS-only shadow* style properties (shadowColor, shadowOffset, shadowRadius, shadowOpacity) do not work on Android or with the New Architecture. Use the cross-platform boxShadow string property instead: boxShadow: '0 2px 8px rgba(0,0,0,0.15)'\n"
   },
   {
@@ -3408,8 +3462,17 @@
     "category": "quality",
     "confidence": "hint",
     "file": "rn.tsx",
-    "line": 149,
+    "line": 155,
     "message": "The iOS-only shadow* style properties (shadowColor, shadowOffset, shadowRadius, shadowOpacity) do not work on Android or with the New Architecture. Use the cross-platform boxShadow string property instead: boxShadow: '0 2px 8px rgba(0,0,0,0.15)'\n"
+  },
+  {
+    "rule_id": "rn.rn-no-non-native-navigator",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "rn.tsx",
+    "line": 110,
+    "message": "@react-navigation/stack uses a JS-driven card navigator that renders animations on the JavaScript thread, causing jank under heavy workloads. Replace with @react-navigation/native-stack which delegates transitions to the platform's native NavigationController / FragmentManager for butter-smooth 60/120fps navigation.\n"
   },
   {
     "rule_id": "rn.rn-no-panresponder",
@@ -3417,8 +3480,17 @@
     "category": "performance",
     "confidence": "rule",
     "file": "rn.tsx",
-    "line": 128,
+    "line": 134,
     "message": "PanResponder runs gesture logic on the JavaScript thread, causing dropped frames when the JS thread is busy. Replace with react-native-gesture-handler's Gesture API which executes on the UI thread via Reanimated worklets.\n"
+  },
+  {
+    "rule_id": "rn.rn-no-renderitem-key",
+    "severity": "info",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 184,
+    "message": "Adding a key prop to the root element of a FlatList renderItem when keyExtractor is already provided is redundant. FlatList uses keyExtractor for reconciliation; the key prop on the rendered element is ignored. Remove the key prop from renderItem and rely on keyExtractor exclusively.\n"
   },
   {
     "rule_id": "rn.rn-no-set-native-props",
@@ -3426,7 +3498,7 @@
     "category": "bug",
     "confidence": "rule",
     "file": "rn.tsx",
-    "line": 178,
+    "line": 206,
     "message": "Deprecated setNativeProps() call detected. setNativeProps is deprecated and not compatible with the Fabric new architecture. Use component state or Reanimated shared values to dynamically update component properties instead.\n"
   },
   {
@@ -3435,7 +3507,7 @@
     "category": "bug",
     "confidence": "rule",
     "file": "rn.tsx",
-    "line": 179,
+    "line": 207,
     "message": "Deprecated setNativeProps() call detected. setNativeProps is deprecated and not compatible with the Fabric new architecture. Use component state or Reanimated shared values to dynamically update component properties instead.\n"
   },
   {
@@ -3444,7 +3516,7 @@
     "category": "performance",
     "confidence": "hint",
     "file": "rn.tsx",
-    "line": 155,
+    "line": 161,
     "message": "Single-element style arrays create a new array reference on every render, defeating React Native's style caching. Use the style value directly: style={styles.box} instead of style={[styles.box]}.\n"
   },
   {
@@ -3453,7 +3525,7 @@
     "category": "performance",
     "confidence": "hint",
     "file": "rn.tsx",
-    "line": 107,
+    "line": 113,
     "message": "React Native's built-in \u003cImage\u003e lacks memory caching, crossfade transitions, and blurhash placeholder support. Use expo-image's \u003cImage\u003e component instead: import { Image } from 'expo-image'\n"
   },
   {
@@ -3462,7 +3534,7 @@
     "category": "quality",
     "confidence": "hint",
     "file": "rn.tsx",
-    "line": 115,
+    "line": 121,
     "message": "TouchableOpacity, TouchableHighlight, and TouchableNativeFeedback are legacy gesture components. Use \u003cPressable\u003e instead — it offers more flexible state-based styling (pressed, hovered, focused) and integrates better with concurrent React.\n"
   },
   {
@@ -3471,7 +3543,7 @@
     "category": "quality",
     "confidence": "hint",
     "file": "rn.tsx",
-    "line": 116,
+    "line": 122,
     "message": "TouchableOpacity, TouchableHighlight, and TouchableNativeFeedback are legacy gesture components. Use \u003cPressable\u003e instead — it offers more flexible state-based styling (pressed, hovered, focused) and integrates better with concurrent React.\n"
   },
   {
@@ -3480,7 +3552,7 @@
     "category": "performance",
     "confidence": "hint",
     "file": "rn.tsx",
-    "line": 137,
+    "line": 143,
     "message": "React Native's Animated API runs on the JavaScript thread, which causes dropped frames under heavy JS workloads. Replace with react-native-reanimated which executes animations on the UI thread: useSharedValue, useAnimatedStyle, withTiming, withSpring.\n"
   },
   {
@@ -3489,7 +3561,7 @@
     "category": "performance",
     "confidence": "hint",
     "file": "rn.tsx",
-    "line": 138,
+    "line": 144,
     "message": "React Native's Animated API runs on the JavaScript thread, which causes dropped frames under heavy JS workloads. Replace with react-native-reanimated which executes animations on the UI thread: useSharedValue, useAnimatedStyle, withTiming, withSpring.\n"
   },
   {
@@ -3498,7 +3570,7 @@
     "category": "performance",
     "confidence": "hint",
     "file": "rn.tsx",
-    "line": 139,
+    "line": 145,
     "message": "React Native's Animated API runs on the JavaScript thread, which causes dropped frames under heavy JS workloads. Replace with react-native-reanimated which executes animations on the UI thread: useSharedValue, useAnimatedStyle, withTiming, withSpring.\n"
   },
   {
@@ -3506,7 +3578,7 @@
     "severity": "warning",
     "confidence": "hint",
     "file": "rn.tsx",
-    "line": 160,
+    "line": 166,
     "message": "Using flex: 1 in contentContainerStyle collapses the ScrollView content on iOS because flex: 1 means \"take all available space\" but a ScrollView has unbounded height. Use flexGrow: 1 instead — it expands content to fill the scroll area without collapsing.\n"
   },
   {
@@ -3762,6 +3834,24 @@
     "message": "Secret environment variable accessed inside a TanStack Start route loader. Route loaders can be compiled into the client bundle, which would expose the secret. Move secret access into a createServerFn() to guarantee server-only execution.\n"
   },
   {
+    "rule_id": "tanstack-start.tanstack-start-no-use-server-in-handler",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "tanstack_start.tsx",
+    "line": 89,
+    "message": "\"use server\" is redundant inside a createServerFn().handler() callback. TanStack Start automatically creates a server boundary at the handler boundary — the directive has no effect here and misleads readers. Remove it.\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-no-use-server-in-handler",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "tanstack_start.tsx",
+    "line": 95,
+    "message": "\"use server\" is redundant inside a createServerFn().handler() callback. TanStack Start automatically creates a server boundary at the handler boundary — the directive has no effect here and misleads readers. Remove it.\n"
+  },
+  {
     "rule_id": "tanstack-start.tanstack-start-no-useeffect-fetch",
     "severity": "warning",
     "category": "performance",
@@ -3814,6 +3904,14 @@
     "file": "tanstack_start_redirect_in_try_catch.tsx",
     "line": 13,
     "message": "Calling 'redirect()' or 'notFound()' inside a try-catch block can prevent the navigation from working correctly because TanStack Router uses thrown errors internally to redirect or show a 404 page. Call redirect() outside the try-catch block or rethrow the exception.\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-server-fn-method-order",
+    "severity": "warning",
+    "confidence": "hint",
+    "file": "tanstack_start.tsx",
+    "line": 110,
+    "message": "createServerFn() chain has .handler() before .validator(). The correct order is createServerFn().validator(schema).handler(fn) — calling .handler() first means the validator schema is attached after the handler is already set, so input validation does not run.\n"
   },
   {
     "rule_id": "tanstack.query-no-query-in-effect",
@@ -4082,7 +4180,7 @@
     "category": "bug",
     "confidence": "hint",
     "file": "tanstack_start.tsx",
-    "line": 91,
+    "line": 124,
     "message": "Direct document.startViewTransition() call bypasses React's concurrent rendering. In React 19+ use the built-in \u003cViewTransition\u003e component or wrap state updates with startTransition() / flushSync() correctly. Direct DOM calls can conflict with React's reconciler and cause flicker or missed transitions.\n"
   },
   {

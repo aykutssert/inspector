@@ -1,0 +1,15 @@
+rules:
+  - id: zod-v4-no-deprecated-error-apis
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      ZodError.errors is a deprecated alias in Zod v4. Use ZodError.issues instead.
+      The .errors property will be removed in a future major version.
+      Replace err.errors with err.issues everywhere.
+    metadata:
+      category: compatibility
+      confidence: hint
+    patterns:
+      - pattern: $ERR.errors
+      - pattern-inside: |
+          if ($ERR instanceof z.ZodError) { ... }

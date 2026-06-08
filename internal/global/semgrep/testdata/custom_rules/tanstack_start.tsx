@@ -83,6 +83,39 @@ function SafeProductList() {
   return <ul>{products.map((p) => <li key={p.id}>{p.name}</li>)}</ul>;
 }
 
+// ─── tanstack-start-no-use-server-in-handler ──────────────────────────────────
+
+// Violation: redundant "use server" inside createServerFn handler
+const badServerFn = createServerFn().handler(async () => {
+  "use server";
+  return { ok: true };
+});
+
+// Violation: with validator
+const badValidatedFn = createServerFn()
+  .validator((data: unknown) => data)
+  .handler(async () => {
+    "use server";
+    return { processed: true };
+  });
+
+// Safe: no "use server" in handler (boundary is implicit)
+const goodServerFn = createServerFn().handler(async () => {
+  return { ok: true };
+});
+
+// ─── tanstack-start-server-fn-method-order ────────────────────────────────────
+
+// Violation: handler before validator — validator won't run
+const wrongOrderFn = createServerFn().handler(async () => {
+  return "data";
+}).validator((input: unknown) => input);
+
+// Safe: correct order — validator first, then handler
+const correctOrderFn = createServerFn()
+  .validator((input: unknown) => input)
+  .handler(async () => "data");
+
 // ─── no-document-start-view-transition ───────────────────────────────────────
 
 // Violation: direct DOM API bypasses React reconciler

@@ -103,6 +103,12 @@ const AdsAdmob = require("expo-ads-admob");
 import * as SplashScreen from "expo-splash-screen";
 import { Image } from "expo-image";
 
+// Violation: @gorhom/bottom-sheet → native Modal formSheet (triggers rn.rn-bottom-sheet-prefer-native)
+import BottomSheet from "@gorhom/bottom-sheet";
+
+// Violation: JS stack navigator → native-stack (triggers rn.rn-no-non-native-navigator)
+import { createStackNavigator } from "@react-navigation/stack";
+
 // Violation: Image from react-native → prefer expo-image (triggers rn.rn-prefer-expo-image)
 import { Image as RNImage } from "react-native";
 
@@ -170,6 +176,28 @@ export function FlexGrowScrollView({ children }: any) {
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
       {children}
     </ScrollView>
+  );
+}
+
+// Violation: key on renderItem root when keyExtractor present (triggers rn.rn-no-renderitem-key)
+export function RedundantKeyList({ users }: any) {
+  return (
+    <FlatList
+      data={users}
+      keyExtractor={(item) => item.id}
+      renderItem={({ item }) => <Text key={item.id}>{item.name}</Text>}
+    />
+  );
+}
+
+// Safe: no key on renderItem root (keyExtractor handles it)
+export function SafeKeyList({ users }: any) {
+  return (
+    <FlatList
+      data={users}
+      keyExtractor={(item) => item.id}
+      renderItem={({ item }) => <Text>{item.name}</Text>}
+    />
   );
 }
 

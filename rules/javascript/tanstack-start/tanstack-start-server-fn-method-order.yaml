@@ -1,0 +1,15 @@
+rules:
+  - id: tanstack-start-server-fn-method-order
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      createServerFn() chain has .handler() before .validator().
+      The correct order is createServerFn().validator(schema).handler(fn) —
+      calling .handler() first means the validator schema is attached after
+      the handler is already set, so input validation does not run.
+    metadata:
+      category: bug
+      confidence: hint
+    pattern-either:
+      - pattern: createServerFn().handler($FN).validator($SCHEMA)
+      - pattern: createServerFn().$METHOD(...).handler($FN).validator($SCHEMA)

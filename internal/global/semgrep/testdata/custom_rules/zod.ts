@@ -38,3 +38,28 @@ const coercedDate = z.preprocess((val) => new Date(val as string), z.date());
 
 // Safe: z.pipe with explicit transform
 const safeCoerced = z.pipe(z.unknown().transform((val) => Number(val)), z.number());
+
+// ─── zod-v4-no-deprecated-error-apis ─────────────────────────────────────────
+
+// Violation: .errors is deprecated alias for .issues in Zod v4
+function validateInput(data: unknown) {
+  try {
+    z.string().parse(data);
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      console.log(err.errors); // bad — use err.issues
+      return err.errors;
+    }
+  }
+}
+
+// Safe: .issues is the Zod v4 canonical property
+function safeValidate(data: unknown) {
+  try {
+    z.string().parse(data);
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      return err.issues; // correct
+    }
+  }
+}

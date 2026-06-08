@@ -1,0 +1,17 @@
+rules:
+  - id: rn-no-renderitem-key
+    languages: [typescript, javascript]
+    severity: INFO
+    message: >
+      Adding a key prop to the root element of a FlatList renderItem when keyExtractor
+      is already provided is redundant. FlatList uses keyExtractor for reconciliation;
+      the key prop on the rendered element is ignored. Remove the key prop from renderItem
+      and rely on keyExtractor exclusively.
+    metadata:
+      category: correctness
+      confidence: hint
+    pattern-either:
+      - pattern: |
+          <$LIST ... keyExtractor={$KEYFN} ... renderItem={($ARGS) => <$TAG ... key={$KEY} ... />} ... />
+      - pattern: |
+          <$LIST ... renderItem={($ARGS) => <$TAG ... key={$KEY} ... />} ... keyExtractor={$KEYFN} ... />

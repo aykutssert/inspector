@@ -1,0 +1,13 @@
+rules:
+  - id: rn-no-non-native-navigator
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      @react-navigation/stack uses a JS-driven card navigator that renders animations on
+      the JavaScript thread, causing jank under heavy workloads.
+      Replace with @react-navigation/native-stack which delegates transitions to the platform's
+      native NavigationController / FragmentManager for butter-smooth 60/120fps navigation.
+    metadata:
+      category: performance
+      confidence: rule
+    pattern-regex: 'from\s+[''"]@react-navigation/stack[''"]'

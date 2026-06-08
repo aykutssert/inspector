@@ -1,0 +1,27 @@
+rules:
+  - id: tanstack-start-no-use-server-in-handler
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      "use server" is redundant inside a createServerFn().handler() callback.
+      TanStack Start automatically creates a server boundary at the handler boundary —
+      the directive has no effect here and misleads readers. Remove it.
+    metadata:
+      category: correctness
+      confidence: hint
+    pattern-either:
+      - pattern: |
+          createServerFn().handler(async (...) => {
+            "use server";
+            ...
+          })
+      - pattern: |
+          createServerFn().validator(...).handler(async (...) => {
+            "use server";
+            ...
+          })
+      - pattern: |
+          createServerFn().handler((...) => {
+            "use server";
+            ...
+          })

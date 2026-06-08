@@ -1,0 +1,14 @@
+rules:
+  - id: rn-bottom-sheet-prefer-native
+    languages: [typescript, javascript]
+    severity: INFO
+    message: >
+      JS-driven bottom sheet libraries (@gorhom/bottom-sheet, react-native-bottom-sheet)
+      animate on the JS thread and require bridge calls for every frame.
+      React Native 0.76+ / Expo SDK 52+ ships native Modal with presentationStyle="formSheet"
+      which runs entirely on the UI thread with zero JS overhead. Prefer the native approach
+      for simple sheet use cases.
+    metadata:
+      category: performance
+      confidence: hint
+    pattern-regex: 'from\s+[''"](?:@gorhom/bottom-sheet|react-native-bottom-sheet)[''"]'
