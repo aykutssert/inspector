@@ -1,0 +1,20 @@
+rules:
+  - id: client-localstorage-no-version
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Unversioned storage key access. When caching data in localStorage or sessionStorage,
+      it is highly recommended to append a version suffix (e.g. 'user_data:v1') so that
+      future schema updates do not cause JSON parsing failures or runtime crashes.
+    metadata:
+      category: correctness
+      confidence: rule
+    patterns:
+      - pattern-either:
+          - pattern: localStorage.setItem($KEY, ...)
+          - pattern: localStorage.getItem($KEY)
+          - pattern: sessionStorage.setItem($KEY, ...)
+          - pattern: sessionStorage.getItem($KEY)
+      - metavariable-regex:
+          metavariable: $KEY
+          regex: ^["'](?!.*([vV]ersion|[vV])\d)[^"']+["']$

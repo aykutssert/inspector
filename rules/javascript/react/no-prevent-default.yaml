@@ -1,0 +1,26 @@
+rules:
+  - id: no-prevent-default
+    languages: [typescript, javascript]
+    severity: INFO
+    message: >
+      Calling preventDefault() in link or form click/submit handlers.
+      Instead of intercepting submissions/clicks with preventDefault() manually, prefer using native form action APIs,
+      appropriate button types (like type="button"), or framework-provided routing/link elements to manage default behaviors.
+    metadata:
+      category: correctness
+      confidence: hint
+    patterns:
+      - pattern-either:
+          - pattern: |
+              <$TAG onSubmit={($E) => { ... $E.preventDefault(...); ... }} ... />
+          - pattern: |
+              <$TAG onSubmit={function ($E) { ... $E.preventDefault(...); ... }} ... />
+          - pattern: |
+              <$TAG onClick={($E) => { ... $E.preventDefault(...); ... }} ... />
+          - pattern: |
+              <$TAG onClick={function ($E) { ... $E.preventDefault(...); ... }} ... />
+          - pattern: <$TAG onSubmit={($E) => $E.preventDefault(...)} ... />
+          - pattern: <$TAG onClick={($E) => $E.preventDefault(...)} ... />
+      - metavariable-regex:
+          metavariable: $TAG
+          regex: ^(form|a)$

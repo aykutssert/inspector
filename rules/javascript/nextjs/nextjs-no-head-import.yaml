@@ -1,0 +1,22 @@
+rules:
+  - id: nextjs-no-head-import
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      App Router files should not import 'next/head'. Use the Metadata API instead
+      to define page titles, descriptions, and other head elements.
+    metadata:
+      category: correctness
+      confidence: rule
+    paths:
+      include:
+        - "**/app/**/*.js"
+        - "**/app/**/*.jsx"
+        - "**/app/**/*.ts"
+        - "**/app/**/*.tsx"
+    patterns:
+      - pattern-either:
+          - pattern: import $HEAD from 'next/head'
+          - pattern: import * as $HEAD from 'next/head'
+          - pattern: import 'next/head'
+          - pattern: require('next/head')

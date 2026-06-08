@@ -1,0 +1,24 @@
+rules:
+  - id: rn-detox-missing-await
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Detox test action or assertion is not awaited. Detox operations are
+      asynchronous and must be awaited to execute in the correct sequence.
+    metadata:
+      category: correctness
+      confidence: rule
+    patterns:
+      - pattern-either:
+          - patterns:
+              - pattern: element(...).$ACTION(...)
+              - metavariable-regex:
+                  metavariable: $ACTION
+                  regex: ^(tap|longPress|multiTap|typeText|replaceText|clearText|scroll|scrollTo|swipe|pinch|tapBackspace|tapReturnKey)$
+              - pattern-not-inside: await ...
+          - patterns:
+              - pattern: expect(...).$ASSERTION(...)
+              - metavariable-regex:
+                  metavariable: $ASSERTION
+                  regex: ^(toBeVisible|toExist|toHaveText|toHaveLabel|toHaveId|toHaveValue)$
+              - pattern-not-inside: await ...

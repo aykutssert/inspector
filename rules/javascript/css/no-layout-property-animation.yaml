@@ -1,0 +1,28 @@
+rules:
+  - id: no-layout-property-animation
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Animation or transition targets a layout-triggering property.
+      Animating layout properties (such as width, height, top, left, margin, padding, or 'all') causes the browser to re-layout
+      the page on every frame, which is computationally expensive and causes jank. Use transform (e.g., scale, translate) and opacity instead.
+    metadata:
+      category: performance
+      confidence: rule
+    patterns:
+      - pattern-either:
+          - pattern: |
+              <$TAG ... style={{ transition: $VAL }} ... />
+          - pattern: |
+              <$TAG ... style={{ transition: $VAL }} ...>...</$TAG>
+          - pattern: |
+              <$TAG ... style={{ transitionProperty: $VAL }} ... />
+          - pattern: |
+              <$TAG ... style={{ transitionProperty: $VAL }} ...>...</$TAG>
+          - pattern: |
+              <$TAG ... style={{ animation: $VAL }} ... />
+          - pattern: |
+              <$TAG ... style={{ animation: $VAL }} ...>...</$TAG>
+      - metavariable-regex:
+          metavariable: $VAL
+          regex: (?i).*\b(width|height|top|left|right|bottom|margin|padding|all)\b.*

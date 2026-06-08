@@ -349,3 +349,93 @@ func TestSingleFindAndIncludesNotFlagged(t *testing.T) {
 		t.Fatalf("single lookups must stay quiet, got %#v", findings)
 	}
 }
+
+func TestCombineIterations(t *testing.T) {
+	src := `
+		function process(items) {
+			const res1 = items.map(x => x * 2).filter(x => x > 10);
+			const res2 = items.filter(x => x.active).forEach(x => console.log(x));
+			return res1;
+		}
+	`
+	findings := scanSrc(t, "combine.ts", src)
+	if !hasRule(findings, "js-combine-iterations") {
+		t.Fatalf("expected js-combine-iterations violation, got %#v", findings)
+	}
+
+	// Make sure a single method call is not flagged
+	srcSafe := `
+		function process(items) {
+			return items.map(x => x * 2);
+		}
+	`
+	findingsSafe := scanSrc(t, "combine_safe.ts", srcSafe)
+	if hasRule(findingsSafe, "js-combine-iterations") {
+		t.Fatalf("expected no js-combine-iterations violation, got %#v", findingsSafe)
+	}
+}
+
+func TestAsyncReduceWithoutAwaitedAcc(t *testing.T) {
+	src := `
+		async function main() {
+			const result = await items.reduce(async (acc, item) => {
+				acc.push(item); // Violation: acc is a Promise!
+				return acc;
+			}, Promise.resolve([]));
+		}
+	`
+	findings := scanSrc(t, "async_reduce.ts", src)
+	if !hasRule(findings, "js-async-reduce-without-awaited-acc") {
+		t.Fatalf("expected js-async-reduce-without-awaited-acc violation, got %#v", findings)
+	}
+
+	// Safe cases
+	srcSafe := `
+		async function main() {
+			const result1 = await items.reduce(async (acc, item) => {
+				const resolved = await acc;
+				resolved.push(item);
+				return resolved;
+			}, Promise.resolve([]));
+
+			const result2 = await items.reduce((acc, item) => {
+				acc.push(item); // Safe: sync reduce callback
+				return acc;
+			}, []);
+		}
+	`
+	findingsSafe := scanSrc(t, "async_reduce_safe.ts", srcSafe)
+	if hasRule(findingsSafe, "js-async-reduce-without-awaited-acc") {
+		t.Fatalf("expected no js-async-reduce-without-awaited-acc violation, got %#v", findingsSafe)
+	}
+}
+
+func TestCacheStorage(t *testing.T) {
+	src := `
+		function process() {
+			for (let i = 0; i < 10; i++) {
+				const x = localStorage.getItem("key"); // Violation: loop
+			}
+		}
+	`
+	findings := scanSrc(t, "cache_storage.ts", src)
+	if !hasRule(findings, "js-cache-storage") {
+		t.Fatalf("expected js-cache-storage violation, got %#v", findings)
+	}
+
+	// Safe case: outside loop
+	srcSafe := `
+		function process() {
+			const x = localStorage.getItem("key");
+			for (let i = 0; i < 10; i++) {
+				consume(x);
+			}
+		}
+	`
+	findingsSafe := scanSrc(t, "cache_storage_safe.ts", srcSafe)
+	if hasRule(findingsSafe, "js-cache-storage") {
+		t.Fatalf("expected no js-cache-storage violation, got %#v", findingsSafe)
+	}
+}
+
+

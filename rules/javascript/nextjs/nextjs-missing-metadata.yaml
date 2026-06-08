@@ -1,0 +1,36 @@
+rules:
+  - id: nextjs-missing-metadata
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Next.js App Router Page/Layout is missing SEO metadata. Export a static 'metadata' object
+      or a dynamic 'generateMetadata' function to improve search engine indexing.
+    metadata:
+      category: performance
+      confidence: rule
+    paths:
+      include:
+        - "**/app/**/page.tsx"
+        - "**/app/**/page.jsx"
+        - "**/app/**/layout.tsx"
+        - "**/app/**/layout.jsx"
+    patterns:
+      - pattern-either:
+          - pattern: export default function $PAGE(...) { ... }
+          - pattern: export default async function $PAGE(...) { ... }
+          - pattern: export default const $PAGE = ...
+      - pattern-not-inside: |
+          "use client";
+          ...
+      - pattern-not-inside: |
+          ...
+          export const metadata = ...
+          ...
+      - pattern-not-inside: |
+          ...
+          export function generateMetadata(...) { ... }
+          ...
+      - pattern-not-inside: |
+          ...
+          export async function generateMetadata(...) { ... }
+          ...

@@ -1,0 +1,20 @@
+rules:
+  - id: nextjs-inline-script-missing-id
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: >
+      Inline Next.js scripts must have an 'id' attribute to enable proper tracking and deduplication.
+    metadata:
+      category: correctness
+      confidence: rule
+    patterns:
+      - pattern-either:
+          - pattern: <$SCRIPT>...</$SCRIPT>
+          - pattern: <$SCRIPT dangerouslySetInnerHTML={...} />
+      - pattern-not: <$SCRIPT id="..." />
+      - pattern-not: <$SCRIPT id={...} />
+      - pattern-not: <$SCRIPT src="..." />
+      - pattern-not: <$SCRIPT src={...} />
+      - metavariable-regex:
+          metavariable: $SCRIPT
+          regex: ^(Script)$

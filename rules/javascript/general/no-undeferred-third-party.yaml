@@ -1,0 +1,25 @@
+rules:
+  - id: no-undeferred-third-party
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Undeferred third-party script blocks page rendering. Add 'defer' or 'async' to standard
+      HTML <script> tags, or avoid 'beforeInteractive' strategy in Next.js <Script> components
+      unless absolutely necessary for core initialization.
+    metadata:
+      category: performance
+      confidence: rule
+    patterns:
+      - pattern-either:
+          # 1. Standard HTML script tag missing defer/async
+          - patterns:
+              - pattern: <script src=$SRC ... />
+              - pattern-not: <script src=$SRC defer ... />
+              - pattern-not: <script src=$SRC defer={$ANY} ... />
+              - pattern-not: <script src=$SRC async ... />
+              - pattern-not: <script src=$SRC async={$ANY} ... />
+          # 2. Next.js Script component with blocking strategy beforeInteractive
+          - pattern: <$SCRIPT src=$SRC strategy="beforeInteractive" ... />
+      - metavariable-regex:
+          metavariable: $SCRIPT
+          regex: ^(Script)$

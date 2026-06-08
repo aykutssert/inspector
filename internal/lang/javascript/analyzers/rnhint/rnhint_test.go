@@ -132,3 +132,81 @@ func TestNonReactNativeFilesStayQuiet(t *testing.T) {
 		t.Fatalf("expected no findings for non-React Native file, got: %#v", findings)
 	}
 }
+
+func TestListDataMapped(t *testing.T) {
+	src := `
+		import { FlatList } from "react-native";
+		export function App({ items }) {
+			return (
+				<FlatList
+					data={items.map(x => x.id)}
+					renderItem={renderItem}
+				/>
+			);
+		}
+	`
+	findings := scanSource(t, "App.tsx", src)
+	if len(findings) != 1 || findings[0].RuleID != "rn-list-data-mapped" {
+		t.Fatalf("expected rn-list-data-mapped finding, got %#v", findings)
+	}
+}
+
+func TestListCallbackPerRow(t *testing.T) {
+	src := `
+		import { FlatList } from "react-native";
+		export function App({ items }) {
+			return (
+				<FlatList
+					data={items}
+					renderItem={({ item }) => <Item item={item} />}
+				/>
+			);
+		}
+	`
+	findings := scanSource(t, "App.tsx", src)
+	if len(findings) != 1 || findings[0].RuleID != "rn-list-callback-per-row" {
+		t.Fatalf("expected rn-list-callback-per-row finding, got %#v", findings)
+	}
+}
+
+func TestScrollViewMappedList(t *testing.T) {
+	src := `
+		import { ScrollView } from "react-native";
+		export function App({ items }) {
+			return (
+				<ScrollView>
+					{items.map(item => <Item item={item} />)}
+				</ScrollView>
+			);
+		}
+	`
+	findings := scanSource(t, "App.tsx", src)
+	if len(findings) != 1 || findings[0].RuleID != "rn-no-scrollview-mapped-list" {
+		t.Fatalf("expected rn-no-scrollview-mapped-list finding, got %#v", findings)
+	}
+}
+
+func TestRNPerformanceSafe(t *testing.T) {
+	src := `
+		import { FlatList, ScrollView } from "react-native";
+		const renderItem = ({ item }) => <Item item={item} />;
+		export function App({ items, preparedData }) {
+			return (
+				<>
+					<FlatList
+						data={preparedData}
+						renderItem={renderItem}
+					/>
+					<ScrollView>
+						{items}
+					</ScrollView>
+				</>
+			);
+		}
+	`
+	findings := scanSource(t, "App.tsx", src)
+	if len(findings) != 0 {
+		t.Fatalf("did not expect any performance findings, got: %#v", findings)
+	}
+}
+

@@ -35,7 +35,7 @@ func TestJavaScriptCustomRulesGolden(t *testing.T) {
 	a := &Analyzer{customDirs: []string{ruleDir}}
 	got, err := a.Scan(core.ProjectContext{
 		Root:  root,
-		Files: []string{"bun.ts", "case.tsx", "client.tsx", "client_data_fetch.tsx", "express.ts", "express_sensitive_route_no_auth.ts", "heavy_import_no_dynamic.tsx", "incomplete.ts", "next_async_client_component.tsx", "next_no_redirect_in_try_catch.tsx", "nextjs_no_use_search_params_without_suspense.tsx", "node_promise.ts", "page.tsx", "react19.tsx", "regex_dos_candidate.ts", "rn.tsx", "route.ts", "server_api_hop.tsx", "server_auth_actions.tsx", "server_no_mutable_module_state.tsx", "tanstack_start_redirect_in_try_catch.tsx", "tanstack_writes.tsx", "unnecessary_client.tsx"},
+		Files: []string{"app/layout.tsx", "app/page.tsx", "app/script.tsx", "app/subdir/page.tsx", "bun.ts", "case.tsx", "client.tsx", "client_data_fetch.tsx", "detox.ts", "dynamic_import.ts", "express.ts", "express_sensitive_route_no_auth.ts", "flex_space.tsx", "heavy_import_no_dynamic.tsx", "image_sizes.tsx", "incomplete.ts", "inputs.tsx", "next_async_client_component.tsx", "next_no_redirect_in_try_catch.tsx", "nextjs_no_use_search_params_without_suspense.tsx", "node_promise.ts", "page.tsx", "pages/index.tsx", "react19.tsx", "regex_dos_candidate.ts", "rn.tsx", "route.ts", "scripts.tsx", "server_api_hop.tsx", "server_auth_actions.tsx", "server_no_mutable_module_state.tsx", "tanstack_start_redirect_in_try_catch.tsx", "tanstack_writes.tsx", "unnecessary_client.tsx"},
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -199,3 +199,26 @@ func TestEveryCustomRuleHasGoldenCoverage(t *testing.T) {
 			strings.Join(missing, "\n  "))
 	}
 }
+
+func TestValidateCustomRulesOffline(t *testing.T) {
+	requireUsableSemgrep(t)
+
+	repo := repoRoot(t)
+	ruleDir := filepath.Join(repo, "rules", "javascript")
+
+	// Create a temporary empty directory inside the repo root to avoid sandbox blocks
+	tempDir, err := os.MkdirTemp(repo, ".semgrep_validate_*")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(tempDir)
+
+	cmd := exec.Command("semgrep", "scan", "--config", ruleDir, "--disable-version-check", "--metrics=off", tempDir)
+	cmd.Dir = repo
+	cmd.Env = semgrepEnv()
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Fatalf("semgrep rule validation failed: %v\nOutput:\n%s", err, string(out))
+	}
+}
+

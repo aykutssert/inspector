@@ -1,0 +1,15 @@
+rules:
+  - id: no-disabled-zoom
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Pinch-to-zoom is disabled in the viewport metadata. Restricting scaling (e.g. user-scalable=no or maximum-scale=1)
+      prevents users with visual impairments from zooming in to read content, violating key accessibility standards (WCAG).
+    metadata:
+      category: accessibility
+      confidence: rule
+    patterns:
+      - pattern: <meta name="viewport" content=$CONTENT ... />
+      - metavariable-regex:
+          metavariable: $CONTENT
+          regex: (?i).*(user-scalable\s*=\s*(no|0)|maximum-scale\s*=\s*1(\.0)?).*

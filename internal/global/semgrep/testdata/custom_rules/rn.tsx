@@ -94,3 +94,24 @@ export function NativeFlashList({ data, renderRow }: any) {
   );
 }
 
+// Violations: legacy Expo packages (triggers rn.rn-no-legacy-expo-packages)
+import ExpoPermissions from "expo-permissions";
+import * as AppLoading from "expo-app-loading";
+const AdsAdmob = require("expo-ads-admob");
+
+// Safe: modern Expo packages
+import * as SplashScreen from "expo-splash-screen";
+import { Image } from "expo-image";
+
+export function SetNativePropsTest(ref: any, inputRef: any) {
+  // Violations: setNativeProps usage (triggers rn.rn-no-set-native-props)
+  ref.setNativeProps({ text: "hello" });
+  inputRef.current.setNativeProps({ style: { color: "red" } });
+
+  // Safe: regular ref methods or state updates
+  ref.current.focus();
+  inputRef.current.clear();
+}
+
+
+

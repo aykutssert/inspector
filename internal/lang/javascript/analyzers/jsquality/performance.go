@@ -37,6 +37,9 @@ func detectPerformancePatterns(root *sitter.Node, _ *sitter.Language, src []byte
 			out = append(out, detectHoistableConstruction(node, src, file)...)
 		case "call_expression":
 			out = append(out, detectRepeatedLookup(node, src, file)...)
+			out = append(out, detectCombineIterations(node, src, file)...)
+			out = append(out, detectAsyncReduceWithoutAwaitedAcc(node, src, file)...)
+			out = append(out, detectCacheStorage(node, src, file)...)
 		case "variable_declarator":
 			out = append(out, detectModuleScopeStaticValue(node, src, file)...)
 			value := node.ChildByFieldName("value")
@@ -49,6 +52,191 @@ func detectPerformancePatterns(root *sitter.Node, _ *sitter.Language, src []byte
 	})
 	return out
 }
+
+func detectCombineIterations(node *sitter.Node, src []byte, file string) []core.Finding {
+	fn := node.ChildByFieldName("function")
+	if fn == nil || fn.Type() != "member_expression" {
+		return nil
+	}
+	outerProp := qualityText(fn.ChildByFieldName("property"), src)
+	if !repeatedArrayMethods[outerProp] {
+		return nil
+	}
+	object := fn.ChildByFieldName("object")
+	if object == nil || object.Type() != "call_expression" {
+		return nil
+	}
+	innerFn := object.ChildByFieldName("function")
+	if innerFn == nil || innerFn.Type() != "member_expression" {
+		return nil
+	}
+	innerProp := qualityText(innerFn.ChildByFieldName("property"), src)
+	if !repeatedArrayMethods[innerProp] {
+		return nil
+	}
+
+	line := int(node.StartPoint().Row) + 1
+	return []core.Finding{hint(
+		"js-combine-iterations", "performance", core.SeverityInfo, file, line,
+		"Chained array iterations '."+innerProp+"()."+outerProp+"()' can be combined into a single iteration.",
+		"Use a single loop or .reduce() to avoid creating intermediate arrays and iterating multiple times.",
+	)}
+}
+
+func detectAsyncReduceWithoutAwaitedAcc(node *sitter.Node, src []byte, file string) []core.Finding {
+	fn := node.ChildByFieldName("function")
+	if fn == nil || fn.Type() != "member_expression" {
+		return nil
+	}
+	prop := qualityText(fn.ChildByFieldName("property"), src)
+	if prop != "reduce" {
+		return nil
+	}
+	args := node.ChildByFieldName("arguments")
+	if args == nil || args.NamedChildCount() == 0 {
+		return nil
+	}
+	callback := args.NamedChild(0)
+	if callback == nil || !isQualityFunction(callback) {
+		return nil
+	}
+	if !isAsyncFunction(callback, src) {
+		return nil
+	}
+	accName := firstParamName(callback, src)
+	if accName == "" {
+		return nil
+	}
+	body := callback.ChildByFieldName("body")
+	if body == nil {
+		return nil
+	}
+
+	hasUnawaitedAccess := false
+	var unawaitedNode *sitter.Node
+
+	walkQuality(body, func(n *sitter.Node) {
+		if hasUnawaitedAccess || n.Type() != "identifier" {
+			return
+		}
+		if qualityText(n, src) == accName {
+			if isPropertyOfMemberExpression(n) {
+				return
+			}
+			if isReturnStatementChild(n) {
+				return
+			}
+			if callback.Type() == "arrow_function" && callback.ChildByFieldName("body") == n {
+				return
+			}
+			if !isAwaited(n) {
+				hasUnawaitedAccess = true
+				unawaitedNode = n
+			}
+		}
+	})
+
+	if hasUnawaitedAccess && unawaitedNode != nil {
+		line := int(unawaitedNode.StartPoint().Row) + 1
+		return []core.Finding{hint(
+			"js-async-reduce-without-awaited-acc", "performance", core.SeverityWarning, file, line,
+			"The accumulator '"+accName+"' in this async reduce callback is used without being awaited.",
+			"Since the callback is async, the accumulator is a Promise in subsequent iterations. Await it before accessing its properties.",
+		)}
+	}
+
+	return nil
+}
+
+func isAsyncFunction(node *sitter.Node, src []byte) bool {
+	if node == nil {
+		return false
+	}
+	for i := 0; i < int(node.ChildCount()); i++ {
+		if node.Child(i).Type() == "async" {
+			return true
+		}
+	}
+	return strings.HasPrefix(strings.TrimSpace(qualityText(node, src)), "async")
+}
+
+func firstParamName(fn *sitter.Node, src []byte) string {
+	params := fn.ChildByFieldName("parameters")
+	if params == nil {
+		return ""
+	}
+	for i := 0; i < int(params.NamedChildCount()); i++ {
+		child := params.NamedChild(i)
+		if child.Type() == "identifier" {
+			return qualityText(child, src)
+		}
+		if child.Type() == "required_parameter" {
+			pattern := child.ChildByFieldName("pattern")
+			if pattern != nil && pattern.Type() == "identifier" {
+				return qualityText(pattern, src)
+			}
+			return qualityText(child, src)
+		}
+	}
+	return ""
+}
+
+func isAwaited(node *sitter.Node) bool {
+	for p := node.Parent(); p != nil; p = p.Parent() {
+		if p.Type() == "await_expression" {
+			return true
+		}
+		if isQualityFunction(p) {
+			break
+		}
+	}
+	return false
+}
+
+func isPropertyOfMemberExpression(node *sitter.Node) bool {
+	parent := node.Parent()
+	if parent != nil && parent.Type() == "member_expression" {
+		return parent.ChildByFieldName("property") == node
+	}
+	return false
+}
+
+func isReturnStatementChild(node *sitter.Node) bool {
+	parent := node.Parent()
+	if parent != nil && parent.Type() == "return_statement" {
+		return true
+	}
+	return false
+}
+
+func detectCacheStorage(node *sitter.Node, src []byte, file string) []core.Finding {
+	if !insideRepeatedExecution(node, src) {
+		return nil
+	}
+	fn := node.ChildByFieldName("function")
+	if fn == nil || fn.Type() != "member_expression" {
+		return nil
+	}
+	obj := fn.ChildByFieldName("object")
+	prop := fn.ChildByFieldName("property")
+	if obj == nil || prop == nil {
+		return nil
+	}
+	objName := qualityText(obj, src)
+	propName := qualityText(prop, src)
+
+	if (objName == "localStorage" || objName == "sessionStorage") && propName == "getItem" {
+		line := int(node.StartPoint().Row) + 1
+		return []core.Finding{hint(
+			"js-cache-storage", "performance", core.SeverityInfo, file, line,
+			"Reading from "+objName+" inside a loop or repeated execution path.",
+			"Store the value in a local variable outside the loop to avoid repeated synchronous disk access.",
+		)}
+	}
+	return nil
+}
+
+
 
 func isPerformanceTestFile(file string) bool {
 	path := "/" + strings.ToLower(strings.ReplaceAll(file, "\\", "/"))

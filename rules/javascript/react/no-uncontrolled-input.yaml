@@ -1,0 +1,35 @@
+rules:
+  - id: no-uncontrolled-input
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      React controlled input conflict. Do not mix 'value' and 'defaultValue' (or 'checked' and 'defaultChecked') on the same input.
+      Also, providing a 'value' (or 'checked') prop without an 'onChange' or 'readOnly' handler makes the input read-only and will cause React warnings.
+    metadata:
+      category: correctness
+      confidence: rule
+    patterns:
+      - pattern-either:
+          # 1. Both value and defaultValue (or checked and defaultChecked)
+          - pattern: <$TAG value={$VAL} defaultValue={$DEF} ... />
+          - pattern: <$TAG defaultValue={$DEF} value={$VAL} ... />
+          - pattern: <$TAG checked={$VAL} defaultChecked={$DEF} ... />
+          - pattern: <$TAG defaultChecked={$DEF} checked={$VAL} ... />
+          # 2. value without onChange/readOnly/disabled
+          - patterns:
+              - pattern-either:
+                  - pattern: <$TAG value={$VAL} ... />
+                  - pattern: <$TAG checked={$VAL} ... />
+              - pattern-not: <$TAG onChange={$FUNC} ... />
+              - pattern-not: <$TAG readOnly ... />
+              - pattern-not: <$TAG readOnly={$ANY} ... />
+              - pattern-not: <$TAG disabled ... />
+              - pattern-not: <$TAG disabled={$ANY} ... />
+              - pattern-not: <$TAG type="button" ... />
+              - pattern-not: <$TAG type="submit" ... />
+              - pattern-not: <$TAG type="hidden" ... />
+              - pattern-not: <$TAG type="reset" ... />
+              - pattern-not: <$TAG type="image" ... />
+      - metavariable-regex:
+          metavariable: $TAG
+          regex: ^(input|textarea|select)$

@@ -14,7 +14,7 @@
     "category": "performance",
     "confidence": "hint",
     "file": "client.tsx",
-    "line": 12,
+    "line": 13,
     "message": "This code uses Node.js 'fs' APIs to read files. If you are running on the Bun runtime, prefer using the faster, optimized native API 'Bun.file(path)' which provides '.text()', '.json()', and stream interfaces directly.\n"
   },
   {
@@ -102,6 +102,49 @@
     "file": "bun.ts",
     "line": 7,
     "message": "bun:sqlite query is built with string concatenation or interpolation. If any part of the value is user-controlled, this can become SQL injection. Use prepared statements with placeholders and bind values separately.\n"
+  },
+  {
+    "rule_id": "css.no-layout-property-animation",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "client.tsx",
+    "line": 168,
+    "message": "Animation or transition targets a layout-triggering property. Animating layout properties (such as width, height, top, left, margin, padding, or 'all') causes the browser to re-layout the page on every frame, which is computationally expensive and causes jank. Use transform (e.g., scale, translate) and opacity instead.\n"
+  },
+  {
+    "rule_id": "css.no-layout-property-animation",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "client.tsx",
+    "line": 169,
+    "message": "Animation or transition targets a layout-triggering property. Animating layout properties (such as width, height, top, left, margin, padding, or 'all') causes the browser to re-layout the page on every frame, which is computationally expensive and causes jank. Use transform (e.g., scale, translate) and opacity instead.\n"
+  },
+  {
+    "rule_id": "css.no-layout-property-animation",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "client.tsx",
+    "line": 170,
+    "message": "Animation or transition targets a layout-triggering property. Animating layout properties (such as width, height, top, left, margin, padding, or 'all') causes the browser to re-layout the page on every frame, which is computationally expensive and causes jank. Use transform (e.g., scale, translate) and opacity instead.\n"
+  },
+  {
+    "rule_id": "css.no-outline-none",
+    "severity": "info",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 173,
+    "message": "Disabling focus outlines with outline: none or outline: 0. Focus outlines are critical for keyboard navigation accessibility (A11y). If you disable the default outline, you must provide an alternative visible focus indicator (e.g., custom border or box-shadow ring) for focus states.\n"
+  },
+  {
+    "rule_id": "css.no-outline-none",
+    "severity": "info",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 174,
+    "message": "Disabling focus outlines with outline: none or outline: 0. Focus outlines are critical for keyboard navigation accessibility (A11y). If you disable the default outline, you must provide an alternative visible focus indicator (e.g., custom border or box-shadow ring) for focus states.\n"
   },
   {
     "rule_id": "express.express-async-error-handling",
@@ -262,7 +305,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "client.tsx",
-    "line": 23,
+    "line": 24,
     "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
   },
   {
@@ -271,7 +314,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "client.tsx",
-    "line": 27,
+    "line": 28,
     "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
   },
   {
@@ -280,7 +323,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "client.tsx",
-    "line": 34,
+    "line": 35,
     "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
   },
   {
@@ -289,7 +332,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "client.tsx",
-    "line": 42,
+    "line": 43,
     "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
   },
   {
@@ -298,7 +341,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "client.tsx",
-    "line": 49,
+    "line": 50,
     "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
   },
   {
@@ -307,7 +350,7 @@
     "category": "security",
     "confidence": "hint",
     "file": "client.tsx",
-    "line": 54,
+    "line": 55,
     "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
   },
   {
@@ -435,6 +478,114 @@
     "file": "incomplete.ts",
     "line": 31,
     "message": "bcrypt is configured with a cost factor below 10. Low bcrypt rounds make offline password cracking materially cheaper if password hashes leak. Use a cost of at least 10, then tune upward based on your production latency budget.\n"
+  },
+  {
+    "rule_id": "general.client-localstorage-no-version",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "case.tsx",
+    "line": 17,
+    "message": "Unversioned storage key access. When caching data in localStorage or sessionStorage, it is highly recommended to append a version suffix (e.g. 'user_data:v1') so that future schema updates do not cause JSON parsing failures or runtime crashes.\n"
+  },
+  {
+    "rule_id": "general.client-localstorage-no-version",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "case.tsx",
+    "line": 18,
+    "message": "Unversioned storage key access. When caching data in localStorage or sessionStorage, it is highly recommended to append a version suffix (e.g. 'user_data:v1') so that future schema updates do not cause JSON parsing failures or runtime crashes.\n"
+  },
+  {
+    "rule_id": "general.client-localstorage-no-version",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "client.tsx",
+    "line": 95,
+    "message": "Unversioned storage key access. When caching data in localStorage or sessionStorage, it is highly recommended to append a version suffix (e.g. 'user_data:v1') so that future schema updates do not cause JSON parsing failures or runtime crashes.\n"
+  },
+  {
+    "rule_id": "general.client-localstorage-no-version",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "client.tsx",
+    "line": 96,
+    "message": "Unversioned storage key access. When caching data in localStorage or sessionStorage, it is highly recommended to append a version suffix (e.g. 'user_data:v1') so that future schema updates do not cause JSON parsing failures or runtime crashes.\n"
+  },
+  {
+    "rule_id": "general.client-localstorage-no-version",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "client.tsx",
+    "line": 97,
+    "message": "Unversioned storage key access. When caching data in localStorage or sessionStorage, it is highly recommended to append a version suffix (e.g. 'user_data:v1') so that future schema updates do not cause JSON parsing failures or runtime crashes.\n"
+  },
+  {
+    "rule_id": "general.client-localstorage-no-version",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "client.tsx",
+    "line": 98,
+    "message": "Unversioned storage key access. When caching data in localStorage or sessionStorage, it is highly recommended to append a version suffix (e.g. 'user_data:v1') so that future schema updates do not cause JSON parsing failures or runtime crashes.\n"
+  },
+  {
+    "rule_id": "general.client-localstorage-no-version",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "page.tsx",
+    "line": 5,
+    "message": "Unversioned storage key access. When caching data in localStorage or sessionStorage, it is highly recommended to append a version suffix (e.g. 'user_data:v1') so that future schema updates do not cause JSON parsing failures or runtime crashes.\n"
+  },
+  {
+    "rule_id": "general.client-passive-event-listeners",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "client.tsx",
+    "line": 112,
+    "message": "Scroll/touch event listener registered without '{ passive: true }'. Touch and wheel event listeners ('touchstart', 'touchmove', 'wheel', 'mousewheel') should be registered with '{ passive: true }' to improve scroll performance and avoid layout/scroll jank, unless they call 'event.preventDefault()'.\n"
+  },
+  {
+    "rule_id": "general.client-passive-event-listeners",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "client.tsx",
+    "line": 113,
+    "message": "Scroll/touch event listener registered without '{ passive: true }'. Touch and wheel event listeners ('touchstart', 'touchmove', 'wheel', 'mousewheel') should be registered with '{ passive: true }' to improve scroll performance and avoid layout/scroll jank, unless they call 'event.preventDefault()'.\n"
+  },
+  {
+    "rule_id": "general.client-passive-event-listeners",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "client.tsx",
+    "line": 114,
+    "message": "Scroll/touch event listener registered without '{ passive: true }'. Touch and wheel event listeners ('touchstart', 'touchmove', 'wheel', 'mousewheel') should be registered with '{ passive: true }' to improve scroll performance and avoid layout/scroll jank, unless they call 'event.preventDefault()'.\n"
+  },
+  {
+    "rule_id": "general.client-passive-event-listeners",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "client.tsx",
+    "line": 115,
+    "message": "Scroll/touch event listener registered without '{ passive: true }'. Touch and wheel event listeners ('touchstart', 'touchmove', 'wheel', 'mousewheel') should be registered with '{ passive: true }' to improve scroll performance and avoid layout/scroll jank, unless they call 'event.preventDefault()'.\n"
+  },
+  {
+    "rule_id": "general.client-passive-event-listeners",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "client.tsx",
+    "line": 116,
+    "message": "Scroll/touch event listener registered without '{ passive: true }'. Touch and wheel event listeners ('touchstart', 'touchmove', 'wheel', 'mousewheel') should be registered with '{ passive: true }' to improve scroll performance and avoid layout/scroll jank, unless they call 'event.preventDefault()'.\n"
   },
   {
     "rule_id": "general.crypto-sync-in-request-path",
@@ -748,7 +899,7 @@
     "category": "quality",
     "confidence": "hint",
     "file": "client.tsx",
-    "line": 29,
+    "line": 30,
     "message": "A console.log/console.debug call was left in the source. These are typically debugging leftovers (a common artifact of AI-generated or rushed code) that leak data to the browser console and add noise in production. Remove it, or route it through an intentional logger. console.warn/console.error are not flagged, since those are usually deliberate.\n"
   },
   {
@@ -757,7 +908,43 @@
     "category": "quality",
     "confidence": "hint",
     "file": "client.tsx",
-    "line": 36,
+    "line": 37,
+    "message": "A console.log/console.debug call was left in the source. These are typically debugging leftovers (a common artifact of AI-generated or rushed code) that leak data to the browser console and add noise in production. Remove it, or route it through an intentional logger. console.warn/console.error are not flagged, since those are usually deliberate.\n"
+  },
+  {
+    "rule_id": "general.leftover-console-statement",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 112,
+    "message": "A console.log/console.debug call was left in the source. These are typically debugging leftovers (a common artifact of AI-generated or rushed code) that leak data to the browser console and add noise in production. Remove it, or route it through an intentional logger. console.warn/console.error are not flagged, since those are usually deliberate.\n"
+  },
+  {
+    "rule_id": "general.leftover-console-statement",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 114,
+    "message": "A console.log/console.debug call was left in the source. These are typically debugging leftovers (a common artifact of AI-generated or rushed code) that leak data to the browser console and add noise in production. Remove it, or route it through an intentional logger. console.warn/console.error are not flagged, since those are usually deliberate.\n"
+  },
+  {
+    "rule_id": "general.leftover-console-statement",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 121,
+    "message": "A console.log/console.debug call was left in the source. These are typically debugging leftovers (a common artifact of AI-generated or rushed code) that leak data to the browser console and add noise in production. Remove it, or route it through an intentional logger. console.warn/console.error are not flagged, since those are usually deliberate.\n"
+  },
+  {
+    "rule_id": "general.leftover-console-statement",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 123,
     "message": "A console.log/console.debug call was left in the source. These are typically debugging leftovers (a common artifact of AI-generated or rushed code) that leak data to the browser console and add noise in production. Remove it, or route it through an intentional logger. console.warn/console.error are not flagged, since those are usually deliberate.\n"
   },
   {
@@ -767,6 +954,15 @@
     "confidence": "hint",
     "file": "heavy_import_no_dynamic.tsx",
     "line": 16,
+    "message": "A console.log/console.debug call was left in the source. These are typically debugging leftovers (a common artifact of AI-generated or rushed code) that leak data to the browser console and add noise in production. Remove it, or route it through an intentional logger. console.warn/console.error are not flagged, since those are usually deliberate.\n"
+  },
+  {
+    "rule_id": "general.leftover-console-statement",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "heavy_import_no_dynamic.tsx",
+    "line": 32,
     "message": "A console.log/console.debug call was left in the source. These are typically debugging leftovers (a common artifact of AI-generated or rushed code) that leak data to the browser console and add noise in production. Remove it, or route it through an intentional logger. console.warn/console.error are not flagged, since those are usually deliberate.\n"
   },
   {
@@ -950,6 +1146,15 @@
     "message": "This file mixes ESM imports with CommonJS require(). Mixed module systems often behave differently across Node, bundlers, and test runners, especially under \"type\": \"module\". Use one module system consistently in a file, or isolate interop behind a small adapter.\n"
   },
   {
+    "rule_id": "general.mixed-esm-cjs",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 100,
+    "message": "This file mixes ESM imports with CommonJS require(). Mixed module systems often behave differently across Node, bundlers, and test runners, especially under \"type\": \"module\". Use one module system consistently in a file, or isolate interop behind a small adapter.\n"
+  },
+  {
     "rule_id": "general.mock-data-in-production",
     "severity": "warning",
     "category": "bug",
@@ -957,6 +1162,47 @@
     "file": "incomplete.ts",
     "line": 2,
     "message": "The faker mock-data library is imported in non-test code, so fake/random data can be shipped into a production path instead of real data. Move faker behind tests/fixtures/seed scripts, or replace it with a real data source.\n"
+  },
+  {
+    "rule_id": "general.no-disabled-zoom",
+    "severity": "warning",
+    "confidence": "rule",
+    "file": "client.tsx",
+    "line": 130,
+    "message": "Pinch-to-zoom is disabled in the viewport metadata. Restricting scaling (e.g. user-scalable=no or maximum-scale=1) prevents users with visual impairments from zooming in to read content, violating key accessibility standards (WCAG).\n"
+  },
+  {
+    "rule_id": "general.no-disabled-zoom",
+    "severity": "warning",
+    "confidence": "rule",
+    "file": "client.tsx",
+    "line": 131,
+    "message": "Pinch-to-zoom is disabled in the viewport metadata. Restricting scaling (e.g. user-scalable=no or maximum-scale=1) prevents users with visual impairments from zooming in to read content, violating key accessibility standards (WCAG).\n"
+  },
+  {
+    "rule_id": "general.no-disabled-zoom",
+    "severity": "warning",
+    "confidence": "rule",
+    "file": "client.tsx",
+    "line": 132,
+    "message": "Pinch-to-zoom is disabled in the viewport metadata. Restricting scaling (e.g. user-scalable=no or maximum-scale=1) prevents users with visual impairments from zooming in to read content, violating key accessibility standards (WCAG).\n"
+  },
+  {
+    "rule_id": "general.no-disabled-zoom",
+    "severity": "warning",
+    "confidence": "rule",
+    "file": "client.tsx",
+    "line": 133,
+    "message": "Pinch-to-zoom is disabled in the viewport metadata. Restricting scaling (e.g. user-scalable=no or maximum-scale=1) prevents users with visual impairments from zooming in to read content, violating key accessibility standards (WCAG).\n"
+  },
+  {
+    "rule_id": "general.no-dynamic-import-path",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "dynamic_import.ts",
+    "line": 6,
+    "message": "Non-static dynamic import path detected. Using a variable or expression inside import() prevents the bundler from analyzing and splitting the imported modules into static chunks. Use static string literals inside import() instead.\n"
   },
   {
     "rule_id": "general.no-moment",
@@ -1002,6 +1248,31 @@
     "file": "case.tsx",
     "line": 8,
     "message": "Import of legacy library 'moment' detected. Moment.js is a heavy library that lacks tree-shaking support and can lead to bundle bloat. Use modern, lightweight date libraries like 'date-fns', 'dayjs', or 'luxon' instead.\n"
+  },
+  {
+    "rule_id": "general.no-tiny-text",
+    "severity": "warning",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 177,
+    "message": "Tiny text size detected (less than 12px). Font sizes below 12px (0.75rem) are very difficult to read on most screens, especially for visually impaired users. Keep font sizes at 12px or larger (use standard Tailwind text-xs, text-sm, etc.).\n"
+  },
+  {
+    "rule_id": "general.no-tiny-text",
+    "severity": "warning",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 178,
+    "message": "Tiny text size detected (less than 12px). Font sizes below 12px (0.75rem) are very difficult to read on most screens, especially for visually impaired users. Keep font sizes at 12px or larger (use standard Tailwind text-xs, text-sm, etc.).\n"
+  },
+  {
+    "rule_id": "general.no-undeferred-third-party",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "scripts.tsx",
+    "line": 16,
+    "message": "Undeferred third-party script blocks page rendering. Add 'defer' or 'async' to standard HTML \u003cscript\u003e tags, or avoid 'beforeInteractive' strategy in Next.js \u003cScript\u003e components unless absolutely necessary for core initialization.\n"
   },
   {
     "rule_id": "general.node-unhandled-promise-rejection",
@@ -1166,6 +1437,42 @@
     "message": "This comment looks like an unfinished placeholder or AI-generation artifact (e.g. \"your code here\", \"rest of the implementation\", \"TODO: implement\", \"as an AI ...\"). It usually means code was elided or never written, so the surrounding function may be incomplete or non-functional. Replace it with the real implementation, or remove the comment if the code is actually complete.\n"
   },
   {
+    "rule_id": "general.prefer-dynamic-import",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "heavy_import_no_dynamic.tsx",
+    "line": 2,
+    "message": "Eagerly imported heavy library detected. This library is large and can significantly increase your initial bundle size. Use dynamic imports (e.g. import() or React.lazy()) to load it asynchronously only when needed.\n"
+  },
+  {
+    "rule_id": "general.prefer-dynamic-import",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "heavy_import_no_dynamic.tsx",
+    "line": 21,
+    "message": "Eagerly imported heavy library detected. This library is large and can significantly increase your initial bundle size. Use dynamic imports (e.g. import() or React.lazy()) to load it asynchronously only when needed.\n"
+  },
+  {
+    "rule_id": "general.prefer-dynamic-import",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "heavy_import_no_dynamic.tsx",
+    "line": 24,
+    "message": "Eagerly imported heavy library detected. This library is large and can significantly increase your initial bundle size. Use dynamic imports (e.g. import() or React.lazy()) to load it asynchronously only when needed.\n"
+  },
+  {
+    "rule_id": "general.prefer-dynamic-import",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "heavy_import_no_dynamic.tsx",
+    "line": 27,
+    "message": "Eagerly imported heavy library detected. This library is large and can significantly increase your initial bundle size. Use dynamic imports (e.g. import() or React.lazy()) to load it asynchronously only when needed.\n"
+  },
+  {
     "rule_id": "general.process-env-dispersed-access",
     "severity": "warning",
     "category": "quality",
@@ -1225,7 +1532,7 @@
     "category": "quality",
     "confidence": "hint",
     "file": "client.tsx",
-    "line": 13,
+    "line": 14,
     "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
   },
   {
@@ -1234,7 +1541,7 @@
     "category": "quality",
     "confidence": "hint",
     "file": "client.tsx",
-    "line": 14,
+    "line": 15,
     "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
   },
   {
@@ -1553,6 +1860,24 @@
     "message": "@ts-ignore suppresses the TypeScript checker without documenting why. This can hide real type regressions permanently. Prefer @ts-expect-error with a short reason, or add an explicit reason if the suppression is unavoidable.\n"
   },
   {
+    "rule_id": "general.use-lazy-motion",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "heavy_import_no_dynamic.tsx",
+    "line": 37,
+    "message": "Eagerly imported 'motion' from 'framer-motion' detected. This pulls in the entire bundle of framer-motion. To reduce bundle size, import 'm' instead of 'motion', and wrap your motion elements in '\u003cLazyMotion features={domAnimation}\u003e'.\n"
+  },
+  {
+    "rule_id": "general.use-lazy-motion",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "heavy_import_no_dynamic.tsx",
+    "line": 38,
+    "message": "Eagerly imported 'motion' from 'framer-motion' detected. This pulls in the entire bundle of framer-motion. To reduce bundle size, import 'm' instead of 'motion', and wrap your motion elements in '\u003cLazyMotion features={domAnimation}\u003e'.\n"
+  },
+  {
     "rule_id": "nestjs.nestjs-dto-without-validators",
     "severity": "warning",
     "category": "security",
@@ -1649,6 +1974,15 @@
     "confidence": "hint",
     "file": "heavy_import_no_dynamic.tsx",
     "line": 8,
+    "message": "Heavy library is statically imported. Statically importing large libraries (like monaco-editor, three, lodash, or chart.js) increases the initial client bundle size and slows down page loads. Consider using dynamic imports (e.g., Next.js dynamic() or dynamic import()) to load this library lazily.\n"
+  },
+  {
+    "rule_id": "nextjs.heavy-import-no-dynamic",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "heavy_import_no_dynamic.tsx",
+    "line": 21,
     "message": "Heavy library is statically imported. Statically importing large libraries (like monaco-editor, three, lodash, or chart.js) increases the initial client bundle size and slows down page loads. Consider using dynamic imports (e.g., Next.js dynamic() or dynamic import()) to load this library lazily.\n"
   },
   {
@@ -1805,6 +2139,15 @@
     "message": "A standard HTML \u003ca\u003e tag is used with an internal route. In Next.js, using \u003ca\u003e for internal navigation causes a full page reload, losing client-side routing benefits. Use the '\u003cLink\u003e' component from 'next/link' instead.\n"
   },
   {
+    "rule_id": "nextjs.next-prefer-link-component",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 166,
+    "message": "A standard HTML \u003ca\u003e tag is used with an internal route. In Next.js, using \u003ca\u003e for internal navigation causes a full page reload, losing client-side routing benefits. Use the '\u003cLink\u003e' component from 'next/link' instead.\n"
+  },
+  {
     "rule_id": "nextjs.next-public-env-secret",
     "severity": "warning",
     "category": "security",
@@ -1828,7 +2171,7 @@
     "category": "performance",
     "confidence": "hint",
     "file": "route.ts",
-    "line": 27,
+    "line": 40,
     "message": "A Next.js request API is called at module scope. cookies(), headers(), and similar request-bound APIs force the route or component to be dynamic and can disable static optimization for the whole file. Move the call inside the handler/component that actually needs request data.\n"
   },
   {
@@ -1837,7 +2180,7 @@
     "category": "performance",
     "confidence": "hint",
     "file": "route.ts",
-    "line": 28,
+    "line": 41,
     "message": "A Next.js request API is called at module scope. cookies(), headers(), and similar request-bound APIs force the route or component to be dynamic and can disable static optimization for the whole file. Move the call inside the handler/component that actually needs request data.\n"
   },
   {
@@ -1971,7 +2314,7 @@
     "severity": "error",
     "confidence": "rule",
     "file": "client.tsx",
-    "line": 5,
+    "line": 6,
     "message": "A client component (using \"use client\") imports a server-only package or Node.js core module. This will fail to run or bundle in the browser. Ensure this import is only used in server components, or mock/stub the functionality on the client.\n"
   },
   {
@@ -2069,6 +2412,15 @@
     "severity": "warning",
     "category": "performance",
     "confidence": "hint",
+    "file": "app/subdir/page.tsx",
+    "line": 2,
+    "message": "Unnecessary \"use client\" directive at the top of the file. No React/Next.js hooks, event handlers, client-only APIs (like createContext), or browser globals (like window/document) were detected. Removing \"use client\" allows this component to be rendered as a React Server Component (RSC), which reduces the client-side bundle size and improves initial page load performance.\n"
+  },
+  {
+    "rule_id": "nextjs.next-unnecessary-use-client",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
     "file": "next_async_client_component.tsx",
     "line": 1,
     "message": "Unnecessary \"use client\" directive at the top of the file. No React/Next.js hooks, event handlers, client-only APIs (like createContext), or browser globals (like window/document) were detected. Removing \"use client\" allows this component to be rendered as a React Server Component (RSC), which reduces the client-side bundle size and improves initial page load performance.\n"
@@ -2128,6 +2480,69 @@
     "message": "A Next.js redirect target is built from a dynamic value. If this value can be influenced by a user, the app may redirect to an attacker-controlled URL. Validate against an allowlist, resolve only internal paths, or build the destination from trusted route names.\n"
   },
   {
+    "rule_id": "nextjs.nextjs-image-missing-sizes",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "image_sizes.tsx",
+    "line": 8,
+    "message": "Next.js \u003cImage\u003e component is missing the 'sizes' property. For responsive images (especially those using 'fill' or responsive layouts), specifying 'sizes' is important for performance so the browser downloads the correct image size.\n"
+  },
+  {
+    "rule_id": "nextjs.nextjs-image-missing-sizes",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "image_sizes.tsx",
+    "line": 11,
+    "message": "Next.js \u003cImage\u003e component is missing the 'sizes' property. For responsive images (especially those using 'fill' or responsive layouts), specifying 'sizes' is important for performance so the browser downloads the correct image size.\n"
+  },
+  {
+    "rule_id": "nextjs.nextjs-image-missing-sizes",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "image_sizes.tsx",
+    "line": 14,
+    "message": "Next.js \u003cImage\u003e component is missing the 'sizes' property. For responsive images (especially those using 'fill' or responsive layouts), specifying 'sizes' is important for performance so the browser downloads the correct image size.\n"
+  },
+  {
+    "rule_id": "nextjs.nextjs-image-missing-sizes",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "image_sizes.tsx",
+    "line": 17,
+    "message": "Next.js \u003cImage\u003e component is missing the 'sizes' property. For responsive images (especially those using 'fill' or responsive layouts), specifying 'sizes' is important for performance so the browser downloads the correct image size.\n"
+  },
+  {
+    "rule_id": "nextjs.nextjs-inline-script-missing-id",
+    "severity": "error",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "app/script.tsx",
+    "line": 7,
+    "message": "Inline Next.js scripts must have an 'id' attribute to enable proper tracking and deduplication.\n"
+  },
+  {
+    "rule_id": "nextjs.nextjs-inline-script-missing-id",
+    "severity": "error",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "app/script.tsx",
+    "line": 12,
+    "message": "Inline Next.js scripts must have an 'id' attribute to enable proper tracking and deduplication.\n"
+  },
+  {
+    "rule_id": "nextjs.nextjs-missing-metadata",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "app/layout.tsx",
+    "line": 3,
+    "message": "Next.js App Router Page/Layout is missing SEO metadata. Export a static 'metadata' object or a dynamic 'generateMetadata' function to improve search engine indexing.\n"
+  },
+  {
     "rule_id": "nextjs.nextjs-no-client-side-redirect",
     "severity": "warning",
     "category": "performance",
@@ -2137,6 +2552,42 @@
     "message": "A redirect runs inside useEffect (router.push/replace). The page renders first and then navigates away, so the user sees a flash of the wrong screen, and it costs an extra client render. Prefer middleware or a Server Component redirect() for auth/routing gates; keep router.push for user-triggered events.\n"
   },
   {
+    "rule_id": "nextjs.nextjs-no-head-import",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "app/layout.tsx",
+    "line": 1,
+    "message": "App Router files should not import 'next/head'. Use the Metadata API instead to define page titles, descriptions, and other head elements.\n"
+  },
+  {
+    "rule_id": "nextjs.nextjs-no-side-effect-in-get-handler",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "rule",
+    "file": "route.ts",
+    "line": 19,
+    "message": "Side effect detected in Next.js GET handler. GET requests are idempotent and can be pre-fetched or cached by the browser/CDN, making side effects (like database mutations or state writes) unpredictable and vulnerable to CSRF. Use a POST handler instead for state-changing operations.\n"
+  },
+  {
+    "rule_id": "nextjs.nextjs-no-side-effect-in-get-handler",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "rule",
+    "file": "route.ts",
+    "line": 22,
+    "message": "Side effect detected in Next.js GET handler. GET requests are idempotent and can be pre-fetched or cached by the browser/CDN, making side effects (like database mutations or state writes) unpredictable and vulnerable to CSRF. Use a POST handler instead for state-changing operations.\n"
+  },
+  {
+    "rule_id": "nextjs.nextjs-no-side-effect-in-get-handler",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "rule",
+    "file": "route.ts",
+    "line": 25,
+    "message": "Side effect detected in Next.js GET handler. GET requests are idempotent and can be pre-fetched or cached by the browser/CDN, making side effects (like database mutations or state writes) unpredictable and vulnerable to CSRF. Use a POST handler instead for state-changing operations.\n"
+  },
+  {
     "rule_id": "nextjs.nextjs-no-use-search-params-without-suspense",
     "severity": "warning",
     "category": "performance",
@@ -2144,6 +2595,24 @@
     "file": "nextjs_no_use_search_params_without_suspense.tsx",
     "line": 5,
     "message": "'useSearchParams()' is used in a Client Component. Next.js requires components using 'useSearchParams()' to be wrapped in a '\u003cSuspense\u003e' boundary at the parent level during static rendering. Without a Suspense boundary, the entire page will fallback to client-side rendering.\n"
+  },
+  {
+    "rule_id": "react-ui.design-no-space-on-flex-children",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "flex_space.tsx",
+    "line": 5,
+    "message": "Tailwind class 'space-x' or 'space-y' detected. Using space-x/y utilities on flex layouts can cause layout bugs (especially in RTL or with hidden children). Prefer using flexbox gap utilities ('gap-x', 'gap-y', or 'gap') instead.\n"
+  },
+  {
+    "rule_id": "react-ui.design-no-space-on-flex-children",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "flex_space.tsx",
+    "line": 10,
+    "message": "Tailwind class 'space-x' or 'space-y' detected. Using space-x/y utilities on flex layouts can cause layout bugs (especially in RTL or with hidden children). Prefer using flexbox gap utilities ('gap-x', 'gap-y', or 'gap') instead.\n"
   },
   {
     "rule_id": "react.dangerously-set-inner-html-variable",
@@ -2214,6 +2683,24 @@
     "message": "A function component defines defaultProps. React 19 removed defaultProps support for function components. Use JavaScript default parameters or destructuring defaults so the fallback still applies after upgrading.\n"
   },
   {
+    "rule_id": "react.no-prevent-default",
+    "severity": "info",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 160,
+    "message": "Calling preventDefault() in link or form click/submit handlers. Instead of intercepting submissions/clicks with preventDefault() manually, prefer using native form action APIs, appropriate button types (like type=\"button\"), or framework-provided routing/link elements to manage default behaviors.\n"
+  },
+  {
+    "rule_id": "react.no-prevent-default",
+    "severity": "info",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 166,
+    "message": "Calling preventDefault() in link or form click/submit handlers. Instead of intercepting submissions/clicks with preventDefault() manually, prefer using native form action APIs, appropriate button types (like type=\"button\"), or framework-provided routing/link elements to manage default behaviors.\n"
+  },
+  {
     "rule_id": "react.no-prop-types",
     "severity": "warning",
     "category": "quality",
@@ -2277,6 +2764,78 @@
     "message": "forwardRef is no longer necessary in React 19 because function components can receive ref as a normal prop. React documents forwardRef for future deprecation. Prefer a ref prop for new React 19 code and migrate when the component API can change safely.\n"
   },
   {
+    "rule_id": "react.no-uncontrolled-input",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "inputs.tsx",
+    "line": 10,
+    "message": "React controlled input conflict. Do not mix 'value' and 'defaultValue' (or 'checked' and 'defaultChecked') on the same input. Also, providing a 'value' (or 'checked') prop without an 'onChange' or 'readOnly' handler makes the input read-only and will cause React warnings.\n"
+  },
+  {
+    "rule_id": "react.no-uncontrolled-input",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "inputs.tsx",
+    "line": 13,
+    "message": "React controlled input conflict. Do not mix 'value' and 'defaultValue' (or 'checked' and 'defaultChecked') on the same input. Also, providing a 'value' (or 'checked') prop without an 'onChange' or 'readOnly' handler makes the input read-only and will cause React warnings.\n"
+  },
+  {
+    "rule_id": "react.no-uncontrolled-input",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "inputs.tsx",
+    "line": 16,
+    "message": "React controlled input conflict. Do not mix 'value' and 'defaultValue' (or 'checked' and 'defaultChecked') on the same input. Also, providing a 'value' (or 'checked') prop without an 'onChange' or 'readOnly' handler makes the input read-only and will cause React warnings.\n"
+  },
+  {
+    "rule_id": "react.no-uncontrolled-input",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "inputs.tsx",
+    "line": 19,
+    "message": "React controlled input conflict. Do not mix 'value' and 'defaultValue' (or 'checked' and 'defaultChecked') on the same input. Also, providing a 'value' (or 'checked') prop without an 'onChange' or 'readOnly' handler makes the input read-only and will cause React warnings.\n"
+  },
+  {
+    "rule_id": "react.no-uncontrolled-input",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "inputs.tsx",
+    "line": 22,
+    "message": "React controlled input conflict. Do not mix 'value' and 'defaultValue' (or 'checked' and 'defaultChecked') on the same input. Also, providing a 'value' (or 'checked') prop without an 'onChange' or 'readOnly' handler makes the input read-only and will cause React warnings.\n"
+  },
+  {
+    "rule_id": "react.no-uncontrolled-input",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "inputs.tsx",
+    "line": 25,
+    "message": "React controlled input conflict. Do not mix 'value' and 'defaultValue' (or 'checked' and 'defaultChecked') on the same input. Also, providing a 'value' (or 'checked') prop without an 'onChange' or 'readOnly' handler makes the input read-only and will cause React warnings.\n"
+  },
+  {
+    "rule_id": "react.no-uncontrolled-input",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "inputs.tsx",
+    "line": 28,
+    "message": "React controlled input conflict. Do not mix 'value' and 'defaultValue' (or 'checked' and 'defaultChecked') on the same input. Also, providing a 'value' (or 'checked') prop without an 'onChange' or 'readOnly' handler makes the input read-only and will cause React warnings.\n"
+  },
+  {
+    "rule_id": "react.no-uncontrolled-input",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "inputs.tsx",
+    "line": 31,
+    "message": "React controlled input conflict. Do not mix 'value' and 'defaultValue' (or 'checked' and 'defaultChecked') on the same input. Also, providing a 'value' (or 'checked') prop without an 'onChange' or 'readOnly' handler makes the input read-only and will cause React warnings.\n"
+  },
+  {
     "rule_id": "react.random-value-as-react-key",
     "severity": "error",
     "category": "bug",
@@ -2329,6 +2888,24 @@
     "file": "rn.tsx",
     "line": 55,
     "message": "React Native AsyncStorage is used to persist a token, secret, credential, or auth value. AsyncStorage is not encrypted storage, so sensitive values can be recovered from device backups, rooted devices, or local compromise. Store auth material in SecureStore, Keychain, Keystore, or another platform-backed secure storage API.\n"
+  },
+  {
+    "rule_id": "rn.rn-detox-missing-await",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "detox.ts",
+    "line": 2,
+    "message": "Detox test action or assertion is not awaited. Detox operations are asynchronous and must be awaited to execute in the correct sequence.\n"
+  },
+  {
+    "rule_id": "rn.rn-detox-missing-await",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "detox.ts",
+    "line": 5,
+    "message": "Detox test action or assertion is not awaited. Detox operations are asynchronous and must be awaited to execute in the correct sequence.\n"
   },
   {
     "rule_id": "rn.rn-dom-element-in-native",
@@ -2410,6 +2987,51 @@
     "file": "rn.tsx",
     "line": 63,
     "message": "In React Native, `{value \u0026\u0026 \u003cJSX/\u003e}` renders a bare 0 when value is 0 — a text node outside \u003cText\u003e — which crashes the screen (\"Text strings must be rendered within a \u003cText\u003e component\"). A numeric left operand (.length or a count-like variable) hits this whenever the list/value is empty. Guard with `value \u003e 0 \u0026\u0026 ...`, `!!value \u0026\u0026 ...`, or a ternary returning null.\n"
+  },
+  {
+    "rule_id": "rn.rn-no-legacy-expo-packages",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "rn.tsx",
+    "line": 98,
+    "message": "Import of deprecated Expo package detected. This package is deprecated or removed in newer Expo SDK versions. Use recommended alternatives (e.g. use expo-splash-screen instead of expo-app-loading, or individual module permissions APIs instead of expo-permissions).\n"
+  },
+  {
+    "rule_id": "rn.rn-no-legacy-expo-packages",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "rn.tsx",
+    "line": 99,
+    "message": "Import of deprecated Expo package detected. This package is deprecated or removed in newer Expo SDK versions. Use recommended alternatives (e.g. use expo-splash-screen instead of expo-app-loading, or individual module permissions APIs instead of expo-permissions).\n"
+  },
+  {
+    "rule_id": "rn.rn-no-legacy-expo-packages",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "rn.tsx",
+    "line": 100,
+    "message": "Import of deprecated Expo package detected. This package is deprecated or removed in newer Expo SDK versions. Use recommended alternatives (e.g. use expo-splash-screen instead of expo-app-loading, or individual module permissions APIs instead of expo-permissions).\n"
+  },
+  {
+    "rule_id": "rn.rn-no-set-native-props",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "rn.tsx",
+    "line": 108,
+    "message": "Deprecated setNativeProps() call detected. setNativeProps is deprecated and not compatible with the Fabric new architecture. Use component state or Reanimated shared values to dynamically update component properties instead.\n"
+  },
+  {
+    "rule_id": "rn.rn-no-set-native-props",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "rn.tsx",
+    "line": 109,
+    "message": "Deprecated setNativeProps() call detected. setNativeProps is deprecated and not compatible with the Fabric new architecture. Use component state or Reanimated shared values to dynamically update component properties instead.\n"
   },
   {
     "rule_id": "rn.rn-scrollview-over-flatlist",
@@ -2547,6 +3169,42 @@
     "message": "Server Action accepts input but does not appear to perform any authorization or authentication check. Server Actions are publicly accessible POST endpoints. Always verify the user's session and permissions at the start of the action (e.g. using auth(), getServerSession(), or custom verification helpers) to prevent unauthorized access.\n"
   },
   {
+    "rule_id": "server.server-cache-with-object-literal",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "server_auth_actions.tsx",
+    "line": 34,
+    "message": "React cache() or React.cache() called inside a function/class body. Calling cache() inside a component, hook, or function body recreates the cache instance on every invocation/render, completely defeating the memoization. Define the cached function at the module scope instead.\n"
+  },
+  {
+    "rule_id": "server.server-cache-with-object-literal",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "server_auth_actions.tsx",
+    "line": 37,
+    "message": "React cache() or React.cache() called inside a function/class body. Calling cache() inside a component, hook, or function body recreates the cache instance on every invocation/render, completely defeating the memoization. Define the cached function at the module scope instead.\n"
+  },
+  {
+    "rule_id": "server.server-cache-with-object-literal",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "server_auth_actions.tsx",
+    "line": 46,
+    "message": "React cache() or React.cache() called inside a function/class body. Calling cache() inside a component, hook, or function body recreates the cache instance on every invocation/render, completely defeating the memoization. Define the cached function at the module scope instead.\n"
+  },
+  {
+    "rule_id": "server.server-cache-with-object-literal",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "server_auth_actions.tsx",
+    "line": 54,
+    "message": "React cache() or React.cache() called inside a function/class body. Calling cache() inside a component, hook, or function body recreates the cache instance on every invocation/render, completely defeating the memoization. Define the cached function at the module scope instead.\n"
+  },
+  {
     "rule_id": "tanstack-start.tanstack-start-redirect-in-try-catch",
     "severity": "warning",
     "category": "bug",
@@ -2615,7 +3273,7 @@
     "category": "quality",
     "confidence": "hint",
     "file": "client.tsx",
-    "line": 22,
+    "line": 23,
     "message": "useMutation is called without cache invalidation or update. When performing a mutation, you should invalidate relevant query caches using queryClient.invalidateQueries() or update query data using queryClient.setQueryData() in onSuccess or onSettled callbacks. Otherwise, the user interface will remain stale and won't reflect the server-side changes.\n"
   },
   {
@@ -2624,7 +3282,7 @@
     "category": "quality",
     "confidence": "hint",
     "file": "client.tsx",
-    "line": 26,
+    "line": 27,
     "message": "useMutation is called without cache invalidation or update. When performing a mutation, you should invalidate relevant query caches using queryClient.invalidateQueries() or update query data using queryClient.setQueryData() in onSuccess or onSettled callbacks. Otherwise, the user interface will remain stale and won't reflect the server-side changes.\n"
   },
   {
@@ -2633,7 +3291,7 @@
     "category": "quality",
     "confidence": "hint",
     "file": "client.tsx",
-    "line": 33,
+    "line": 34,
     "message": "useMutation is called without cache invalidation or update. When performing a mutation, you should invalidate relevant query caches using queryClient.invalidateQueries() or update query data using queryClient.setQueryData() in onSuccess or onSettled callbacks. Otherwise, the user interface will remain stale and won't reflect the server-side changes.\n"
   },
   {
@@ -2678,7 +3336,7 @@
     "category": "quality",
     "confidence": "hint",
     "file": "client.tsx",
-    "line": 44,
+    "line": 45,
     "message": "TanStack Query key uses an inline string literal. Repeating raw strings across useQuery, setQueryData, and invalidateQueries makes cache updates easy to mistype or drift. Prefer a query-key factory or shared constant so reads and invalidations use the same key shape.\n"
   },
   {
@@ -2687,7 +3345,7 @@
     "category": "quality",
     "confidence": "hint",
     "file": "client.tsx",
-    "line": 50,
+    "line": 51,
     "message": "TanStack Query key uses an inline string literal. Repeating raw strings across useQuery, setQueryData, and invalidateQueries makes cache updates easy to mistype or drift. Prefer a query-key factory or shared constant so reads and invalidations use the same key shape.\n"
   },
   {
@@ -2696,7 +3354,7 @@
     "category": "quality",
     "confidence": "hint",
     "file": "client.tsx",
-    "line": 63,
+    "line": 64,
     "message": "TanStack Query key uses an inline string literal. Repeating raw strings across useQuery, setQueryData, and invalidateQueries makes cache updates easy to mistype or drift. Prefer a query-key factory or shared constant so reads and invalidations use the same key shape.\n"
   },
   {
@@ -2705,7 +3363,7 @@
     "category": "quality",
     "confidence": "hint",
     "file": "client.tsx",
-    "line": 74,
+    "line": 75,
     "message": "TanStack Query key uses an inline string literal. Repeating raw strings across useQuery, setQueryData, and invalidateQueries makes cache updates easy to mistype or drift. Prefer a query-key factory or shared constant so reads and invalidations use the same key shape.\n"
   },
   {
@@ -2759,7 +3417,7 @@
     "category": "performance",
     "confidence": "hint",
     "file": "client.tsx",
-    "line": 63,
+    "line": 64,
     "message": "useQuery is called without specifying a staleTime. By default, staleTime is 0, which means queries are instantly considered stale. For server-side rendered (SSR) or prefetched data, this causes an immediate client-side refetch upon hydration, resulting in duplicate network requests and potential screen flickering. Set a staleTime (e.g. staleTime: 1000 * 60 * 5) to cache and reuse the hydrated data.\n"
   },
   {
@@ -2768,7 +3426,7 @@
     "category": "performance",
     "confidence": "hint",
     "file": "client.tsx",
-    "line": 68,
+    "line": 69,
     "message": "useQuery is called without specifying a staleTime. By default, staleTime is 0, which means queries are instantly considered stale. For server-side rendered (SSR) or prefetched data, this causes an immediate client-side refetch upon hydration, resulting in duplicate network requests and potential screen flickering. Set a staleTime (e.g. staleTime: 1000 * 60 * 5) to cache and reuse the hydrated data.\n"
   },
   {
@@ -2779,6 +3437,15 @@
     "file": "client_data_fetch.tsx",
     "line": 42,
     "message": "useQuery is called without specifying a staleTime. By default, staleTime is 0, which means queries are instantly considered stale. For server-side rendered (SSR) or prefetched data, this causes an immediate client-side refetch upon hydration, resulting in duplicate network requests and potential screen flickering. Set a staleTime (e.g. staleTime: 1000 * 60 * 5) to cache and reuse the hydrated data.\n"
+  },
+  {
+    "rule_id": "view-transitions.no-flush-sync",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "client.tsx",
+    "line": 147,
+    "message": "Avoid using flushSync() to force synchronous updates. flushSync() bypasses React's concurrent rendering optimization and triggers synchronous, blocking layout passes. If integrating with View Transitions, use React 19's native startTransition support instead.\n"
   },
   {
     "rule_id": "vite.vite-insecure-config",
@@ -2831,7 +3498,7 @@
     "category": "bug",
     "confidence": "rule",
     "file": "client.tsx",
-    "line": 13,
+    "line": 14,
     "message": "process.env should not be used in a Vite project. Vite does not inject process.env by default, which can cause runtime ReferenceErrors (process is not defined) in the browser. Use import.meta.env instead.\n"
   },
   {

@@ -1,0 +1,14 @@
+rules:
+  - id: rn-no-set-native-props
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Deprecated setNativeProps() call detected. setNativeProps is deprecated and not compatible with the Fabric new architecture.
+      Use component state or Reanimated shared values to dynamically update component properties instead.
+    metadata:
+      category: correctness
+      confidence: rule
+    patterns:
+      - pattern-either:
+          - pattern: $REF.current.setNativeProps(...)
+          - pattern: $REF.setNativeProps(...)

@@ -1,0 +1,20 @@
+rules:
+  - id: prefer-dynamic-import
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Eagerly imported heavy library detected. This library is large and can significantly increase
+      your initial bundle size. Use dynamic imports (e.g. import() or React.lazy()) to load it asynchronously
+      only when needed.
+    metadata:
+      category: performance
+      confidence: rule
+    patterns:
+      - pattern-either:
+          - pattern: import $ANY from '$PKG'
+          - pattern: import * as $ANY from '$PKG'
+          - pattern: import '$PKG'
+          - pattern: require('$PKG')
+      - metavariable-regex:
+          metavariable: $PKG
+          regex: ^(monaco-editor|@monaco-editor/react|recharts|chart\.js|apexcharts|pdfjs-dist|@wangeditor/editor)$

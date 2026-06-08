@@ -1,0 +1,14 @@
+rules:
+  - id: no-dynamic-import-path
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Non-static dynamic import path detected. Using a variable or expression
+      inside import() prevents the bundler from analyzing and splitting the
+      imported modules into static chunks. Use static string literals inside import() instead.
+    metadata:
+      category: performance
+      confidence: rule
+    patterns:
+      - pattern: import($PATH)
+      - pattern-not: import("...")

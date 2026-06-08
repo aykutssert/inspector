@@ -742,3 +742,81 @@ func TestUseEffectFetchSuggestQuerySafe(t *testing.T) {
 		t.Fatalf("did not expect react-useeffect-fetch-suggest-query finding, got %v", ids)
 	}
 }
+
+func TestNoRenderInRender(t *testing.T) {
+	src := `
+		function Parent() {
+			return (
+				<div>
+					{Child()}
+					{ListItem({ item: "hello" })}
+					{renderHeader()}
+					{renderItem("test")}
+					{this.renderFooter()}
+				</div>
+			);
+		}
+	`
+	ids := parseSrc(t, ".tsx", src)
+	if countID(ids, "no-render-in-render") != 5 {
+		t.Fatalf("expected 5 no-render-in-render findings, got %v", ids)
+	}
+}
+
+func TestNoRenderInRenderSafe(t *testing.T) {
+	src := `
+		function Parent() {
+			return (
+				<div>
+					<Child />
+					<ListItem item="hello" />
+					{Boolean(true)}
+					{Date()}
+					{Math.random()}
+					{renderHeader}
+				</div>
+			);
+		}
+	`
+	ids := parseSrc(t, ".tsx", src)
+	if has(ids, "no-render-in-render") {
+		t.Fatalf("did not expect any no-render-in-render findings, got %v", ids)
+	}
+}
+
+func TestStableEmptyFallback(t *testing.T) {
+	src := `
+		function Parent(props) {
+			const items = props.items || [];
+			const options = props.options ?? {};
+			return null;
+		}
+	`
+	ids := parseSrc(t, ".tsx", src)
+	if countID(ids, "prefer-stable-empty-fallback") != 2 {
+		t.Fatalf("expected 2 prefer-stable-empty-fallback findings, got %v", ids)
+	}
+}
+
+func TestStableEmptyFallbackSafe(t *testing.T) {
+	src := `
+		const EMPTY_ARRAY = [];
+		const EMPTY_OBJECT = {};
+		const fallbackAtModule = someVal || []; // Safe: outside component
+
+		function Parent({ items = [], options = {} }) { // Safe: default parameter
+			const { data = {} } = props; // Safe: default destructuring
+			const list = props.list || EMPTY_ARRAY; // Safe: stable variable
+			const config = props.config || { compact: true }; // Safe: non-empty object
+			const nums = props.nums || [1, 2]; // Safe: non-empty array
+			const str = props.name || "default"; // Safe: string fallback
+			return null;
+		}
+	`
+	ids := parseSrc(t, ".tsx", src)
+	if has(ids, "prefer-stable-empty-fallback") {
+		t.Fatalf("did not expect any prefer-stable-empty-fallback findings, got %v", ids)
+	}
+}
+
+

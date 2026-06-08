@@ -1,0 +1,28 @@
+rules:
+  - id: server-cache-with-object-literal
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      React cache() or React.cache() called inside a function/class body.
+      Calling cache() inside a component, hook, or function body recreates the cache instance on every invocation/render,
+      completely defeating the memoization. Define the cached function at the module scope instead.
+    metadata:
+      category: performance
+      confidence: rule
+    patterns:
+      - pattern-either:
+          - pattern: cache(...)
+          - pattern: React.cache(...)
+      - pattern-either:
+          - pattern-inside: |
+              function $F(...) {
+                ...
+              }
+          - pattern-inside: |
+              const $F = (...) => {
+                ...
+              }
+          - pattern-inside: |
+              class $C {
+                ...
+              }

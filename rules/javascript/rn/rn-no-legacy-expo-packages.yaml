@@ -1,0 +1,19 @@
+rules:
+  - id: rn-no-legacy-expo-packages
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Import of deprecated Expo package detected. This package is deprecated or removed in newer Expo SDK versions.
+      Use recommended alternatives (e.g. use expo-splash-screen instead of expo-app-loading, or individual module permissions APIs instead of expo-permissions).
+    metadata:
+      category: correctness
+      confidence: rule
+    patterns:
+      - pattern-either:
+          - pattern: import $ANY from '$PKG'
+          - pattern: import * as $ANY from '$PKG'
+          - pattern: import '$PKG'
+          - pattern: require('$PKG')
+      - metavariable-regex:
+          metavariable: $PKG
+          regex: ^(expo-permissions|expo-app-loading|expo-ads-admob|expo-facebook|expo-google-sign-in|expo-segment|expo-ar|expo-payments-stripe)$

@@ -1,0 +1,48 @@
+rules:
+  - id: client-passive-event-listeners
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Scroll/touch event listener registered without '{ passive: true }'.
+      Touch and wheel event listeners ('touchstart', 'touchmove', 'wheel', 'mousewheel') should be registered with
+      '{ passive: true }' to improve scroll performance and avoid layout/scroll jank, unless they call 'event.preventDefault()'.
+    metadata:
+      category: performance
+      confidence: rule
+    patterns:
+      - pattern-either:
+          - pattern: $TARGET.addEventListener($TYPE, $CALLBACK)
+          - pattern: $TARGET.addEventListener($TYPE, $CALLBACK, $OPTIONS)
+          - pattern: addEventListener($TYPE, $CALLBACK)
+          - pattern: addEventListener($TYPE, $CALLBACK, $OPTIONS)
+      - metavariable-regex:
+          metavariable: $TYPE
+          regex: ^["'](touchstart|touchmove|wheel|mousewheel)["']$
+      - pattern-not: "$TARGET.addEventListener($TYPE, $CALLBACK, {..., passive: true, ...})"
+      - pattern-not: "addEventListener($TYPE, $CALLBACK, {..., passive: true, ...})"
+      - pattern-not: |
+          $TARGET.addEventListener($TYPE, ($EVENT) => {
+            ...
+            $EVENT.preventDefault(...)
+            ...
+          })
+      - pattern-not: |
+          $TARGET.addEventListener($TYPE, function ($EVENT) {
+            ...
+            $EVENT.preventDefault(...)
+            ...
+          })
+      - pattern-not: |
+          addEventListener($TYPE, ($EVENT) => {
+            ...
+            $EVENT.preventDefault(...)
+            ...
+          })
+      - pattern-not: |
+          addEventListener($TYPE, function ($EVENT) {
+            ...
+            $EVENT.preventDefault(...)
+            ...
+          })
+      - pattern-not: $TARGET.addEventListener($TYPE, ($EVENT) => $EVENT.preventDefault(...))
+      - pattern-not: addEventListener($TYPE, ($EVENT) => $EVENT.preventDefault(...))

@@ -1,0 +1,27 @@
+rules:
+  - id: nextjs-image-missing-sizes
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Next.js <Image> component is missing the 'sizes' property. For responsive images
+      (especially those using 'fill' or responsive layouts), specifying 'sizes' is
+      important for performance so the browser downloads the correct image size.
+    metadata:
+      category: performance
+      confidence: rule
+    patterns:
+      - pattern: <$IMG ... />
+      - pattern-not: <$IMG sizes="..." ... />
+      - pattern-not: <$IMG sizes={...} ... />
+      - pattern-either:
+          - pattern-inside: |
+              <$IMG fill ... />
+          - pattern-inside: |
+              <$IMG fill={true} ... />
+          - pattern-inside: |
+              <$IMG layout="fill" ... />
+          - pattern-inside: |
+              <$IMG layout="responsive" ... />
+      - metavariable-regex:
+          metavariable: $IMG
+          regex: ^(Image)$

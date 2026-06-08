@@ -1,0 +1,28 @@
+rules:
+  - id: no-outline-none
+    languages: [typescript, javascript]
+    severity: INFO
+    message: >
+      Disabling focus outlines with outline: none or outline: 0.
+      Focus outlines are critical for keyboard navigation accessibility (A11y). If you disable the default outline,
+      you must provide an alternative visible focus indicator (e.g., custom border or box-shadow ring) for focus states.
+    metadata:
+      category: accessibility
+      confidence: hint
+    patterns:
+      - pattern-either:
+          - pattern: |
+              <$TAG ... style={{ outline: $VAL }} ... />
+          - pattern: |
+              <$TAG ... style={{ outline: $VAL }} ...>...</$TAG>
+          - pattern: |
+              <$TAG ... style={{ outlineStyle: $VAL }} ... />
+          - pattern: |
+              <$TAG ... style={{ outlineStyle: $VAL }} ...>...</$TAG>
+          - pattern: |
+              <$TAG ... style={{ outlineWidth: $VAL }} ... />
+          - pattern: |
+              <$TAG ... style={{ outlineWidth: $VAL }} ...>...</$TAG>
+      - metavariable-regex:
+          metavariable: $VAL
+          regex: (?i).*\b(none|0px|0)\b.*

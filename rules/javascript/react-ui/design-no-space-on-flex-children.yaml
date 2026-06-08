@@ -1,0 +1,18 @@
+rules:
+  - id: design-no-space-on-flex-children
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Tailwind class 'space-x' or 'space-y' detected. Using space-x/y utilities on
+      flex layouts can cause layout bugs (especially in RTL or with hidden children).
+      Prefer using flexbox gap utilities ('gap-x', 'gap-y', or 'gap') instead.
+    metadata:
+      category: correctness
+      confidence: rule
+    patterns:
+      - pattern-either:
+          - pattern: <$TAG className=$CLASS>...</$TAG>
+          - pattern: <$TAG className=$CLASS />
+      - metavariable-regex:
+          metavariable: $CLASS
+          regex: (?i).*(space-[xy]-\d+|space-[xy]-px|space-[xy]-reverse).*

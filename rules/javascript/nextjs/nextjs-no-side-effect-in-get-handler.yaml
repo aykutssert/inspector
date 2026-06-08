@@ -1,0 +1,64 @@
+rules:
+  - id: nextjs-no-side-effect-in-get-handler
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Side effect detected in Next.js GET handler. GET requests are idempotent and can be pre-fetched
+      or cached by the browser/CDN, making side effects (like database mutations or state writes)
+      unpredictable and vulnerable to CSRF. Use a POST handler instead for state-changing operations.
+    metadata:
+      category: security
+      confidence: rule
+    paths:
+      include:
+        - "**/route.js"
+        - "**/route.jsx"
+        - "**/route.ts"
+        - "**/route.tsx"
+    patterns:
+      - pattern-either:
+          - pattern-inside: |
+              export function GET(...) {
+                ...
+              }
+          - pattern-inside: |
+              export async function GET(...) {
+                ...
+              }
+          - pattern-inside: |
+              export const GET = (...) => {
+                ...
+              }
+          - pattern-inside: |
+              export const GET = async (...) => {
+                ...
+              }
+          - pattern-inside: |
+              export const GET = function(...) {
+                ...
+              }
+          - pattern-inside: |
+              export const GET = async function(...) {
+                ...
+              }
+      - pattern-either:
+          # Prisma mutations
+          - pattern: $DB.create(...)
+          - pattern: $DB.update(...)
+          - pattern: $DB.delete(...)
+          - pattern: $DB.upsert(...)
+          - pattern: $DB.createMany(...)
+          - pattern: $DB.updateMany(...)
+          - pattern: $DB.deleteMany(...)
+          # Mongoose/MongoDB mutations
+          - pattern: $MODEL.save(...)
+          - pattern: $MODEL.updateOne(...)
+          - pattern: $MODEL.updateMany(...)
+          - pattern: $MODEL.deleteOne(...)
+          - pattern: $MODEL.deleteMany(...)
+          - pattern: $MODEL.create(...)
+          # Drizzle ORM mutations
+          - pattern: $DB.insert(...)
+          - pattern: $DB.update(...)
+          - pattern: $DB.delete(...)
+

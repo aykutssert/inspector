@@ -80,6 +80,9 @@ func scanFile(abs, rel string) ([]core.Finding, error) {
 	var findings []core.Finding
 	findings = append(findings, detectImageChildren(tree.RootNode(), src, rel, importedNames, namespaces)...)
 	findings = append(findings, detectBareStrings(tree.RootNode(), src, rel, importedNames, namespaces)...)
+	findings = append(findings, detectListDataMapped(tree.RootNode(), src, rel, importedNames, namespaces)...)
+	findings = append(findings, detectListCallbackPerRow(tree.RootNode(), src, rel, importedNames, namespaces)...)
+	findings = append(findings, detectScrollViewMappedList(tree.RootNode(), src, rel, importedNames, namespaces)...)
 	return findings, nil
 }
 
@@ -303,3 +306,205 @@ func walk(node *sitter.Node, fn func(*sitter.Node)) {
 		walk(node.NamedChild(i), fn)
 	}
 }
+
+func detectListDataMapped(root *sitter.Node, src []byte, file string, importedNames map[string]string, namespaces map[string]bool) []core.Finding {
+	var findings []core.Finding
+	walk(root, func(node *sitter.Node) {
+		if node.Type() != "jsx_element" && node.Type() != "jsx_self_closing_element" {
+			return
+		}
+		var opening *sitter.Node
+		if node.Type() == "jsx_element" {
+			opening = directChildOfType(node, "jsx_opening_element")
+		} else {
+			opening = node
+		}
+		if opening == nil {
+			return
+		}
+		tag := jsxTagName(opening, src)
+		isList := tag == "FlatList" || tag == "FlashList" || importedNames[tag] == "FlatList"
+		if !isList {
+			for namespace := range namespaces {
+				if tag == namespace+".FlatList" {
+					isList = true
+					break
+				}
+			}
+		}
+		if !isList {
+			return
+		}
+
+		walk(opening, func(attr *sitter.Node) {
+			if attr.Type() != "jsx_attribute" {
+				return
+			}
+			nameNode := attr.NamedChild(0)
+			if nameNode == nil || nameNode.Content(src) != "data" {
+				return
+			}
+			valNode := attr.NamedChild(1)
+			if valNode == nil || valNode.Type() != "jsx_expression" {
+				return
+			}
+			for i := 0; i < int(valNode.NamedChildCount()); i++ {
+				child := valNode.NamedChild(i)
+				if isInlineMapCall(child, src) {
+					findings = append(findings, core.Finding{
+						Analyzer:   "rn-hint",
+						RuleID:     "rn-list-data-mapped",
+						Severity:   core.SeverityWarning,
+						Level:      core.SeverityWarning.String(),
+						Category:   "performance",
+						Confidence: core.ConfidenceRule,
+						File:       file,
+						Line:       int(child.StartPoint().Row) + 1,
+						Message:    "List 'data' prop is populated via inline '.map()' inside render body. This recreates the array reference on every render, causing performance degradation by forcing child cells to redraw.",
+						Fix:        "Move the data mapping logic to a useMemo hook or outside the component's render body.",
+					})
+				}
+			}
+		})
+	})
+	return findings
+}
+
+func detectListCallbackPerRow(root *sitter.Node, src []byte, file string, importedNames map[string]string, namespaces map[string]bool) []core.Finding {
+	var findings []core.Finding
+	walk(root, func(node *sitter.Node) {
+		if node.Type() != "jsx_element" && node.Type() != "jsx_self_closing_element" {
+			return
+		}
+		var opening *sitter.Node
+		if node.Type() == "jsx_element" {
+			opening = directChildOfType(node, "jsx_opening_element")
+		} else {
+			opening = node
+		}
+		if opening == nil {
+			return
+		}
+		tag := jsxTagName(opening, src)
+		isList := tag == "FlatList" || tag == "FlashList" || importedNames[tag] == "FlatList"
+		if !isList {
+			for namespace := range namespaces {
+				if tag == namespace+".FlatList" {
+					isList = true
+					break
+				}
+			}
+		}
+		if !isList {
+			return
+		}
+
+		walk(opening, func(attr *sitter.Node) {
+			if attr.Type() != "jsx_attribute" {
+				return
+			}
+			nameNode := attr.NamedChild(0)
+			if nameNode == nil || nameNode.Content(src) != "renderItem" {
+				return
+			}
+			valNode := attr.NamedChild(1)
+			if valNode == nil || valNode.Type() != "jsx_expression" {
+				return
+			}
+			for i := 0; i < int(valNode.NamedChildCount()); i++ {
+				child := valNode.NamedChild(i)
+				if isInlineFunction(child) {
+					findings = append(findings, core.Finding{
+						Analyzer:   "rn-hint",
+						RuleID:     "rn-list-callback-per-row",
+						Severity:   core.SeverityWarning,
+						Level:      core.SeverityWarning.String(),
+						Category:   "performance",
+						Confidence: core.ConfidenceRule,
+						File:       file,
+						Line:       int(child.StartPoint().Row) + 1,
+						Message:    "List 'renderItem' callback is defined inline inside the render body. This recreates the callback function on every render, breaking item view recycling optimization.",
+						Fix:        "Extract the renderItem function to a separate component, module scope, or wrap it in a useCallback hook.",
+					})
+				}
+			}
+		})
+	})
+	return findings
+}
+
+func detectScrollViewMappedList(root *sitter.Node, src []byte, file string, importedNames map[string]string, namespaces map[string]bool) []core.Finding {
+	var findings []core.Finding
+	walk(root, func(node *sitter.Node) {
+		if node.Type() != "jsx_element" {
+			return
+		}
+		opening := directChildOfType(node, "jsx_opening_element")
+		if opening == nil {
+			return
+		}
+		tag := jsxTagName(opening, src)
+		isScrollView := tag == "ScrollView" || importedNames[tag] == "ScrollView"
+		if !isScrollView {
+			for namespace := range namespaces {
+				if tag == namespace+".ScrollView" {
+					isScrollView = true
+					break
+				}
+			}
+		}
+		if !isScrollView {
+			return
+		}
+
+		for i := 0; i < int(node.NamedChildCount()); i++ {
+			child := node.NamedChild(i)
+			if child.Type() != "jsx_expression" {
+				continue
+			}
+			for j := 0; j < int(child.NamedChildCount()); j++ {
+				expr := child.NamedChild(j)
+				if isInlineMapCall(expr, src) {
+					findings = append(findings, core.Finding{
+						Analyzer:   "rn-hint",
+						RuleID:     "rn-no-scrollview-mapped-list",
+						Severity:   core.SeverityWarning,
+						Level:      core.SeverityWarning.String(),
+						Category:   "performance",
+						Confidence: core.ConfidenceRule,
+						File:       file,
+						Line:       int(expr.StartPoint().Row) + 1,
+						Message:    "Inline '.map()' list rendering detected inside a <ScrollView>. This renders all items at once without virtualization, which can cause severe lag and memory issues for large lists.",
+						Fix:        "Replace <ScrollView> with <FlatList> or Shopify's <FlashList> to enable lazy rendering and component recycling.",
+					})
+				}
+			}
+		}
+	})
+	return findings
+}
+
+func isInlineMapCall(node *sitter.Node, src []byte) bool {
+	if node == nil || node.Type() != "call_expression" {
+		return false
+	}
+	callee := node.ChildByFieldName("function")
+	if callee == nil {
+		return false
+	}
+	if callee.Type() == "member_expression" {
+		prop := callee.ChildByFieldName("property")
+		if prop != nil && prop.Content(src) == "map" {
+			return true
+		}
+	}
+	return false
+}
+
+func isInlineFunction(node *sitter.Node) bool {
+	if node == nil {
+		return false
+	}
+	return node.Type() == "arrow_function" || node.Type() == "function_expression"
+}
+
