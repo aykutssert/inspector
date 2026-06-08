@@ -56,6 +56,12 @@ var detectors = []detector{
 	detectUseEffectFetchSuggestQuery,
 	detectUseEffectMissingCleanup,
 	detectStableEmptyFallback,
+	// effect anti-patterns (#78, #85, #86, #91, #92)
+	detectInitializeState,
+	detectMutableInDeps,
+	detectPreferUseSyncExternalStore,
+	detectCascadingSetState,
+	detectSelfUpdatingEffect,
 }
 
 

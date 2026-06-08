@@ -820,3 +820,187 @@ func TestStableEmptyFallbackSafe(t *testing.T) {
 }
 
 
+
+// ─── no-initialize-state (#85) ─────────────────────────────────────────────
+
+func TestInitializeState_Fires(t *testing.T) {
+	src := `function C() {
+  const [v, setV] = useState(null);
+  useEffect(() => { setV(computeInitial()); }, []);
+  return null;
+}`
+	if ids := parseSrc(t, ".tsx", src); !has(ids, "no-initialize-state") {
+		t.Fatalf("expected no-initialize-state, got %v", ids)
+	}
+}
+
+func TestInitializeState_ConciseArrow(t *testing.T) {
+	src := `function C() {
+  const [v, setV] = useState(null);
+  useEffect(() => setV(42), []);
+  return null;
+}`
+	if ids := parseSrc(t, ".tsx", src); !has(ids, "no-initialize-state") {
+		t.Fatalf("expected no-initialize-state for concise arrow, got %v", ids)
+	}
+}
+
+func TestInitializeState_WithFetch_NotFlagged(t *testing.T) {
+	src := `function C() {
+  const [data, setData] = useState(null);
+  useEffect(() => {
+    fetch("/api").then(r => r.json()).then(setData);
+  }, []);
+  return null;
+}`
+	if ids := parseSrc(t, ".tsx", src); has(ids, "no-initialize-state") {
+		t.Fatalf("no-initialize-state should not fire when body has fetch, got %v", ids)
+	}
+}
+
+func TestInitializeState_NonEmptyDeps_NotFlagged(t *testing.T) {
+	src := `function C({ id }) {
+  const [v, setV] = useState(null);
+  useEffect(() => { setV(id * 2); }, [id]);
+  return null;
+}`
+	if ids := parseSrc(t, ".tsx", src); has(ids, "no-initialize-state") {
+		t.Fatalf("no-initialize-state should not fire with non-empty deps, got %v", ids)
+	}
+}
+
+// ─── no-mutable-in-deps (#86) ──────────────────────────────────────────────
+
+func TestMutableInDeps_RefCurrent(t *testing.T) {
+	src := `function C({ inputRef }) {
+  useEffect(() => {
+    inputRef.current.focus();
+  }, [inputRef.current]);
+  return null;
+}`
+	if ids := parseSrc(t, ".tsx", src); !has(ids, "no-mutable-in-deps") {
+		t.Fatalf("expected no-mutable-in-deps for ref.current, got %v", ids)
+	}
+}
+
+func TestMutableInDeps_LocationPathname(t *testing.T) {
+	src := `function C() {
+  useEffect(() => {
+    console.log("path changed");
+  }, [location.pathname]);
+  return null;
+}`
+	if ids := parseSrc(t, ".tsx", src); !has(ids, "no-mutable-in-deps") {
+		t.Fatalf("expected no-mutable-in-deps for location.pathname, got %v", ids)
+	}
+}
+
+func TestMutableInDeps_StateVar_NotFlagged(t *testing.T) {
+	src := `function C() {
+  const [count, setCount] = useState(0);
+  useEffect(() => { doSomething(count); }, [count]);
+  return null;
+}`
+	if ids := parseSrc(t, ".tsx", src); has(ids, "no-mutable-in-deps") {
+		t.Fatalf("no-mutable-in-deps should not fire for reactive state, got %v", ids)
+	}
+}
+
+// ─── prefer-use-sync-external-store (#92) ──────────────────────────────────
+
+func TestPreferUseSyncExternalStore_Fires(t *testing.T) {
+	src := `function C() {
+  const [state, setState] = useState(store.getState());
+  useEffect(() => {
+    const unsub = store.subscribe(() => setState(store.getState()));
+    return () => unsub();
+  }, []);
+  return null;
+}`
+	if ids := parseSrc(t, ".tsx", src); !has(ids, "prefer-use-sync-external-store") {
+		t.Fatalf("expected prefer-use-sync-external-store, got %v", ids)
+	}
+}
+
+func TestPreferUseSyncExternalStore_NoCleanup_NotFlagged(t *testing.T) {
+	src := `function C() {
+  useEffect(() => {
+    store.subscribe(() => doSomething());
+  }, []);
+  return null;
+}`
+	if ids := parseSrc(t, ".tsx", src); has(ids, "prefer-use-sync-external-store") {
+		t.Fatalf("prefer-use-sync-external-store should not fire without cleanup, got %v", ids)
+	}
+}
+
+// ─── no-cascading-set-state (#78) ──────────────────────────────────────────
+
+func TestCascadingSetState_Fires(t *testing.T) {
+	src := `function C() {
+  const [a, setA] = useState(null);
+  const [b, setB] = useState(null);
+  useEffect(() => {
+    setA(1);
+    setB(2);
+  }, [dep]);
+  return null;
+}`
+	if ids := parseSrc(t, ".tsx", src); !has(ids, "no-cascading-set-state") {
+		t.Fatalf("expected no-cascading-set-state, got %v", ids)
+	}
+}
+
+func TestCascadingSetState_SingleSetter_NotFlagged(t *testing.T) {
+	src := `function C() {
+  const [v, setV] = useState(0);
+  useEffect(() => { setV(42); }, [dep]);
+  return null;
+}`
+	if ids := parseSrc(t, ".tsx", src); has(ids, "no-cascading-set-state") {
+		t.Fatalf("no-cascading-set-state should not fire for single setter, got %v", ids)
+	}
+}
+
+// ─── no-self-updating-effect (#91) ─────────────────────────────────────────
+
+func TestSelfUpdatingEffect_Fires(t *testing.T) {
+	src := `function C() {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    setCount(count + 1);
+  }, [count]);
+  return null;
+}`
+	if ids := parseSrc(t, ".tsx", src); !has(ids, "no-self-updating-effect") {
+		t.Fatalf("expected no-self-updating-effect, got %v", ids)
+	}
+}
+
+func TestSelfUpdatingEffect_FunctionalUpdate_NotFlagged(t *testing.T) {
+	// Using functional update removes the state from deps — correct pattern.
+	src := `function C() {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    setCount(prev => prev + 1);
+  }, []);
+  return null;
+}`
+	if ids := parseSrc(t, ".tsx", src); has(ids, "no-self-updating-effect") {
+		t.Fatalf("no-self-updating-effect should not fire for functional update, got %v", ids)
+	}
+}
+
+func TestSelfUpdatingEffect_DifferentSetter_NotFlagged(t *testing.T) {
+	src := `function C() {
+  const [a, setA] = useState(0);
+  const [b, setB] = useState(0);
+  useEffect(() => {
+    setB(a + 1); // updates b from a — a is in deps, but setA is not called
+  }, [a]);
+  return null;
+}`
+	if ids := parseSrc(t, ".tsx", src); has(ids, "no-self-updating-effect") {
+		t.Fatalf("no-self-updating-effect should not fire when setter != dep var, got %v", ids)
+	}
+}
