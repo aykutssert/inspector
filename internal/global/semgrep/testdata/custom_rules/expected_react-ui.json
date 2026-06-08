@@ -1,0 +1,92 @@
+[
+  {
+    "rule_id": "react-ui.design-no-redundant-padding-axes",
+    "severity": "info",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "design.tsx",
+    "line": 7,
+    "message": "Equal px-N and py-N Tailwind classes can be simplified to p-N. Use the shorthand utility to reduce class list noise.\n"
+  },
+  {
+    "rule_id": "react-ui.design-no-redundant-padding-axes",
+    "severity": "info",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "design.tsx",
+    "line": 12,
+    "message": "Equal px-N and py-N Tailwind classes can be simplified to p-N. Use the shorthand utility to reduce class list noise.\n"
+  },
+  {
+    "rule_id": "react-ui.design-no-redundant-size-axes",
+    "severity": "info",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "design.tsx",
+    "line": 24,
+    "message": "Equal w-N and h-N Tailwind classes can be simplified to size-N (Tailwind v3.4+). Use the shorthand utility to reduce class list noise.\n"
+  },
+  {
+    "rule_id": "react-ui.design-no-redundant-size-axes",
+    "severity": "info",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "design.tsx",
+    "line": 29,
+    "message": "Equal w-N and h-N Tailwind classes can be simplified to size-N (Tailwind v3.4+). Use the shorthand utility to reduce class list noise.\n"
+  },
+  {
+    "rule_id": "react-ui.design-no-space-on-flex-children",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "flex_space.tsx",
+    "line": 5,
+    "message": "Tailwind class 'space-x' or 'space-y' detected. Using space-x/y utilities on flex layouts can cause layout bugs (especially in RTL or with hidden children). Prefer using flexbox gap utilities ('gap-x', 'gap-y', or 'gap') instead.\n"
+  },
+  {
+    "rule_id": "react-ui.design-no-space-on-flex-children",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "flex_space.tsx",
+    "line": 10,
+    "message": "Tailwind class 'space-x' or 'space-y' detected. Using space-x/y utilities on flex layouts can cause layout bugs (especially in RTL or with hidden children). Prefer using flexbox gap utilities ('gap-x', 'gap-y', or 'gap') instead.\n"
+  },
+  {
+    "rule_id": "react-ui.design-no-three-period-ellipsis",
+    "severity": "info",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "design.tsx",
+    "line": 41,
+    "message": "Three ASCII periods '...' used as an ellipsis in JSX text content. Use the typographic ellipsis character '…' (U+2026) instead for correct spacing and screen-reader pronunciation.\n"
+  },
+  {
+    "rule_id": "react-ui.design-no-three-period-ellipsis",
+    "severity": "info",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "design.tsx",
+    "line": 46,
+    "message": "Three ASCII periods '...' used as an ellipsis in JSX text content. Use the typographic ellipsis character '…' (U+2026) instead for correct spacing and screen-reader pronunciation.\n"
+  },
+  {
+    "rule_id": "react-ui.rendering-animate-svg-wrapper",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "animations.tsx",
+    "line": 68,
+    "message": "Animating an SVG element directly with motion.svg causes browser repaint issues on many devices because SVG elements cannot be composited to their own GPU layer. Wrap the SVG in a motion.div (or motion.span) and animate the wrapper instead, keeping the SVG inside as a static child.\n"
+  },
+  {
+    "rule_id": "react-ui.rendering-animate-svg-wrapper",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "animations.tsx",
+    "line": 82,
+    "message": "Animating an SVG element directly with motion.svg causes browser repaint issues on many devices because SVG elements cannot be composited to their own GPU layer. Wrap the SVG in a motion.div (or motion.span) and animate the wrapper instead, keeping the SVG inside as a static child.\n"
+  }
+]

@@ -1,0 +1,101 @@
+[
+  {
+    "rule_id": "vite.vite-insecure-config",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 500,
+    "message": "Vite dev server is configured to listen on all interfaces. This can expose local development services to the LAN or container network. Bind to localhost unless remote device testing is intentional, and document the reason when host: true is required.\n"
+  },
+  {
+    "rule_id": "vite.vite-process-env-usage",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "case.tsx",
+    "line": 135,
+    "message": "process.env should not be used in a Vite project. Vite does not inject process.env by default, which can cause runtime ReferenceErrors (process is not defined) in the browser. Use import.meta.env instead.\n"
+  },
+  {
+    "rule_id": "vite.vite-process-env-usage",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "case.tsx",
+    "line": 137,
+    "message": "process.env should not be used in a Vite project. Vite does not inject process.env by default, which can cause runtime ReferenceErrors (process is not defined) in the browser. Use import.meta.env instead.\n"
+  },
+  {
+    "rule_id": "vite.vite-process-env-usage",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "case.tsx",
+    "line": 138,
+    "message": "process.env should not be used in a Vite project. Vite does not inject process.env by default, which can cause runtime ReferenceErrors (process is not defined) in the browser. Use import.meta.env instead.\n"
+  },
+  {
+    "rule_id": "vite.vite-process-env-usage",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "case.tsx",
+    "line": 317,
+    "message": "process.env should not be used in a Vite project. Vite does not inject process.env by default, which can cause runtime ReferenceErrors (process is not defined) in the browser. Use import.meta.env instead.\n"
+  },
+  {
+    "rule_id": "vite.vite-process-env-usage",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "client.tsx",
+    "line": 14,
+    "message": "process.env should not be used in a Vite project. Vite does not inject process.env by default, which can cause runtime ReferenceErrors (process is not defined) in the browser. Use import.meta.env instead.\n"
+  },
+  {
+    "rule_id": "vite.vite-process-env-usage",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "rn.tsx",
+    "line": 82,
+    "message": "process.env should not be used in a Vite project. Vite does not inject process.env by default, which can cause runtime ReferenceErrors (process is not defined) in the browser. Use import.meta.env instead.\n"
+  },
+  {
+    "rule_id": "vite.vite-process-env-usage",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "tanstack_start.tsx",
+    "line": 31,
+    "message": "process.env should not be used in a Vite project. Vite does not inject process.env by default, which can cause runtime ReferenceErrors (process is not defined) in the browser. Use import.meta.env instead.\n"
+  },
+  {
+    "rule_id": "vite.vite-process-env-usage",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "tanstack_start.tsx",
+    "line": 39,
+    "message": "process.env should not be used in a Vite project. Vite does not inject process.env by default, which can cause runtime ReferenceErrors (process is not defined) in the browser. Use import.meta.env instead.\n"
+  },
+  {
+    "rule_id": "vite.vite-process-env-usage",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "tanstack_start.tsx",
+    "line": 47,
+    "message": "process.env should not be used in a Vite project. Vite does not inject process.env by default, which can cause runtime ReferenceErrors (process is not defined) in the browser. Use import.meta.env instead.\n"
+  },
+  {
+    "rule_id": "vite.vite-public-secret-prefix",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 495,
+    "message": "A VITE_* environment variable is named like a secret. Vite exposes every VITE_* value to client-side code, so tokens, passwords, private keys, and credentials with this prefix are shipped to the browser. Rename real secrets without the VITE_ prefix and read them only on the server.\n"
+  }
+]

@@ -42,32 +42,82 @@ func TestJavaScriptCustomRulesGolden(t *testing.T) {
 	}
 
 	normalized := normalizeFindings(got)
-	actual, err := json.MarshalIndent(normalized, "", "  ")
-	if err != nil {
-		t.Fatal(err)
-	}
-	actual = append(actual, '\n')
+	byNS := groupFindingsByNamespace(normalized)
 
-	expectedPath := filepath.Join(root, "expected.json")
-	// UPDATE_EXPECTED=true regenerates the golden instead of hand-editing it.
-	// Adding/changing a rule shifts line numbers of every later finding in a
-	// shared fixture, so manual edits are churn-prone; this writes the canonical
-	// output (same flag the corpus regression test uses).
+	// UPDATE_EXPECTED=true regenerates the per-namespace goldens instead of
+	// hand-editing them. Each namespace lives in expected_<ns>.json so that
+	// a new rule in one namespace only touches its own golden file — no
+	// line-shift churn across unrelated namespaces.
 	if os.Getenv("UPDATE_EXPECTED") == "true" {
-		if err := os.WriteFile(expectedPath, actual, 0o644); err != nil {
-			t.Fatalf("failed to update golden: %v", err)
+		for ns, findings := range byNS {
+			path := filepath.Join(root, "expected_"+ns+".json")
+			data, merr := json.MarshalIndent(findings, "", "  ")
+			if merr != nil {
+				t.Fatalf("marshal namespace %q: %v", ns, merr)
+			}
+			data = append(data, '\n')
+			if werr := os.WriteFile(path, data, 0o644); werr != nil {
+				t.Fatalf("write golden %s: %v", path, werr)
+			}
+			t.Logf("updated golden %s", path)
 		}
-		t.Logf("updated golden %s", expectedPath)
+		// Remove stale namespace files for namespaces that produced zero findings.
+		existing, _ := filepath.Glob(filepath.Join(root, "expected_*.json"))
+		for _, f := range existing {
+			base := filepath.Base(f)
+			ns := strings.TrimPrefix(strings.TrimSuffix(base, ".json"), "expected_")
+			if _, ok := byNS[ns]; !ok {
+				t.Logf("removing stale golden %s", base)
+				os.Remove(f)
+			}
+		}
 		return
 	}
 
-	want, err := os.ReadFile(expectedPath)
-	if err != nil {
-		t.Fatal(err)
+	// Verify each namespace matches its golden.
+	for ns, findings := range byNS {
+		path := filepath.Join(root, "expected_"+ns+".json")
+		want, rerr := os.ReadFile(path)
+		if rerr != nil {
+			t.Fatalf("missing golden for namespace %q — run with UPDATE_EXPECTED=true to generate it", ns)
+		}
+		actual, merr := json.MarshalIndent(findings, "", "  ")
+		if merr != nil {
+			t.Fatal(merr)
+		}
+		actual = append(actual, '\n')
+		if string(actual) != string(want) {
+			t.Fatalf("golden mismatch for namespace %q\nwant:\n%s\n\ngot:\n%s", ns, want, actual)
+		}
 	}
-	if string(actual) != string(want) {
-		t.Fatalf("custom rule golden mismatch\nwant:\n%s\n\ngot:\n%s", want, actual)
+
+	// Detect stale golden files (namespace was removed but file remains).
+	existing, _ := filepath.Glob(filepath.Join(root, "expected_*.json"))
+	for _, f := range existing {
+		base := filepath.Base(f)
+		ns := strings.TrimPrefix(strings.TrimSuffix(base, ".json"), "expected_")
+		if _, ok := byNS[ns]; !ok {
+			t.Errorf("stale golden %s — namespace %q produced no findings; delete the file or run UPDATE_EXPECTED=true", base, ns)
+		}
 	}
+}
+
+// groupFindingsByNamespace splits findings by the namespace prefix of rule_id
+// (the part before the first "."). Each namespace maps to its own golden file.
+func groupFindingsByNamespace(findings []goldenFinding) map[string][]goldenFinding {
+	byNS := make(map[string][]goldenFinding)
+	for _, f := range findings {
+		ns := namespaceOf(f.RuleID)
+		byNS[ns] = append(byNS[ns], f)
+	}
+	return byNS
+}
+
+func namespaceOf(ruleID string) string {
+	if i := strings.IndexByte(ruleID, '.'); i >= 0 {
+		return ruleID[:i]
+	}
+	return ruleID
 }
 
 func requireUsableSemgrep(t *testing.T) {
@@ -149,19 +199,27 @@ func normalizeFindings(findings []core.Finding) []goldenFinding {
 }
 
 // TestEveryCustomRuleHasGoldenCoverage fails when a rule file under
-// rules/javascript ships without a matching firing in the golden expected.json.
-// It is the cheap guard (no semgrep needed) that keeps rule authors honest: a
-// new rule must come with a fixture that proves it fires, or this test breaks.
+// rules/javascript ships without a matching firing in any namespace golden.
+// A new rule must come with a fixture that proves it fires, or this test breaks.
 func TestEveryCustomRuleHasGoldenCoverage(t *testing.T) {
 	repo := repoRoot(t)
 	ruleDir := filepath.Join(repo, "rules", "javascript")
+	goldenDir := filepath.Join(repo, "internal", "global", "semgrep", "testdata", "custom_rules")
 
-	expected, err := os.ReadFile(filepath.Join(repo,
-		"internal", "global", "semgrep", "testdata", "custom_rules", "expected.json"))
+	// Concatenate all namespace golden files for the substring search.
+	goldenFiles, err := filepath.Glob(filepath.Join(goldenDir, "expected_*.json"))
 	if err != nil {
 		t.Fatal(err)
 	}
-	golden := string(expected)
+	var sb strings.Builder
+	for _, gf := range goldenFiles {
+		data, rerr := os.ReadFile(gf)
+		if rerr != nil {
+			t.Fatal(rerr)
+		}
+		sb.Write(data)
+	}
+	golden := sb.String()
 
 	idLine := regexp.MustCompile(`(?m)^\s*-\s*id:\s*(\S+)`)
 	var missing []string
@@ -221,4 +279,3 @@ func TestValidateCustomRulesOffline(t *testing.T) {
 		t.Fatalf("semgrep rule validation failed: %v\nOutput:\n%s", err, string(out))
 	}
 }
-

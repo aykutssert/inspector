@@ -1,0 +1,124 @@
+[
+  {
+    "rule_id": "bun.bun-prefer-bun-file",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 289,
+    "message": "This code uses Node.js 'fs' APIs to read files. If you are running on the Bun runtime, prefer using the faster, optimized native API 'Bun.file(path)' which provides '.text()', '.json()', and stream interfaces directly.\n"
+  },
+  {
+    "rule_id": "bun.bun-prefer-bun-file",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 13,
+    "message": "This code uses Node.js 'fs' APIs to read files. If you are running on the Bun runtime, prefer using the faster, optimized native API 'Bun.file(path)' which provides '.text()', '.json()', and stream interfaces directly.\n"
+  },
+  {
+    "rule_id": "bun.bun-prefer-bun-file",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "server.tsx",
+    "line": 8,
+    "message": "This code uses Node.js 'fs' APIs to read files. If you are running on the Bun runtime, prefer using the faster, optimized native API 'Bun.file(path)' which provides '.text()', '.json()', and stream interfaces directly.\n"
+  },
+  {
+    "rule_id": "bun.bun-prefer-bun-file",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "server.tsx",
+    "line": 12,
+    "message": "This code uses Node.js 'fs' APIs to read files. If you are running on the Bun runtime, prefer using the faster, optimized native API 'Bun.file(path)' which provides '.text()', '.json()', and stream interfaces directly.\n"
+  },
+  {
+    "rule_id": "bun.bun-prefer-bun-password",
+    "severity": "warning",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 293,
+    "message": "This code uses external hashing libraries (bcrypt, bcryptjs, argon2) or Node.js crypto.pbkdf2 for password hashing. If you are running on the Bun runtime, prefer using the optimized native APIs 'Bun.password.hash(...)' and 'Bun.password.verify(...)'.\n"
+  },
+  {
+    "rule_id": "bun.bun-prefer-bun-password",
+    "severity": "warning",
+    "confidence": "hint",
+    "file": "express.ts",
+    "line": 80,
+    "message": "This code uses external hashing libraries (bcrypt, bcryptjs, argon2) or Node.js crypto.pbkdf2 for password hashing. If you are running on the Bun runtime, prefer using the optimized native APIs 'Bun.password.hash(...)' and 'Bun.password.verify(...)'.\n"
+  },
+  {
+    "rule_id": "bun.bun-prefer-bun-password",
+    "severity": "warning",
+    "confidence": "hint",
+    "file": "express.ts",
+    "line": 85,
+    "message": "This code uses external hashing libraries (bcrypt, bcryptjs, argon2) or Node.js crypto.pbkdf2 for password hashing. If you are running on the Bun runtime, prefer using the optimized native APIs 'Bun.password.hash(...)' and 'Bun.password.verify(...)'.\n"
+  },
+  {
+    "rule_id": "bun.bun-prefer-bun-password",
+    "severity": "warning",
+    "confidence": "hint",
+    "file": "route.ts",
+    "line": 16,
+    "message": "This code uses external hashing libraries (bcrypt, bcryptjs, argon2) or Node.js crypto.pbkdf2 for password hashing. If you are running on the Bun runtime, prefer using the optimized native APIs 'Bun.password.hash(...)' and 'Bun.password.verify(...)'.\n"
+  },
+  {
+    "rule_id": "bun.bun-prefer-bun-serve",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 296,
+    "message": "This code builds an HTTP server using Node's 'http.createServer'. If you are running on the Bun runtime, prefer using the optimized native API 'Bun.serve(...)' for significantly higher performance.\n"
+  },
+  {
+    "rule_id": "bun.bun-prefer-bun-write",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 290,
+    "message": "This code uses Node.js 'fs' APIs to write files. If you are running on the Bun runtime, prefer using the faster, optimized native API 'Bun.write(path, data)' for better performance.\n"
+  },
+  {
+    "rule_id": "bun.bun-shell-injection",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "bun.ts",
+    "line": 12,
+    "message": "Bun shell command is built from a dynamic value. If the value is user-controlled, shell metacharacters can change the command that runs. Use a fixed command with an argument array, validate against an allowlist, or avoid invoking a shell.\n"
+  },
+  {
+    "rule_id": "bun.bun-shell-injection",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "bun.ts",
+    "line": 13,
+    "message": "Bun shell command is built from a dynamic value. If the value is user-controlled, shell metacharacters can change the command that runs. Use a fixed command with an argument array, validate against an allowlist, or avoid invoking a shell.\n"
+  },
+  {
+    "rule_id": "bun.bun-sqlite-injection",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "bun.ts",
+    "line": 6,
+    "message": "bun:sqlite query is built with string concatenation or interpolation. If any part of the value is user-controlled, this can become SQL injection. Use prepared statements with placeholders and bind values separately.\n"
+  },
+  {
+    "rule_id": "bun.bun-sqlite-injection",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "bun.ts",
+    "line": 7,
+    "message": "bun:sqlite query is built with string concatenation or interpolation. If any part of the value is user-controlled, this can become SQL injection. Use prepared statements with placeholders and bind values separately.\n"
+  }
+]

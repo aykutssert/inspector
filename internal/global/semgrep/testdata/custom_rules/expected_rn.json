@@ -1,0 +1,352 @@
+[
+  {
+    "rule_id": "rn.expo-no-non-inlined-env",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "rn.tsx",
+    "line": 81,
+    "message": "Dynamic lookup of 'process.env[key]' detected in Expo project. Expo's compiler only inlines static property accesses (like 'process.env.EXPO_PUBLIC_VAR') at build time. Dynamic key lookups resolve to 'undefined' at runtime. Use explicit static property access instead.\n"
+  },
+  {
+    "rule_id": "rn.rn-anonymous-renderitem",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 27,
+    "message": "FlatList renderItem receives an inline function. This creates a new function on every render, which can defeat list item memoization and add avoidable work on large lists. Move renderItem to a stable function or wrap it in useCallback with correct dependencies.\n"
+  },
+  {
+    "rule_id": "rn.rn-anonymous-renderitem",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 28,
+    "message": "FlatList renderItem receives an inline function. This creates a new function on every render, which can defeat list item memoization and add avoidable work on large lists. Move renderItem to a stable function or wrap it in useCallback with correct dependencies.\n"
+  },
+  {
+    "rule_id": "rn.rn-anonymous-renderitem",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 184,
+    "message": "FlatList renderItem receives an inline function. This creates a new function on every render, which can defeat list item memoization and add avoidable work on large lists. Move renderItem to a stable function or wrap it in useCallback with correct dependencies.\n"
+  },
+  {
+    "rule_id": "rn.rn-anonymous-renderitem",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 195,
+    "message": "FlatList renderItem receives an inline function. This creates a new function on every render, which can defeat list item memoization and add avoidable work on large lists. Move renderItem to a stable function or wrap it in useCallback with correct dependencies.\n"
+  },
+  {
+    "rule_id": "rn.rn-async-storage-token",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 54,
+    "message": "React Native AsyncStorage is used to persist a token, secret, credential, or auth value. AsyncStorage is not encrypted storage, so sensitive values can be recovered from device backups, rooted devices, or local compromise. Store auth material in SecureStore, Keychain, Keystore, or another platform-backed secure storage API.\n"
+  },
+  {
+    "rule_id": "rn.rn-async-storage-token",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 55,
+    "message": "React Native AsyncStorage is used to persist a token, secret, credential, or auth value. AsyncStorage is not encrypted storage, so sensitive values can be recovered from device backups, rooted devices, or local compromise. Store auth material in SecureStore, Keychain, Keystore, or another platform-backed secure storage API.\n"
+  },
+  {
+    "rule_id": "rn.rn-bottom-sheet-prefer-native",
+    "severity": "info",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 107,
+    "message": "JS-driven bottom sheet libraries (@gorhom/bottom-sheet, react-native-bottom-sheet) animate on the JS thread and require bridge calls for every frame. React Native 0.76+ / Expo SDK 52+ ships native Modal with presentationStyle=\"formSheet\" which runs entirely on the UI thread with zero JS overhead. Prefer the native approach for simple sheet use cases.\n"
+  },
+  {
+    "rule_id": "rn.rn-detox-missing-await",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "detox.ts",
+    "line": 2,
+    "message": "Detox test action or assertion is not awaited. Detox operations are asynchronous and must be awaited to execute in the correct sequence.\n"
+  },
+  {
+    "rule_id": "rn.rn-detox-missing-await",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "detox.ts",
+    "line": 5,
+    "message": "Detox test action or assertion is not awaited. Detox operations are asynchronous and must be awaited to execute in the correct sequence.\n"
+  },
+  {
+    "rule_id": "rn.rn-dom-element-in-native",
+    "severity": "error",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "rn.tsx",
+    "line": 11,
+    "message": "A DOM element is rendered inside a React Native component. React Native does not support HTML tags such as div, span, p, button, or input; this crashes or fails to render on native platforms. Use View, Text, Pressable, TextInput, or another React Native component instead.\n"
+  },
+  {
+    "rule_id": "rn.rn-dom-element-in-native",
+    "severity": "error",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "rn.tsx",
+    "line": 12,
+    "message": "A DOM element is rendered inside a React Native component. React Native does not support HTML tags such as div, span, p, button, or input; this crashes or fails to render on native platforms. Use View, Text, Pressable, TextInput, or another React Native component instead.\n"
+  },
+  {
+    "rule_id": "rn.rn-list-missing-estimated-item-size",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 91,
+    "message": "A Shopify FlashList is rendered without estimatedItemSize. FlashList uses it to size the recycle pool up front; without it the first scroll janks and blanks while it measures. Set estimatedItemSize to the average row height.\n"
+  },
+  {
+    "rule_id": "rn.rn-no-deep-imports",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "rule",
+    "file": "rn.tsx",
+    "line": 128,
+    "message": "Importing from react-native internal Libraries/ paths is unsupported and breaks across React Native versions. Use the public top-level API: import { X } from 'react-native' instead of internal sub-paths.\n"
+  },
+  {
+    "rule_id": "rn.rn-no-dimensions-get",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 70,
+    "message": "Dimensions.get(...) reads a snapshot that can become stale after device rotation, split-screen resizing, or foldable-window changes. In a component, use useWindowDimensions() so layout follows current dimensions. Outside React render code, subscribe to Dimensions change events and clean up the listener.\n"
+  },
+  {
+    "rule_id": "rn.rn-no-dimensions-get",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 73,
+    "message": "Dimensions.get(...) reads a snapshot that can become stale after device rotation, split-screen resizing, or foldable-window changes. In a component, use useWindowDimensions() so layout follows current dimensions. Outside React render code, subscribe to Dimensions change events and clean up the listener.\n"
+  },
+  {
+    "rule_id": "rn.rn-no-dimensions-get",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 74,
+    "message": "Dimensions.get(...) reads a snapshot that can become stale after device rotation, split-screen resizing, or foldable-window changes. In a component, use useWindowDimensions() so layout follows current dimensions. Outside React render code, subscribe to Dimensions change events and clean up the listener.\n"
+  },
+  {
+    "rule_id": "rn.rn-no-dimensions-get",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 75,
+    "message": "Dimensions.get(...) reads a snapshot that can become stale after device rotation, split-screen resizing, or foldable-window changes. In a component, use useWindowDimensions() so layout follows current dimensions. Outside React render code, subscribe to Dimensions change events and clean up the listener.\n"
+  },
+  {
+    "rule_id": "rn.rn-no-falsy-and-render",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "rn.tsx",
+    "line": 62,
+    "message": "In React Native, `{value \u0026\u0026 \u003cJSX/\u003e}` renders a bare 0 when value is 0 — a text node outside \u003cText\u003e — which crashes the screen (\"Text strings must be rendered within a \u003cText\u003e component\"). A numeric left operand (.length or a count-like variable) hits this whenever the list/value is empty. Guard with `value \u003e 0 \u0026\u0026 ...`, `!!value \u0026\u0026 ...`, or a ternary returning null.\n"
+  },
+  {
+    "rule_id": "rn.rn-no-falsy-and-render",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "rn.tsx",
+    "line": 63,
+    "message": "In React Native, `{value \u0026\u0026 \u003cJSX/\u003e}` renders a bare 0 when value is 0 — a text node outside \u003cText\u003e — which crashes the screen (\"Text strings must be rendered within a \u003cText\u003e component\"). A numeric left operand (.length or a count-like variable) hits this whenever the list/value is empty. Guard with `value \u003e 0 \u0026\u0026 ...`, `!!value \u0026\u0026 ...`, or a ternary returning null.\n"
+  },
+  {
+    "rule_id": "rn.rn-no-legacy-expo-packages",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "rn.tsx",
+    "line": 98,
+    "message": "Import of deprecated Expo package detected. This package is deprecated or removed in newer Expo SDK versions. Use recommended alternatives (e.g. use expo-splash-screen instead of expo-app-loading, or individual module permissions APIs instead of expo-permissions).\n"
+  },
+  {
+    "rule_id": "rn.rn-no-legacy-expo-packages",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "rn.tsx",
+    "line": 99,
+    "message": "Import of deprecated Expo package detected. This package is deprecated or removed in newer Expo SDK versions. Use recommended alternatives (e.g. use expo-splash-screen instead of expo-app-loading, or individual module permissions APIs instead of expo-permissions).\n"
+  },
+  {
+    "rule_id": "rn.rn-no-legacy-expo-packages",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "rn.tsx",
+    "line": 100,
+    "message": "Import of deprecated Expo package detected. This package is deprecated or removed in newer Expo SDK versions. Use recommended alternatives (e.g. use expo-splash-screen instead of expo-app-loading, or individual module permissions APIs instead of expo-permissions).\n"
+  },
+  {
+    "rule_id": "rn.rn-no-legacy-shadow-styles",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 151,
+    "message": "The iOS-only shadow* style properties (shadowColor, shadowOffset, shadowRadius, shadowOpacity) do not work on Android or with the New Architecture. Use the cross-platform boxShadow string property instead: boxShadow: '0 2px 8px rgba(0,0,0,0.15)'\n"
+  },
+  {
+    "rule_id": "rn.rn-no-legacy-shadow-styles",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 155,
+    "message": "The iOS-only shadow* style properties (shadowColor, shadowOffset, shadowRadius, shadowOpacity) do not work on Android or with the New Architecture. Use the cross-platform boxShadow string property instead: boxShadow: '0 2px 8px rgba(0,0,0,0.15)'\n"
+  },
+  {
+    "rule_id": "rn.rn-no-non-native-navigator",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "rn.tsx",
+    "line": 110,
+    "message": "@react-navigation/stack uses a JS-driven card navigator that renders animations on the JavaScript thread, causing jank under heavy workloads. Replace with @react-navigation/native-stack which delegates transitions to the platform's native NavigationController / FragmentManager for butter-smooth 60/120fps navigation.\n"
+  },
+  {
+    "rule_id": "rn.rn-no-panresponder",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "rn.tsx",
+    "line": 134,
+    "message": "PanResponder runs gesture logic on the JavaScript thread, causing dropped frames when the JS thread is busy. Replace with react-native-gesture-handler's Gesture API which executes on the UI thread via Reanimated worklets.\n"
+  },
+  {
+    "rule_id": "rn.rn-no-renderitem-key",
+    "severity": "info",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 184,
+    "message": "Adding a key prop to the root element of a FlatList renderItem when keyExtractor is already provided is redundant. FlatList uses keyExtractor for reconciliation; the key prop on the rendered element is ignored. Remove the key prop from renderItem and rely on keyExtractor exclusively.\n"
+  },
+  {
+    "rule_id": "rn.rn-no-set-native-props",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "rn.tsx",
+    "line": 206,
+    "message": "Deprecated setNativeProps() call detected. setNativeProps is deprecated and not compatible with the Fabric new architecture. Use component state or Reanimated shared values to dynamically update component properties instead.\n"
+  },
+  {
+    "rule_id": "rn.rn-no-set-native-props",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "rn.tsx",
+    "line": 207,
+    "message": "Deprecated setNativeProps() call detected. setNativeProps is deprecated and not compatible with the Fabric new architecture. Use component state or Reanimated shared values to dynamically update component properties instead.\n"
+  },
+  {
+    "rule_id": "rn.rn-no-single-element-style-array",
+    "severity": "info",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 161,
+    "message": "Single-element style arrays create a new array reference on every render, defeating React Native's style caching. Use the style value directly: style={styles.box} instead of style={[styles.box]}.\n"
+  },
+  {
+    "rule_id": "rn.rn-prefer-expo-image",
+    "severity": "info",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 113,
+    "message": "React Native's built-in \u003cImage\u003e lacks memory caching, crossfade transitions, and blurhash placeholder support. Use expo-image's \u003cImage\u003e component instead: import { Image } from 'expo-image'\n"
+  },
+  {
+    "rule_id": "rn.rn-prefer-pressable",
+    "severity": "info",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 121,
+    "message": "TouchableOpacity, TouchableHighlight, and TouchableNativeFeedback are legacy gesture components. Use \u003cPressable\u003e instead — it offers more flexible state-based styling (pressed, hovered, focused) and integrates better with concurrent React.\n"
+  },
+  {
+    "rule_id": "rn.rn-prefer-pressable",
+    "severity": "info",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 122,
+    "message": "TouchableOpacity, TouchableHighlight, and TouchableNativeFeedback are legacy gesture components. Use \u003cPressable\u003e instead — it offers more flexible state-based styling (pressed, hovered, focused) and integrates better with concurrent React.\n"
+  },
+  {
+    "rule_id": "rn.rn-prefer-reanimated",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 143,
+    "message": "React Native's Animated API runs on the JavaScript thread, which causes dropped frames under heavy JS workloads. Replace with react-native-reanimated which executes animations on the UI thread: useSharedValue, useAnimatedStyle, withTiming, withSpring.\n"
+  },
+  {
+    "rule_id": "rn.rn-prefer-reanimated",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 144,
+    "message": "React Native's Animated API runs on the JavaScript thread, which causes dropped frames under heavy JS workloads. Replace with react-native-reanimated which executes animations on the UI thread: useSharedValue, useAnimatedStyle, withTiming, withSpring.\n"
+  },
+  {
+    "rule_id": "rn.rn-prefer-reanimated",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 145,
+    "message": "React Native's Animated API runs on the JavaScript thread, which causes dropped frames under heavy JS workloads. Replace with react-native-reanimated which executes animations on the UI thread: useSharedValue, useAnimatedStyle, withTiming, withSpring.\n"
+  },
+  {
+    "rule_id": "rn.rn-scrollview-flex-in-content-container",
+    "severity": "warning",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 166,
+    "message": "Using flex: 1 in contentContainerStyle collapses the ScrollView content on iOS because flex: 1 means \"take all available space\" but a ScrollView has unbounded height. Use flexGrow: 1 instead — it expands content to fill the scroll area without collapsing.\n"
+  },
+  {
+    "rule_id": "rn.rn-scrollview-over-flatlist",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 35,
+    "message": "ScrollView renders every child eagerly while this code maps over a dynamic collection. Large or growing lists can cause memory pressure and jank on native devices. Use FlatList or SectionList so React Native can virtualize rows.\n"
+  }
+]

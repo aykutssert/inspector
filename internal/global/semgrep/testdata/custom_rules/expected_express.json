@@ -1,0 +1,290 @@
+[
+  {
+    "rule_id": "express.express-async-error-handling",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 179,
+    "message": "An asynchronous Express route handler does not wrap its execution in a try/catch block or use an async error handler wrapper. Unhandled async rejections in Express can crash the Node.js process or cause requests to hang. Wrap the body in try/catch and pass the error to next(err).\n"
+  },
+  {
+    "rule_id": "express.express-async-error-handling",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 184,
+    "message": "An asynchronous Express route handler does not wrap its execution in a try/catch block or use an async error handler wrapper. Unhandled async rejections in Express can crash the Node.js process or cause requests to hang. Wrap the body in try/catch and pass the error to next(err).\n"
+  },
+  {
+    "rule_id": "express.express-async-error-handling",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "express.ts",
+    "line": 16,
+    "message": "An asynchronous Express route handler does not wrap its execution in a try/catch block or use an async error handler wrapper. Unhandled async rejections in Express can crash the Node.js process or cause requests to hang. Wrap the body in try/catch and pass the error to next(err).\n"
+  },
+  {
+    "rule_id": "express.express-async-error-handling",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "express.ts",
+    "line": 84,
+    "message": "An asynchronous Express route handler does not wrap its execution in a try/catch block or use an async error handler wrapper. Unhandled async rejections in Express can crash the Node.js process or cause requests to hang. Wrap the body in try/catch and pass the error to next(err).\n"
+  },
+  {
+    "rule_id": "express.express-body-limit-missing",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "express.ts",
+    "line": 109,
+    "message": "Express body parsing middleware is configured without an explicit payload limit. Large JSON or form bodies can consume memory and CPU before route handlers run, creating a simple denial-of-service path. Set a small application-specific limit such as express.json({ limit: \"1mb\" }).\n"
+  },
+  {
+    "rule_id": "express.express-body-limit-missing",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "express.ts",
+    "line": 110,
+    "message": "Express body parsing middleware is configured without an explicit payload limit. Large JSON or form bodies can consume memory and CPU before route handlers run, creating a simple denial-of-service path. Set a small application-specific limit such as express.json({ limit: \"1mb\" }).\n"
+  },
+  {
+    "rule_id": "express.express-cors-wildcard-with-credentials",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "express.ts",
+    "line": 45,
+    "message": "CORS is configured with origin '*' and credentials enabled. Browsers reject this combination, and relaxing it later often turns into credential leakage. Use an explicit allowlist of trusted origins when cookies or authorization headers are allowed.\n"
+  },
+  {
+    "rule_id": "express.express-cors-wildcard-with-credentials",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "express.ts",
+    "line": 46,
+    "message": "CORS is configured with origin '*' and credentials enabled. Browsers reject this combination, and relaxing it later often turns into credential leakage. Use an explicit allowlist of trusted origins when cookies or authorization headers are allowed.\n"
+  },
+  {
+    "rule_id": "express.express-insecure-session-cookie",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "express.ts",
+    "line": 114,
+    "message": "express-session config weakens the session cookie security flags. Session cookies should normally be httpOnly so JavaScript cannot read them, and secure in production so they are not sent over plain HTTP. Keep httpOnly enabled and set secure true behind HTTPS.\n"
+  },
+  {
+    "rule_id": "express.express-insecure-session-cookie",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "express.ts",
+    "line": 115,
+    "message": "express-session config weakens the session cookie security flags. Session cookies should normally be httpOnly so JavaScript cannot read them, and secure in production so they are not sent over plain HTTP. Keep httpOnly enabled and set secure true behind HTTPS.\n"
+  },
+  {
+    "rule_id": "express.express-missing-helmet",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 177,
+    "message": "The Express application is initialized but does not appear to use the 'helmet' middleware. Helmet sets critical security headers to protect the app from common web vulnerabilities (XSS, Clickjacking, MIME-sniffing, etc.). Add app.use(helmet()) to secure HTTP headers.\n"
+  },
+  {
+    "rule_id": "express.express-missing-helmet",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "express.ts",
+    "line": 9,
+    "message": "The Express application is initialized but does not appear to use the 'helmet' middleware. Helmet sets critical security headers to protect the app from common web vulnerabilities (XSS, Clickjacking, MIME-sniffing, etc.). Add app.use(helmet()) to secure HTTP headers.\n"
+  },
+  {
+    "rule_id": "express.express-missing-helmet",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "express_sensitive_route_no_auth.ts",
+    "line": 3,
+    "message": "The Express application is initialized but does not appear to use the 'helmet' middleware. Helmet sets critical security headers to protect the app from common web vulnerabilities (XSS, Clickjacking, MIME-sniffing, etc.). Add app.use(helmet()) to secure HTTP headers.\n"
+  },
+  {
+    "rule_id": "express.express-missing-rate-limit",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 179,
+    "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
+  },
+  {
+    "rule_id": "express.express-missing-rate-limit",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 184,
+    "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
+  },
+  {
+    "rule_id": "express.express-missing-rate-limit",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 196,
+    "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
+  },
+  {
+    "rule_id": "express.express-missing-rate-limit",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 205,
+    "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
+  },
+  {
+    "rule_id": "express.express-missing-rate-limit",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 24,
+    "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
+  },
+  {
+    "rule_id": "express.express-missing-rate-limit",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 28,
+    "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
+  },
+  {
+    "rule_id": "express.express-missing-rate-limit",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 35,
+    "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
+  },
+  {
+    "rule_id": "express.express-missing-rate-limit",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 43,
+    "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
+  },
+  {
+    "rule_id": "express.express-missing-rate-limit",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 50,
+    "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
+  },
+  {
+    "rule_id": "express.express-missing-rate-limit",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 55,
+    "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
+  },
+  {
+    "rule_id": "express.express-missing-rate-limit",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "express.ts",
+    "line": 11,
+    "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
+  },
+  {
+    "rule_id": "express.express-missing-rate-limit",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "express.ts",
+    "line": 16,
+    "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
+  },
+  {
+    "rule_id": "express.express-missing-rate-limit",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "express.ts",
+    "line": 21,
+    "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
+  },
+  {
+    "rule_id": "express.express-missing-rate-limit",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "express.ts",
+    "line": 79,
+    "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
+  },
+  {
+    "rule_id": "express.express-missing-rate-limit",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "express_sensitive_route_no_auth.ts",
+    "line": 10,
+    "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
+  },
+  {
+    "rule_id": "express.express-missing-rate-limit",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "express_sensitive_route_no_auth.ts",
+    "line": 13,
+    "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
+  },
+  {
+    "rule_id": "express.express-missing-rate-limit",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "express_sensitive_route_no_auth.ts",
+    "line": 16,
+    "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
+  },
+  {
+    "rule_id": "express.express-sensitive-route-no-auth",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "express_sensitive_route_no_auth.ts",
+    "line": 10,
+    "message": "A sensitive Express route (e.g., containing 'admin', 'delete', 'update', 'secure', 'private', or 'remove') does not seem to use any authorization or authentication middleware. Ensure that route handlers for sensitive paths are protected using an authentication or permission-checking middleware.\n"
+  },
+  {
+    "rule_id": "express.express-sensitive-route-no-auth",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "express_sensitive_route_no_auth.ts",
+    "line": 13,
+    "message": "A sensitive Express route (e.g., containing 'admin', 'delete', 'update', 'secure', 'private', or 'remove') does not seem to use any authorization or authentication middleware. Ensure that route handlers for sensitive paths are protected using an authentication or permission-checking middleware.\n"
+  }
+]

@@ -1,0 +1,109 @@
+[
+  {
+    "rule_id": "tanstack-start.tanstack-start-no-direct-fetch-in-loader",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "tanstack_start.tsx",
+    "line": 11,
+    "message": "Direct fetch() call inside a TanStack Start route loader. Loaders run on the client during navigation; using fetch() directly creates client-side waterfalls and bypasses server-side data fetching. Wrap the call in createServerFn() so it runs on the server with full Node.js access.\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-no-secrets-in-loader",
+    "severity": "error",
+    "category": "security",
+    "confidence": "hint",
+    "file": "tanstack_start.tsx",
+    "line": 31,
+    "message": "Secret environment variable accessed inside a TanStack Start route loader. Route loaders can be compiled into the client bundle, which would expose the secret. Move secret access into a createServerFn() to guarantee server-only execution.\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-no-secrets-in-loader",
+    "severity": "error",
+    "category": "security",
+    "confidence": "hint",
+    "file": "tanstack_start.tsx",
+    "line": 39,
+    "message": "Secret environment variable accessed inside a TanStack Start route loader. Route loaders can be compiled into the client bundle, which would expose the secret. Move secret access into a createServerFn() to guarantee server-only execution.\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-no-use-server-in-handler",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "tanstack_start.tsx",
+    "line": 89,
+    "message": "\"use server\" is redundant inside a createServerFn().handler() callback. TanStack Start automatically creates a server boundary at the handler boundary — the directive has no effect here and misleads readers. Remove it.\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-no-use-server-in-handler",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "tanstack_start.tsx",
+    "line": 95,
+    "message": "\"use server\" is redundant inside a createServerFn().handler() callback. TanStack Start automatically creates a server boundary at the handler boundary — the directive has no effect here and misleads readers. Remove it.\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-no-useeffect-fetch",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "client_data_fetch.tsx",
+    "line": 12,
+    "message": "useEffect + fetch() used for data fetching in a TanStack Start route component. TanStack Router provides a loader function that runs before the component renders, eliminating this pattern and preventing client-side waterfalls. Move the fetch call to the route's loader and access data via useLoaderData().\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-no-useeffect-fetch",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "tanstack_start.tsx",
+    "line": 58,
+    "message": "useEffect + fetch() used for data fetching in a TanStack Start route component. TanStack Router provides a loader function that runs before the component renders, eliminating this pattern and preventing client-side waterfalls. Move the fetch call to the route's loader and access data via useLoaderData().\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-no-useeffect-fetch",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "tanstack_start.tsx",
+    "line": 71,
+    "message": "useEffect + fetch() used for data fetching in a TanStack Start route component. TanStack Router provides a loader function that runs before the component renders, eliminating this pattern and preventing client-side waterfalls. Move the fetch call to the route's loader and access data via useLoaderData().\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-redirect-in-try-catch",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "next_no_redirect_in_try_catch.tsx",
+    "line": 6,
+    "message": "Calling 'redirect()' or 'notFound()' inside a try-catch block can prevent the navigation from working correctly because TanStack Router uses thrown errors internally to redirect or show a 404 page. Call redirect() outside the try-catch block or rethrow the exception.\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-redirect-in-try-catch",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "tanstack_start_redirect_in_try_catch.tsx",
+    "line": 6,
+    "message": "Calling 'redirect()' or 'notFound()' inside a try-catch block can prevent the navigation from working correctly because TanStack Router uses thrown errors internally to redirect or show a 404 page. Call redirect() outside the try-catch block or rethrow the exception.\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-redirect-in-try-catch",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "tanstack_start_redirect_in_try_catch.tsx",
+    "line": 13,
+    "message": "Calling 'redirect()' or 'notFound()' inside a try-catch block can prevent the navigation from working correctly because TanStack Router uses thrown errors internally to redirect or show a 404 page. Call redirect() outside the try-catch block or rethrow the exception.\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-server-fn-method-order",
+    "severity": "warning",
+    "confidence": "hint",
+    "file": "tanstack_start.tsx",
+    "line": 110,
+    "message": "createServerFn() chain has .handler() before .validator(). The correct order is createServerFn().validator(schema).handler(fn) — calling .handler() first means the validator schema is attached after the handler is already set, so input validation does not run.\n"
+  }
+]

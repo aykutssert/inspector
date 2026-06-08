@@ -1,0 +1,268 @@
+[
+  {
+    "rule_id": "react.dangerously-set-inner-html-variable",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 31,
+    "message": "dangerouslySetInnerHTML is fed a dynamic value (not a string literal). If that value contains any user-controlled data, this is a stored/reflected XSS sink. Confirm the HTML is sanitized (e.g. DOMPurify) before it reaches this prop, or render the value as text instead.\n"
+  },
+  {
+    "rule_id": "react.dangerously-set-inner-html-variable",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 430,
+    "message": "dangerouslySetInnerHTML is fed a dynamic value (not a string literal). If that value contains any user-controlled data, this is a stored/reflected XSS sink. Confirm the HTML is sanitized (e.g. DOMPurify) before it reaches this prop, or render the value as text instead.\n"
+  },
+  {
+    "rule_id": "react.dangerously-set-inner-html-variable",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 433,
+    "message": "dangerouslySetInnerHTML is fed a dynamic value (not a string literal). If that value contains any user-controlled data, this is a stored/reflected XSS sink. Confirm the HTML is sanitized (e.g. DOMPurify) before it reaches this prop, or render the value as text instead.\n"
+  },
+  {
+    "rule_id": "react.direct-dom-manipulation",
+    "severity": "warning",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 323,
+    "message": "Direct DOM manipulation call detected in React file. Accessing or modifying the DOM directly (using document.getElementById, querySelector, etc.) bypasses the Virtual DOM, causing state inconsistencies and rendering issues. Use React refs (useRef) or state binding instead.\n"
+  },
+  {
+    "rule_id": "react.direct-dom-manipulation",
+    "severity": "warning",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 324,
+    "message": "Direct DOM manipulation call detected in React file. Accessing or modifying the DOM directly (using document.getElementById, querySelector, etc.) bypasses the Virtual DOM, causing state inconsistencies and rendering issues. Use React refs (useRef) or state binding instead.\n"
+  },
+  {
+    "rule_id": "react.direct-dom-manipulation",
+    "severity": "warning",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 424,
+    "message": "Direct DOM manipulation call detected in React file. Accessing or modifying the DOM directly (using document.getElementById, querySelector, etc.) bypasses the Virtual DOM, causing state inconsistencies and rendering issues. Use React refs (useRef) or state binding instead.\n"
+  },
+  {
+    "rule_id": "react.direct-dom-manipulation",
+    "severity": "warning",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 457,
+    "message": "Direct DOM manipulation call detected in React file. Accessing or modifying the DOM directly (using document.getElementById, querySelector, etc.) bypasses the Virtual DOM, causing state inconsistencies and rendering issues. Use React refs (useRef) or state binding instead.\n"
+  },
+  {
+    "rule_id": "react.no-default-props",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "rule",
+    "file": "react19.tsx",
+    "line": 9,
+    "message": "A function component defines defaultProps. React 19 removed defaultProps support for function components. Use JavaScript default parameters or destructuring defaults so the fallback still applies after upgrading.\n"
+  },
+  {
+    "rule_id": "react.no-prevent-default",
+    "severity": "info",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 160,
+    "message": "Calling preventDefault() in link or form click/submit handlers. Instead of intercepting submissions/clicks with preventDefault() manually, prefer using native form action APIs, appropriate button types (like type=\"button\"), or framework-provided routing/link elements to manage default behaviors.\n"
+  },
+  {
+    "rule_id": "react.no-prevent-default",
+    "severity": "info",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 166,
+    "message": "Calling preventDefault() in link or form click/submit handlers. Instead of intercepting submissions/clicks with preventDefault() manually, prefer using native form action APIs, appropriate button types (like type=\"button\"), or framework-provided routing/link elements to manage default behaviors.\n"
+  },
+  {
+    "rule_id": "react.no-prop-types",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "rule",
+    "file": "react19.tsx",
+    "line": 10,
+    "message": "A function component defines propTypes. React 19 ignores propTypes on function components, so this runtime validation no longer protects the component contract. Move the contract to TypeScript types or validate untrusted data at the application boundary with a schema.\n"
+  },
+  {
+    "rule_id": "react.no-react-dom-deprecated-apis",
+    "severity": "error",
+    "category": "quality",
+    "confidence": "rule",
+    "file": "react19.tsx",
+    "line": 15,
+    "message": "This legacy ReactDOM API is removed or unsupported by modern React roots. Use createRoot(...).render(...), hydrateRoot(...), root.unmount(), or a ref-based alternative instead.\n"
+  },
+  {
+    "rule_id": "react.no-react-dom-deprecated-apis",
+    "severity": "error",
+    "category": "quality",
+    "confidence": "rule",
+    "file": "react19.tsx",
+    "line": 16,
+    "message": "This legacy ReactDOM API is removed or unsupported by modern React roots. Use createRoot(...).render(...), hydrateRoot(...), root.unmount(), or a ref-based alternative instead.\n"
+  },
+  {
+    "rule_id": "react.no-react-dom-deprecated-apis",
+    "severity": "error",
+    "category": "quality",
+    "confidence": "rule",
+    "file": "react19.tsx",
+    "line": 17,
+    "message": "This legacy ReactDOM API is removed or unsupported by modern React roots. Use createRoot(...).render(...), hydrateRoot(...), root.unmount(), or a ref-based alternative instead.\n"
+  },
+  {
+    "rule_id": "react.no-react-dom-deprecated-apis",
+    "severity": "error",
+    "category": "quality",
+    "confidence": "rule",
+    "file": "react19.tsx",
+    "line": 18,
+    "message": "This legacy ReactDOM API is removed or unsupported by modern React roots. Use createRoot(...).render(...), hydrateRoot(...), root.unmount(), or a ref-based alternative instead.\n"
+  },
+  {
+    "rule_id": "react.no-react19-deprecated-apis",
+    "severity": "info",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "react19.tsx",
+    "line": 12,
+    "message": "forwardRef is no longer necessary in React 19 because function components can receive ref as a normal prop. React documents forwardRef for future deprecation. Prefer a ref prop for new React 19 code and migrate when the component API can change safely.\n"
+  },
+  {
+    "rule_id": "react.no-react19-deprecated-apis",
+    "severity": "info",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "react19.tsx",
+    "line": 13,
+    "message": "forwardRef is no longer necessary in React 19 because function components can receive ref as a normal prop. React documents forwardRef for future deprecation. Prefer a ref prop for new React 19 code and migrate when the component API can change safely.\n"
+  },
+  {
+    "rule_id": "react.no-uncontrolled-input",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "inputs.tsx",
+    "line": 10,
+    "message": "React controlled input conflict. Do not mix 'value' and 'defaultValue' (or 'checked' and 'defaultChecked') on the same input. Also, providing a 'value' (or 'checked') prop without an 'onChange' or 'readOnly' handler makes the input read-only and will cause React warnings.\n"
+  },
+  {
+    "rule_id": "react.no-uncontrolled-input",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "inputs.tsx",
+    "line": 13,
+    "message": "React controlled input conflict. Do not mix 'value' and 'defaultValue' (or 'checked' and 'defaultChecked') on the same input. Also, providing a 'value' (or 'checked') prop without an 'onChange' or 'readOnly' handler makes the input read-only and will cause React warnings.\n"
+  },
+  {
+    "rule_id": "react.no-uncontrolled-input",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "inputs.tsx",
+    "line": 16,
+    "message": "React controlled input conflict. Do not mix 'value' and 'defaultValue' (or 'checked' and 'defaultChecked') on the same input. Also, providing a 'value' (or 'checked') prop without an 'onChange' or 'readOnly' handler makes the input read-only and will cause React warnings.\n"
+  },
+  {
+    "rule_id": "react.no-uncontrolled-input",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "inputs.tsx",
+    "line": 19,
+    "message": "React controlled input conflict. Do not mix 'value' and 'defaultValue' (or 'checked' and 'defaultChecked') on the same input. Also, providing a 'value' (or 'checked') prop without an 'onChange' or 'readOnly' handler makes the input read-only and will cause React warnings.\n"
+  },
+  {
+    "rule_id": "react.no-uncontrolled-input",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "inputs.tsx",
+    "line": 22,
+    "message": "React controlled input conflict. Do not mix 'value' and 'defaultValue' (or 'checked' and 'defaultChecked') on the same input. Also, providing a 'value' (or 'checked') prop without an 'onChange' or 'readOnly' handler makes the input read-only and will cause React warnings.\n"
+  },
+  {
+    "rule_id": "react.no-uncontrolled-input",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "inputs.tsx",
+    "line": 25,
+    "message": "React controlled input conflict. Do not mix 'value' and 'defaultValue' (or 'checked' and 'defaultChecked') on the same input. Also, providing a 'value' (or 'checked') prop without an 'onChange' or 'readOnly' handler makes the input read-only and will cause React warnings.\n"
+  },
+  {
+    "rule_id": "react.no-uncontrolled-input",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "inputs.tsx",
+    "line": 28,
+    "message": "React controlled input conflict. Do not mix 'value' and 'defaultValue' (or 'checked' and 'defaultChecked') on the same input. Also, providing a 'value' (or 'checked') prop without an 'onChange' or 'readOnly' handler makes the input read-only and will cause React warnings.\n"
+  },
+  {
+    "rule_id": "react.no-uncontrolled-input",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "inputs.tsx",
+    "line": 31,
+    "message": "React controlled input conflict. Do not mix 'value' and 'defaultValue' (or 'checked' and 'defaultChecked') on the same input. Also, providing a 'value' (or 'checked') prop without an 'onChange' or 'readOnly' handler makes the input read-only and will cause React warnings.\n"
+  },
+  {
+    "rule_id": "react.random-value-as-react-key",
+    "severity": "error",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "case.tsx",
+    "line": 34,
+    "message": "A React key derived from Math.random()/Date.now() changes on every render, so React remounts the element each time: local state is lost, inputs lose focus, and reconciliation degrades. Use a stable id from the data instead.\n"
+  },
+  {
+    "rule_id": "react.redux-useselector-inline-derivation",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "redux.tsx",
+    "line": 16,
+    "message": "Inline data derivation inside useSelector creates a new reference on every render, defeating referential equality and causing unnecessary re-renders. Extract the selector to a memoized function with createSelector or move derivation outside.\n"
+  },
+  {
+    "rule_id": "react.redux-useselector-inline-derivation",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "redux.tsx",
+    "line": 22,
+    "message": "Inline data derivation inside useSelector creates a new reference on every render, defeating referential equality and causing unnecessary re-renders. Extract the selector to a memoized function with createSelector or move derivation outside.\n"
+  },
+  {
+    "rule_id": "react.redux-useselector-returns-new-collection",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "redux.tsx",
+    "line": 47,
+    "message": "useSelector returns a new array or object literal on every call, breaking referential equality and triggering a re-render on every state update. Use createSelector to memoize the result or select a stable slice of state directly.\n"
+  },
+  {
+    "rule_id": "react.redux-useselector-returns-new-collection",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "redux.tsx",
+    "line": 53,
+    "message": "useSelector returns a new array or object literal on every call, breaking referential equality and triggering a re-render on every state update. Use createSelector to memoize the result or select a stable slice of state directly.\n"
+  }
+]

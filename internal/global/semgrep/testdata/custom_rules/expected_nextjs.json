@@ -1,0 +1,694 @@
+[
+  {
+    "rule_id": "nextjs.heavy-import-no-dynamic",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 5,
+    "message": "Heavy library is statically imported. Statically importing large libraries (like monaco-editor, three, lodash, or chart.js) increases the initial client bundle size and slows down page loads. Consider using dynamic imports (e.g., Next.js dynamic() or dynamic import()) to load this library lazily.\n"
+  },
+  {
+    "rule_id": "nextjs.heavy-import-no-dynamic",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 6,
+    "message": "Heavy library is statically imported. Statically importing large libraries (like monaco-editor, three, lodash, or chart.js) increases the initial client bundle size and slows down page loads. Consider using dynamic imports (e.g., Next.js dynamic() or dynamic import()) to load this library lazily.\n"
+  },
+  {
+    "rule_id": "nextjs.heavy-import-no-dynamic",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "heavy_import_no_dynamic.tsx",
+    "line": 2,
+    "message": "Heavy library is statically imported. Statically importing large libraries (like monaco-editor, three, lodash, or chart.js) increases the initial client bundle size and slows down page loads. Consider using dynamic imports (e.g., Next.js dynamic() or dynamic import()) to load this library lazily.\n"
+  },
+  {
+    "rule_id": "nextjs.heavy-import-no-dynamic",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "heavy_import_no_dynamic.tsx",
+    "line": 5,
+    "message": "Heavy library is statically imported. Statically importing large libraries (like monaco-editor, three, lodash, or chart.js) increases the initial client bundle size and slows down page loads. Consider using dynamic imports (e.g., Next.js dynamic() or dynamic import()) to load this library lazily.\n"
+  },
+  {
+    "rule_id": "nextjs.heavy-import-no-dynamic",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "heavy_import_no_dynamic.tsx",
+    "line": 8,
+    "message": "Heavy library is statically imported. Statically importing large libraries (like monaco-editor, three, lodash, or chart.js) increases the initial client bundle size and slows down page loads. Consider using dynamic imports (e.g., Next.js dynamic() or dynamic import()) to load this library lazily.\n"
+  },
+  {
+    "rule_id": "nextjs.heavy-import-no-dynamic",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "heavy_import_no_dynamic.tsx",
+    "line": 21,
+    "message": "Heavy library is statically imported. Statically importing large libraries (like monaco-editor, three, lodash, or chart.js) increases the initial client bundle size and slows down page loads. Consider using dynamic imports (e.g., Next.js dynamic() or dynamic import()) to load this library lazily.\n"
+  },
+  {
+    "rule_id": "nextjs.next-async-client-component",
+    "severity": "error",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "client_data_fetch.tsx",
+    "line": 55,
+    "message": "Client Components cannot be async functions. Making a Client Component async results in runtime errors and prevents proper client-side rendering. Convert the component to a synchronous function and use hooks like useEffect or useSWR/TanStack Query for data fetching, or keep it as a Server Component.\n"
+  },
+  {
+    "rule_id": "nextjs.next-async-client-component",
+    "severity": "error",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "next_async_client_component.tsx",
+    "line": 4,
+    "message": "Client Components cannot be async functions. Making a Client Component async results in runtime errors and prevents proper client-side rendering. Convert the component to a synchronous function and use hooks like useEffect or useSWR/TanStack Query for data fetching, or keep it as a Server Component.\n"
+  },
+  {
+    "rule_id": "nextjs.next-async-client-component",
+    "severity": "error",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "next_async_client_component.tsx",
+    "line": 9,
+    "message": "Client Components cannot be async functions. Making a Client Component async results in runtime errors and prevents proper client-side rendering. Convert the component to a synchronous function and use hooks like useEffect or useSWR/TanStack Query for data fetching, or keep it as a Server Component.\n"
+  },
+  {
+    "rule_id": "nextjs.next-browser-api-during-ssr",
+    "severity": "error",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "page.tsx",
+    "line": 4,
+    "message": "A Next.js Server Component or route file uses a browser-only API without a \"use client\" directive. window, document, localStorage, sessionStorage, navigator, and similar APIs are not available during server rendering and can crash with ReferenceError. Move this code to a Client Component or guard it so it only runs in the browser.\n"
+  },
+  {
+    "rule_id": "nextjs.next-browser-api-during-ssr",
+    "severity": "error",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "page.tsx",
+    "line": 5,
+    "message": "A Next.js Server Component or route file uses a browser-only API without a \"use client\" directive. window, document, localStorage, sessionStorage, navigator, and similar APIs are not available during server rendering and can crash with ReferenceError. Move this code to a Client Component or guard it so it only runs in the browser.\n"
+  },
+  {
+    "rule_id": "nextjs.next-browser-api-during-ssr",
+    "severity": "error",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "page.tsx",
+    "line": 6,
+    "message": "A Next.js Server Component or route file uses a browser-only API without a \"use client\" directive. window, document, localStorage, sessionStorage, navigator, and similar APIs are not available during server rendering and can crash with ReferenceError. Move this code to a Client Component or guard it so it only runs in the browser.\n"
+  },
+  {
+    "rule_id": "nextjs.next-client-component-data-fetch",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "client_data_fetch.tsx",
+    "line": 20,
+    "message": "Client-side data fetching detected inside useEffect in a Client Component. Using useEffect with fetch or axios in Client Components can lead to request waterfalls, increased bundle sizes, and negative impact on SEO. Consider moving data fetching to a React Server Component (RSC), or use a library like TanStack Query for client-side state and caching.\n"
+  },
+  {
+    "rule_id": "nextjs.next-client-component-data-fetch",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "client_data_fetch.tsx",
+    "line": 25,
+    "message": "Client-side data fetching detected inside useEffect in a Client Component. Using useEffect with fetch or axios in Client Components can lead to request waterfalls, increased bundle sizes, and negative impact on SEO. Consider moving data fetching to a React Server Component (RSC), or use a library like TanStack Query for client-side state and caching.\n"
+  },
+  {
+    "rule_id": "nextjs.next-insecure-cookie-setting",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 169,
+    "message": "A cookie is set via cookies().set() without explicitly enabling the secure flag. Sensitive cookies (like session tokens) should always be set with 'secure: true' in production to prevent them from being transmitted over unencrypted HTTP connections.\n"
+  },
+  {
+    "rule_id": "nextjs.next-insecure-cookie-setting",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 171,
+    "message": "A cookie is set via cookies().set() without explicitly enabling the secure flag. Sensitive cookies (like session tokens) should always be set with 'secure: true' in production to prevent them from being transmitted over unencrypted HTTP connections.\n"
+  },
+  {
+    "rule_id": "nextjs.next-no-redirect-in-try-catch",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "next_no_redirect_in_try_catch.tsx",
+    "line": 6,
+    "message": "Calling 'redirect()' or 'permanentRedirect()' inside a try-catch block can prevent the redirect from working correctly because Next.js uses thrown errors internally to control routing. Call redirect() outside the try-catch block or ensure the redirect error is rethrown.\n"
+  },
+  {
+    "rule_id": "nextjs.next-no-redirect-in-try-catch",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "next_no_redirect_in_try_catch.tsx",
+    "line": 13,
+    "message": "Calling 'redirect()' or 'permanentRedirect()' inside a try-catch block can prevent the redirect from working correctly because Next.js uses thrown errors internally to control routing. Call redirect() outside the try-catch block or ensure the redirect error is rethrown.\n"
+  },
+  {
+    "rule_id": "nextjs.next-no-redirect-in-try-catch",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "tanstack_start_redirect_in_try_catch.tsx",
+    "line": 6,
+    "message": "Calling 'redirect()' or 'permanentRedirect()' inside a try-catch block can prevent the redirect from working correctly because Next.js uses thrown errors internally to control routing. Call redirect() outside the try-catch block or ensure the redirect error is rethrown.\n"
+  },
+  {
+    "rule_id": "nextjs.next-prefer-image-component",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 218,
+    "message": "A standard HTML \u003cimg\u003e tag is used. In Next.js, using \u003cimg\u003e bypasses automatic image optimization (lazy loading, responsive sizing, and modern format conversion). Use the '\u003cImage\u003e' component from 'next/image' instead.\n"
+  },
+  {
+    "rule_id": "nextjs.next-prefer-link-component",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 30,
+    "message": "A standard HTML \u003ca\u003e tag is used with an internal route. In Next.js, using \u003ca\u003e for internal navigation causes a full page reload, losing client-side routing benefits. Use the '\u003cLink\u003e' component from 'next/link' instead.\n"
+  },
+  {
+    "rule_id": "nextjs.next-prefer-link-component",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 212,
+    "message": "A standard HTML \u003ca\u003e tag is used with an internal route. In Next.js, using \u003ca\u003e for internal navigation causes a full page reload, losing client-side routing benefits. Use the '\u003cLink\u003e' component from 'next/link' instead.\n"
+  },
+  {
+    "rule_id": "nextjs.next-prefer-link-component",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 213,
+    "message": "A standard HTML \u003ca\u003e tag is used with an internal route. In Next.js, using \u003ca\u003e for internal navigation causes a full page reload, losing client-side routing benefits. Use the '\u003cLink\u003e' component from 'next/link' instead.\n"
+  },
+  {
+    "rule_id": "nextjs.next-prefer-link-component",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 166,
+    "message": "A standard HTML \u003ca\u003e tag is used with an internal route. In Next.js, using \u003ca\u003e for internal navigation causes a full page reload, losing client-side routing benefits. Use the '\u003cLink\u003e' component from 'next/link' instead.\n"
+  },
+  {
+    "rule_id": "nextjs.next-public-env-secret",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 135,
+    "message": "A NEXT_PUBLIC_* environment variable named like a secret (secret, token, password, credential, private/api key) is read here. Next.js inlines every NEXT_PUBLIC_* value into the client JavaScript bundle, so this value is shipped to the browser and readable by anyone. If it is a real secret, drop the NEXT_PUBLIC_ prefix and read it only in server code (route handlers, server components, getServerSideProps). If the value is genuinely public (e.g. a publishable key), rename it so it no longer looks like a secret.\n"
+  },
+  {
+    "rule_id": "nextjs.next-public-env-secret",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 136,
+    "message": "A NEXT_PUBLIC_* environment variable named like a secret (secret, token, password, credential, private/api key) is read here. Next.js inlines every NEXT_PUBLIC_* value into the client JavaScript bundle, so this value is shipped to the browser and readable by anyone. If it is a real secret, drop the NEXT_PUBLIC_ prefix and read it only in server code (route handlers, server components, getServerSideProps). If the value is genuinely public (e.g. a publishable key), rename it so it no longer looks like a secret.\n"
+  },
+  {
+    "rule_id": "nextjs.next-root-level-request-apis",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "route.ts",
+    "line": 40,
+    "message": "A Next.js request API is called at module scope. cookies(), headers(), and similar request-bound APIs force the route or component to be dynamic and can disable static optimization for the whole file. Move the call inside the handler/component that actually needs request data.\n"
+  },
+  {
+    "rule_id": "nextjs.next-root-level-request-apis",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "route.ts",
+    "line": 41,
+    "message": "A Next.js request API is called at module scope. cookies(), headers(), and similar request-bound APIs force the route or component to be dynamic and can disable static optimization for the whole file. Move the call inside the handler/component that actually needs request data.\n"
+  },
+  {
+    "rule_id": "nextjs.next-route-handler-invalid-method",
+    "severity": "error",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "route.ts",
+    "line": 3,
+    "message": "A Next.js App Router route handler exports a function whose name is not a valid HTTP method. Next.js only recognizes GET, POST, PUT, PATCH, DELETE, HEAD, and OPTIONS in route files; other exported handler names are ignored and the endpoint will not respond as intended.\n"
+  },
+  {
+    "rule_id": "nextjs.next-route-handler-invalid-method",
+    "severity": "error",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "route.ts",
+    "line": 7,
+    "message": "A Next.js App Router route handler exports a function whose name is not a valid HTTP method. Next.js only recognizes GET, POST, PUT, PATCH, DELETE, HEAD, and OPTIONS in route files; other exported handler names are ignored and the endpoint will not respond as intended.\n"
+  },
+  {
+    "rule_id": "nextjs.next-route-handler-invalid-method",
+    "severity": "error",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "route.ts",
+    "line": 11,
+    "message": "A Next.js App Router route handler exports a function whose name is not a valid HTTP method. Next.js only recognizes GET, POST, PUT, PATCH, DELETE, HEAD, and OPTIONS in route files; other exported handler names are ignored and the endpoint will not respond as intended.\n"
+  },
+  {
+    "rule_id": "nextjs.next-server-action-missing-validation",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 352,
+    "message": "A Next.js Server Action accepts input but does not appear to validate it with a schema parser. Server Actions are callable from the client, so unvalidated parameters can become authorization, injection, or data integrity bugs. Validate the input with Zod, Valibot, or a similar schema before using it.\n"
+  },
+  {
+    "rule_id": "nextjs.next-server-action-missing-validation",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 464,
+    "message": "A Next.js Server Action accepts input but does not appear to validate it with a schema parser. Server Actions are callable from the client, so unvalidated parameters can become authorization, injection, or data integrity bugs. Validate the input with Zod, Valibot, or a similar schema before using it.\n"
+  },
+  {
+    "rule_id": "nextjs.next-server-action-missing-validation",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 469,
+    "message": "A Next.js Server Action accepts input but does not appear to validate it with a schema parser. Server Actions are callable from the client, so unvalidated parameters can become authorization, injection, or data integrity bugs. Validate the input with Zod, Valibot, or a similar schema before using it.\n"
+  },
+  {
+    "rule_id": "nextjs.next-server-action-missing-validation",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "server_auth_actions.tsx",
+    "line": 2,
+    "message": "A Next.js Server Action accepts input but does not appear to validate it with a schema parser. Server Actions are callable from the client, so unvalidated parameters can become authorization, injection, or data integrity bugs. Validate the input with Zod, Valibot, or a similar schema before using it.\n"
+  },
+  {
+    "rule_id": "nextjs.next-server-action-missing-validation",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "server_auth_actions.tsx",
+    "line": 8,
+    "message": "A Next.js Server Action accepts input but does not appear to validate it with a schema parser. Server Actions are callable from the client, so unvalidated parameters can become authorization, injection, or data integrity bugs. Validate the input with Zod, Valibot, or a similar schema before using it.\n"
+  },
+  {
+    "rule_id": "nextjs.next-server-action-missing-validation",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "server_auth_actions.tsx",
+    "line": 16,
+    "message": "A Next.js Server Action accepts input but does not appear to validate it with a schema parser. Server Actions are callable from the client, so unvalidated parameters can become authorization, injection, or data integrity bugs. Validate the input with Zod, Valibot, or a similar schema before using it.\n"
+  },
+  {
+    "rule_id": "nextjs.next-server-component-api-hop",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "case.tsx",
+    "line": 164,
+    "message": "Server Component fetches its own API route. Server Components can access databases, services, or internal APIs directly in Next.js. Fetching an internal /api/... route adds unnecessary HTTP request overhead (serialization, latency, network hop). Call the database or service function directly instead of performing an HTTP fetch.\n"
+  },
+  {
+    "rule_id": "nextjs.next-server-component-api-hop",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "case.tsx",
+    "line": 328,
+    "message": "Server Component fetches its own API route. Server Components can access databases, services, or internal APIs directly in Next.js. Fetching an internal /api/... route adds unnecessary HTTP request overhead (serialization, latency, network hop). Call the database or service function directly instead of performing an HTTP fetch.\n"
+  },
+  {
+    "rule_id": "nextjs.next-server-component-api-hop",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "server_api_hop.tsx",
+    "line": 7,
+    "message": "Server Component fetches its own API route. Server Components can access databases, services, or internal APIs directly in Next.js. Fetching an internal /api/... route adds unnecessary HTTP request overhead (serialization, latency, network hop). Call the database or service function directly instead of performing an HTTP fetch.\n"
+  },
+  {
+    "rule_id": "nextjs.next-server-component-api-hop",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "server_api_hop.tsx",
+    "line": 14,
+    "message": "Server Component fetches its own API route. Server Components can access databases, services, or internal APIs directly in Next.js. Fetching an internal /api/... route adds unnecessary HTTP request overhead (serialization, latency, network hop). Call the database or service function directly instead of performing an HTTP fetch.\n"
+  },
+  {
+    "rule_id": "nextjs.next-server-component-api-hop",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "server_api_hop.tsx",
+    "line": 21,
+    "message": "Server Component fetches its own API route. Server Components can access databases, services, or internal APIs directly in Next.js. Fetching an internal /api/... route adds unnecessary HTTP request overhead (serialization, latency, network hop). Call the database or service function directly instead of performing an HTTP fetch.\n"
+  },
+  {
+    "rule_id": "nextjs.next-server-component-api-hop",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "tanstack_start.tsx",
+    "line": 59,
+    "message": "Server Component fetches its own API route. Server Components can access databases, services, or internal APIs directly in Next.js. Fetching an internal /api/... route adds unnecessary HTTP request overhead (serialization, latency, network hop). Call the database or service function directly instead of performing an HTTP fetch.\n"
+  },
+  {
+    "rule_id": "nextjs.next-server-component-api-hop",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "tanstack_start.tsx",
+    "line": 72,
+    "message": "Server Component fetches its own API route. Server Components can access databases, services, or internal APIs directly in Next.js. Fetching an internal /api/... route adds unnecessary HTTP request overhead (serialization, latency, network hop). Call the database or service function directly instead of performing an HTTP fetch.\n"
+  },
+  {
+    "rule_id": "nextjs.next-server-only-in-client",
+    "severity": "error",
+    "confidence": "rule",
+    "file": "client.tsx",
+    "line": 6,
+    "message": "A client component (using \"use client\") imports a server-only package or Node.js core module. This will fail to run or bundle in the browser. Ensure this import is only used in server components, or mock/stub the functionality on the client.\n"
+  },
+  {
+    "rule_id": "nextjs.next-ssrf-prone-fetch",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 46,
+    "message": "Server-side fetch() is called with a dynamic or unvalidated URL. If this URL is built from user-controlled input, it can lead to Server-Side Request Forgery (SSRF), allowing attackers to query internal services, bypass firewalls, or leak credentials. Validate the URL against a strict allowlist of allowed domains, or ensure the input is sanitized and mapped to safe endpoints.\n"
+  },
+  {
+    "rule_id": "nextjs.next-ssrf-prone-fetch",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 121,
+    "message": "Server-side fetch() is called with a dynamic or unvalidated URL. If this URL is built from user-controlled input, it can lead to Server-Side Request Forgery (SSRF), allowing attackers to query internal services, bypass firewalls, or leak credentials. Validate the URL against a strict allowlist of allowed domains, or ensure the input is sanitized and mapped to safe endpoints.\n"
+  },
+  {
+    "rule_id": "nextjs.next-ssrf-prone-fetch",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 163,
+    "message": "Server-side fetch() is called with a dynamic or unvalidated URL. If this URL is built from user-controlled input, it can lead to Server-Side Request Forgery (SSRF), allowing attackers to query internal services, bypass firewalls, or leak credentials. Validate the URL against a strict allowlist of allowed domains, or ensure the input is sanitized and mapped to safe endpoints.\n"
+  },
+  {
+    "rule_id": "nextjs.next-ssrf-prone-fetch",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 165,
+    "message": "Server-side fetch() is called with a dynamic or unvalidated URL. If this URL is built from user-controlled input, it can lead to Server-Side Request Forgery (SSRF), allowing attackers to query internal services, bypass firewalls, or leak credentials. Validate the URL against a strict allowlist of allowed domains, or ensure the input is sanitized and mapped to safe endpoints.\n"
+  },
+  {
+    "rule_id": "nextjs.next-ssrf-prone-fetch",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 330,
+    "message": "Server-side fetch() is called with a dynamic or unvalidated URL. If this URL is built from user-controlled input, it can lead to Server-Side Request Forgery (SSRF), allowing attackers to query internal services, bypass firewalls, or leak credentials. Validate the URL against a strict allowlist of allowed domains, or ensure the input is sanitized and mapped to safe endpoints.\n"
+  },
+  {
+    "rule_id": "nextjs.next-ssrf-prone-fetch",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 386,
+    "message": "Server-side fetch() is called with a dynamic or unvalidated URL. If this URL is built from user-controlled input, it can lead to Server-Side Request Forgery (SSRF), allowing attackers to query internal services, bypass firewalls, or leak credentials. Validate the URL against a strict allowlist of allowed domains, or ensure the input is sanitized and mapped to safe endpoints.\n"
+  },
+  {
+    "rule_id": "nextjs.next-ssrf-prone-fetch",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 396,
+    "message": "Server-side fetch() is called with a dynamic or unvalidated URL. If this URL is built from user-controlled input, it can lead to Server-Side Request Forgery (SSRF), allowing attackers to query internal services, bypass firewalls, or leak credentials. Validate the URL against a strict allowlist of allowed domains, or ensure the input is sanitized and mapped to safe endpoints.\n"
+  },
+  {
+    "rule_id": "nextjs.next-ssrf-prone-fetch",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 399,
+    "message": "Server-side fetch() is called with a dynamic or unvalidated URL. If this URL is built from user-controlled input, it can lead to Server-Side Request Forgery (SSRF), allowing attackers to query internal services, bypass firewalls, or leak credentials. Validate the URL against a strict allowlist of allowed domains, or ensure the input is sanitized and mapped to safe endpoints.\n"
+  },
+  {
+    "rule_id": "nextjs.next-ssrf-prone-fetch",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 447,
+    "message": "Server-side fetch() is called with a dynamic or unvalidated URL. If this URL is built from user-controlled input, it can lead to Server-Side Request Forgery (SSRF), allowing attackers to query internal services, bypass firewalls, or leak credentials. Validate the URL against a strict allowlist of allowed domains, or ensure the input is sanitized and mapped to safe endpoints.\n"
+  },
+  {
+    "rule_id": "nextjs.next-ssrf-prone-fetch",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 471,
+    "message": "Server-side fetch() is called with a dynamic or unvalidated URL. If this URL is built from user-controlled input, it can lead to Server-Side Request Forgery (SSRF), allowing attackers to query internal services, bypass firewalls, or leak credentials. Validate the URL against a strict allowlist of allowed domains, or ensure the input is sanitized and mapped to safe endpoints.\n"
+  },
+  {
+    "rule_id": "nextjs.next-ssrf-prone-fetch",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "tanstack_start.tsx",
+    "line": 48,
+    "message": "Server-side fetch() is called with a dynamic or unvalidated URL. If this URL is built from user-controlled input, it can lead to Server-Side Request Forgery (SSRF), allowing attackers to query internal services, bypass firewalls, or leak credentials. Validate the URL against a strict allowlist of allowed domains, or ensure the input is sanitized and mapped to safe endpoints.\n"
+  },
+  {
+    "rule_id": "nextjs.next-unnecessary-use-client",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "app/subdir/page.tsx",
+    "line": 2,
+    "message": "Unnecessary \"use client\" directive at the top of the file. No React/Next.js hooks, event handlers, client-only APIs (like createContext), or browser globals (like window/document) were detected. Removing \"use client\" allows this component to be rendered as a React Server Component (RSC), which reduces the client-side bundle size and improves initial page load performance.\n"
+  },
+  {
+    "rule_id": "nextjs.next-unnecessary-use-client",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "next_async_client_component.tsx",
+    "line": 1,
+    "message": "Unnecessary \"use client\" directive at the top of the file. No React/Next.js hooks, event handlers, client-only APIs (like createContext), or browser globals (like window/document) were detected. Removing \"use client\" allows this component to be rendered as a React Server Component (RSC), which reduces the client-side bundle size and improves initial page load performance.\n"
+  },
+  {
+    "rule_id": "nextjs.next-unnecessary-use-client",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "unnecessary_client.tsx",
+    "line": 2,
+    "message": "Unnecessary \"use client\" directive at the top of the file. No React/Next.js hooks, event handlers, client-only APIs (like createContext), or browser globals (like window/document) were detected. Removing \"use client\" allows this component to be rendered as a React Server Component (RSC), which reduces the client-side bundle size and improves initial page load performance.\n"
+  },
+  {
+    "rule_id": "nextjs.next-unsafe-redirect",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 156,
+    "message": "A Next.js redirect target is built from a dynamic value. If this value can be influenced by a user, the app may redirect to an attacker-controlled URL. Validate against an allowlist, resolve only internal paths, or build the destination from trusted route names.\n"
+  },
+  {
+    "rule_id": "nextjs.next-unsafe-redirect",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 158,
+    "message": "A Next.js redirect target is built from a dynamic value. If this value can be influenced by a user, the app may redirect to an attacker-controlled URL. Validate against an allowlist, resolve only internal paths, or build the destination from trusted route names.\n"
+  },
+  {
+    "rule_id": "nextjs.next-unsafe-redirect",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "tanstack_start_redirect_in_try_catch.tsx",
+    "line": 6,
+    "message": "A Next.js redirect target is built from a dynamic value. If this value can be influenced by a user, the app may redirect to an attacker-controlled URL. Validate against an allowlist, resolve only internal paths, or build the destination from trusted route names.\n"
+  },
+  {
+    "rule_id": "nextjs.next-unsafe-redirect",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "tanstack_start_redirect_in_try_catch.tsx",
+    "line": 21,
+    "message": "A Next.js redirect target is built from a dynamic value. If this value can be influenced by a user, the app may redirect to an attacker-controlled URL. Validate against an allowlist, resolve only internal paths, or build the destination from trusted route names.\n"
+  },
+  {
+    "rule_id": "nextjs.next-unsafe-redirect",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "tanstack_start_redirect_in_try_catch.tsx",
+    "line": 25,
+    "message": "A Next.js redirect target is built from a dynamic value. If this value can be influenced by a user, the app may redirect to an attacker-controlled URL. Validate against an allowlist, resolve only internal paths, or build the destination from trusted route names.\n"
+  },
+  {
+    "rule_id": "nextjs.nextjs-image-missing-sizes",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "image_sizes.tsx",
+    "line": 8,
+    "message": "Next.js \u003cImage\u003e component is missing the 'sizes' property. For responsive images (especially those using 'fill' or responsive layouts), specifying 'sizes' is important for performance so the browser downloads the correct image size.\n"
+  },
+  {
+    "rule_id": "nextjs.nextjs-image-missing-sizes",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "image_sizes.tsx",
+    "line": 11,
+    "message": "Next.js \u003cImage\u003e component is missing the 'sizes' property. For responsive images (especially those using 'fill' or responsive layouts), specifying 'sizes' is important for performance so the browser downloads the correct image size.\n"
+  },
+  {
+    "rule_id": "nextjs.nextjs-image-missing-sizes",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "image_sizes.tsx",
+    "line": 14,
+    "message": "Next.js \u003cImage\u003e component is missing the 'sizes' property. For responsive images (especially those using 'fill' or responsive layouts), specifying 'sizes' is important for performance so the browser downloads the correct image size.\n"
+  },
+  {
+    "rule_id": "nextjs.nextjs-image-missing-sizes",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "image_sizes.tsx",
+    "line": 17,
+    "message": "Next.js \u003cImage\u003e component is missing the 'sizes' property. For responsive images (especially those using 'fill' or responsive layouts), specifying 'sizes' is important for performance so the browser downloads the correct image size.\n"
+  },
+  {
+    "rule_id": "nextjs.nextjs-inline-script-missing-id",
+    "severity": "error",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "app/script.tsx",
+    "line": 7,
+    "message": "Inline Next.js scripts must have an 'id' attribute to enable proper tracking and deduplication.\n"
+  },
+  {
+    "rule_id": "nextjs.nextjs-inline-script-missing-id",
+    "severity": "error",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "app/script.tsx",
+    "line": 12,
+    "message": "Inline Next.js scripts must have an 'id' attribute to enable proper tracking and deduplication.\n"
+  },
+  {
+    "rule_id": "nextjs.nextjs-missing-metadata",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "app/layout.tsx",
+    "line": 3,
+    "message": "Next.js App Router Page/Layout is missing SEO metadata. Export a static 'metadata' object or a dynamic 'generateMetadata' function to improve search engine indexing.\n"
+  },
+  {
+    "rule_id": "nextjs.nextjs-no-client-side-redirect",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "client_data_fetch.tsx",
+    "line": 30,
+    "message": "A redirect runs inside useEffect (router.push/replace). The page renders first and then navigates away, so the user sees a flash of the wrong screen, and it costs an extra client render. Prefer middleware or a Server Component redirect() for auth/routing gates; keep router.push for user-triggered events.\n"
+  },
+  {
+    "rule_id": "nextjs.nextjs-no-head-import",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "app/layout.tsx",
+    "line": 1,
+    "message": "App Router files should not import 'next/head'. Use the Metadata API instead to define page titles, descriptions, and other head elements.\n"
+  },
+  {
+    "rule_id": "nextjs.nextjs-no-side-effect-in-get-handler",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "rule",
+    "file": "route.ts",
+    "line": 19,
+    "message": "Side effect detected in Next.js GET handler. GET requests are idempotent and can be pre-fetched or cached by the browser/CDN, making side effects (like database mutations or state writes) unpredictable and vulnerable to CSRF. Use a POST handler instead for state-changing operations.\n"
+  },
+  {
+    "rule_id": "nextjs.nextjs-no-side-effect-in-get-handler",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "rule",
+    "file": "route.ts",
+    "line": 22,
+    "message": "Side effect detected in Next.js GET handler. GET requests are idempotent and can be pre-fetched or cached by the browser/CDN, making side effects (like database mutations or state writes) unpredictable and vulnerable to CSRF. Use a POST handler instead for state-changing operations.\n"
+  },
+  {
+    "rule_id": "nextjs.nextjs-no-side-effect-in-get-handler",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "rule",
+    "file": "route.ts",
+    "line": 25,
+    "message": "Side effect detected in Next.js GET handler. GET requests are idempotent and can be pre-fetched or cached by the browser/CDN, making side effects (like database mutations or state writes) unpredictable and vulnerable to CSRF. Use a POST handler instead for state-changing operations.\n"
+  },
+  {
+    "rule_id": "nextjs.nextjs-no-use-search-params-without-suspense",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "nextjs_no_use_search_params_without_suspense.tsx",
+    "line": 5,
+    "message": "'useSearchParams()' is used in a Client Component. Next.js requires components using 'useSearchParams()' to be wrapped in a '\u003cSuspense\u003e' boundary at the parent level during static rendering. Without a Suspense boundary, the entire page will fallback to client-side rendering.\n"
+  }
+]

@@ -1,0 +1,218 @@
+[
+  {
+    "rule_id": "server.server-auth-actions",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 352,
+    "message": "Server Action accepts input but does not appear to perform any authorization or authentication check. Server Actions are publicly accessible POST endpoints. Always verify the user's session and permissions at the start of the action (e.g. using auth(), getServerSession(), or custom verification helpers) to prevent unauthorized access.\n"
+  },
+  {
+    "rule_id": "server.server-auth-actions",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 352,
+    "message": "Server Action accepts input but does not appear to perform any authorization or authentication check. Server Actions are publicly accessible POST endpoints. Always verify the user's session and permissions at the start of the action (e.g. using auth(), getServerSession(), or custom verification helpers) to prevent unauthorized access.\n"
+  },
+  {
+    "rule_id": "server.server-auth-actions",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 357,
+    "message": "Server Action accepts input but does not appear to perform any authorization or authentication check. Server Actions are publicly accessible POST endpoints. Always verify the user's session and permissions at the start of the action (e.g. using auth(), getServerSession(), or custom verification helpers) to prevent unauthorized access.\n"
+  },
+  {
+    "rule_id": "server.server-auth-actions",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 357,
+    "message": "Server Action accepts input but does not appear to perform any authorization or authentication check. Server Actions are publicly accessible POST endpoints. Always verify the user's session and permissions at the start of the action (e.g. using auth(), getServerSession(), or custom verification helpers) to prevent unauthorized access.\n"
+  },
+  {
+    "rule_id": "server.server-auth-actions",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 363,
+    "message": "Server Action accepts input but does not appear to perform any authorization or authentication check. Server Actions are publicly accessible POST endpoints. Always verify the user's session and permissions at the start of the action (e.g. using auth(), getServerSession(), or custom verification helpers) to prevent unauthorized access.\n"
+  },
+  {
+    "rule_id": "server.server-auth-actions",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 363,
+    "message": "Server Action accepts input but does not appear to perform any authorization or authentication check. Server Actions are publicly accessible POST endpoints. Always verify the user's session and permissions at the start of the action (e.g. using auth(), getServerSession(), or custom verification helpers) to prevent unauthorized access.\n"
+  },
+  {
+    "rule_id": "server.server-auth-actions",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 464,
+    "message": "Server Action accepts input but does not appear to perform any authorization or authentication check. Server Actions are publicly accessible POST endpoints. Always verify the user's session and permissions at the start of the action (e.g. using auth(), getServerSession(), or custom verification helpers) to prevent unauthorized access.\n"
+  },
+  {
+    "rule_id": "server.server-auth-actions",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 464,
+    "message": "Server Action accepts input but does not appear to perform any authorization or authentication check. Server Actions are publicly accessible POST endpoints. Always verify the user's session and permissions at the start of the action (e.g. using auth(), getServerSession(), or custom verification helpers) to prevent unauthorized access.\n"
+  },
+  {
+    "rule_id": "server.server-auth-actions",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 469,
+    "message": "Server Action accepts input but does not appear to perform any authorization or authentication check. Server Actions are publicly accessible POST endpoints. Always verify the user's session and permissions at the start of the action (e.g. using auth(), getServerSession(), or custom verification helpers) to prevent unauthorized access.\n"
+  },
+  {
+    "rule_id": "server.server-auth-actions",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 469,
+    "message": "Server Action accepts input but does not appear to perform any authorization or authentication check. Server Actions are publicly accessible POST endpoints. Always verify the user's session and permissions at the start of the action (e.g. using auth(), getServerSession(), or custom verification helpers) to prevent unauthorized access.\n"
+  },
+  {
+    "rule_id": "server.server-auth-actions",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "server_auth_actions.tsx",
+    "line": 2,
+    "message": "Server Action accepts input but does not appear to perform any authorization or authentication check. Server Actions are publicly accessible POST endpoints. Always verify the user's session and permissions at the start of the action (e.g. using auth(), getServerSession(), or custom verification helpers) to prevent unauthorized access.\n"
+  },
+  {
+    "rule_id": "server.server-auth-actions",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "server_auth_actions.tsx",
+    "line": 2,
+    "message": "Server Action accepts input but does not appear to perform any authorization or authentication check. Server Actions are publicly accessible POST endpoints. Always verify the user's session and permissions at the start of the action (e.g. using auth(), getServerSession(), or custom verification helpers) to prevent unauthorized access.\n"
+  },
+  {
+    "rule_id": "server.server-auth-actions",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "server_auth_actions.tsx",
+    "line": 8,
+    "message": "Server Action accepts input but does not appear to perform any authorization or authentication check. Server Actions are publicly accessible POST endpoints. Always verify the user's session and permissions at the start of the action (e.g. using auth(), getServerSession(), or custom verification helpers) to prevent unauthorized access.\n"
+  },
+  {
+    "rule_id": "server.server-auth-actions",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "server_auth_actions.tsx",
+    "line": 16,
+    "message": "Server Action accepts input but does not appear to perform any authorization or authentication check. Server Actions are publicly accessible POST endpoints. Always verify the user's session and permissions at the start of the action (e.g. using auth(), getServerSession(), or custom verification helpers) to prevent unauthorized access.\n"
+  },
+  {
+    "rule_id": "server.server-cache-with-object-literal",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "server_auth_actions.tsx",
+    "line": 34,
+    "message": "React cache() or React.cache() called inside a function/class body. Calling cache() inside a component, hook, or function body recreates the cache instance on every invocation/render, completely defeating the memoization. Define the cached function at the module scope instead.\n"
+  },
+  {
+    "rule_id": "server.server-cache-with-object-literal",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "server_auth_actions.tsx",
+    "line": 37,
+    "message": "React cache() or React.cache() called inside a function/class body. Calling cache() inside a component, hook, or function body recreates the cache instance on every invocation/render, completely defeating the memoization. Define the cached function at the module scope instead.\n"
+  },
+  {
+    "rule_id": "server.server-cache-with-object-literal",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "server_auth_actions.tsx",
+    "line": 46,
+    "message": "React cache() or React.cache() called inside a function/class body. Calling cache() inside a component, hook, or function body recreates the cache instance on every invocation/render, completely defeating the memoization. Define the cached function at the module scope instead.\n"
+  },
+  {
+    "rule_id": "server.server-cache-with-object-literal",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "server_auth_actions.tsx",
+    "line": 54,
+    "message": "React cache() or React.cache() called inside a function/class body. Calling cache() inside a component, hook, or function body recreates the cache instance on every invocation/render, completely defeating the memoization. Define the cached function at the module scope instead.\n"
+  },
+  {
+    "rule_id": "server.server-dedup-props",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "server.tsx",
+    "line": 30,
+    "message": "JSON.stringify() used as a JSX prop value. Passing serialized data as a string prop forces the client to JSON.parse() it manually. Pass the raw value directly — React serializes Server Component props automatically. If the raw prop is also passed alongside the JSON version, remove the duplicate.\n"
+  },
+  {
+    "rule_id": "server.server-dedup-props",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "server.tsx",
+    "line": 45,
+    "message": "JSON.stringify() used as a JSX prop value. Passing serialized data as a string prop forces the client to JSON.parse() it manually. Pass the raw value directly — React serializes Server Component props automatically. If the raw prop is also passed alongside the JSON version, remove the duplicate.\n"
+  },
+  {
+    "rule_id": "server.server-hoist-static-io",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 289,
+    "message": "Static file read inside a function body. Reading a file that never changes (config, templates, etc.) on every invocation is wasteful. Move the read to module scope so it runs once at startup.\n"
+  },
+  {
+    "rule_id": "server.server-hoist-static-io",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 13,
+    "message": "Static file read inside a function body. Reading a file that never changes (config, templates, etc.) on every invocation is wasteful. Move the read to module scope so it runs once at startup.\n"
+  },
+  {
+    "rule_id": "server.server-hoist-static-io",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "server.tsx",
+    "line": 12,
+    "message": "Static file read inside a function body. Reading a file that never changes (config, templates, etc.) on every invocation is wasteful. Move the read to module scope so it runs once at startup.\n"
+  },
+  {
+    "rule_id": "server.server-hoist-static-io",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "server.tsx",
+    "line": 18,
+    "message": "Static file read inside a function body. Reading a file that never changes (config, templates, etc.) on every invocation is wasteful. Move the read to module scope so it runs once at startup.\n"
+  }
+]

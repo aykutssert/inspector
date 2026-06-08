@@ -1,0 +1,29 @@
+[
+  {
+    "rule_id": "jotai.jotai-derived-atom-returns-fresh-object",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "jotai.ts",
+    "line": 8,
+    "message": "Derived atom returns a new object/array literal on every read. Each evaluation of atom(get =\u003e ({ ... })) produces a new reference, so every subscriber re-renders even when underlying values are unchanged. Use selectAtom with an equality function, or stabilize the shape with atom(get =\u003e derived, equal) to avoid unnecessary re-renders.\n"
+  },
+  {
+    "rule_id": "jotai.jotai-derived-atom-returns-fresh-object",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "jotai.ts",
+    "line": 14,
+    "message": "Derived atom returns a new object/array literal on every read. Each evaluation of atom(get =\u003e ({ ... })) produces a new reference, so every subscriber re-renders even when underlying values are unchanged. Use selectAtom with an equality function, or stabilize the shape with atom(get =\u003e derived, equal) to avoid unnecessary re-renders.\n"
+  },
+  {
+    "rule_id": "jotai.jotai-derived-atom-returns-fresh-object",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "jotai.ts",
+    "line": 17,
+    "message": "Derived atom returns a new object/array literal on every read. Each evaluation of atom(get =\u003e ({ ... })) produces a new reference, so every subscriber re-renders even when underlying values are unchanged. Use selectAtom with an equality function, or stabilize the shape with atom(get =\u003e derived, equal) to avoid unnecessary re-renders.\n"
+  }
+]

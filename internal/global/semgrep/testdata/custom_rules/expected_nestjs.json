@@ -1,0 +1,56 @@
+[
+  {
+    "rule_id": "nestjs.nestjs-dto-without-validators",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "rule",
+    "file": "incomplete.ts",
+    "line": 69,
+    "message": "DTO class property is defined without any decorators. In NestJS, properties inside DTO classes (e.g. classes ending in Dto) must have at least one validation decorator (such as @IsString(), @IsNumber(), etc.) for the global ValidationPipe to validate them. Properties without decorators are ignored by validation, allowing unchecked payload fields.\n"
+  },
+  {
+    "rule_id": "nestjs.nestjs-dto-without-validators",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "rule",
+    "file": "incomplete.ts",
+    "line": 72,
+    "message": "DTO class property is defined without any decorators. In NestJS, properties inside DTO classes (e.g. classes ending in Dto) must have at least one validation decorator (such as @IsString(), @IsNumber(), etc.) for the global ValidationPipe to validate them. Properties without decorators are ignored by validation, allowing unchecked payload fields.\n"
+  },
+  {
+    "rule_id": "nestjs.nestjs-fat-controller",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 238,
+    "message": "A NestJS controller directly performs database or ORM operations. NestJS architecture mandates that controllers only handle HTTP routing and delegate business logic and data access to services. Move this database operation into a service class.\n"
+  },
+  {
+    "rule_id": "nestjs.nestjs-fat-controller",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 243,
+    "message": "A NestJS controller directly performs database or ORM operations. NestJS architecture mandates that controllers only handle HTTP routing and delegate business logic and data access to services. Move this database operation into a service class.\n"
+  },
+  {
+    "rule_id": "nestjs.nestjs-fat-controller",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 248,
+    "message": "A NestJS controller directly performs database or ORM operations. NestJS architecture mandates that controllers only handle HTTP routing and delegate business logic and data access to services. Move this database operation into a service class.\n"
+  },
+  {
+    "rule_id": "nestjs.nestjs-fat-controller",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 442,
+    "message": "A NestJS controller directly performs database or ORM operations. NestJS architecture mandates that controllers only handle HTTP routing and delegate business logic and data access to services. Move this database operation into a service class.\n"
+  }
+]

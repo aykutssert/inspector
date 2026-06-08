@@ -1,0 +1,263 @@
+[
+  {
+    "rule_id": "tanstack.query-no-query-in-effect",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "tanstack_writes.tsx",
+    "line": 59,
+    "message": "Calling refetch() inside useEffect couples your query trigger to React's rendering lifecycle. When the queryKey or 'enabled' option changes, TanStack Query re-fetches automatically — useEffect + refetch() is rarely the right pattern and introduces race conditions and double-fetching.\n"
+  },
+  {
+    "rule_id": "tanstack.query-no-rest-destructuring",
+    "severity": "info",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "tanstack_writes.tsx",
+    "line": 81,
+    "message": "Rest/spread destructuring from useQuery subscribes to every query state field (isFetching, isStale, dataUpdatedAt, ...), causing a re-render whenever any of them changes. Destructure only what you use: const { data, isLoading, error } = useQuery(...).\n"
+  },
+  {
+    "rule_id": "tanstack.query-no-usequery-for-mutation",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "tanstack_writes.tsx",
+    "line": 19,
+    "message": "useQuery is executing an HTTP write operation. Queries are designed for idempotent reads and may refetch automatically; POST, PUT, PATCH, and DELETE belong in useMutation so retries, pending state, and cache updates follow mutation semantics.\n"
+  },
+  {
+    "rule_id": "tanstack.query-no-usequery-for-mutation",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "tanstack_writes.tsx",
+    "line": 25,
+    "message": "useQuery is executing an HTTP write operation. Queries are designed for idempotent reads and may refetch automatically; POST, PUT, PATCH, and DELETE belong in useMutation so retries, pending state, and cache updates follow mutation semantics.\n"
+  },
+  {
+    "rule_id": "tanstack.query-no-void-query-fn",
+    "severity": "error",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "tanstack_writes.tsx",
+    "line": 29,
+    "message": "This TanStack Query queryFn has a block body but returns no value. Query functions must resolve data; resolving undefined breaks the cache contract and is rejected by current TanStack Query versions. Return the fetched value or throw an error.\n"
+  },
+  {
+    "rule_id": "tanstack.query-stable-query-client",
+    "severity": "error",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "tanstack_writes.tsx",
+    "line": 16,
+    "message": "QueryClient is created inside a React component or hook, so a new cache can be created on each render. Create it once at module scope, or lazily store it in useState/useRef before passing it to QueryClientProvider.\n"
+  },
+  {
+    "rule_id": "tanstack.tanstack-mutation-without-invalidation",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 23,
+    "message": "useMutation is called without cache invalidation or update. When performing a mutation, you should invalidate relevant query caches using queryClient.invalidateQueries() or update query data using queryClient.setQueryData() in onSuccess or onSettled callbacks. Otherwise, the user interface will remain stale and won't reflect the server-side changes.\n"
+  },
+  {
+    "rule_id": "tanstack.tanstack-mutation-without-invalidation",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 27,
+    "message": "useMutation is called without cache invalidation or update. When performing a mutation, you should invalidate relevant query caches using queryClient.invalidateQueries() or update query data using queryClient.setQueryData() in onSuccess or onSettled callbacks. Otherwise, the user interface will remain stale and won't reflect the server-side changes.\n"
+  },
+  {
+    "rule_id": "tanstack.tanstack-mutation-without-invalidation",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 34,
+    "message": "useMutation is called without cache invalidation or update. When performing a mutation, you should invalidate relevant query caches using queryClient.invalidateQueries() or update query data using queryClient.setQueryData() in onSuccess or onSettled callbacks. Otherwise, the user interface will remain stale and won't reflect the server-side changes.\n"
+  },
+  {
+    "rule_id": "tanstack.tanstack-nonserializable-query-key",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 520,
+    "message": "TanStack Query key contains a non-serializable value. Functions, Date, Map, Set, or class instances can make cache identity unstable or hard to invalidate consistently. Use primitive values or plain serializable objects in query keys.\n"
+  },
+  {
+    "rule_id": "tanstack.tanstack-nonserializable-query-key",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 521,
+    "message": "TanStack Query key contains a non-serializable value. Functions, Date, Map, Set, or class instances can make cache identity unstable or hard to invalidate consistently. Use primitive values or plain serializable objects in query keys.\n"
+  },
+  {
+    "rule_id": "tanstack.tanstack-query-key-string",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 517,
+    "message": "TanStack Query key uses an inline string literal. Repeating raw strings across useQuery, setQueryData, and invalidateQueries makes cache updates easy to mistype or drift. Prefer a query-key factory or shared constant so reads and invalidations use the same key shape.\n"
+  },
+  {
+    "rule_id": "tanstack.tanstack-query-key-string",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 518,
+    "message": "TanStack Query key uses an inline string literal. Repeating raw strings across useQuery, setQueryData, and invalidateQueries makes cache updates easy to mistype or drift. Prefer a query-key factory or shared constant so reads and invalidations use the same key shape.\n"
+  },
+  {
+    "rule_id": "tanstack.tanstack-query-key-string",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 45,
+    "message": "TanStack Query key uses an inline string literal. Repeating raw strings across useQuery, setQueryData, and invalidateQueries makes cache updates easy to mistype or drift. Prefer a query-key factory or shared constant so reads and invalidations use the same key shape.\n"
+  },
+  {
+    "rule_id": "tanstack.tanstack-query-key-string",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 51,
+    "message": "TanStack Query key uses an inline string literal. Repeating raw strings across useQuery, setQueryData, and invalidateQueries makes cache updates easy to mistype or drift. Prefer a query-key factory or shared constant so reads and invalidations use the same key shape.\n"
+  },
+  {
+    "rule_id": "tanstack.tanstack-query-key-string",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 64,
+    "message": "TanStack Query key uses an inline string literal. Repeating raw strings across useQuery, setQueryData, and invalidateQueries makes cache updates easy to mistype or drift. Prefer a query-key factory or shared constant so reads and invalidations use the same key shape.\n"
+  },
+  {
+    "rule_id": "tanstack.tanstack-query-key-string",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 75,
+    "message": "TanStack Query key uses an inline string literal. Repeating raw strings across useQuery, setQueryData, and invalidateQueries makes cache updates easy to mistype or drift. Prefer a query-key factory or shared constant so reads and invalidations use the same key shape.\n"
+  },
+  {
+    "rule_id": "tanstack.tanstack-query-key-string",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "client_data_fetch.tsx",
+    "line": 42,
+    "message": "TanStack Query key uses an inline string literal. Repeating raw strings across useQuery, setQueryData, and invalidateQueries makes cache updates easy to mistype or drift. Prefer a query-key factory or shared constant so reads and invalidations use the same key shape.\n"
+  },
+  {
+    "rule_id": "tanstack.tanstack-query-missing-staletime",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 517,
+    "message": "useQuery is called without specifying a staleTime. By default, staleTime is 0, which means queries are instantly considered stale. For server-side rendered (SSR) or prefetched data, this causes an immediate client-side refetch upon hydration, resulting in duplicate network requests and potential screen flickering. Set a staleTime (e.g. staleTime: 1000 * 60 * 5) to cache and reuse the hydrated data.\n"
+  },
+  {
+    "rule_id": "tanstack.tanstack-query-missing-staletime",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 519,
+    "message": "useQuery is called without specifying a staleTime. By default, staleTime is 0, which means queries are instantly considered stale. For server-side rendered (SSR) or prefetched data, this causes an immediate client-side refetch upon hydration, resulting in duplicate network requests and potential screen flickering. Set a staleTime (e.g. staleTime: 1000 * 60 * 5) to cache and reuse the hydrated data.\n"
+  },
+  {
+    "rule_id": "tanstack.tanstack-query-missing-staletime",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 520,
+    "message": "useQuery is called without specifying a staleTime. By default, staleTime is 0, which means queries are instantly considered stale. For server-side rendered (SSR) or prefetched data, this causes an immediate client-side refetch upon hydration, resulting in duplicate network requests and potential screen flickering. Set a staleTime (e.g. staleTime: 1000 * 60 * 5) to cache and reuse the hydrated data.\n"
+  },
+  {
+    "rule_id": "tanstack.tanstack-query-missing-staletime",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 521,
+    "message": "useQuery is called without specifying a staleTime. By default, staleTime is 0, which means queries are instantly considered stale. For server-side rendered (SSR) or prefetched data, this causes an immediate client-side refetch upon hydration, resulting in duplicate network requests and potential screen flickering. Set a staleTime (e.g. staleTime: 1000 * 60 * 5) to cache and reuse the hydrated data.\n"
+  },
+  {
+    "rule_id": "tanstack.tanstack-query-missing-staletime",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 64,
+    "message": "useQuery is called without specifying a staleTime. By default, staleTime is 0, which means queries are instantly considered stale. For server-side rendered (SSR) or prefetched data, this causes an immediate client-side refetch upon hydration, resulting in duplicate network requests and potential screen flickering. Set a staleTime (e.g. staleTime: 1000 * 60 * 5) to cache and reuse the hydrated data.\n"
+  },
+  {
+    "rule_id": "tanstack.tanstack-query-missing-staletime",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "client.tsx",
+    "line": 69,
+    "message": "useQuery is called without specifying a staleTime. By default, staleTime is 0, which means queries are instantly considered stale. For server-side rendered (SSR) or prefetched data, this causes an immediate client-side refetch upon hydration, resulting in duplicate network requests and potential screen flickering. Set a staleTime (e.g. staleTime: 1000 * 60 * 5) to cache and reuse the hydrated data.\n"
+  },
+  {
+    "rule_id": "tanstack.tanstack-query-missing-staletime",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "client_data_fetch.tsx",
+    "line": 42,
+    "message": "useQuery is called without specifying a staleTime. By default, staleTime is 0, which means queries are instantly considered stale. For server-side rendered (SSR) or prefetched data, this causes an immediate client-side refetch upon hydration, resulting in duplicate network requests and potential screen flickering. Set a staleTime (e.g. staleTime: 1000 * 60 * 5) to cache and reuse the hydrated data.\n"
+  },
+  {
+    "rule_id": "tanstack.tanstack-query-missing-staletime",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "tanstack_writes.tsx",
+    "line": 54,
+    "message": "useQuery is called without specifying a staleTime. By default, staleTime is 0, which means queries are instantly considered stale. For server-side rendered (SSR) or prefetched data, this causes an immediate client-side refetch upon hydration, resulting in duplicate network requests and potential screen flickering. Set a staleTime (e.g. staleTime: 1000 * 60 * 5) to cache and reuse the hydrated data.\n"
+  },
+  {
+    "rule_id": "tanstack.tanstack-query-missing-staletime",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "tanstack_writes.tsx",
+    "line": 68,
+    "message": "useQuery is called without specifying a staleTime. By default, staleTime is 0, which means queries are instantly considered stale. For server-side rendered (SSR) or prefetched data, this causes an immediate client-side refetch upon hydration, resulting in duplicate network requests and potential screen flickering. Set a staleTime (e.g. staleTime: 1000 * 60 * 5) to cache and reuse the hydrated data.\n"
+  },
+  {
+    "rule_id": "tanstack.tanstack-query-missing-staletime",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "tanstack_writes.tsx",
+    "line": 81,
+    "message": "useQuery is called without specifying a staleTime. By default, staleTime is 0, which means queries are instantly considered stale. For server-side rendered (SSR) or prefetched data, this causes an immediate client-side refetch upon hydration, resulting in duplicate network requests and potential screen flickering. Set a staleTime (e.g. staleTime: 1000 * 60 * 5) to cache and reuse the hydrated data.\n"
+  },
+  {
+    "rule_id": "tanstack.tanstack-query-missing-staletime",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "tanstack_writes.tsx",
+    "line": 90,
+    "message": "useQuery is called without specifying a staleTime. By default, staleTime is 0, which means queries are instantly considered stale. For server-side rendered (SSR) or prefetched data, this causes an immediate client-side refetch upon hydration, resulting in duplicate network requests and potential screen flickering. Set a staleTime (e.g. staleTime: 1000 * 60 * 5) to cache and reuse the hydrated data.\n"
+  }
+]
