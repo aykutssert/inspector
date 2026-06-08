@@ -1,0 +1,12 @@
+rules:
+  - id: rn-prefer-expo-image
+    languages: [typescript, javascript]
+    severity: INFO
+    message: >
+      React Native's built-in <Image> lacks memory caching, crossfade transitions, and
+      blurhash placeholder support. Use expo-image's <Image> component instead:
+      import { Image } from 'expo-image'
+    metadata:
+      category: performance
+      confidence: hint
+    pattern-regex: 'import\s*\{[^}]*\bImage\b[^}]*\}\s*from\s*[''"]react-native[''"]'

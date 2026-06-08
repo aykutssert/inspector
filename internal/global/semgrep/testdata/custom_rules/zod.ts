@@ -20,3 +20,21 @@ const safeUuid = z.uuid();
 // Safe: string without format — plain string validation
 const name = z.string().min(1).max(100);
 const description = z.string().optional();
+
+// ─── zod-v4-no-deprecated-error-customization ────────────────────────────────
+
+// Violation: errorMap option renamed to error in Zod v4
+const ageSchema = z.number({ errorMap: (issue, ctx) => ({ message: "Age must be a number" }) });
+const nameSchema = z.string({ required_error: "Name required", errorMap: () => ({ message: "Invalid" }) });
+
+// Safe: Zod v4 error option
+const safeAge = z.number({ error: () => "Age must be a number" });
+
+// ─── zod-v4-no-deprecated-schema-apis ────────────────────────────────────────
+
+// Violation: z.preprocess deprecated — use z.pipe()
+const coercedNumber = z.preprocess((val) => Number(val), z.number());
+const coercedDate = z.preprocess((val) => new Date(val as string), z.date());
+
+// Safe: z.pipe with explicit transform
+const safeCoerced = z.pipe(z.unknown().transform((val) => Number(val)), z.number());

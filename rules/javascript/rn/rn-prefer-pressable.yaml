@@ -1,0 +1,16 @@
+rules:
+  - id: rn-prefer-pressable
+    languages: [typescript, javascript]
+    severity: INFO
+    message: >
+      TouchableOpacity, TouchableHighlight, and TouchableNativeFeedback are legacy
+      gesture components. Use <Pressable> instead — it offers more flexible state-based
+      styling (pressed, hovered, focused) and integrates better with concurrent React.
+    metadata:
+      category: compatibility
+      confidence: hint
+    pattern-either:
+      - pattern: <TouchableOpacity ... />
+      - pattern: <TouchableOpacity ...>...</TouchableOpacity>
+      - pattern: <TouchableHighlight ... />
+      - pattern: <TouchableHighlight ...>...</TouchableHighlight>

@@ -1,0 +1,12 @@
+rules:
+  - id: rn-no-deep-imports
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Importing from react-native internal Libraries/ paths is unsupported and
+      breaks across React Native versions. Use the public top-level API:
+      import { X } from 'react-native' instead of internal sub-paths.
+    metadata:
+      category: compatibility
+      confidence: rule
+    pattern-regex: 'from\s+[''"]react-native/Libraries/'

@@ -1,0 +1,12 @@
+rules:
+  - id: zod-v4-no-deprecated-error-customization
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      The errorMap option was renamed to error in Zod v4. Replace
+      { errorMap: (issue, ctx) => ({ message: "..." }) } with
+      { error: (issue) => "..." } which is shorter and better typed.
+    metadata:
+      category: compatibility
+      confidence: rule
+    pattern-regex: 'z\.\w+\(\s*\{[^}]*\berrorMap\b'

@@ -1,0 +1,16 @@
+rules:
+  - id: rn-no-single-element-style-array
+    languages: [typescript, javascript]
+    severity: INFO
+    message: >
+      Single-element style arrays create a new array reference on every render,
+      defeating React Native's style caching. Use the style value directly:
+      style={styles.box} instead of style={[styles.box]}.
+    metadata:
+      category: performance
+      confidence: hint
+    pattern-either:
+      - pattern: |
+          <$TAG ... style={[$STYLE]} ... />
+      - pattern: |
+          <$TAG ... style={[$STYLE]} ...>...</$TAG>

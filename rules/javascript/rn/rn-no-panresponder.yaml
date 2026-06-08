@@ -1,0 +1,12 @@
+rules:
+  - id: rn-no-panresponder
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      PanResponder runs gesture logic on the JavaScript thread, causing dropped frames
+      when the JS thread is busy. Replace with react-native-gesture-handler's Gesture API
+      which executes on the UI thread via Reanimated worklets.
+    metadata:
+      category: performance
+      confidence: rule
+    pattern: PanResponder.create(...)

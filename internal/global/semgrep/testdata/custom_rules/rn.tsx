@@ -103,6 +103,76 @@ const AdsAdmob = require("expo-ads-admob");
 import * as SplashScreen from "expo-splash-screen";
 import { Image } from "expo-image";
 
+// Violation: Image from react-native → prefer expo-image (triggers rn.rn-prefer-expo-image)
+import { Image as RNImage } from "react-native";
+
+// Violation: TouchableOpacity → Pressable (triggers rn.rn-prefer-pressable)
+import { TouchableOpacity, TouchableHighlight } from "react-native";
+
+export function LegacyTouchables() {
+  return (
+    <View>
+      <TouchableOpacity onPress={() => {}}><Text>Old button</Text></TouchableOpacity>
+      <TouchableHighlight onPress={() => {}}><Text>Old highlight</Text></TouchableHighlight>
+    </View>
+  );
+}
+
+// Violation: deep internal import (triggers rn.rn-no-deep-imports)
+import { something } from "react-native/Libraries/Utilities/Platform";
+
+// Violation: PanResponder (triggers rn.rn-no-panresponder)
+import { PanResponder, Animated, ScrollView, StyleSheet } from "react-native";
+
+export function LegacyGestures() {
+  const pan = PanResponder.create({
+    onMoveShouldSetPanResponder: () => true,
+    onPanResponderMove: () => {},
+  });
+  return <View {...pan.panHandlers} />;
+}
+
+// Violations: Animated API → prefer Reanimated (triggers rn.rn-prefer-reanimated)
+export function LegacyAnimations() {
+  const opacity = new Animated.Value(0);
+  Animated.timing(opacity, { toValue: 1, duration: 300, useNativeDriver: true }).start();
+  Animated.spring(opacity, { toValue: 1, useNativeDriver: true }).start();
+  return <Animated.View style={{ opacity }} />;
+}
+
+// Violation: shadowColor in inline style (triggers rn.rn-no-legacy-shadow-styles)
+export function ShadowBox() {
+  return <View style={{ shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowRadius: 4, shadowOpacity: 0.3 }} />;
+}
+
+// Violation: StyleSheet with shadowColor (triggers rn.rn-no-legacy-shadow-styles)
+const shadowStyles = StyleSheet.create({
+  card: { shadowColor: "#000" },
+});
+
+// Violation: single-element style array (triggers rn.rn-no-single-element-style-array)
+export function SingleArrayStyle() {
+  return <View style={[shadowStyles.card]}><Text>Unnecessary array</Text></View>;
+}
+
+// Violation: contentContainerStyle flex:1 (triggers rn.rn-scrollview-flex-in-content-container)
+export function FlexScrollView({ children }: any) {
+  return (
+    <ScrollView contentContainerStyle={{ flex: 1 }}>
+      {children}
+    </ScrollView>
+  );
+}
+
+// Safe: flexGrow:1 is correct
+export function FlexGrowScrollView({ children }: any) {
+  return (
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+      {children}
+    </ScrollView>
+  );
+}
+
 export function SetNativePropsTest(ref: any, inputRef: any) {
   // Violations: setNativeProps usage (triggers rn.rn-no-set-native-props)
   ref.setNativeProps({ text: "hello" });

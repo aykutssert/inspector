@@ -1,0 +1,17 @@
+rules:
+  - id: rn-scrollview-flex-in-content-container
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Using flex: 1 in contentContainerStyle collapses the ScrollView content on iOS
+      because flex: 1 means "take all available space" but a ScrollView has unbounded
+      height. Use flexGrow: 1 instead — it expands content to fill the scroll area
+      without collapsing.
+    metadata:
+      category: bug
+      confidence: hint
+    pattern-either:
+      - pattern: |
+          <ScrollView ... contentContainerStyle={{ flex: 1 }} ... />
+      - pattern: |
+          <ScrollView ... contentContainerStyle={{ flex: 1 }} ...>...</ScrollView>

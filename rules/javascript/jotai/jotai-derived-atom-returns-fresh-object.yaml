@@ -1,0 +1,18 @@
+rules:
+  - id: jotai-derived-atom-returns-fresh-object
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Derived atom returns a new object/array literal on every read.
+      Each evaluation of atom(get => ({ ... })) produces a new reference,
+      so every subscriber re-renders even when underlying values are unchanged.
+      Use selectAtom with an equality function, or stabilize the shape with atom(get =>
+      derived, equal) to avoid unnecessary re-renders.
+    metadata:
+      category: performance
+      confidence: hint
+    pattern-either:
+      - pattern: atom(($GET) => ({...}))
+      - pattern: atom(($GET) => ([...]))
+      - pattern: atom(async ($GET) => ({...}))
+      - pattern: atom(async ($GET) => ([...]))

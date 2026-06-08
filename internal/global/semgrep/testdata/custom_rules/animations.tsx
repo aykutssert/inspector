@@ -60,3 +60,35 @@ function ConditionalGPU({ isAnimating }: { isAnimating: boolean }) {
     </div>
   );
 }
+
+// ─── rendering-animate-svg-wrapper ────────────────────────────────────────────
+
+// Violation: animating SVG directly — use a wrapper div instead
+function AnimatedLogo() {
+  return (
+    <motion.svg
+      animate={{ opacity: 1, scale: 1 }}
+      initial={{ opacity: 0, scale: 0.8 }}
+      width="100"
+      height="100"
+    >
+      <circle cx="50" cy="50" r="40" />
+    </motion.svg>
+  );
+}
+
+// Violation: self-closing motion.svg
+function AnimatedIcon() {
+  return <motion.svg animate={{ rotate: 360 }} width="24" height="24" />;
+}
+
+// Safe: motion.div wrapping SVG
+function SafeAnimatedLogo() {
+  return (
+    <motion.div animate={{ opacity: 1, scale: 1 }} initial={{ opacity: 0 }}>
+      <svg width="100" height="100">
+        <circle cx="50" cy="50" r="40" />
+      </svg>
+    </motion.div>
+  );
+}

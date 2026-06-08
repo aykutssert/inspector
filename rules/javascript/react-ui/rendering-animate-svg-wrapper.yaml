@@ -1,0 +1,15 @@
+rules:
+  - id: rendering-animate-svg-wrapper
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Animating an SVG element directly with motion.svg causes browser repaint issues
+      on many devices because SVG elements cannot be composited to their own GPU layer.
+      Wrap the SVG in a motion.div (or motion.span) and animate the wrapper instead,
+      keeping the SVG inside as a static child.
+    metadata:
+      category: performance
+      confidence: hint
+    pattern-either:
+      - pattern: <motion.svg ... />
+      - pattern: <motion.svg ...>...</motion.svg>

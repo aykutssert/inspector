@@ -1,0 +1,12 @@
+rules:
+  - id: zod-v4-no-deprecated-schema-apis
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      z.preprocess() is deprecated in Zod v4. Use z.pipe() with an explicit transform
+      instead: z.pipe(z.unknown().transform(val => coerce(val)), targetSchema).
+      This makes the transformation chain explicit and type-safe.
+    metadata:
+      category: compatibility
+      confidence: rule
+    pattern: z.preprocess($FN, $SCHEMA)
