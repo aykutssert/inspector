@@ -1,0 +1,21 @@
+rules:
+  - id: redux-useselector-inline-derivation
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Inline data derivation inside useSelector creates a new reference on every render,
+      defeating referential equality and causing unnecessary re-renders.
+      Extract the selector to a memoized function with createSelector or move derivation outside.
+    metadata:
+      category: performance
+      confidence: hint
+    patterns:
+      - pattern-either:
+          - pattern: useSelector(($S) => $S.$FIELD.filter(...))
+          - pattern: useSelector(($S) => $S.$FIELD.map(...))
+          - pattern: useSelector(($S) => $S.$FIELD.reduce(...))
+          - pattern: useSelector(($S) => $S.$FIELD.flatMap(...))
+          - pattern: useSelector(($S) => [...$S.$FIELD])
+          - pattern: useSelector(($S) => Object.values($S.$FIELD))
+          - pattern: useSelector(($S) => Object.keys($S.$FIELD))
+          - pattern: useSelector(($S) => Object.entries($S.$FIELD))

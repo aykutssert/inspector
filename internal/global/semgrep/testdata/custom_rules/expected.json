@@ -122,6 +122,24 @@
     "message": "bun:sqlite query is built with string concatenation or interpolation. If any part of the value is user-controlled, this can become SQL injection. Use prepared statements with placeholders and bind values separately.\n"
   },
   {
+    "rule_id": "css.no-large-animated-blur",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "animations.tsx",
+    "line": 8,
+    "message": "Large blur radius used in an animation. Animating blur() values above ~30px forces the GPU to re-composite on every frame, causing significant jank especially on mobile. Prefer smaller blur values (under 20px), or animate opacity/transform instead.\n"
+  },
+  {
+    "rule_id": "css.no-large-animated-blur",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "animations.tsx",
+    "line": 20,
+    "message": "Large blur radius used in an animation. Animating blur() values above ~30px forces the GPU to re-composite on every frame, causing significant jank especially on mobile. Prefer smaller blur values (under 20px), or animate opacity/transform instead.\n"
+  },
+  {
     "rule_id": "css.no-layout-property-animation",
     "severity": "warning",
     "category": "performance",
@@ -163,6 +181,24 @@
     "file": "client.tsx",
     "line": 174,
     "message": "Disabling focus outlines with outline: none or outline: 0. Focus outlines are critical for keyboard navigation accessibility (A11y). If you disable the default outline, you must provide an alternative visible focus indicator (e.g., custom border or box-shadow ring) for focus states.\n"
+  },
+  {
+    "rule_id": "css.no-permanent-will-change",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "animations.tsx",
+    "line": 47,
+    "message": "will-change applied permanently in a static style prop. will-change signals to the browser to promote the element to its own GPU layer, consuming significant GPU memory. Apply it only just before an animation starts and remove it immediately after — permanent will-change is a net performance negative.\n"
+  },
+  {
+    "rule_id": "css.no-permanent-will-change",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "animations.tsx",
+    "line": 52,
+    "message": "will-change applied permanently in a static style prop. will-change signals to the browser to promote the element to its own GPU layer, consuming significant GPU memory. Apply it only just before an animation starts and remove it immediately after — permanent will-change is a net performance negative.\n"
   },
   {
     "rule_id": "express.express-async-error-handling",
@@ -738,6 +774,24 @@
     "confidence": "hint",
     "file": "server_api_hop.tsx",
     "line": 40,
+    "message": "A hardcoded HTTP/HTTPS URL is used directly in a network request. To ensure flexibility across different environments (development, staging, production), avoid hardcoding base URLs. Load the base URL from an environment variable or use an API client with a configured baseURL.\n"
+  },
+  {
+    "rule_id": "general.hardcoded-api-url",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "tanstack_start.tsx",
+    "line": 11,
+    "message": "A hardcoded HTTP/HTTPS URL is used directly in a network request. To ensure flexibility across different environments (development, staging, production), avoid hardcoding base URLs. Load the base URL from an environment variable or use an API client with a configured baseURL.\n"
+  },
+  {
+    "rule_id": "general.hardcoded-api-url",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "tanstack_start.tsx",
+    "line": 18,
     "message": "A hardcoded HTTP/HTTPS URL is used directly in a network request. To ensure flexibility across different environments (development, staging, production), avoid hardcoding base URLs. Load the base URL from an environment variable or use an API client with a configured baseURL.\n"
   },
   {
@@ -1590,6 +1644,33 @@
     "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
   },
   {
+    "rule_id": "general.process-env-dispersed-access",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "tanstack_start.tsx",
+    "line": 31,
+    "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
+  },
+  {
+    "rule_id": "general.process-env-dispersed-access",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "tanstack_start.tsx",
+    "line": 39,
+    "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
+  },
+  {
+    "rule_id": "general.process-env-dispersed-access",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "tanstack_start.tsx",
+    "line": 47,
+    "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
+  },
+  {
     "rule_id": "general.reduce-spread-accumulator",
     "severity": "warning",
     "category": "performance",
@@ -1882,6 +1963,15 @@
     "severity": "warning",
     "category": "performance",
     "confidence": "rule",
+    "file": "animations.tsx",
+    "line": 2,
+    "message": "Eagerly imported 'motion' from 'framer-motion' detected. This pulls in the entire bundle of framer-motion. To reduce bundle size, import 'm' instead of 'motion', and wrap your motion elements in '\u003cLazyMotion features={domAnimation}\u003e'.\n"
+  },
+  {
+    "rule_id": "general.use-lazy-motion",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
     "file": "heavy_import_no_dynamic.tsx",
     "line": 37,
     "message": "Eagerly imported 'motion' from 'framer-motion' detected. This pulls in the entire bundle of framer-motion. To reduce bundle size, import 'm' instead of 'motion', and wrap your motion elements in '\u003cLazyMotion features={domAnimation}\u003e'.\n"
@@ -1894,6 +1984,69 @@
     "file": "heavy_import_no_dynamic.tsx",
     "line": 38,
     "message": "Eagerly imported 'motion' from 'framer-motion' detected. This pulls in the entire bundle of framer-motion. To reduce bundle size, import 'm' instead of 'motion', and wrap your motion elements in '\u003cLazyMotion features={domAnimation}\u003e'.\n"
+  },
+  {
+    "rule_id": "general.zod-v4-prefer-top-level-string-formats",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "zod.ts",
+    "line": 7,
+    "message": "Zod v4 promotes string format validators to top-level functions. Replace z.string().email() with z.email(), z.string().url() with z.url(), etc. The chained form still works but generates a larger schema and is deprecated.\n"
+  },
+  {
+    "rule_id": "general.zod-v4-prefer-top-level-string-formats",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "zod.ts",
+    "line": 8,
+    "message": "Zod v4 promotes string format validators to top-level functions. Replace z.string().email() with z.email(), z.string().url() with z.url(), etc. The chained form still works but generates a larger schema and is deprecated.\n"
+  },
+  {
+    "rule_id": "general.zod-v4-prefer-top-level-string-formats",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "zod.ts",
+    "line": 9,
+    "message": "Zod v4 promotes string format validators to top-level functions. Replace z.string().email() with z.email(), z.string().url() with z.url(), etc. The chained form still works but generates a larger schema and is deprecated.\n"
+  },
+  {
+    "rule_id": "general.zod-v4-prefer-top-level-string-formats",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "zod.ts",
+    "line": 10,
+    "message": "Zod v4 promotes string format validators to top-level functions. Replace z.string().email() with z.email(), z.string().url() with z.url(), etc. The chained form still works but generates a larger schema and is deprecated.\n"
+  },
+  {
+    "rule_id": "general.zod-v4-prefer-top-level-string-formats",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "zod.ts",
+    "line": 11,
+    "message": "Zod v4 promotes string format validators to top-level functions. Replace z.string().email() with z.email(), z.string().url() with z.url(), etc. The chained form still works but generates a larger schema and is deprecated.\n"
+  },
+  {
+    "rule_id": "general.zod-v4-prefer-top-level-string-formats",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "zod.ts",
+    "line": 12,
+    "message": "Zod v4 promotes string format validators to top-level functions. Replace z.string().email() with z.email(), z.string().url() with z.url(), etc. The chained form still works but generates a larger schema and is deprecated.\n"
+  },
+  {
+    "rule_id": "general.zod-v4-prefer-top-level-string-formats",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "zod.ts",
+    "line": 13,
+    "message": "Zod v4 promotes string format validators to top-level functions. Replace z.string().email() with z.email(), z.string().url() with z.url(), etc. The chained form still works but generates a larger schema and is deprecated.\n"
   },
   {
     "rule_id": "nestjs.nestjs-dto-without-validators",
@@ -2328,6 +2481,24 @@
     "message": "Server Component fetches its own API route. Server Components can access databases, services, or internal APIs directly in Next.js. Fetching an internal /api/... route adds unnecessary HTTP request overhead (serialization, latency, network hop). Call the database or service function directly instead of performing an HTTP fetch.\n"
   },
   {
+    "rule_id": "nextjs.next-server-component-api-hop",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "tanstack_start.tsx",
+    "line": 59,
+    "message": "Server Component fetches its own API route. Server Components can access databases, services, or internal APIs directly in Next.js. Fetching an internal /api/... route adds unnecessary HTTP request overhead (serialization, latency, network hop). Call the database or service function directly instead of performing an HTTP fetch.\n"
+  },
+  {
+    "rule_id": "nextjs.next-server-component-api-hop",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "tanstack_start.tsx",
+    "line": 72,
+    "message": "Server Component fetches its own API route. Server Components can access databases, services, or internal APIs directly in Next.js. Fetching an internal /api/... route adds unnecessary HTTP request overhead (serialization, latency, network hop). Call the database or service function directly instead of performing an HTTP fetch.\n"
+  },
+  {
     "rule_id": "nextjs.next-server-only-in-client",
     "severity": "error",
     "confidence": "rule",
@@ -2423,6 +2594,15 @@
     "confidence": "hint",
     "file": "case.tsx",
     "line": 471,
+    "message": "Server-side fetch() is called with a dynamic or unvalidated URL. If this URL is built from user-controlled input, it can lead to Server-Side Request Forgery (SSRF), allowing attackers to query internal services, bypass firewalls, or leak credentials. Validate the URL against a strict allowlist of allowed domains, or ensure the input is sanitized and mapped to safe endpoints.\n"
+  },
+  {
+    "rule_id": "nextjs.next-ssrf-prone-fetch",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "tanstack_start.tsx",
+    "line": 48,
     "message": "Server-side fetch() is called with a dynamic or unvalidated URL. If this URL is built from user-controlled input, it can lead to Server-Side Request Forgery (SSRF), allowing attackers to query internal services, bypass firewalls, or leak credentials. Validate the URL against a strict allowlist of allowed domains, or ensure the input is sanitized and mapped to safe endpoints.\n"
   },
   {
@@ -2615,6 +2795,42 @@
     "message": "'useSearchParams()' is used in a Client Component. Next.js requires components using 'useSearchParams()' to be wrapped in a '\u003cSuspense\u003e' boundary at the parent level during static rendering. Without a Suspense boundary, the entire page will fallback to client-side rendering.\n"
   },
   {
+    "rule_id": "react-ui.design-no-redundant-padding-axes",
+    "severity": "info",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "design.tsx",
+    "line": 7,
+    "message": "Equal px-N and py-N Tailwind classes can be simplified to p-N. Use the shorthand utility to reduce class list noise.\n"
+  },
+  {
+    "rule_id": "react-ui.design-no-redundant-padding-axes",
+    "severity": "info",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "design.tsx",
+    "line": 12,
+    "message": "Equal px-N and py-N Tailwind classes can be simplified to p-N. Use the shorthand utility to reduce class list noise.\n"
+  },
+  {
+    "rule_id": "react-ui.design-no-redundant-size-axes",
+    "severity": "info",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "design.tsx",
+    "line": 24,
+    "message": "Equal w-N and h-N Tailwind classes can be simplified to size-N (Tailwind v3.4+). Use the shorthand utility to reduce class list noise.\n"
+  },
+  {
+    "rule_id": "react-ui.design-no-redundant-size-axes",
+    "severity": "info",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "design.tsx",
+    "line": 29,
+    "message": "Equal w-N and h-N Tailwind classes can be simplified to size-N (Tailwind v3.4+). Use the shorthand utility to reduce class list noise.\n"
+  },
+  {
     "rule_id": "react-ui.design-no-space-on-flex-children",
     "severity": "warning",
     "category": "bug",
@@ -2631,6 +2847,24 @@
     "file": "flex_space.tsx",
     "line": 10,
     "message": "Tailwind class 'space-x' or 'space-y' detected. Using space-x/y utilities on flex layouts can cause layout bugs (especially in RTL or with hidden children). Prefer using flexbox gap utilities ('gap-x', 'gap-y', or 'gap') instead.\n"
+  },
+  {
+    "rule_id": "react-ui.design-no-three-period-ellipsis",
+    "severity": "info",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "design.tsx",
+    "line": 41,
+    "message": "Three ASCII periods '...' used as an ellipsis in JSX text content. Use the typographic ellipsis character '…' (U+2026) instead for correct spacing and screen-reader pronunciation.\n"
+  },
+  {
+    "rule_id": "react-ui.design-no-three-period-ellipsis",
+    "severity": "info",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "design.tsx",
+    "line": 46,
+    "message": "Three ASCII periods '...' used as an ellipsis in JSX text content. Use the typographic ellipsis character '…' (U+2026) instead for correct spacing and screen-reader pronunciation.\n"
   },
   {
     "rule_id": "react.dangerously-set-inner-html-variable",
@@ -2861,6 +3095,42 @@
     "file": "case.tsx",
     "line": 34,
     "message": "A React key derived from Math.random()/Date.now() changes on every render, so React remounts the element each time: local state is lost, inputs lose focus, and reconciliation degrades. Use a stable id from the data instead.\n"
+  },
+  {
+    "rule_id": "react.redux-useselector-inline-derivation",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "redux.tsx",
+    "line": 16,
+    "message": "Inline data derivation inside useSelector creates a new reference on every render, defeating referential equality and causing unnecessary re-renders. Extract the selector to a memoized function with createSelector or move derivation outside.\n"
+  },
+  {
+    "rule_id": "react.redux-useselector-inline-derivation",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "redux.tsx",
+    "line": 22,
+    "message": "Inline data derivation inside useSelector creates a new reference on every render, defeating referential equality and causing unnecessary re-renders. Extract the selector to a memoized function with createSelector or move derivation outside.\n"
+  },
+  {
+    "rule_id": "react.redux-useselector-returns-new-collection",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "redux.tsx",
+    "line": 47,
+    "message": "useSelector returns a new array or object literal on every call, breaking referential equality and triggering a re-render on every state update. Use createSelector to memoize the result or select a stable slice of state directly.\n"
+  },
+  {
+    "rule_id": "react.redux-useselector-returns-new-collection",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "redux.tsx",
+    "line": 53,
+    "message": "useSelector returns a new array or object literal on every call, breaking referential equality and triggering a re-render on every state update. Use createSelector to memoize the result or select a stable slice of state directly.\n"
   },
   {
     "rule_id": "rn.expo-no-non-inlined-env",
@@ -3277,6 +3547,60 @@
     "message": "Static file read inside a function body. Reading a file that never changes (config, templates, etc.) on every invocation is wasteful. Move the read to module scope so it runs once at startup.\n"
   },
   {
+    "rule_id": "tanstack-start.tanstack-start-no-direct-fetch-in-loader",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "tanstack_start.tsx",
+    "line": 11,
+    "message": "Direct fetch() call inside a TanStack Start route loader. Loaders run on the client during navigation; using fetch() directly creates client-side waterfalls and bypasses server-side data fetching. Wrap the call in createServerFn() so it runs on the server with full Node.js access.\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-no-secrets-in-loader",
+    "severity": "error",
+    "category": "security",
+    "confidence": "hint",
+    "file": "tanstack_start.tsx",
+    "line": 31,
+    "message": "Secret environment variable accessed inside a TanStack Start route loader. Route loaders can be compiled into the client bundle, which would expose the secret. Move secret access into a createServerFn() to guarantee server-only execution.\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-no-secrets-in-loader",
+    "severity": "error",
+    "category": "security",
+    "confidence": "hint",
+    "file": "tanstack_start.tsx",
+    "line": 39,
+    "message": "Secret environment variable accessed inside a TanStack Start route loader. Route loaders can be compiled into the client bundle, which would expose the secret. Move secret access into a createServerFn() to guarantee server-only execution.\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-no-useeffect-fetch",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "client_data_fetch.tsx",
+    "line": 12,
+    "message": "useEffect + fetch() used for data fetching in a TanStack Start route component. TanStack Router provides a loader function that runs before the component renders, eliminating this pattern and preventing client-side waterfalls. Move the fetch call to the route's loader and access data via useLoaderData().\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-no-useeffect-fetch",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "tanstack_start.tsx",
+    "line": 58,
+    "message": "useEffect + fetch() used for data fetching in a TanStack Start route component. TanStack Router provides a loader function that runs before the component renders, eliminating this pattern and preventing client-side waterfalls. Move the fetch call to the route's loader and access data via useLoaderData().\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-no-useeffect-fetch",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "tanstack_start.tsx",
+    "line": 71,
+    "message": "useEffect + fetch() used for data fetching in a TanStack Start route component. TanStack Router provides a loader function that runs before the component renders, eliminating this pattern and preventing client-side waterfalls. Move the fetch call to the route's loader and access data via useLoaderData().\n"
+  },
+  {
     "rule_id": "tanstack-start.tanstack-start-redirect-in-try-catch",
     "severity": "warning",
     "category": "bug",
@@ -3565,6 +3889,15 @@
     "message": "useQuery is called without specifying a staleTime. By default, staleTime is 0, which means queries are instantly considered stale. For server-side rendered (SSR) or prefetched data, this causes an immediate client-side refetch upon hydration, resulting in duplicate network requests and potential screen flickering. Set a staleTime (e.g. staleTime: 1000 * 60 * 5) to cache and reuse the hydrated data.\n"
   },
   {
+    "rule_id": "view-transitions.no-document-start-view-transition",
+    "severity": "info",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "tanstack_start.tsx",
+    "line": 91,
+    "message": "Direct document.startViewTransition() call bypasses React's concurrent rendering. In React 19+ use the built-in \u003cViewTransition\u003e component or wrap state updates with startTransition() / flushSync() correctly. Direct DOM calls can conflict with React's reconciler and cause flicker or missed transitions.\n"
+  },
+  {
     "rule_id": "view-transitions.no-flush-sync",
     "severity": "warning",
     "category": "performance",
@@ -3634,6 +3967,33 @@
     "confidence": "rule",
     "file": "rn.tsx",
     "line": 82,
+    "message": "process.env should not be used in a Vite project. Vite does not inject process.env by default, which can cause runtime ReferenceErrors (process is not defined) in the browser. Use import.meta.env instead.\n"
+  },
+  {
+    "rule_id": "vite.vite-process-env-usage",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "tanstack_start.tsx",
+    "line": 31,
+    "message": "process.env should not be used in a Vite project. Vite does not inject process.env by default, which can cause runtime ReferenceErrors (process is not defined) in the browser. Use import.meta.env instead.\n"
+  },
+  {
+    "rule_id": "vite.vite-process-env-usage",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "tanstack_start.tsx",
+    "line": 39,
+    "message": "process.env should not be used in a Vite project. Vite does not inject process.env by default, which can cause runtime ReferenceErrors (process is not defined) in the browser. Use import.meta.env instead.\n"
+  },
+  {
+    "rule_id": "vite.vite-process-env-usage",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "tanstack_start.tsx",
+    "line": 47,
     "message": "process.env should not be used in a Vite project. Vite does not inject process.env by default, which can cause runtime ReferenceErrors (process is not defined) in the browser. Use import.meta.env instead.\n"
   },
   {

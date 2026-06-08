@@ -1,0 +1,17 @@
+rules:
+  - id: redux-useselector-returns-new-collection
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      useSelector returns a new array or object literal on every call, breaking
+      referential equality and triggering a re-render on every state update.
+      Use createSelector to memoize the result or select a stable slice of state directly.
+    metadata:
+      category: performance
+      confidence: rule
+    patterns:
+      - pattern-either:
+          - pattern: useSelector(($S) => [...])
+          - pattern: useSelector(($S) => ({ ... }))
+          - pattern: useSelector(($S) => [$A, $B])
+          - pattern: useSelector(($S) => [$A, $B, $C])

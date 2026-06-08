@@ -1,0 +1,11 @@
+rules:
+  - id: design-no-redundant-size-axes
+    languages: [typescript, javascript]
+    severity: INFO
+    message: >
+      Equal w-N and h-N Tailwind classes can be simplified to size-N (Tailwind v3.4+).
+      Use the shorthand utility to reduce class list noise.
+    metadata:
+      category: correctness
+      confidence: hint
+    pattern-regex: 'className=["''`][^"''`]*\bw-(\d+(?:\.\d+)?)\b[^"''`]*\bh-\1\b[^"''`]*["''`]'

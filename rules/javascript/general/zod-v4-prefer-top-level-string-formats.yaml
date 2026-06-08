@@ -1,0 +1,24 @@
+rules:
+  - id: zod-v4-prefer-top-level-string-formats
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Zod v4 promotes string format validators to top-level functions.
+      Replace z.string().email() with z.email(), z.string().url() with z.url(), etc.
+      The chained form still works but generates a larger schema and is deprecated.
+    metadata:
+      category: correctness
+      confidence: rule
+    patterns:
+      - pattern-either:
+          - pattern: z.string().email(...)
+          - pattern: z.string().url(...)
+          - pattern: z.string().uuid(...)
+          - pattern: z.string().cuid(...)
+          - pattern: z.string().cuid2(...)
+          - pattern: z.string().ulid(...)
+          - pattern: z.string().nanoid(...)
+          - pattern: z.string().emoji(...)
+          - pattern: z.string().ip(...)
+          - pattern: z.string().base64(...)
+          - pattern: z.string().jwt(...)

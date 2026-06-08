@@ -1,0 +1,26 @@
+rules:
+  - id: tanstack-start-no-useeffect-fetch
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      useEffect + fetch() used for data fetching in a TanStack Start route component.
+      TanStack Router provides a loader function that runs before the component renders,
+      eliminating this pattern and preventing client-side waterfalls. Move the fetch call
+      to the route's loader and access data via useLoaderData().
+    metadata:
+      category: performance
+      confidence: hint
+    patterns:
+      - pattern-either:
+          - pattern: |
+              useEffect(() => {
+                ...
+                fetch($URL)
+                ...
+              }, ...)
+          - pattern: |
+              useEffect(async () => {
+                ...
+                await fetch($URL)
+                ...
+              }, ...)

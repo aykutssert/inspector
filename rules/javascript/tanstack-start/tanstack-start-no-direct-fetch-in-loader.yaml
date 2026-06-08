@@ -1,0 +1,20 @@
+rules:
+  - id: tanstack-start-no-direct-fetch-in-loader
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Direct fetch() call inside a TanStack Start route loader.
+      Loaders run on the client during navigation; using fetch() directly creates
+      client-side waterfalls and bypasses server-side data fetching.
+      Wrap the call in createServerFn() so it runs on the server with full Node.js access.
+    metadata:
+      category: performance
+      confidence: hint
+    patterns:
+      - pattern: await fetch($URL)
+      - pattern-inside: |
+          {
+            loader: async (...) => {
+              ...
+            }
+          }

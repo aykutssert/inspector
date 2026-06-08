@@ -1,0 +1,20 @@
+rules:
+  - id: no-permanent-will-change
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      will-change applied permanently in a static style prop.
+      will-change signals to the browser to promote the element to its own GPU layer,
+      consuming significant GPU memory. Apply it only just before an animation starts
+      and remove it immediately after — permanent will-change is a net performance negative.
+    metadata:
+      category: performance
+      confidence: hint
+    patterns:
+      - pattern-either:
+          - pattern: |
+              <$TAG ... style={{ willChange: $VAL }} ... />
+          - pattern: |
+              <$TAG ... style={{ willChange: $VAL }} ...>...</$TAG>
+      - pattern-not-inside: |
+          ($COND) ? ... : ...

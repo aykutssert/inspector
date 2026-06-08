@@ -1,0 +1,13 @@
+rules:
+  - id: no-document-start-view-transition
+    languages: [typescript, javascript]
+    severity: INFO
+    message: >
+      Direct document.startViewTransition() call bypasses React's concurrent rendering.
+      In React 19+ use the built-in <ViewTransition> component or wrap state updates with
+      startTransition() / flushSync() correctly. Direct DOM calls can conflict with
+      React's reconciler and cause flicker or missed transitions.
+    metadata:
+      category: correctness
+      confidence: hint
+    pattern: document.startViewTransition(...)
