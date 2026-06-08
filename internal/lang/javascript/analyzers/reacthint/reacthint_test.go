@@ -1004,3 +1004,179 @@ func TestSelfUpdatingEffect_DifferentSetter_NotFlagged(t *testing.T) {
 		t.Fatalf("no-self-updating-effect should not fire when setter != dep var, got %v", ids)
 	}
 }
+
+// ─── no-effect-event-in-deps (#82) ───────────────────────────────────────────
+
+func TestEffectEventInDeps_Fires(t *testing.T) {
+	src := `function C() {
+  const handleSave = useEffectEvent(() => { save(value) });
+  useEffect(() => {
+    handleSave();
+  }, [handleSave]);
+  return null;
+}`
+	if ids := parseSrc(t, ".tsx", src); !has(ids, "no-effect-event-in-deps") {
+		t.Fatalf("expected no-effect-event-in-deps, got %v", ids)
+	}
+}
+
+func TestEffectEventInDeps_NotInDeps_NotFlagged(t *testing.T) {
+	src := `function C() {
+  const handleSave = useEffectEvent(() => { save(value) });
+  useEffect(() => {
+    handleSave();
+  }, []);
+  return null;
+}`
+	if ids := parseSrc(t, ".tsx", src); has(ids, "no-effect-event-in-deps") {
+		t.Fatalf("no-effect-event-in-deps should not fire when fn not in deps, got %v", ids)
+	}
+}
+
+// ─── no-pass-data-to-parent (#87) ────────────────────────────────────────────
+
+func TestPassDataToParent_Fires(t *testing.T) {
+	src := `function Child({ onDataChange }) {
+  const [data, setData] = useState(null);
+  useEffect(() => {
+    onDataChange(data);
+  }, [data, onDataChange]);
+  return null;
+}`
+	if ids := parseSrc(t, ".tsx", src); !has(ids, "no-pass-data-to-parent") {
+		t.Fatalf("expected no-pass-data-to-parent, got %v", ids)
+	}
+}
+
+func TestPassDataToParent_NoStateArg_NotFlagged(t *testing.T) {
+	src := `function Child({ onSubmit }) {
+  const [data, setData] = useState(null);
+  useEffect(() => {
+    onSubmit("static-value");
+  }, [onSubmit]);
+  return null;
+}`
+	if ids := parseSrc(t, ".tsx", src); has(ids, "no-pass-data-to-parent") {
+		t.Fatalf("no-pass-data-to-parent should not fire when arg is not state, got %v", ids)
+	}
+}
+
+// ─── no-adjust-state-on-prop-change (#77) ────────────────────────────────────
+
+func TestAdjustStateOnPropChange_Fires(t *testing.T) {
+	src := `function C({ items }) {
+  const [filtered, setFiltered] = useState([]);
+  useEffect(() => {
+    setFiltered(items.filter(x => x.active));
+  }, [items]);
+  return null;
+}`
+	if ids := parseSrc(t, ".tsx", src); !has(ids, "no-adjust-state-on-prop-change") {
+		t.Fatalf("expected no-adjust-state-on-prop-change, got %v", ids)
+	}
+}
+
+func TestAdjustStateOnPropChange_StateDep_NotFlagged(t *testing.T) {
+	src := `function C() {
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState([]);
+  useEffect(() => {
+    setResults(search(query));
+  }, [query]);
+  return null;
+}`
+	// dep is a state var — different smell, should NOT fire this rule
+	if ids := parseSrc(t, ".tsx", src); has(ids, "no-adjust-state-on-prop-change") {
+		t.Fatalf("no-adjust-state-on-prop-change should not fire when dep is state, got %v", ids)
+	}
+}
+
+func TestAdjustStateOnPropChange_EmptyDeps_NotFlagged(t *testing.T) {
+	src := `function C({ initial }) {
+  const [val, setVal] = useState(0);
+  useEffect(() => {
+    setVal(initial);
+  }, []);
+  return null;
+}`
+	// Empty deps covered by no-initialize-state, not this rule
+	if ids := parseSrc(t, ".tsx", src); has(ids, "no-adjust-state-on-prop-change") {
+		t.Fatalf("no-adjust-state-on-prop-change should not fire on empty deps, got %v", ids)
+	}
+}
+
+// ─── rendering-hydration-no-flicker (#49) ─────────────────────────────────────
+
+func TestHydrationNoFlicker_Fires(t *testing.T) {
+	src := `function App() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true) }, []);
+  if (!mounted) return null;
+  return <div />;
+}`
+	if ids := parseSrc(t, ".tsx", src); !has(ids, "rendering-hydration-no-flicker") {
+		t.Fatalf("expected rendering-hydration-no-flicker, got %v", ids)
+	}
+}
+
+func TestHydrationNoFlicker_NonBooleanInit_NotFlagged(t *testing.T) {
+	src := `function App() {
+  const [count, setCount] = useState(0);
+  useEffect(() => { setCount(1) }, []);
+  return null;
+}`
+	// setCount(1) — arg is "1" not "true", should not fire
+	if ids := parseSrc(t, ".tsx", src); has(ids, "rendering-hydration-no-flicker") {
+		t.Fatalf("rendering-hydration-no-flicker should not fire for non-true arg, got %v", ids)
+	}
+}
+
+// ─── rerender-transitions-scroll (#53) ────────────────────────────────────────
+
+func TestTransitionsScroll_Fires(t *testing.T) {
+	src := `function C() {
+  const [y, setY] = useState(0);
+  return <div onScroll={e => setY(e.currentTarget.scrollTop)} />;
+}`
+	if ids := parseSrc(t, ".tsx", src); !has(ids, "rerender-transitions-scroll") {
+		t.Fatalf("expected rerender-transitions-scroll, got %v", ids)
+	}
+}
+
+func TestTransitionsScroll_NoSetter_NotFlagged(t *testing.T) {
+	src := `function C() {
+  return <div onScroll={e => console.log(e.target.scrollTop)} />;
+}`
+	if ids := parseSrc(t, ".tsx", src); has(ids, "rerender-transitions-scroll") {
+		t.Fatalf("rerender-transitions-scroll should not fire without setState, got %v", ids)
+	}
+}
+
+// ─── advanced-event-handler-refs (#76) ────────────────────────────────────────
+
+func TestEventHandlerRefs_Fires(t *testing.T) {
+	src := `function C({ handleKey }) {
+  useEffect(() => {
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [handleKey]);
+  return null;
+}`
+	if ids := parseSrc(t, ".tsx", src); !has(ids, "advanced-event-handler-refs") {
+		t.Fatalf("expected advanced-event-handler-refs, got %v", ids)
+	}
+}
+
+func TestEventHandlerRefs_NotInDeps_NotFlagged(t *testing.T) {
+	src := `function C({ handleKey }) {
+  const ref = useRef(handleKey);
+  useEffect(() => {
+    window.addEventListener('keydown', ref.current);
+    return () => window.removeEventListener('keydown', ref.current);
+  }, []);
+  return null;
+}`
+	if ids := parseSrc(t, ".tsx", src); has(ids, "advanced-event-handler-refs") {
+		t.Fatalf("advanced-event-handler-refs should not fire when handler not in deps, got %v", ids)
+	}
+}

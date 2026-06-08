@@ -411,3 +411,195 @@ func sliceContains(ss []string, s string) bool {
 	}
 	return false
 }
+
+// ─── no-effect-event-in-deps (#82) ───────────────────────────────────────────
+
+// detectEffectEventInDeps flags useEffectEvent function references that appear
+// in a useEffect dependency array. useEffectEvent produces a stable wrapper that
+// always reads the latest values — it must NOT be listed in deps (React will
+// also warn at runtime when the experimental flag is enabled).
+//
+//	const fn = useEffectEvent(() => { ... })
+//	useEffect(() => { fn() }, [fn])  // BAD: fn in deps
+func detectEffectEventInDeps(root *sitter.Node, lang *sitter.Language, src []byte, file string) []core.Finding {
+	if isEffectPerformanceTestFile(file) {
+		return nil
+	}
+	var out []core.Finding
+	walkReact(root, func(node *sitter.Node) {
+		if !isUseEffectCall(node, src) {
+			return
+		}
+		deps := effectDepTexts(node, src)
+		if len(deps) == 0 {
+			return
+		}
+		scope := enclosingFunction(node)
+		if scope == nil {
+			return
+		}
+		eventVars := collectEffectEventVars(scope, lang, src)
+		for _, dep := range deps {
+			if sliceContains(eventVars, dep) {
+				out = append(out, hint(
+					"no-effect-event-in-deps", "bug", core.SeverityWarning, file,
+					int(node.StartPoint().Row)+1,
+					"useEffectEvent function "+dep+" is in the dependency array. "+
+						"useEffectEvent creates a stable wrapper that always reads the latest values — "+
+						"adding it to deps defeats the purpose and may cause infinite re-runs.",
+					"Remove "+dep+" from the dependency array.",
+				))
+			}
+		}
+	})
+	return out
+}
+
+// effectEventVarQuery matches: const X = useEffectEvent(...)
+const effectEventVarQuery = `
+(variable_declarator
+  name: (identifier) @name
+  value: (call_expression
+    function: [(identifier)(member_expression)] @fn)) @decl
+`
+
+// collectEffectEventVars returns names of variables bound to useEffectEvent
+// calls directly inside fn (not in nested function bodies).
+func collectEffectEventVars(fn *sitter.Node, lang *sitter.Language, src []byte) []string {
+	var names []string
+	_ = runMatches(effectEventVarQuery, fn, lang, func(caps map[string]*sitter.Node) {
+		if calleeName(caps["fn"], src) != "useEffectEvent" {
+			return
+		}
+		decl := caps["decl"]
+		if decl == nil || isInNestedFunction(decl, fn) {
+			return
+		}
+		names = append(names, nodeText(caps["name"], src))
+	})
+	return names
+}
+
+// ─── no-pass-data-to-parent (#87) ────────────────────────────────────────────
+
+// detectPassDataToParent flags useEffect hooks that call a prop callback (onXxx)
+// with local state as an argument. This is the "passing data up via effects"
+// anti-pattern — each state update triggers another render cycle just to notify
+// the parent.
+//
+//	useEffect(() => { onDataChange(data) }, [data, onDataChange])
+func detectPassDataToParent(root *sitter.Node, lang *sitter.Language, src []byte, file string) []core.Finding {
+	if isEffectPerformanceTestFile(file) {
+		return nil
+	}
+	var out []core.Finding
+	walkReact(root, func(node *sitter.Node) {
+		if !isUseEffectCall(node, src) {
+			return
+		}
+		cb := effectCallback(node)
+		if cb == nil {
+			return
+		}
+		scope := enclosingFunction(node)
+		if scope == nil {
+			return
+		}
+		deps := effectDepTexts(node, src)
+		stateDecls := collectStateDecls(scope, lang, src)
+		if len(stateDecls) == 0 {
+			return
+		}
+		stateVarSet := make(map[string]bool, len(stateDecls))
+		for _, sd := range stateDecls {
+			stateVarSet[sd.valueVar] = true
+		}
+		found := false
+		walkReact(cb, func(inner *sitter.Node) {
+			if found || inner.Type() != "call_expression" || isInNestedFunction(inner, cb) {
+				return
+			}
+			callee := calleeName(inner.ChildByFieldName("function"), src)
+			if !strings.HasPrefix(callee, "on") || !sliceContains(deps, callee) {
+				return
+			}
+			args := inner.ChildByFieldName("arguments")
+			if args == nil {
+				return
+			}
+			for i := 0; i < int(args.NamedChildCount()); i++ {
+				if stateVarSet[nodeText(args.NamedChild(i), src)] {
+					found = true
+					return
+				}
+			}
+		})
+		if !found {
+			return
+		}
+		out = append(out, hint(
+			"no-pass-data-to-parent", "design", core.SeverityInfo, file,
+			int(node.StartPoint().Row)+1,
+			"useEffect calls a parent callback (on*) with local state — this syncs data upward via effects. "+
+				"Each state update triggers an effect run to notify the parent, adding an extra render cycle.",
+			"Lift state to the parent component, or pass data up via event handlers instead of effects.",
+		))
+	})
+	return out
+}
+
+// ─── no-adjust-state-on-prop-change (#77) ────────────────────────────────────
+
+// detectAdjustStateOnPropChange flags useEffect hooks whose body only calls
+// state setters and whose deps are all non-state values (i.e., props or external
+// references). The pattern derives state from a prop via an effect, adding an
+// extra render cycle; the fix is to compute the value inline during render.
+//
+//	useEffect(() => { setFiltered(items.filter(active)) }, [items, active])
+func detectAdjustStateOnPropChange(root *sitter.Node, lang *sitter.Language, src []byte, file string) []core.Finding {
+	if isEffectPerformanceTestFile(file) {
+		return nil
+	}
+	var out []core.Finding
+	walkReact(root, func(node *sitter.Node) {
+		if !isUseEffectCall(node, src) {
+			return
+		}
+		deps := effectDepTexts(node, src)
+		if len(deps) == 0 {
+			return // covered by no-initialize-state
+		}
+		cb := effectCallback(node)
+		if cb == nil || !callbackOnlyCallsSetters(cb, src) {
+			return
+		}
+		scope := enclosingFunction(node)
+		if scope == nil {
+			return
+		}
+		stateDecls := collectStateDecls(scope, lang, src)
+		if len(stateDecls) == 0 {
+			return
+		}
+		// All deps must be non-state — if any dep is a state var, the effect
+		// reacts to state, not props, so it's a different smell.
+		stateVars := make(map[string]bool, len(stateDecls)*2)
+		for _, sd := range stateDecls {
+			stateVars[sd.valueVar] = true
+			stateVars[sd.setterVar] = true
+		}
+		for _, dep := range deps {
+			if stateVars[dep] {
+				return
+			}
+		}
+		out = append(out, hint(
+			"no-adjust-state-on-prop-change", "quality", core.SeverityInfo, file,
+			int(node.StartPoint().Row)+1,
+			"useEffect adjusts state when a prop or external value changes — this causes an extra render cycle. "+
+				"If the new state can be fully derived from the prop, compute it inline during render.",
+			"Replace useState + useEffect with a derived value: const derived = transform(prop).",
+		))
+	})
+	return out
+}

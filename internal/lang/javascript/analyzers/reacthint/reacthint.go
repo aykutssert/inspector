@@ -62,6 +62,14 @@ var detectors = []detector{
 	detectPreferUseSyncExternalStore,
 	detectCascadingSetState,
 	detectSelfUpdatingEffect,
+	// effect anti-patterns continued (#77, #82, #87)
+	detectAdjustStateOnPropChange,
+	detectEffectEventInDeps,
+	detectPassDataToParent,
+	// render hints (#49, #53, #76)
+	detectHydrationNoFlicker,
+	detectTransitionsScroll,
+	detectEventHandlerRefs,
 }
 
 
