@@ -23,6 +23,8 @@ func main() {
 		runContext(os.Args[2:])
 	case "doctor":
 		runDoctor(os.Args[2:])
+	case "explain":
+		runExplain(os.Args[2:])
 	default:
 		usage()
 		os.Exit(2)
@@ -36,6 +38,7 @@ func usage() {
 	fmt.Fprintln(os.Stderr, "  scout context [--root dir]                  # repo map")
 	fmt.Fprintln(os.Stderr, "  scout context [--root dir] <file | file:symbol | symbol>")
 	fmt.Fprintln(os.Stderr, "  scout doctor [--json]")
+	fmt.Fprintln(os.Stderr, "  scout explain <rule_id>                     # why/bad/good/fix for a rule")
 }
 
 func runScan(args []string) {
@@ -120,6 +123,80 @@ func runContext(args []string) {
 		fmt.Fprintln(os.Stderr, "error:", err)
 		os.Exit(1)
 	}
+}
+
+func runExplain(args []string) {
+	fs := flag.NewFlagSet("explain", flag.ExitOnError)
+	catalog := fs.String("catalog", "", "path to catalog.yaml override (default: embedded)")
+	_ = fs.Parse(args)
+
+	if fs.NArg() == 0 {
+		fmt.Fprintln(os.Stderr, "usage: scout explain <rule_id>")
+		os.Exit(2)
+	}
+
+	result, err := app.Explain(app.ExplainOptions{
+		CatalogPath: *catalog,
+		RuleID:      fs.Arg(0),
+	})
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "error:", err)
+		os.Exit(1)
+	}
+
+	if !result.Found {
+		fmt.Fprintf(os.Stderr, "no catalog entry for rule %q\n", result.RuleID)
+		os.Exit(1)
+	}
+
+	if isTTY(os.Stdout) {
+		fmt.Printf("rule:  %s\n\n", result.RuleID)
+		fmt.Printf("WHY\n  %s\n", result.Why)
+		if result.Bad != "" {
+			fmt.Printf("\nBAD\n%s\n", indent(result.Bad, "  "))
+		}
+		if result.Good != "" {
+			fmt.Printf("GOOD\n%s\n", indent(result.Good, "  "))
+		}
+		if result.Fix != "" {
+			fmt.Printf("FIX\n  %s\n", result.Fix)
+		}
+	} else {
+		enc := json.NewEncoder(os.Stdout)
+		enc.SetIndent("", "  ")
+		if err := enc.Encode(result); err != nil {
+			fmt.Fprintln(os.Stderr, "error:", err)
+			os.Exit(1)
+		}
+	}
+}
+
+// indent prepends each non-empty line with the given prefix.
+func indent(s, prefix string) string {
+	out := ""
+	for _, line := range splitLines(s) {
+		if line == "" {
+			out += "\n"
+		} else {
+			out += prefix + line + "\n"
+		}
+	}
+	return out
+}
+
+func splitLines(s string) []string {
+	var lines []string
+	start := 0
+	for i := 0; i < len(s); i++ {
+		if s[i] == '\n' {
+			lines = append(lines, s[start:i])
+			start = i + 1
+		}
+	}
+	if start < len(s) {
+		lines = append(lines, s[start:])
+	}
+	return lines
 }
 
 func runDoctor(args []string) {

@@ -50,7 +50,7 @@ func Scan(opts ScanOptions, reg *registry.Registry) (core.Report, error) {
 		Root:      absRoot,
 		DiffOnly:  opts.DiffOnly,
 		Files:     files,
-		Languages: lang.NewRegistry(adapters...).Detect(files),
+		Languages: lang.NewRegistry(adapters...).Detect(files, absRoot),
 		Changed:   changed,
 	}
 

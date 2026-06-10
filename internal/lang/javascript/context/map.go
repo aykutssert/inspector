@@ -113,7 +113,11 @@ func (g *Graph) detectEntryPoints(framework string) []string {
 	switch framework {
 	case "nextjs":
 		eps = g.nextjsEntryPoints()
-	case "react-native":
+	case "express":
+		eps = g.expressEntryPoints()
+	case "nestjs":
+		eps = g.nestjsEntryPoints()
+	case "vite":
 		eps = g.genericEntryPoints()
 	default:
 		eps = g.genericEntryPoints()
@@ -129,6 +133,50 @@ func (g *Graph) detectEntryPoints(framework string) []string {
 	}
 	sort.Strings(out)
 	return out
+}
+
+// expressEntryPoints finds files that act as Express servers.
+// Signals: calls to express() or .listen() with a receiver.
+func (g *Graph) expressEntryPoints() []string {
+	var eps []string
+	for rel, fp := range g.Files {
+		isExpress := false
+		for _, c := range fp.Calls {
+			if c.Name == "express" && c.Recv == "" {
+				isExpress = true
+				break
+			}
+			if c.Recv != "" && c.Name == "listen" {
+				isExpress = true
+				break
+			}
+		}
+		if isExpress {
+			eps = append(eps, rel)
+		}
+	}
+	if len(eps) > 0 {
+		return eps
+	}
+	return g.genericEntryPoints()
+}
+
+// nestjsEntryPoints finds the NestJS application bootstrap file.
+// Signal: call to NestFactory.create().
+func (g *Graph) nestjsEntryPoints() []string {
+	var eps []string
+	for rel, fp := range g.Files {
+		for _, c := range fp.Calls {
+			if c.Recv == "NestFactory" && c.Name == "create" {
+				eps = append(eps, rel)
+				break
+			}
+		}
+	}
+	if len(eps) > 0 {
+		return eps
+	}
+	return g.genericEntryPoints()
 }
 
 // nextjsEntryPoints uses the Next.js file-system router conventions.

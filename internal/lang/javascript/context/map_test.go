@@ -215,6 +215,69 @@ func TestTopByImportedBy_ExcludesZero(t *testing.T) {
 
 // ─── BuildMap smoke test ───────────────────────────────────────────────────────
 
+func TestExpressEntryPoints(t *testing.T) {
+	root := writeFixture(t, map[string]string{
+		"package.json":    `{"dependencies":{"express":"4.18"}}`,
+		"src/server.ts":   `import express from 'express'; const app = express(); app.listen(3000);`,
+		"src/routes.ts":   `import { Router } from 'express'; const router = Router(); router.get('/');`,
+		"lib/db.ts":       `export function query() {}`,
+	})
+	g := Build(root, []string{"src/server.ts", "src/routes.ts", "lib/db.ts"})
+	eps := g.detectEntryPoints("express")
+	epSet := make(map[string]bool)
+	for _, e := range eps {
+		epSet[e] = true
+	}
+	if !epSet["src/server.ts"] {
+		t.Errorf("missing entry point src/server.ts (got %v)", eps)
+	}
+	if epSet["lib/db.ts"] {
+		t.Errorf("lib/db.ts should not be an entry point (got %v)", eps)
+	}
+}
+
+func TestNestJSEntryPoints(t *testing.T) {
+	root := writeFixture(t, map[string]string{
+		"package.json":     `{"dependencies":{"@nestjs/core":"10.0","@nestjs/common":"10.0"}}`,
+		"src/main.ts":      `import { NestFactory } from '@nestjs/core'; const app = await NestFactory.create(AppModule); await app.listen(3000);`,
+		"src/app.module.ts": `@Module({}) export class AppModule {}`,
+		"lib/util.ts":      `export function helper() {}`,
+	})
+	g := Build(root, []string{"src/main.ts", "src/app.module.ts", "lib/util.ts"})
+	eps := g.detectEntryPoints("nestjs")
+	epSet := make(map[string]bool)
+	for _, e := range eps {
+		epSet[e] = true
+	}
+	if !epSet["src/main.ts"] {
+		t.Errorf("missing entry point src/main.ts (got %v)", eps)
+	}
+	if epSet["lib/util.ts"] {
+		t.Errorf("lib/util.ts should not be an entry point (got %v)", eps)
+	}
+}
+
+func TestViteEntryPoints(t *testing.T) {
+	root := writeFixture(t, map[string]string{
+		"package.json":      `{"dependencies":{"vite":"5.0"}}`,
+		"vite.config.ts":    `import { defineConfig } from 'vite'; export default defineConfig({});`,
+		"index.html":        `<div id="root"></div>`,
+		"src/main.ts":       `import { createApp } from 'vue'; createApp(App).mount('#root');`,
+	})
+	g := Build(root, []string{"vite.config.ts", "index.html", "src/main.ts"})
+	eps := g.detectEntryPoints("vite")
+	epSet := make(map[string]bool)
+	for _, e := range eps {
+		epSet[e] = true
+	}
+	// Vite falls back to generic: index.html by name.
+	if epSet["index.html"] {
+		t.Logf("vite entry points: %v", eps)
+	} else {
+		t.Errorf("expected at least one entry point, got %v", eps)
+	}
+}
+
 func TestBuildMap_NextJS(t *testing.T) {
 	root := writeFixture(t, map[string]string{
 		"package.json":   `{"dependencies":{"next":"14.1.0"}}`,

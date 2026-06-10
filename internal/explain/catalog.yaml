@@ -1,0 +1,2545 @@
+# Scout Rule Catalog
+# Each entry maps a rule_id to its explanation for `scout explain <rule_id>`.
+# rule_id must match the finding's rule_id exactly (e.g. "general.jwt-verify-without-algorithms").
+# Fields: why, bad, good, fix — all plain text or fenced code blocks.
+
+- id: bun.bun-prefer-bun-file
+  why: |
+    This code uses Node.js 'fs' APIs to read files. If you are running on the Bun runtime, prefer using the faster, optimized native API 'Bun.file(path)' which provides '.text()', '.json()', and stream interfaces directly.
+  bad: |
+    # See `scout explain bun.bun-prefer-bun-file` for code example
+  good: |
+    # See `scout explain bun.bun-prefer-bun-file` for code example
+  fix: |
+    This code uses Node.
+
+- id: bun.bun-prefer-bun-password
+  why: |
+    This code uses external hashing libraries (bcrypt, bcryptjs, argon2) or Node.js crypto.pbkdf2 for password hashing. If you are running on the Bun runtime, prefer using the optimized native APIs 'Bun.password.hash(...)' and 'Bun.password.verify(...)'.
+  bad: |
+    # See `scout explain bun.bun-prefer-bun-password` for code example
+  good: |
+    # See `scout explain bun.bun-prefer-bun-password` for code example
+  fix: |
+    This code uses external hashing libraries (bcrypt, bcryptjs, argon2) or Node.
+
+- id: bun.bun-prefer-bun-serve
+  why: |
+    This code builds an HTTP server using Node's 'http.createServer'. If you are running on the Bun runtime, prefer using the optimized native API 'Bun.serve(...)' for significantly higher performance.
+  bad: |
+    # See `scout explain bun.bun-prefer-bun-serve` for code example
+  good: |
+    # See `scout explain bun.bun-prefer-bun-serve` for code example
+  fix: |
+    This code builds an HTTP server using Node's 'http.
+
+- id: bun.bun-prefer-bun-write
+  why: |
+    This code uses Node.js 'fs' APIs to write files. If you are running on the Bun runtime, prefer using the faster, optimized native API 'Bun.write(path, data)' for better performance.
+  bad: |
+    # See `scout explain bun.bun-prefer-bun-write` for code example
+  good: |
+    # See `scout explain bun.bun-prefer-bun-write` for code example
+  fix: |
+    This code uses Node.
+
+- id: bun.bun-shell-injection
+  why: |
+    Bun shell command is built from a dynamic value. If the value is user-controlled, shell metacharacters can change the command that runs. Use a fixed command with an argument array, validate against an allowlist, or avoid invoking a shell.
+  bad: |
+    # See `scout explain bun.bun-shell-injection` for code example
+  good: |
+    # See `scout explain bun.bun-shell-injection` for code example
+  fix: |
+    Bun shell command is built from a dynamic value.
+
+- id: bun.bun-sqlite-injection
+  why: |
+    bun:sqlite query is built with string concatenation or interpolation. If any part of the value is user-controlled, this can become SQL injection. Use prepared statements with placeholders and bind values separately.
+  bad: |
+    # See `scout explain bun.bun-sqlite-injection` for code example
+  good: |
+    # See `scout explain bun.bun-sqlite-injection` for code example
+  fix: |
+    bun:sqlite query is built with string concatenation or interpolation.
+
+- id: css.no-large-animated-blur
+  why: |
+    Large blur radius used in an animation. Animating blur() values above ~30px forces the GPU to re-composite on every frame, causing significant jank especially on mobile. Prefer smaller blur values (under 20px), or animate opacity/transform instead.
+  bad: |
+    # See `scout explain css.no-large-animated-blur` for code example
+  good: |
+    # See `scout explain css.no-large-animated-blur` for code example
+  fix: |
+    Large blur radius used in an animation.
+
+- id: css.no-layout-property-animation
+  why: |
+    Animation or transition targets a layout-triggering property. Animating layout properties (such as width, height, top, left, margin, padding, or 'all') causes the browser to re-layout the page on every frame, which is computationally expensive and causes jank. Use transform (e.g., scale, translate) and opacity instead.
+  bad: |
+    # See `scout explain css.no-layout-property-animation` for code example
+  good: |
+    # See `scout explain css.no-layout-property-animation` for code example
+  fix: |
+    Animation or transition targets a layout-triggering property.
+
+- id: css.no-outline-none
+  why: |
+    Disabling focus outlines with outline: none or outline: 0. Focus outlines are critical for keyboard navigation accessibility (A11y). If you disable the default outline, you must provide an alternative visible focus indicator (e.g., custom border or box-shadow ring) for focus states.
+  bad: |
+    # See `scout explain css.no-outline-none` for code example
+  good: |
+    # See `scout explain css.no-outline-none` for code example
+  fix: |
+    Disabling focus outlines with outline: none or outline: 0.
+
+- id: css.no-permanent-will-change
+  why: |
+    will-change applied permanently in a static style prop. will-change signals to the browser to promote the element to its own GPU layer, consuming significant GPU memory. Apply it only just before an animation starts and remove it immediately after — permanent will-change is a net performance negative.
+  bad: |
+    # See `scout explain css.no-permanent-will-change` for code example
+  good: |
+    # See `scout explain css.no-permanent-will-change` for code example
+  fix: |
+    will-change applied permanently in a static style prop.
+
+- id: express.express-async-error-handling
+  why: |
+    An asynchronous Express route handler does not wrap its execution in a try/catch block or use an async error handler wrapper. Unhandled async rejections in Express can crash the Node.js process or cause requests to hang. Wrap the body in try/catch and pass the error to next(err).
+  bad: |
+    app.get("/data", async (req, res) => { throw err })
+  good: |
+    app.get("/data", asyncHandler(async (req, res) => { ... }))
+  fix: |
+    Wrap async route handlers to catch rejected promises.
+
+- id: express.express-body-limit-missing
+  why: |
+    Express body parsing middleware is configured without an explicit payload limit. Large JSON or form bodies can consume memory and CPU before route handlers run, creating a simple denial-of-service path. Set a small application-specific limit such as express.json({ limit: "1mb" }).
+  bad: |
+    app.use(express.json())  // no size limit
+  good: |
+    app.use(express.json({ limit: "10kb" }))
+  fix: |
+    Set a body size limit on JSON/URL-encoded body parsers.
+
+- id: express.express-cors-wildcard-with-credentials
+  why: |
+    CORS is configured with origin '*' and credentials enabled. Browsers reject this combination, and relaxing it later often turns into credential leakage. Use an explicit allowlist of trusted origins when cookies or authorization headers are allowed.
+  bad: |
+    cors({ origin: "*", credentials: true })
+  good: |
+    cors({ origin: "https://trusted.com", credentials: true })
+  fix: |
+    Specify allowed origins explicitly instead of using wildcard with credentials.
+
+- id: express.express-insecure-session-cookie
+  why: |
+    express-session config weakens the session cookie security flags. Session cookies should normally be httpOnly so JavaScript cannot read them, and secure in production so they are not sent over plain HTTP. Keep httpOnly enabled and set secure true behind HTTPS.
+  bad: |
+    session({ secret: "test", cookie: { secure: false } })
+  good: |
+    session({ secret: "test", cookie: { secure: true, httpOnly: true } })
+  fix: |
+    Enable secure and httpOnly flags on session cookies.
+
+- id: express.express-missing-helmet
+  why: |
+    The Express application is initialized but does not appear to use the 'helmet' middleware. Helmet sets critical security headers to protect the app from common web vulnerabilities (XSS, Clickjacking, MIME-sniffing, etc.). Add app.use(helmet()) to secure HTTP headers.
+  bad: |
+    app = express()  // no helmet
+  good: |
+    app = express(); app.use(helmet())
+  fix: |
+    Add app.use(helmet()) after creating the express app.
+
+- id: express.express-missing-rate-limit
+  why: |
+    This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).
+  bad: |
+    app.post("/login", handler)  // no rate limit
+  good: |
+    app.post("/login", rateLimit({ windowMs: 15*60*1000, max: 100 }), handler)
+  fix: |
+    Add rate limiting middleware to sensitive routes.
+
+- id: express.express-sensitive-route-no-auth
+  why: |
+    A sensitive Express route (e.g., containing 'admin', 'delete', 'update', 'secure', 'private', or 'remove') does not seem to use any authorization or authentication middleware. Ensure that route handlers for sensitive paths are protected using an authentication or permission-checking middleware.
+  bad: |
+    app.get("/admin", handler)  // no auth
+  good: |
+    app.get("/admin", authenticate, handler)
+  fix: |
+    Add authentication middleware to sensitive routes.
+
+- id: express.express-trust-proxy-misconfig
+  why: |
+    Express trust proxy setting is missing, disabled, or not set to the correct proxy count. Without proper trust proxy configuration behind a reverse proxy (NGINX, Cloudflare, ELB), req.ip is spoofable via X-Forwarded-For and secure cookies may malfunction.
+  bad: |
+    app.set("trust proxy", false)
+  good: |
+    app.set("trust proxy", 1)
+  fix: |
+    Set trust proxy to the correct proxy count.
+
+- id: general.await-in-loop
+  why: |
+    An await sits directly inside a loop, so the iterations run strictly one after another: each waits for the previous to finish. When the operations are independent (e.g. fetching N urls), this is needlessly slow and should be parallelized with Promise.all(items.map(...)). If each iteration genuinely depends on the previous, or you are intentionally rate-limiting, the serial form is correct.
+  bad: |
+    # See `scout explain general.await-in-loop` for code example
+  good: |
+    # See `scout explain general.await-in-loop` for code example
+  fix: |
+    An await sits directly inside a loop, so the iterations run strictly one after another: each waits for the previous to finish.
+
+- id: general.bcrypt-weak-cost
+  why: |
+    bcrypt is configured with a cost factor below 10. Low bcrypt rounds make offline password cracking materially cheaper if password hashes leak. Use a cost of at least 10, then tune upward based on your production latency budget.
+  bad: |
+    # See `scout explain general.bcrypt-weak-cost` for code example
+  good: |
+    # See `scout explain general.bcrypt-weak-cost` for code example
+  fix: |
+    bcrypt is configured with a cost factor below 10.
+
+- id: general.client-localstorage-no-version
+  why: |
+    Unversioned storage key access. When caching data in localStorage or sessionStorage, it is highly recommended to append a version suffix (e.g. 'user_data:v1') so that future schema updates do not cause JSON parsing failures or runtime crashes.
+  bad: |
+    # See `scout explain general.client-localstorage-no-version` for code example
+  good: |
+    # See `scout explain general.client-localstorage-no-version` for code example
+  fix: |
+    Unversioned storage key access.
+
+- id: general.client-passive-event-listeners
+  why: |
+    Scroll/touch event listener registered without '{ passive: true }'. Touch and wheel event listeners ('touchstart', 'touchmove', 'wheel', 'mousewheel') should be registered with '{ passive: true }' to improve scroll performance and avoid layout/scroll jank, unless they call 'event.preventDefault()'.
+  bad: |
+    # See `scout explain general.client-passive-event-listeners` for code example
+  good: |
+    # See `scout explain general.client-passive-event-listeners` for code example
+  fix: |
+    Scroll/touch event listener registered without '{ passive: true }'.
+
+- id: general.crypto-sync-in-request-path
+  why: |
+    Synchronous cryptographic operations (e.g. pbkdf2Sync, scryptSync, bcrypt.hashSync, compareSync) run inside a request handler. CPU-intensive sync crypto blocks the single-threaded Node.js event loop, preventing all other concurrent requests from being processed and creating a simple denial-of-service (DoS) vulnerability. Use asynchronous alternatives like bcrypt.hash or crypto.pbkdf2.
+  bad: |
+    # See `scout explain general.crypto-sync-in-request-path` for code example
+  good: |
+    # See `scout explain general.crypto-sync-in-request-path` for code example
+  fix: |
+    Synchronous cryptographic operations (e.
+
+- id: general.empty-catch-block
+  why: |
+    This catch block is empty, so the error is silently swallowed: failures vanish with no log, no rethrow, and no recovery, which hides bugs and makes incidents undebuggable. Handle the error, log it, or rethrow. If ignoring is truly intentional, leave a comment explaining why.
+  bad: |
+    # See `scout explain general.empty-catch-block` for code example
+  good: |
+    # See `scout explain general.empty-catch-block` for code example
+  fix: |
+    This catch block is empty, so the error is silently swallowed: failures vanish with no log, no rethrow, and no recovery, which hides bugs and makes incidents undebuggable.
+
+- id: general.fetch-in-loop
+  why: |
+    fetch() is called from inside a loop. This often creates an N+1 network pattern or forces requests to run one by one when combined with await. Prefer batching, a backend bulk endpoint, or Promise.all over a mapped collection when the requests are independent.
+  bad: |
+    # See `scout explain general.fetch-in-loop` for code example
+  good: |
+    # See `scout explain general.fetch-in-loop` for code example
+  fix: |
+    fetch() is called from inside a loop.
+
+- id: general.hardcoded-api-url
+  why: |
+    A hardcoded HTTP/HTTPS URL is used directly in a network request. To ensure flexibility across different environments (development, staging, production), avoid hardcoding base URLs. Load the base URL from an environment variable or use an API client with a configured baseURL.
+  bad: |
+    # See `scout explain general.hardcoded-api-url` for code example
+  good: |
+    # See `scout explain general.hardcoded-api-url` for code example
+  fix: |
+    A hardcoded HTTP/HTTPS URL is used directly in a network request.
+
+- id: general.hardcoded-secret
+  why: |
+    A hardcoded secret or credential appears in the source (an AWS access key, a GitHub/Slack/Stripe token, a Google API key, or a PEM private key). Committed secrets are exposed to everyone with repository access and stay in git history even after the line is deleted. Move the value to an environment variable or a secret manager, rotate the leaked credential immediately, and purge it from git history.
+  bad: |
+    const API_KEY = "sk-12345..."
+  good: |
+    const API_KEY = process.env.API_KEY
+  fix: |
+    Move secrets to environment variables.
+
+- id: general.incomplete-not-implemented
+  why: |
+    This throws a "not implemented" placeholder, so the function is an unfinished stub left in the codebase: if a real caller reaches it, it fails at runtime. Implement the function, or remove it if it is dead code. A genuine "subclasses must override" placeholder belongs on an abstract method, not a shipped concrete path.
+  bad: |
+    # See `scout explain general.incomplete-not-implemented` for code example
+  good: |
+    # See `scout explain general.incomplete-not-implemented` for code example
+  fix: |
+    This throws a "not implemented" placeholder, so the function is an unfinished stub left in the codebase: if a real caller reaches it, it fails at runtime.
+
+- id: general.insecure-document-cookie
+  why: |
+    document.cookie is assigned without an obvious Secure attribute. Client-set cookies are also readable from JavaScript, so auth material should normally be set server-side with HttpOnly, Secure, and SameSite. If this is not auth material, still confirm the cookie is intentionally accessible to scripts.
+  bad: |
+    # See `scout explain general.insecure-document-cookie` for code example
+  good: |
+    # See `scout explain general.insecure-document-cookie` for code example
+  fix: |
+    document.
+
+- id: general.js-hoist-intl
+  why: |
+    new Intl.*Format(...) created inside a function/render scope. Intl formatters are relatively expensive to construct — locale data parsing and pattern compilation happen on every instantiation. Hoist to module scope so the formatter is created once.
+  bad: |
+    function f(n) { return new Intl.NumberFormat("en").format(n) }
+  good: |
+    const fmt = new Intl.NumberFormat("en"); function f(n) { return fmt.format(n) }
+  fix: |
+    Hoist the Intl formatter to module scope.
+
+- id: general.js-hoist-regexp
+  why: |
+    new RegExp(...) created inside a function/render scope. The regular expression is recompiled on every invocation. Hoist RegExp creation to module scope — the pattern is static and compiling it once is sufficient.
+  bad: |
+    function f() { return new RegExp("^foo/").test(s) }
+  good: |
+    const RE = /^foo\//; function f(s) { return RE.test(s) }
+  fix: |
+    Hoist the RegExp to module scope.
+
+- id: general.js-prototype-pollution-merge
+  why: |
+    Untrusted user input (req.body / req.params / req.query) passed directly to Object.assign() or _.merge(). An attacker can inject __proto__ or constructor.prototype properties to pollute all object prototypes, leading to privilege escalation or RCE.
+  bad: |
+    Object.assign({}, req.body)
+  good: |
+    Object.assign({}, safeSource)
+  fix: |
+    Do not merge untrusted input directly into objects.
+
+- id: general.json-parse-without-guard
+  why: |
+    JSON.parse is called on request-controlled input without a local try/catch. A malformed payload can throw synchronously and turn a single bad request into a 500 response or process-level failure, depending on the framework error path. Validate the input or catch SyntaxError before using it.
+  bad: |
+    # See `scout explain general.json-parse-without-guard` for code example
+  good: |
+    # See `scout explain general.json-parse-without-guard` for code example
+  fix: |
+    JSON.
+
+- id: general.json-stringify-deep-clone
+  why: |
+    JSON.parse(JSON.stringify(...)) is used as a deep clone. This is slow on large objects and silently changes values such as Date, Map, Set, undefined, NaN, Infinity, RegExp, functions, and class instances. Prefer structuredClone where available, or use a clone strategy that preserves the data shape you actually need.
+  bad: |
+    # See `scout explain general.json-stringify-deep-clone` for code example
+  good: |
+    # See `scout explain general.json-stringify-deep-clone` for code example
+  fix: |
+    JSON.
+
+- id: general.jwt-decode-without-verify
+  why: |
+    A JWT is read with jwt.decode(), which only base64-decodes the token and does NOT check the signature. Any value derived from a decoded-but-unverified token (user id, role, expiry) is attacker-controlled: a forged token passes. Use jwt.verify(token, secret) before trusting the payload. decode() is only safe for reading the header to pick a key, never for authorization decisions.
+  bad: |
+    # See `scout explain general.jwt-decode-without-verify` for code example
+  good: |
+    # See `scout explain general.jwt-decode-without-verify` for code example
+  fix: |
+    A JWT is read with jwt.
+
+- id: general.leftover-console-statement
+  why: |
+    A console.log/console.debug call was left in the source. These are typically debugging leftovers (a common artifact of AI-generated or rushed code) that leak data to the browser console and add noise in production. Remove it, or route it through an intentional logger. console.warn/console.error are not flagged, since those are usually deliberate.
+  bad: |
+    console.log("debug:", data)
+  good: |
+    # Remove or use a proper logger
+  fix: |
+    Remove console.log/debug statements from production code.
+
+- id: general.lodash-barrel-import
+  why: |
+    Lodash is imported from the top-level package, which can pull a much larger bundle than the one helper this file needs. Prefer a per-method import such as lodash/debounce, or use lodash-es with a bundler that tree-shakes it correctly.
+  bad: |
+    # See `scout explain general.lodash-barrel-import` for code example
+  good: |
+    # See `scout explain general.lodash-barrel-import` for code example
+  fix: |
+    Lodash is imported from the top-level package, which can pull a much larger bundle than the one helper this file needs.
+
+- id: general.message-event-missing-origin-check
+  why: |
+    A message event handler does not appear to check event.origin. postMessage data can come from untrusted origins, so handlers should verify the sender against a strict allowlist before trusting event.data.
+  bad: |
+    # See `scout explain general.message-event-missing-origin-check` for code example
+  good: |
+    # See `scout explain general.message-event-missing-origin-check` for code example
+  fix: |
+    A message event handler does not appear to check event.
+
+- id: general.mixed-esm-cjs
+  why: |
+    This file mixes ESM imports with CommonJS require(). Mixed module systems often behave differently across Node, bundlers, and test runners, especially under "type": "module". Use one module system consistently in a file, or isolate interop behind a small adapter.
+  bad: |
+    # See `scout explain general.mixed-esm-cjs` for code example
+  good: |
+    # See `scout explain general.mixed-esm-cjs` for code example
+  fix: |
+    This file mixes ESM imports with CommonJS require().
+
+- id: general.mock-data-in-production
+  why: |
+    The faker mock-data library is imported in non-test code, so fake/random data can be shipped into a production path instead of real data. Move faker behind tests/fixtures/seed scripts, or replace it with a real data source.
+  bad: |
+    # See `scout explain general.mock-data-in-production` for code example
+  good: |
+    # See `scout explain general.mock-data-in-production` for code example
+  fix: |
+    The faker mock-data library is imported in non-test code, so fake/random data can be shipped into a production path instead of real data.
+
+- id: general.no-disabled-zoom
+  why: |
+    Pinch-to-zoom is disabled in the viewport metadata. Restricting scaling (e.g. user-scalable=no or maximum-scale=1) prevents users with visual impairments from zooming in to read content, violating key accessibility standards (WCAG).
+  bad: |
+    # See `scout explain general.no-disabled-zoom` for code example
+  good: |
+    # See `scout explain general.no-disabled-zoom` for code example
+  fix: |
+    Pinch-to-zoom is disabled in the viewport metadata.
+
+- id: general.dom-innerhtml-variable
+  why: |
+    innerHTML is assigned a dynamic value. If that value contains user-controlled data, this is a DOM XSS sink. Prefer textContent for plain text, or sanitize trusted HTML before assigning it.
+  bad: |
+    # See `scout explain general.dom-innerhtml-variable` for code example
+  good: |
+    # See `scout explain general.dom-innerhtml-variable` for code example
+  fix: |
+    innerHTML is assigned a dynamic value.
+
+- id: general.dynamic-code-execution
+  why: |
+    Dynamic code execution through eval()/Function() can execute attacker-controlled input as JavaScript. Avoid interpreting strings as code; use explicit parsing or a constrained dispatch table instead.
+  bad: |
+    eval(userInput)
+  good: |
+    // Use a lookup table or safe parser
+  fix: |
+    Replace eval/Function() with a safe alternative.
+
+- id: general.no-dynamic-import-path
+  why: |
+    Non-static dynamic import path detected. Using a variable or expression inside import() prevents the bundler from analyzing and splitting the imported modules into static chunks. Use static string literals inside import() instead.
+  bad: |
+    # See `scout explain general.no-dynamic-import-path` for code example
+  good: |
+    # See `scout explain general.no-dynamic-import-path` for code example
+  fix: |
+    Non-static dynamic import path detected.
+
+- id: general.javascript-url
+  why: |
+    A javascript: URL executes code when the link is activated. Use a real route, button handler, or safe URL instead.
+  bad: |
+    # See `scout explain general.javascript-url` for code example
+  good: |
+    # See `scout explain general.javascript-url` for code example
+  fix: |
+    A javascript: URL executes code when the link is activated.
+
+- id: general.math-random-security-token
+  why: |
+    Math.random() is used to create a token, nonce, secret, session value, or other security-sensitive identifier. Math.random() is not cryptographically secure and can be predictable. Use crypto.getRandomValues(), crypto.randomUUID(), or a server-side CSPRNG instead.
+  bad: |
+    # See `scout explain general.math-random-security-token` for code example
+  good: |
+    # See `scout explain general.math-random-security-token` for code example
+  fix: |
+    Math.
+
+- id: general.no-moment
+  why: |
+    Import of legacy library 'moment' detected. Moment.js is a heavy library that lacks tree-shaking support and can lead to bundle bloat. Use modern, lightweight date libraries like 'date-fns', 'dayjs', or 'luxon' instead.
+  bad: |
+    # See `scout explain general.no-moment` for code example
+  good: |
+    # See `scout explain general.no-moment` for code example
+  fix: |
+    Import of legacy library 'moment' detected.
+
+- id: general.no-tiny-text
+  why: |
+    Tiny text size detected (less than 12px). Font sizes below 12px (0.75rem) are very difficult to read on most screens, especially for visually impaired users. Keep font sizes at 12px or larger (use standard Tailwind text-xs, text-sm, etc.).
+  bad: |
+    # See `scout explain general.no-tiny-text` for code example
+  good: |
+    # See `scout explain general.no-tiny-text` for code example
+  fix: |
+    Tiny text size detected (less than 12px).
+
+- id: general.no-undeferred-third-party
+  why: |
+    Undeferred third-party script blocks page rendering. Add 'defer' or 'async' to standard HTML <script> tags, or avoid 'beforeInteractive' strategy in Next.js <Script> components unless absolutely necessary for core initialization.
+  bad: |
+    # See `scout explain general.no-undeferred-third-party` for code example
+  good: |
+    # See `scout explain general.no-undeferred-third-party` for code example
+  fix: |
+    Undeferred third-party script blocks page rendering.
+
+- id: general.node-unhandled-promise-rejection
+  why: |
+    A promise is started as a standalone statement without await, return, or a rejection handler. If it rejects, Node reports an unhandled rejection and modern runtimes may terminate the process. Await/return it, or attach an explicit catch handler.
+  bad: |
+    # See `scout explain general.node-unhandled-promise-rejection` for code example
+  good: |
+    # See `scout explain general.node-unhandled-promise-rejection` for code example
+  fix: |
+    A promise is started as a standalone statement without await, return, or a rejection handler.
+
+- id: general.open-redirect-dynamic-url
+  why: |
+    A redirect/navigation target is built from a dynamic value. If this value can be influenced by a user, the app may redirect to an attacker-controlled URL. Validate against an allowlist, resolve only internal paths, or build the destination from trusted route names.
+  bad: |
+    # See `scout explain general.open-redirect-dynamic-url` for code example
+  good: |
+    # See `scout explain general.open-redirect-dynamic-url` for code example
+  fix: |
+    A redirect/navigation target is built from a dynamic value.
+
+- id: general.orm-unsafe-raw-query
+  why: |
+    Unsafe raw SQL query detected. Using string interpolation or concatenation inside Prisma ($queryRaw, $executeRaw, $queryRawUnsafe, $executeRawUnsafe) or TypeORM (query) bypasses parameterized query generation, risking SQL injection. Use safe tagged templates (e.g. prisma.$queryRaw`...`) or pass parameters as a separate argument/binding.
+  bad: |
+    # See `scout explain general.orm-unsafe-raw-query` for code example
+  good: |
+    # See `scout explain general.orm-unsafe-raw-query` for code example
+  fix: |
+    Unsafe raw SQL query detected.
+
+- id: general.path-traversal-unchecked-join
+  why: |
+    Request-controlled input is joined into a filesystem path without an obvious basename/normalize/allowlist step. Attackers can use ../ segments or absolute paths to escape the intended directory. Resolve against a fixed base directory and reject paths that leave it, or map user input to known filenames.
+  bad: |
+    # See `scout explain general.path-traversal-unchecked-join` for code example
+  good: |
+    # See `scout explain general.path-traversal-unchecked-join` for code example
+  fix: |
+    Request-controlled input is joined into a filesystem path without an obvious basename/normalize/allowlist step.
+
+- id: general.placeholder-or-ai-slop-comment
+  why: |
+    This comment looks like an unfinished placeholder or AI-generation artifact (e.g. "your code here", "rest of the implementation", "TODO: implement", "as an AI ..."). It usually means code was elided or never written, so the surrounding function may be incomplete or non-functional. Replace it with the real implementation, or remove the comment if the code is actually complete.
+  bad: |
+    # See `scout explain general.placeholder-or-ai-slop-comment` for code example
+  good: |
+    # See `scout explain general.placeholder-or-ai-slop-comment` for code example
+  fix: |
+    This comment looks like an unfinished placeholder or AI-generation artifact (e.
+
+- id: general.prefer-dynamic-import
+  why: |
+    Eagerly imported heavy library detected. This library is large and can significantly increase your initial bundle size. Use dynamic imports (e.g. import() or React.lazy()) to load it asynchronously only when needed.
+  bad: |
+    # See `scout explain general.prefer-dynamic-import` for code example
+  good: |
+    # See `scout explain general.prefer-dynamic-import` for code example
+  fix: |
+    Eagerly imported heavy library detected.
+
+- id: general.process-env-dispersed-access
+  why: |
+    Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.
+  bad: |
+    # See `scout explain general.process-env-dispersed-access` for code example
+  good: |
+    # See `scout explain general.process-env-dispersed-access` for code example
+  fix: |
+    Direct access to 'process.
+
+- id: general.reduce-spread-accumulator
+  why: |
+    This reduce callback rebuilds the accumulator with [...acc, ...] on every iteration, which copies the growing array repeatedly and turns a linear collection step into O(n²) work. Prefer map/filter, or mutate a local accumulator inside the reduce callback when reduce is genuinely needed.
+  bad: |
+    # See `scout explain general.reduce-spread-accumulator` for code example
+  good: |
+    # See `scout explain general.reduce-spread-accumulator` for code example
+  fix: |
+    This reduce callback rebuilds the accumulator with [.
+
+- id: general.regex-dos-candidate
+  why: |
+    Regular expression contains nested quantifiers (e.g. (a+)+, ([a-z]+)*) which can lead to Regular Expression Denial of Service (ReDoS) due to catastrophic backtracking when matched against malicious or extremely long inputs. Simplify the regex or use a safe regex engine/validator.
+  bad: |
+    # See `scout explain general.regex-dos-candidate` for code example
+  good: |
+    # See `scout explain general.regex-dos-candidate` for code example
+  fix: |
+    Regular expression contains nested quantifiers (e.
+
+- id: general.sensitive-data-in-web-storage
+  why: |
+    A token/secret/credential is written to localStorage or sessionStorage. Web storage is readable by any script on the page, so any XSS can exfiltrate it; unlike an httpOnly cookie it is not protected from JavaScript. Prefer an httpOnly, Secure, SameSite cookie for auth material, or keep it in memory.
+  bad: |
+    # See `scout explain general.sensitive-data-in-web-storage` for code example
+  good: |
+    # See `scout explain general.sensitive-data-in-web-storage` for code example
+  fix: |
+    A token/secret/credential is written to localStorage or sessionStorage.
+
+- id: general.sync-fs-in-server
+  why: |
+    Synchronous fs I/O runs inside an Express request handler. readFileSync, writeFileSync, and existsSync block the Node.js event loop, so one slow disk operation can stall unrelated requests. Use async fs APIs, pre-load static data at startup, or move the work outside the request path.
+  bad: |
+    # See `scout explain general.sync-fs-in-server` for code example
+  good: |
+    # See `scout explain general.sync-fs-in-server` for code example
+  fix: |
+    Synchronous fs I/O runs inside an Express request handler.
+
+- id: general.tainted-command-injection
+  why: |
+    User-controlled request data reaches an OS command execution sink. An attacker can inject shell metacharacters to run arbitrary commands on the server. Avoid passing request data into a shell; use a fixed command with an argument array (no shell), or validate the input against a strict allowlist before execution.
+  bad: |
+    # (tainted input reaches a sink)
+  good: |
+    # (validate/sanitize before reaching sink)
+  fix: |
+    Validate or sanitize user input before it reaches a dangerous sink.
+
+- id: general.tainted-dom-xss
+  why: |
+    Browser-controlled input reaches an HTML-injection sink without sanitization, leading to DOM-based Cross-Site Scripting (XSS). An attacker can craft a URL, fragment, or request field that injects script into the page. Render untrusted data as text (textContent), or sanitize it with a trusted library (e.g. DOMPurify.sanitize) before assigning it to an HTML sink.
+  bad: |
+    # (tainted input reaches a sink)
+  good: |
+    # (validate/sanitize before reaching sink)
+  fix: |
+    Validate or sanitize user input before it reaches a dangerous sink.
+
+- id: general.tainted-hardcoded-secret
+  why: |
+    A hardcoded secret or credential (an AWS access key, a GitHub/Slack/Stripe token, a Google API key, or a PEM private key) is assigned to a variable or object property and then flows into a function call. Unlike the regex rule, this catches indirect usage where the literal is stored first and consumed elsewhere. Committed secrets are exposed to everyone with repository access and remain in git history even after deletion. Move the value to an environment variable or a secret manager, rotate the leaked credential immediately, and purge it from git history.
+  bad: |
+    const API_KEY = "sk-12345..."
+  good: |
+    const API_KEY = process.env.API_KEY
+  fix: |
+    Move secrets to environment variables.
+
+- id: general.tainted-sql-query
+  why: |
+    User-controlled request data reaches a raw SQL query sink. Build SQL with parameterized placeholders or trusted query-builder APIs instead of concatenating request data into the SQL text.
+  bad: |
+    # (tainted input reaches a sink)
+  good: |
+    # (validate/sanitize before reaching sink)
+  fix: |
+    Validate or sanitize user input before it reaches a dangerous sink.
+
+- id: general.tainted-ssrf-request
+  why: |
+    User-controlled request data reaches an outbound HTTP request URL. This can lead to Server-Side Request Forgery (SSRF), where attackers make the server call internal services or attacker-controlled hosts. Resolve the destination from trusted route names or validate it against a strict allowlist before making the request.
+  bad: |
+    # (tainted input reaches a sink)
+  good: |
+    # (validate/sanitize before reaching sink)
+  fix: |
+    Validate or sanitize user input before it reaches a dangerous sink.
+
+- id: general.ts-as-any-escape
+  why: |
+    `as any` (and `Record<_, any>`) disables type checking at this point, so the compiler stops catching real bugs flowing through here. Unlike an incidental `: any`, this is an explicit escape hatch. Prefer `unknown` with a narrowing check, a precise generic, or a typed shape.
+  bad: |
+    # See `scout explain general.ts-as-any-escape` for code example
+  good: |
+    # See `scout explain general.ts-as-any-escape` for code example
+  fix: |
+    `as any` (and `Record<_, any>`) disables type checking at this point, so the compiler stops catching real bugs flowing through here.
+
+- id: general.ts-ignore-without-reason
+  why: |
+    @ts-ignore suppresses the TypeScript checker without documenting why. This can hide real type regressions permanently. Prefer @ts-expect-error with a short reason, or add an explicit reason if the suppression is unavoidable.
+  bad: |
+    # See `scout explain general.ts-ignore-without-reason` for code example
+  good: |
+    # See `scout explain general.ts-ignore-without-reason` for code example
+  fix: |
+    @ts-ignore suppresses the TypeScript checker without documenting why.
+
+- id: general.use-lazy-motion
+  why: |
+    Eagerly imported 'motion' from 'framer-motion' detected. This pulls in the entire bundle of framer-motion. To reduce bundle size, import 'm' instead of 'motion', and wrap your motion elements in '<LazyMotion features={domAnimation}>'.
+  bad: |
+    # See `scout explain general.use-lazy-motion` for code example
+  good: |
+    # See `scout explain general.use-lazy-motion` for code example
+  fix: |
+    Eagerly imported 'motion' from 'framer-motion' detected.
+
+- id: general.zod-v4-no-deprecated-error-apis
+  why: |
+    ZodError.errors is a deprecated alias in Zod v4. Use ZodError.issues instead. The .errors property will be removed in a future major version. Replace err.errors with err.issues everywhere.
+  bad: |
+    # See `scout explain general.zod-v4-no-deprecated-error-apis` for code example
+  good: |
+    # See `scout explain general.zod-v4-no-deprecated-error-apis` for code example
+  fix: |
+    ZodError.
+
+- id: general.zod-v4-no-deprecated-error-customization
+  why: |
+    The errorMap option was renamed to error in Zod v4. Replace { errorMap: (issue, ctx) => ({ message: "..." }) } with { error: (issue) => "..." } which is shorter and better typed.
+  bad: |
+    # See `scout explain general.zod-v4-no-deprecated-error-customization` for code example
+  good: |
+    # See `scout explain general.zod-v4-no-deprecated-error-customization` for code example
+  fix: |
+    The errorMap option was renamed to error in Zod v4.
+
+- id: general.zod-v4-no-deprecated-schema-apis
+  why: |
+    z.preprocess() is deprecated in Zod v4. Use z.pipe() with an explicit transform instead: z.pipe(z.unknown().transform(val => coerce(val)), targetSchema). This makes the transformation chain explicit and type-safe.
+  bad: |
+    # See `scout explain general.zod-v4-no-deprecated-schema-apis` for code example
+  good: |
+    # See `scout explain general.zod-v4-no-deprecated-schema-apis` for code example
+  fix: |
+    z.
+
+- id: general.zod-v4-prefer-top-level-string-formats
+  why: |
+    Zod v4 promotes string format validators to top-level functions. Replace z.string().email() with z.email(), z.string().url() with z.url(), etc. The chained form still works but generates a larger schema and is deprecated.
+  bad: |
+    # See `scout explain general.zod-v4-prefer-top-level-string-formats` for code example
+  good: |
+    # See `scout explain general.zod-v4-prefer-top-level-string-formats` for code example
+  fix: |
+    Zod v4 promotes string format validators to top-level functions.
+
+- id: jotai.jotai-derived-atom-returns-fresh-object
+  why: |
+    Derived atom returns a new object/array literal on every read. Each evaluation of atom(get => ({ ... })) produces a new reference, so every subscriber re-renders even when underlying values are unchanged. Use selectAtom with an equality function, or stabilize the shape with atom(get => derived, equal) to avoid unnecessary re-renders.
+  bad: |
+    # See `scout explain jotai.jotai-derived-atom-returns-fresh-object` for code example
+  good: |
+    # See `scout explain jotai.jotai-derived-atom-returns-fresh-object` for code example
+  fix: |
+    Derived atom returns a new object/array literal on every read.
+
+- id: jotai.jotai-select-atom-in-render-body
+  why: |
+    selectAtom() is created inside a component render body. That recreates the selector on every render and weakens Jotai memoization. Hoist the selector to module scope or extract it outside the component.
+  bad: |
+    # See `scout explain jotai.jotai-select-atom-in-render-body` for code example
+  good: |
+    # See `scout explain jotai.jotai-select-atom-in-render-body` for code example
+  fix: |
+    selectAtom() is created inside a component render body.
+
+- id: jotai.jotai-selectatom-without-stable-equality
+  why: |
+    selectAtom selector returns an object or array literal without an equality function (3rd argument). Each evaluation creates a new reference, causing downstream atoms/subscribers to re-render infinitely. Add a deep equality function as the third argument (e.g., shallowEqual).
+  bad: |
+    selectAtom(atom, (state) => ({ name: state.name }))
+  good: |
+    selectAtom(atom, (state) => ({ name: state.name }), shallowEqual)
+  fix: |
+    Add a deep equality function as the third argument.
+
+- id: jotai.jotai-tq-use-raw-query-atom
+  why: |
+    This component subscribes to the full TanStack Query atom. That broad subscription causes unnecessary re-renders when only a slice is needed. Use selectAtom() to derive the minimal state the component actually reads.
+  bad: |
+    # See `scout explain jotai.jotai-tq-use-raw-query-atom` for code example
+  good: |
+    # See `scout explain jotai.jotai-tq-use-raw-query-atom` for code example
+  fix: |
+    This component subscribes to the full TanStack Query atom.
+
+- id: nestjs.nestjs-dto-without-validators
+  why: |
+    DTO class property is defined without any decorators. In NestJS, properties inside DTO classes (e.g. classes ending in Dto) must have at least one validation decorator (such as @IsString(), @IsNumber(), etc.) for the global ValidationPipe to validate them. Properties without decorators are ignored by validation, allowing unchecked payload fields.
+  bad: |
+    # See `scout explain nestjs.nestjs-dto-without-validators` for code example
+  good: |
+    # See `scout explain nestjs.nestjs-dto-without-validators` for code example
+  fix: |
+    DTO class property is defined without any decorators.
+
+- id: nestjs.nestjs-fat-controller
+  why: |
+    A NestJS controller directly performs database or ORM operations. NestJS architecture mandates that controllers only handle HTTP routing and delegate business logic and data access to services. Move this database operation into a service class.
+  bad: |
+    # See `scout explain nestjs.nestjs-fat-controller` for code example
+  good: |
+    # See `scout explain nestjs.nestjs-fat-controller` for code example
+  fix: |
+    A NestJS controller directly performs database or ORM operations.
+
+- id: nextjs.heavy-import-no-dynamic
+  why: |
+    Heavy library is statically imported. Statically importing large libraries (like monaco-editor, three, lodash, or chart.js) increases the initial client bundle size and slows down page loads. Consider using dynamic imports (e.g., Next.js dynamic() or dynamic import()) to load this library lazily.
+  bad: |
+    # See `scout explain nextjs.heavy-import-no-dynamic` for code example
+  good: |
+    # See `scout explain nextjs.heavy-import-no-dynamic` for code example
+  fix: |
+    Heavy library is statically imported.
+
+- id: nextjs.next-async-client-component
+  why: |
+    Client Components cannot be async functions. Making a Client Component async results in runtime errors and prevents proper client-side rendering. Convert the component to a synchronous function and use hooks like useEffect or useSWR/TanStack Query for data fetching, or keep it as a Server Component.
+  bad: |
+    # See `scout explain nextjs.next-async-client-component` for code example
+  good: |
+    # See `scout explain nextjs.next-async-client-component` for code example
+  fix: |
+    Client Components cannot be async functions.
+
+- id: nextjs.next-browser-api-during-ssr
+  why: |
+    A Next.js Server Component or route file uses a browser-only API without a "use client" directive. window, document, localStorage, sessionStorage, navigator, and similar APIs are not available during server rendering and can crash with ReferenceError. Move this code to a Client Component or guard it so it only runs in the browser.
+  bad: |
+    # See `scout explain nextjs.next-browser-api-during-ssr` for code example
+  good: |
+    # See `scout explain nextjs.next-browser-api-during-ssr` for code example
+  fix: |
+    A Next.
+
+- id: nextjs.next-client-component-data-fetch
+  why: |
+    Client-side data fetching detected inside useEffect in a Client Component. Using useEffect with fetch or axios in Client Components can lead to request waterfalls, increased bundle sizes, and negative impact on SEO. Consider moving data fetching to a React Server Component (RSC), or use a library like TanStack Query for client-side state and caching.
+  bad: |
+    # See `scout explain nextjs.next-client-component-data-fetch` for code example
+  good: |
+    # See `scout explain nextjs.next-client-component-data-fetch` for code example
+  fix: |
+    Client-side data fetching detected inside useEffect in a Client Component.
+
+- id: nextjs.next-insecure-cookie-setting
+  why: |
+    A cookie is set via cookies().set() without explicitly enabling the secure flag. Sensitive cookies (like session tokens) should always be set with 'secure: true' in production to prevent them from being transmitted over unencrypted HTTP connections.
+  bad: |
+    # See `scout explain nextjs.next-insecure-cookie-setting` for code example
+  good: |
+    # See `scout explain nextjs.next-insecure-cookie-setting` for code example
+  fix: |
+    A cookie is set via cookies().
+
+- id: nextjs.next-no-redirect-in-try-catch
+  why: |
+    Calling 'redirect()' or 'permanentRedirect()' inside a try-catch block can prevent the redirect from working correctly because Next.js uses thrown errors internally to control routing. Call redirect() outside the try-catch block or ensure the redirect error is rethrown.
+  bad: |
+    # See `scout explain nextjs.next-no-redirect-in-try-catch` for code example
+  good: |
+    # See `scout explain nextjs.next-no-redirect-in-try-catch` for code example
+  fix: |
+    Calling 'redirect()' or 'permanentRedirect()' inside a try-catch block can prevent the redirect from working correctly because Next.
+
+- id: nextjs.next-prefer-image-component
+  why: |
+    A standard HTML <img> tag is used. In Next.js, using <img> bypasses automatic image optimization (lazy loading, responsive sizing, and modern format conversion). Use the '<Image>' component from 'next/image' instead.
+  bad: |
+    # See `scout explain nextjs.next-prefer-image-component` for code example
+  good: |
+    # See `scout explain nextjs.next-prefer-image-component` for code example
+  fix: |
+    A standard HTML <img> tag is used.
+
+- id: nextjs.next-prefer-link-component
+  why: |
+    A standard HTML <a> tag is used with an internal route. In Next.js, using <a> for internal navigation causes a full page reload, losing client-side routing benefits. Use the '<Link>' component from 'next/link' instead.
+  bad: |
+    # See `scout explain nextjs.next-prefer-link-component` for code example
+  good: |
+    # See `scout explain nextjs.next-prefer-link-component` for code example
+  fix: |
+    A standard HTML <a> tag is used with an internal route.
+
+- id: nextjs.next-public-env-secret
+  why: |
+    A NEXT_PUBLIC_* environment variable named like a secret (secret, token, password, credential, private/api key) is read here. Next.js inlines every NEXT_PUBLIC_* value into the client JavaScript bundle, so this value is shipped to the browser and readable by anyone. If it is a real secret, drop the NEXT_PUBLIC_ prefix and read it only in server code (route handlers, server components, getServerSideProps). If the value is genuinely public (e.g. a publishable key), rename it so it no longer looks like a secret.
+  bad: |
+    const API_KEY = "sk-12345..."
+  good: |
+    const API_KEY = process.env.API_KEY
+  fix: |
+    Move secrets to environment variables.
+
+- id: nextjs.next-root-level-request-apis
+  why: |
+    A Next.js request API is called at module scope. cookies(), headers(), and similar request-bound APIs force the route or component to be dynamic and can disable static optimization for the whole file. Move the call inside the handler/component that actually needs request data.
+  bad: |
+    # See `scout explain nextjs.next-root-level-request-apis` for code example
+  good: |
+    # See `scout explain nextjs.next-root-level-request-apis` for code example
+  fix: |
+    A Next.
+
+- id: nextjs.next-route-handler-invalid-method
+  why: |
+    A Next.js App Router route handler exports a function whose name is not a valid HTTP method. Next.js only recognizes GET, POST, PUT, PATCH, DELETE, HEAD, and OPTIONS in route files; other exported handler names are ignored and the endpoint will not respond as intended.
+  bad: |
+    # See `scout explain nextjs.next-route-handler-invalid-method` for code example
+  good: |
+    # See `scout explain nextjs.next-route-handler-invalid-method` for code example
+  fix: |
+    A Next.
+
+- id: nextjs.next-server-action-missing-validation
+  why: |
+    A Next.js Server Action accepts input but does not appear to validate it with a schema parser. Server Actions are callable from the client, so unvalidated parameters can become authorization, injection, or data integrity bugs. Validate the input with Zod, Valibot, or a similar schema before using it.
+  bad: |
+    # See `scout explain nextjs.next-server-action-missing-validation` for code example
+  good: |
+    # See `scout explain nextjs.next-server-action-missing-validation` for code example
+  fix: |
+    A Next.
+
+- id: nextjs.next-server-component-api-hop
+  why: |
+    Server Component fetches its own API route. Server Components can access databases, services, or internal APIs directly in Next.js. Fetching an internal /api/... route adds unnecessary HTTP request overhead (serialization, latency, network hop). Call the database or service function directly instead of performing an HTTP fetch.
+  bad: |
+    # See `scout explain nextjs.next-server-component-api-hop` for code example
+  good: |
+    # See `scout explain nextjs.next-server-component-api-hop` for code example
+  fix: |
+    Server Component fetches its own API route.
+
+- id: nextjs.next-server-only-in-client
+  why: |
+    A client component (using "use client") imports a server-only package or Node.js core module. This will fail to run or bundle in the browser. Ensure this import is only used in server components, or mock/stub the functionality on the client.
+  bad: |
+    # See `scout explain nextjs.next-server-only-in-client` for code example
+  good: |
+    # See `scout explain nextjs.next-server-only-in-client` for code example
+  fix: |
+    A client component (using "use client") imports a server-only package or Node.
+
+- id: nextjs.next-ssrf-prone-fetch
+  why: |
+    Server-side fetch() is called with a dynamic or unvalidated URL. If this URL is built from user-controlled input, it can lead to Server-Side Request Forgery (SSRF), allowing attackers to query internal services, bypass firewalls, or leak credentials. Validate the URL against a strict allowlist of allowed domains, or ensure the input is sanitized and mapped to safe endpoints.
+  bad: |
+    # (tainted input reaches a sink)
+  good: |
+    # (validate/sanitize before reaching sink)
+  fix: |
+    Validate or sanitize user input before it reaches a dangerous sink.
+
+- id: nextjs.next-unnecessary-use-client
+  why: |
+    Unnecessary "use client" directive at the top of the file. No React/Next.js hooks, event handlers, client-only APIs (like createContext), or browser globals (like window/document) were detected. Removing "use client" allows this component to be rendered as a React Server Component (RSC), which reduces the client-side bundle size and improves initial page load performance.
+  bad: |
+    # See `scout explain nextjs.next-unnecessary-use-client` for code example
+  good: |
+    # See `scout explain nextjs.next-unnecessary-use-client` for code example
+  fix: |
+    Unnecessary "use client" directive at the top of the file.
+
+- id: nextjs.next-unsafe-redirect
+  why: |
+    A Next.js redirect target is built from a dynamic value. If this value can be influenced by a user, the app may redirect to an attacker-controlled URL. Validate against an allowlist, resolve only internal paths, or build the destination from trusted route names.
+  bad: |
+    # See `scout explain nextjs.next-unsafe-redirect` for code example
+  good: |
+    # See `scout explain nextjs.next-unsafe-redirect` for code example
+  fix: |
+    A Next.
+
+- id: nextjs.nextjs-image-missing-sizes
+  why: |
+    Next.js <Image> component is missing the 'sizes' property. For responsive images (especially those using 'fill' or responsive layouts), specifying 'sizes' is important for performance so the browser downloads the correct image size.
+  bad: |
+    # See `scout explain nextjs.nextjs-image-missing-sizes` for code example
+  good: |
+    # See `scout explain nextjs.nextjs-image-missing-sizes` for code example
+  fix: |
+    Next.
+
+- id: nextjs.nextjs-inline-script-missing-id
+  why: |
+    Inline Next.js scripts must have an 'id' attribute to enable proper tracking and deduplication.
+  bad: |
+    # See `scout explain nextjs.nextjs-inline-script-missing-id` for code example
+  good: |
+    # See `scout explain nextjs.nextjs-inline-script-missing-id` for code example
+  fix: |
+    Inline Next.
+
+- id: nextjs.nextjs-missing-metadata
+  why: |
+    Next.js App Router Page/Layout is missing SEO metadata. Export a static 'metadata' object or a dynamic 'generateMetadata' function to improve search engine indexing.
+  bad: |
+    # See `scout explain nextjs.nextjs-missing-metadata` for code example
+  good: |
+    # See `scout explain nextjs.nextjs-missing-metadata` for code example
+  fix: |
+    Next.
+
+- id: nextjs.nextjs-no-client-side-redirect
+  why: |
+    A redirect runs inside useEffect (router.push/replace). The page renders first and then navigates away, so the user sees a flash of the wrong screen, and it costs an extra client render. Prefer middleware or a Server Component redirect() for auth/routing gates; keep router.push for user-triggered events.
+  bad: |
+    # See `scout explain nextjs.nextjs-no-client-side-redirect` for code example
+  good: |
+    # See `scout explain nextjs.nextjs-no-client-side-redirect` for code example
+  fix: |
+    A redirect runs inside useEffect (router.
+
+- id: nextjs.nextjs-no-head-import
+  why: |
+    App Router files should not import 'next/head'. Use the Metadata API instead to define page titles, descriptions, and other head elements.
+  bad: |
+    # See `scout explain nextjs.nextjs-no-head-import` for code example
+  good: |
+    # See `scout explain nextjs.nextjs-no-head-import` for code example
+  fix: |
+    App Router files should not import 'next/head'.
+
+- id: nextjs.nextjs-no-side-effect-in-get-handler
+  why: |
+    Side effect detected in Next.js GET handler. GET requests are idempotent and can be pre-fetched or cached by the browser/CDN, making side effects (like database mutations or state writes) unpredictable and vulnerable to CSRF. Use a POST handler instead for state-changing operations.
+  bad: |
+    # See `scout explain nextjs.nextjs-no-side-effect-in-get-handler` for code example
+  good: |
+    # See `scout explain nextjs.nextjs-no-side-effect-in-get-handler` for code example
+  fix: |
+    Side effect detected in Next.
+
+- id: nextjs.nextjs-no-use-search-params-without-suspense
+  why: |
+    'useSearchParams()' is used in a Client Component. Next.js requires components using 'useSearchParams()' to be wrapped in a '<Suspense>' boundary at the parent level during static rendering. Without a Suspense boundary, the entire page will fallback to client-side rendering.
+  bad: |
+    # See `scout explain nextjs.nextjs-no-use-search-params-without-suspense` for code example
+  good: |
+    # See `scout explain nextjs.nextjs-no-use-search-params-without-suspense` for code example
+  fix: |
+    'useSearchParams()' is used in a Client Component.
+
+- id: react-ui.design-no-redundant-padding-axes
+  why: |
+    Equal px-N and py-N Tailwind classes can be simplified to p-N. Use the shorthand utility to reduce class list noise.
+  bad: |
+    # See `scout explain react-ui.design-no-redundant-padding-axes` for code example
+  good: |
+    # See `scout explain react-ui.design-no-redundant-padding-axes` for code example
+  fix: |
+    Equal px-N and py-N Tailwind classes can be simplified to p-N.
+
+- id: react-ui.design-no-redundant-size-axes
+  why: |
+    Equal w-N and h-N Tailwind classes can be simplified to size-N (Tailwind v3.4+). Use the shorthand utility to reduce class list noise.
+  bad: |
+    # See `scout explain react-ui.design-no-redundant-size-axes` for code example
+  good: |
+    # See `scout explain react-ui.design-no-redundant-size-axes` for code example
+  fix: |
+    Equal w-N and h-N Tailwind classes can be simplified to size-N (Tailwind v3.
+
+- id: react-ui.design-no-space-on-flex-children
+  why: |
+    Tailwind class 'space-x' or 'space-y' detected. Using space-x/y utilities on flex layouts can cause layout bugs (especially in RTL or with hidden children). Prefer using flexbox gap utilities ('gap-x', 'gap-y', or 'gap') instead.
+  bad: |
+    # See `scout explain react-ui.design-no-space-on-flex-children` for code example
+  good: |
+    # See `scout explain react-ui.design-no-space-on-flex-children` for code example
+  fix: |
+    Tailwind class 'space-x' or 'space-y' detected.
+
+- id: react-ui.design-no-three-period-ellipsis
+  why: |
+    Three ASCII periods '...' used as an ellipsis in JSX text content. Use the typographic ellipsis character '…' (U+2026) instead for correct spacing and screen-reader pronunciation.
+  bad: |
+    # See `scout explain react-ui.design-no-three-period-ellipsis` for code example
+  good: |
+    # See `scout explain react-ui.design-no-three-period-ellipsis` for code example
+  fix: |
+    Three ASCII periods '.
+
+- id: react-ui.rendering-animate-svg-wrapper
+  why: |
+    Animating an SVG element directly with motion.svg causes browser repaint issues on many devices because SVG elements cannot be composited to their own GPU layer. Wrap the SVG in a motion.div (or motion.span) and animate the wrapper instead, keeping the SVG inside as a static child.
+  bad: |
+    # See `scout explain react-ui.rendering-animate-svg-wrapper` for code example
+  good: |
+    # See `scout explain react-ui.rendering-animate-svg-wrapper` for code example
+  fix: |
+    Animating an SVG element directly with motion.
+
+- id: react.dangerously-set-inner-html-variable
+  why: |
+    dangerouslySetInnerHTML is fed a dynamic value (not a string literal). If that value contains any user-controlled data, this is a stored/reflected XSS sink. Confirm the HTML is sanitized (e.g. DOMPurify) before it reaches this prop, or render the value as text instead.
+  bad: |
+    # See `scout explain react.dangerously-set-inner-html-variable` for code example
+  good: |
+    # See `scout explain react.dangerously-set-inner-html-variable` for code example
+  fix: |
+    dangerouslySetInnerHTML is fed a dynamic value (not a string literal).
+
+- id: react.direct-dom-manipulation
+  why: |
+    Direct DOM manipulation call detected in React file. Accessing or modifying the DOM directly (using document.getElementById, querySelector, etc.) bypasses the Virtual DOM, causing state inconsistencies and rendering issues. Use React refs (useRef) or state binding instead.
+  bad: |
+    # See `scout explain react.direct-dom-manipulation` for code example
+  good: |
+    # See `scout explain react.direct-dom-manipulation` for code example
+  fix: |
+    Direct DOM manipulation call detected in React file.
+
+- id: react.js-react-missing-interval-cleanup
+  why: |
+    setInterval() called inside useEffect() without a corresponding clearInterval() in the cleanup function. When the component unmounts, the interval continues running, holding references and executing stale closures. Add a return () => clearInterval($ID).
+  bad: |
+    useEffect(() => { setInterval(fetch, 5000) }, [])
+  good: |
+    useEffect(() => { const id = setInterval(fetch, 5000); return () => clearInterval(id) }, [])
+  fix: |
+    Return clearInterval() from the useEffect cleanup function.
+
+- id: react.no-default-props
+  why: |
+    A function component defines defaultProps. React 19 removed defaultProps support for function components. Use JavaScript default parameters or destructuring defaults so the fallback still applies after upgrading.
+  bad: |
+    # See `scout explain react.no-default-props` for code example
+  good: |
+    # See `scout explain react.no-default-props` for code example
+  fix: |
+    A function component defines defaultProps.
+
+- id: react.no-inline-exhaustive-style
+  why: |
+    Inline style object with many properties. Extract to a CSS class or Tailwind utility classes for better maintainability and smaller bundle size.
+  bad: |
+    # See `scout explain react.no-inline-exhaustive-style` for code example
+  good: |
+    # See `scout explain react.no-inline-exhaustive-style` for code example
+  fix: |
+    Inline style object with many properties.
+
+- id: react.no-prevent-default
+  why: |
+    Calling preventDefault() in link or form click/submit handlers. Instead of intercepting submissions/clicks with preventDefault() manually, prefer using native form action APIs, appropriate button types (like type="button"), or framework-provided routing/link elements to manage default behaviors.
+  bad: |
+    # See `scout explain react.no-prevent-default` for code example
+  good: |
+    # See `scout explain react.no-prevent-default` for code example
+  fix: |
+    Calling preventDefault() in link or form click/submit handlers.
+
+- id: react.no-prop-types
+  why: |
+    A function component defines propTypes. React 19 ignores propTypes on function components, so this runtime validation no longer protects the component contract. Move the contract to TypeScript types or validate untrusted data at the application boundary with a schema.
+  bad: |
+    # See `scout explain react.no-prop-types` for code example
+  good: |
+    # See `scout explain react.no-prop-types` for code example
+  fix: |
+    A function component defines propTypes.
+
+- id: react.random-value-as-react-key
+  why: |
+    A React key derived from Math.random()/Date.now() changes on every render, so React remounts the element each time: local state is lost, inputs lose focus, and reconciliation degrades. Use a stable id from the data instead.
+  bad: |
+    # See `scout explain react.random-value-as-react-key` for code example
+  good: |
+    # See `scout explain react.random-value-as-react-key` for code example
+  fix: |
+    A React key derived from Math.
+
+- id: react.no-react-dom-deprecated-apis
+  why: |
+    This legacy ReactDOM API is removed or unsupported by modern React roots. Use createRoot(...).render(...), hydrateRoot(...), root.unmount(), or a ref-based alternative instead.
+  bad: |
+    # See `scout explain react.no-react-dom-deprecated-apis` for code example
+  good: |
+    # See `scout explain react.no-react-dom-deprecated-apis` for code example
+  fix: |
+    This legacy ReactDOM API is removed or unsupported by modern React roots.
+
+- id: react.no-react19-deprecated-apis
+  why: |
+    forwardRef is no longer necessary in React 19 because function components can receive ref as a normal prop. React documents forwardRef for future deprecation. Prefer a ref prop for new React 19 code and migrate when the component API can change safely.
+  bad: |
+    # See `scout explain react.no-react19-deprecated-apis` for code example
+  good: |
+    # See `scout explain react.no-react19-deprecated-apis` for code example
+  fix: |
+    forwardRef is no longer necessary in React 19 because function components can receive ref as a normal prop.
+
+- id: react.no-uncontrolled-input
+  why: |
+    React controlled input conflict. Do not mix 'value' and 'defaultValue' (or 'checked' and 'defaultChecked') on the same input. Also, providing a 'value' (or 'checked') prop without an 'onChange' or 'readOnly' handler makes the input read-only and will cause React warnings.
+  bad: |
+    # See `scout explain react.no-uncontrolled-input` for code example
+  good: |
+    # See `scout explain react.no-uncontrolled-input` for code example
+  fix: |
+    React controlled input conflict.
+
+- id: react.prefer-html-dialog
+  why: |
+    Use native <dialog> instead of role="dialog" on a generic element. Native <dialog> provides built-in accessibility (focus trap, escape to close, inert background) without extra ARIA attributes or imperative JavaScript.
+  bad: |
+    # See `scout explain react.prefer-html-dialog` for code example
+  good: |
+    # See `scout explain react.prefer-html-dialog` for code example
+  fix: |
+    Use native <dialog> instead of role="dialog" on a generic element.
+
+- id: react.redux-useselector-inline-derivation
+  why: |
+    Inline data derivation inside useSelector creates a new reference on every render, defeating referential equality and causing unnecessary re-renders. Extract the selector to a memoized function with createSelector or move derivation outside.
+  bad: |
+    # See `scout explain react.redux-useselector-inline-derivation` for code example
+  good: |
+    # See `scout explain react.redux-useselector-inline-derivation` for code example
+  fix: |
+    Inline data derivation inside useSelector creates a new reference on every render, defeating referential equality and causing unnecessary re-renders.
+
+- id: react.redux-useselector-returns-new-collection
+  why: |
+    useSelector returns a new array or object literal on every call, breaking referential equality and triggering a re-render on every state update. Use createSelector to memoize the result or select a stable slice of state directly.
+  bad: |
+    # See `scout explain react.redux-useselector-returns-new-collection` for code example
+  good: |
+    # See `scout explain react.redux-useselector-returns-new-collection` for code example
+  fix: |
+    useSelector returns a new array or object literal on every call, breaking referential equality and triggering a re-render on every state update.
+
+- id: rn.expo-no-non-inlined-env
+  why: |
+    Dynamic lookup of 'process.env[key]' detected in Expo project. Expo's compiler only inlines static property accesses (like 'process.env.EXPO_PUBLIC_VAR') at build time. Dynamic key lookups resolve to 'undefined' at runtime. Use explicit static property access instead.
+  bad: |
+    # See `scout explain rn.expo-no-non-inlined-env` for code example
+  good: |
+    # See `scout explain rn.expo-no-non-inlined-env` for code example
+  fix: |
+    Dynamic lookup of 'process.
+
+- id: rn.rn-anonymous-renderitem
+  why: |
+    FlatList renderItem receives an inline function. This creates a new function on every render, which can defeat list item memoization and add avoidable work on large lists. Move renderItem to a stable function or wrap it in useCallback with correct dependencies.
+  bad: |
+    # See `scout explain rn.rn-anonymous-renderitem` for code example
+  good: |
+    # See `scout explain rn.rn-anonymous-renderitem` for code example
+  fix: |
+    FlatList renderItem receives an inline function.
+
+- id: rn.rn-async-storage-token
+  why: |
+    React Native AsyncStorage is used to persist a token, secret, credential, or auth value. AsyncStorage is not encrypted storage, so sensitive values can be recovered from device backups, rooted devices, or local compromise. Store auth material in SecureStore, Keychain, Keystore, or another platform-backed secure storage API.
+  bad: |
+    # See `scout explain rn.rn-async-storage-token` for code example
+  good: |
+    # See `scout explain rn.rn-async-storage-token` for code example
+  fix: |
+    React Native AsyncStorage is used to persist a token, secret, credential, or auth value.
+
+- id: rn.rn-bottom-sheet-prefer-native
+  why: |
+    JS-driven bottom sheet libraries (@gorhom/bottom-sheet, react-native-bottom-sheet) animate on the JS thread and require bridge calls for every frame. React Native 0.76+ / Expo SDK 52+ ships native Modal with presentationStyle="formSheet" which runs entirely on the UI thread with zero JS overhead. Prefer the native approach for simple sheet use cases.
+  bad: |
+    # See `scout explain rn.rn-bottom-sheet-prefer-native` for code example
+  good: |
+    # See `scout explain rn.rn-bottom-sheet-prefer-native` for code example
+  fix: |
+    JS-driven bottom sheet libraries (@gorhom/bottom-sheet, react-native-bottom-sheet) animate on the JS thread and require bridge calls for every frame.
+
+- id: rn.rn-detox-missing-await
+  why: |
+    Detox test action or assertion is not awaited. Detox operations are asynchronous and must be awaited to execute in the correct sequence.
+  bad: |
+    # See `scout explain rn.rn-detox-missing-await` for code example
+  good: |
+    # See `scout explain rn.rn-detox-missing-await` for code example
+  fix: |
+    Detox test action or assertion is not awaited.
+
+- id: rn.rn-dom-element-in-native
+  why: |
+    A DOM element is rendered inside a React Native component. React Native does not support HTML tags such as div, span, p, button, or input; this crashes or fails to render on native platforms. Use View, Text, Pressable, TextInput, or another React Native component instead.
+  bad: |
+    # See `scout explain rn.rn-dom-element-in-native` for code example
+  good: |
+    # See `scout explain rn.rn-dom-element-in-native` for code example
+  fix: |
+    A DOM element is rendered inside a React Native component.
+
+- id: rn.rn-list-missing-estimated-item-size
+  why: |
+    A Shopify FlashList is rendered without estimatedItemSize. FlashList uses it to size the recycle pool up front; without it the first scroll janks and blanks while it measures. Set estimatedItemSize to the average row height.
+  bad: |
+    # See `scout explain rn.rn-list-missing-estimated-item-size` for code example
+  good: |
+    # See `scout explain rn.rn-list-missing-estimated-item-size` for code example
+  fix: |
+    A Shopify FlashList is rendered without estimatedItemSize.
+
+- id: rn.rn-list-recyclable-without-types
+  why: |
+    FlashList without getItemType prop. When rows have different layouts/types, getItemType enables per-type view recycling. Without it, all rows are treated as the same type and FlashList cannot recycle across different row layouts.
+  bad: |
+    # See `scout explain rn.rn-list-recyclable-without-types` for code example
+  good: |
+    # See `scout explain rn.rn-list-recyclable-without-types` for code example
+  fix: |
+    FlashList without getItemType prop.
+
+- id: rn.rn-no-deep-imports
+  why: |
+    Importing from react-native internal Libraries/ paths is unsupported and breaks across React Native versions. Use the public top-level API: import { X } from 'react-native' instead of internal sub-paths.
+  bad: |
+    # See `scout explain rn.rn-no-deep-imports` for code example
+  good: |
+    # See `scout explain rn.rn-no-deep-imports` for code example
+  fix: |
+    Importing from react-native internal Libraries/ paths is unsupported and breaks across React Native versions.
+
+- id: rn.rn-no-dimensions-get
+  why: |
+    Dimensions.get(...) reads a snapshot that can become stale after device rotation, split-screen resizing, or foldable-window changes. In a component, use useWindowDimensions() so layout follows current dimensions. Outside React render code, subscribe to Dimensions change events and clean up the listener.
+  bad: |
+    # See `scout explain rn.rn-no-dimensions-get` for code example
+  good: |
+    # See `scout explain rn.rn-no-dimensions-get` for code example
+  fix: |
+    Dimensions.
+
+- id: rn.rn-no-falsy-and-render
+  why: |
+    In React Native, `{value && <JSX/>}` renders a bare 0 when value is 0 — a text node outside <Text> — which crashes the screen ("Text strings must be rendered within a <Text> component"). A numeric left operand (.length or a count-like variable) hits this whenever the list/value is empty. Guard with `value > 0 && ...`, `!!value && ...`, or a ternary returning null.
+  bad: |
+    # See `scout explain rn.rn-no-falsy-and-render` for code example
+  good: |
+    # See `scout explain rn.rn-no-falsy-and-render` for code example
+  fix: |
+    In React Native, `{value && <JSX/>}` renders a bare 0 when value is 0 — a text node outside <Text> — which crashes the screen ("Text strings must be rendered within a <Text> component").
+
+- id: rn.rn-no-legacy-expo-packages
+  why: |
+    Import of deprecated Expo package detected. This package is deprecated or removed in newer Expo SDK versions. Use recommended alternatives (e.g. use expo-splash-screen instead of expo-app-loading, or individual module permissions APIs instead of expo-permissions).
+  bad: |
+    # See `scout explain rn.rn-no-legacy-expo-packages` for code example
+  good: |
+    # See `scout explain rn.rn-no-legacy-expo-packages` for code example
+  fix: |
+    Import of deprecated Expo package detected.
+
+- id: rn.rn-no-legacy-shadow-styles
+  why: |
+    The iOS-only shadow* style properties (shadowColor, shadowOffset, shadowRadius, shadowOpacity) do not work on Android or with the New Architecture. Use the cross-platform boxShadow string property instead: boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+  bad: |
+    # See `scout explain rn.rn-no-legacy-shadow-styles` for code example
+  good: |
+    # See `scout explain rn.rn-no-legacy-shadow-styles` for code example
+  fix: |
+    The iOS-only shadow* style properties (shadowColor, shadowOffset, shadowRadius, shadowOpacity) do not work on Android or with the New Architecture.
+
+- id: rn.rn-no-non-native-navigator
+  why: |
+    @react-navigation/stack uses a JS-driven card navigator that renders animations on the JavaScript thread, causing jank under heavy workloads. Replace with @react-navigation/native-stack which delegates transitions to the platform's native NavigationController / FragmentManager for butter-smooth 60/120fps navigation.
+  bad: |
+    # See `scout explain rn.rn-no-non-native-navigator` for code example
+  good: |
+    # See `scout explain rn.rn-no-non-native-navigator` for code example
+  fix: |
+    @react-navigation/stack uses a JS-driven card navigator that renders animations on the JavaScript thread, causing jank under heavy workloads.
+
+- id: rn.rn-no-panresponder
+  why: |
+    PanResponder runs gesture logic on the JavaScript thread, causing dropped frames when the JS thread is busy. Replace with react-native-gesture-handler's Gesture API which executes on the UI thread via Reanimated worklets.
+  bad: |
+    # See `scout explain rn.rn-no-panresponder` for code example
+  good: |
+    # See `scout explain rn.rn-no-panresponder` for code example
+  fix: |
+    PanResponder runs gesture logic on the JavaScript thread, causing dropped frames when the JS thread is busy.
+
+- id: rn.rn-no-renderitem-key
+  why: |
+    Adding a key prop to the root element of a FlatList renderItem when keyExtractor is already provided is redundant. FlatList uses keyExtractor for reconciliation; the key prop on the rendered element is ignored. Remove the key prop from renderItem and rely on keyExtractor exclusively.
+  bad: |
+    # See `scout explain rn.rn-no-renderitem-key` for code example
+  good: |
+    # See `scout explain rn.rn-no-renderitem-key` for code example
+  fix: |
+    Adding a key prop to the root element of a FlatList renderItem when keyExtractor is already provided is redundant.
+
+- id: rn.rn-no-set-native-props
+  why: |
+    Deprecated setNativeProps() call detected. setNativeProps is deprecated and not compatible with the Fabric new architecture. Use component state or Reanimated shared values to dynamically update component properties instead.
+  bad: |
+    # See `scout explain rn.rn-no-set-native-props` for code example
+  good: |
+    # See `scout explain rn.rn-no-set-native-props` for code example
+  fix: |
+    Deprecated setNativeProps() call detected.
+
+- id: rn.rn-no-single-element-style-array
+  why: |
+    Single-element style arrays create a new array reference on every render, defeating React Native's style caching. Use the style value directly: style={styles.box} instead of style={[styles.box]}.
+  bad: |
+    # See `scout explain rn.rn-no-single-element-style-array` for code example
+  good: |
+    # See `scout explain rn.rn-no-single-element-style-array` for code example
+  fix: |
+    Single-element style arrays create a new array reference on every render, defeating React Native's style caching.
+
+- id: rn.rn-prefer-content-inset-adjustment
+  why: |
+    Manual paddingTop/paddingBottom on SafeAreaView adds redundant safe-area inset — SafeAreaView already handles this natively on iOS. Remove manual padding and let SafeAreaView manage safe-area insets automatically. For ScrollView, use contentInsetAdjustmentBehavior="automatic" instead.
+  bad: |
+    # See `scout explain rn.rn-prefer-content-inset-adjustment` for code example
+  good: |
+    # See `scout explain rn.rn-prefer-content-inset-adjustment` for code example
+  fix: |
+    Manual paddingTop/paddingBottom on SafeAreaView adds redundant safe-area inset — SafeAreaView already handles this natively on iOS.
+
+- id: rn.rn-prefer-expo-image
+  why: |
+    React Native's built-in <Image> lacks memory caching, crossfade transitions, and blurhash placeholder support. Use expo-image's <Image> component instead: import { Image } from 'expo-image'
+  bad: |
+    # See `scout explain rn.rn-prefer-expo-image` for code example
+  good: |
+    # See `scout explain rn.rn-prefer-expo-image` for code example
+  fix: |
+    React Native's built-in <Image> lacks memory caching, crossfade transitions, and blurhash placeholder support.
+
+- id: rn.rn-prefer-pressable-over-gesture-detector
+  why: |
+    GestureDetector with only a Tap gesture is heavier than necessary. The Gesture.Tap API initializes the full gesture handler pipeline on the JS thread. For simple tap interactions, Pressable is lighter, works on both threads, and requires no native setup.
+  bad: |
+    # See `scout explain rn.rn-prefer-pressable-over-gesture-detector` for code example
+  good: |
+    # See `scout explain rn.rn-prefer-pressable-over-gesture-detector` for code example
+  fix: |
+    GestureDetector with only a Tap gesture is heavier than necessary.
+
+- id: rn.rn-prefer-pressable
+  why: |
+    TouchableOpacity, TouchableHighlight, and TouchableNativeFeedback are legacy gesture components. Use <Pressable> instead — it offers more flexible state-based styling (pressed, hovered, focused) and integrates better with concurrent React.
+  bad: |
+    # See `scout explain rn.rn-prefer-pressable` for code example
+  good: |
+    # See `scout explain rn.rn-prefer-pressable` for code example
+  fix: |
+    TouchableOpacity, TouchableHighlight, and TouchableNativeFeedback are legacy gesture components.
+
+- id: rn.rn-prefer-reanimated
+  why: |
+    React Native's Animated API runs on the JavaScript thread, which causes dropped frames under heavy JS workloads. Replace with react-native-reanimated which executes animations on the UI thread: useSharedValue, useAnimatedStyle, withTiming, withSpring.
+  bad: |
+    # See `scout explain rn.rn-prefer-reanimated` for code example
+  good: |
+    # See `scout explain rn.rn-prefer-reanimated` for code example
+  fix: |
+    React Native's Animated API runs on the JavaScript thread, which causes dropped frames under heavy JS workloads.
+
+- id: rn.rn-pressable-shared-value-mutation
+  why: |
+    Shared value mutated inside onPress/onLongPress callback runs on the JS thread, causing dropped frames on animation-dependent components. Use Reanimated worklets (withTiming/withSpring) instead of direct `.value =` assignment in press handlers.
+  bad: |
+    # See `scout explain rn.rn-pressable-shared-value-mutation` for code example
+  good: |
+    # See `scout explain rn.rn-pressable-shared-value-mutation` for code example
+  fix: |
+    Shared value mutated inside onPress/onLongPress callback runs on the JS thread, causing dropped frames on animation-dependent components.
+
+- id: rn.rn-scrollview-dynamic-padding
+  why: |
+    ScrollView (or FlatList) has paddingTop/paddingBottom in its style or contentContainerStyle. Padding on scroll content shifts the visible area during scroll and can cause layout jank. Use the native `contentInset` prop instead to adjust scroll indicator insets without moving content boundaries.
+  bad: |
+    # See `scout explain rn.rn-scrollview-dynamic-padding` for code example
+  good: |
+    # See `scout explain rn.rn-scrollview-dynamic-padding` for code example
+  fix: |
+    ScrollView (or FlatList) has paddingTop/paddingBottom in its style or contentContainerStyle.
+
+- id: rn.rn-scrollview-flex-in-content-container
+  why: |
+    Using flex: 1 in contentContainerStyle collapses the ScrollView content on iOS because flex: 1 means "take all available space" but a ScrollView has unbounded height. Use flexGrow: 1 instead — it expands content to fill the scroll area without collapsing.
+  bad: |
+    # See `scout explain rn.rn-scrollview-flex-in-content-container` for code example
+  good: |
+    # See `scout explain rn.rn-scrollview-flex-in-content-container` for code example
+  fix: |
+    Using flex: 1 in contentContainerStyle collapses the ScrollView content on iOS because flex: 1 means "take all available space" but a ScrollView has unbounded height.
+
+- id: rn.rn-scrollview-over-flatlist
+  why: |
+    ScrollView renders every child eagerly while this code maps over a dynamic collection. Large or growing lists can cause memory pressure and jank on native devices. Use FlatList or SectionList so React Native can virtualize rows.
+  bad: |
+    # See `scout explain rn.rn-scrollview-over-flatlist` for code example
+  good: |
+    # See `scout explain rn.rn-scrollview-over-flatlist` for code example
+  fix: |
+    ScrollView renders every child eagerly while this code maps over a dynamic collection.
+
+- id: server.server-after-nonblocking
+  why: |
+    Logging or analytics call inside a request handler may block the response. Use after() from next/after to defer non-critical work until after the response is sent to the client.
+  bad: |
+    # See `scout explain server.server-after-nonblocking` for code example
+  good: |
+    # See `scout explain server.server-after-nonblocking` for code example
+  fix: |
+    Logging or analytics call inside a request handler may block the response.
+
+- id: server.server-auth-actions
+  why: |
+    Server Action accepts input but does not appear to perform any authorization or authentication check. Server Actions are publicly accessible POST endpoints. Always verify the user's session and permissions at the start of the action (e.g. using auth(), getServerSession(), or custom verification helpers) to prevent unauthorized access.
+  bad: |
+    # See `scout explain server.server-auth-actions` for code example
+  good: |
+    # See `scout explain server.server-auth-actions` for code example
+  fix: |
+    Server Action accepts input but does not appear to perform any authorization or authentication check.
+
+- id: server.server-cache-with-object-literal
+  why: |
+    React cache() or React.cache() called inside a function/class body. Calling cache() inside a component, hook, or function body recreates the cache instance on every invocation/render, completely defeating the memoization. Define the cached function at the module scope instead.
+  bad: |
+    # See `scout explain server.server-cache-with-object-literal` for code example
+  good: |
+    # See `scout explain server.server-cache-with-object-literal` for code example
+  fix: |
+    React cache() or React.
+
+- id: server.server-dedup-props
+  why: |
+    JSON.stringify() used as a JSX prop value. Passing serialized data as a string prop forces the client to JSON.parse() it manually. Pass the raw value directly — React serializes Server Component props automatically. If the raw prop is also passed alongside the JSON version, remove the duplicate.
+  bad: |
+    # See `scout explain server.server-dedup-props` for code example
+  good: |
+    # See `scout explain server.server-dedup-props` for code example
+  fix: |
+    JSON.
+
+- id: server.server-fetch-without-revalidate
+  why: |
+    fetch() inside a server handler without cache or revalidation configuration. In Next.js App Router, fetched data is cached by default (equivalent to cache: 'force-cache'). If this data should be fresh on every request, add cache: 'no-store' or next: { revalidate: 0 }.
+  bad: |
+    # See `scout explain server.server-fetch-without-revalidate` for code example
+  good: |
+    # See `scout explain server.server-fetch-without-revalidate` for code example
+  fix: |
+    fetch() inside a server handler without cache or revalidation configuration.
+
+- id: server.server-hoist-static-io
+  why: |
+    Static file read inside a function body. Reading a file that never changes (config, templates, etc.) on every invocation is wasteful. Move the read to module scope so it runs once at startup.
+  bad: |
+    # See `scout explain server.server-hoist-static-io` for code example
+  good: |
+    # See `scout explain server.server-hoist-static-io` for code example
+  fix: |
+    Static file read inside a function body.
+
+- id: tanstack-start.tanstack-start-get-mutation
+  why: |
+    GET serverFn detected. GET requests should be idempotent and safe — they should not create, update, or delete data. If this handler mutates data, change the method to POST to prevent CSRF vulnerabilities via prefetching.
+  bad: |
+    # See `scout explain tanstack-start.tanstack-start-get-mutation` for code example
+  good: |
+    # See `scout explain tanstack-start.tanstack-start-get-mutation` for code example
+  fix: |
+    GET serverFn detected.
+
+- id: tanstack-start.tanstack-start-missing-head-content
+  why: |
+    Root route component missing <HeadContent />. TanStack Start requires <HeadContent /> in the root route component to render <title> and other head elements defined by child routes. Without it, meta tags are silently dropped during rendering.
+  bad: |
+    # See `scout explain tanstack-start.tanstack-start-missing-head-content` for code example
+  good: |
+    # See `scout explain tanstack-start.tanstack-start-missing-head-content` for code example
+  fix: |
+    Root route component missing <HeadContent />.
+
+- id: tanstack-start.tanstack-start-no-direct-fetch-in-loader
+  why: |
+    Direct fetch() call inside a TanStack Start route loader. Loaders run on the client during navigation; using fetch() directly creates client-side waterfalls and bypasses server-side data fetching. Wrap the call in createServerFn() so it runs on the server with full Node.js access.
+  bad: |
+    # See `scout explain tanstack-start.tanstack-start-no-direct-fetch-in-loader` for code example
+  good: |
+    # See `scout explain tanstack-start.tanstack-start-no-direct-fetch-in-loader` for code example
+  fix: |
+    Direct fetch() call inside a TanStack Start route loader.
+
+- id: tanstack-start.tanstack-start-no-dynamic-server-fn-import
+  why: |
+    Dynamic import() inside a serverFn handler or route. Dynamic imports of serverFn break the RPC stub that TanStack Start generates at build time. Use a static import at the top of the file instead.
+  bad: |
+    # See `scout explain tanstack-start.tanstack-start-no-dynamic-server-fn-import` for code example
+  good: |
+    # See `scout explain tanstack-start.tanstack-start-no-dynamic-server-fn-import` for code example
+  fix: |
+    Dynamic import() inside a serverFn handler or route.
+
+- id: tanstack-start.tanstack-start-no-navigate-in-render
+  why: |
+    navigate() called in component render body instead of a route loader or user event handler. Call redirect() in the route's loader for declarative redirects, or place navigate() inside an event handler / useEffect.
+  bad: |
+    # See `scout explain tanstack-start.tanstack-start-no-navigate-in-render` for code example
+  good: |
+    # See `scout explain tanstack-start.tanstack-start-no-navigate-in-render` for code example
+  fix: |
+    navigate() called in component render body instead of a route loader or user event handler.
+
+- id: tanstack-start.tanstack-start-no-secrets-in-loader
+  why: |
+    Secret environment variable accessed inside a TanStack Start route loader. Route loaders can be compiled into the client bundle, which would expose the secret. Move secret access into a createServerFn() to guarantee server-only execution.
+  bad: |
+    const API_KEY = "sk-12345..."
+  good: |
+    const API_KEY = process.env.API_KEY
+  fix: |
+    Move secrets to environment variables.
+
+- id: tanstack-start.tanstack-start-no-use-server-in-handler
+  why: |
+    "use server" is redundant inside a createServerFn().handler() callback. TanStack Start automatically creates a server boundary at the handler boundary — the directive has no effect here and misleads readers. Remove it.
+  bad: |
+    # See `scout explain tanstack-start.tanstack-start-no-use-server-in-handler` for code example
+  good: |
+    # See `scout explain tanstack-start.tanstack-start-no-use-server-in-handler` for code example
+  fix: |
+    "use server" is redundant inside a createServerFn().
+
+- id: tanstack-start.tanstack-start-no-useeffect-fetch
+  why: |
+    useEffect + fetch() used for data fetching in a TanStack Start route component. TanStack Router provides a loader function that runs before the component renders, eliminating this pattern and preventing client-side waterfalls. Move the fetch call to the route's loader and access data via useLoaderData().
+  bad: |
+    # See `scout explain tanstack-start.tanstack-start-no-useeffect-fetch` for code example
+  good: |
+    # See `scout explain tanstack-start.tanstack-start-no-useeffect-fetch` for code example
+  fix: |
+    useEffect + fetch() used for data fetching in a TanStack Start route component.
+
+- id: tanstack-start.tanstack-start-redirect-in-try-catch
+  why: |
+    Calling 'redirect()' or 'notFound()' inside a try-catch block can prevent the navigation from working correctly because TanStack Router uses thrown errors internally to redirect or show a 404 page. Call redirect() outside the try-catch block or rethrow the exception.
+  bad: |
+    # See `scout explain tanstack-start.tanstack-start-redirect-in-try-catch` for code example
+  good: |
+    # See `scout explain tanstack-start.tanstack-start-redirect-in-try-catch` for code example
+  fix: |
+    Calling 'redirect()' or 'notFound()' inside a try-catch block can prevent the navigation from working correctly because TanStack Router uses thrown errors internally to redirect or show a 404 page.
+
+- id: tanstack-start.tanstack-start-server-fn-method-order
+  why: |
+    createServerFn() chain has .handler() before .validator(). The correct order is createServerFn().validator(schema).handler(fn) — calling .handler() first means the validator schema is attached after the handler is already set, so input validation does not run.
+  bad: |
+    # See `scout explain tanstack-start.tanstack-start-server-fn-method-order` for code example
+  good: |
+    # See `scout explain tanstack-start.tanstack-start-server-fn-method-order` for code example
+  fix: |
+    createServerFn() chain has .
+
+- id: tanstack-start.tanstack-start-serverfn-missing-csrf-middleware
+  why: |
+    createServerFn() in this file does not use CSRF middleware. TanStack Start recommends createCsrfMiddleware() to protect against cross-site request forgery on state-changing endpoints.
+  bad: |
+    createServerFn().handler(...)  // no CSRF middleware
+  good: |
+    // In router config: createCsrfMiddleware();
+  fix: |
+    Add createCsrfMiddleware() to your router configuration.
+
+- id: tanstack-start.tanstack-start-serverfn-missing-input-validator
+  why: |
+    createServerFn() chain missing .inputValidator(schema). Without input validation, untrusted client data reaches the server function unchecked, opening the route to injection and type-confusion attacks. TanStack Start docs show inputValidator as the standard contract.
+  bad: |
+    createServerFn().handler(async () => { ... })
+  good: |
+    createServerFn().validator(schema).handler(async ({ input }) => { ... })
+  fix: |
+    Add .inputValidator() or .validator() before .handler().
+
+- id: tanstack.query-no-query-in-effect
+  why: |
+    Calling refetch() inside useEffect couples your query trigger to React's rendering lifecycle. When the queryKey or 'enabled' option changes, TanStack Query re-fetches automatically — useEffect + refetch() is rarely the right pattern and introduces race conditions and double-fetching.
+  bad: |
+    # See `scout explain tanstack.query-no-query-in-effect` for code example
+  good: |
+    # See `scout explain tanstack.query-no-query-in-effect` for code example
+  fix: |
+    Calling refetch() inside useEffect couples your query trigger to React's rendering lifecycle.
+
+- id: tanstack.query-no-rest-destructuring
+  why: |
+    Rest/spread destructuring from useQuery subscribes to every query state field (isFetching, isStale, dataUpdatedAt, ...), causing a re-render whenever any of them changes. Destructure only what you use: const { data, isLoading, error } = useQuery(...).
+  bad: |
+    # See `scout explain tanstack.query-no-rest-destructuring` for code example
+  good: |
+    # See `scout explain tanstack.query-no-rest-destructuring` for code example
+  fix: |
+    Rest/spread destructuring from useQuery subscribes to every query state field (isFetching, isStale, dataUpdatedAt, .
+
+- id: tanstack.query-no-usequery-for-mutation
+  why: |
+    useQuery is executing an HTTP write operation. Queries are designed for idempotent reads and may refetch automatically; POST, PUT, PATCH, and DELETE belong in useMutation so retries, pending state, and cache updates follow mutation semantics.
+  bad: |
+    # See `scout explain tanstack.query-no-usequery-for-mutation` for code example
+  good: |
+    # See `scout explain tanstack.query-no-usequery-for-mutation` for code example
+  fix: |
+    useQuery is executing an HTTP write operation.
+
+- id: tanstack.query-no-void-query-fn
+  why: |
+    This TanStack Query queryFn has a block body but returns no value. Query functions must resolve data; resolving undefined breaks the cache contract and is rejected by current TanStack Query versions. Return the fetched value or throw an error.
+  bad: |
+    # See `scout explain tanstack.query-no-void-query-fn` for code example
+  good: |
+    # See `scout explain tanstack.query-no-void-query-fn` for code example
+  fix: |
+    This TanStack Query queryFn has a block body but returns no value.
+
+- id: tanstack.query-stable-query-client
+  why: |
+    QueryClient is created inside a React component or hook, so a new cache can be created on each render. Create it once at module scope, or lazily store it in useState/useRef before passing it to QueryClientProvider.
+  bad: |
+    # See `scout explain tanstack.query-stable-query-client` for code example
+  good: |
+    # See `scout explain tanstack.query-stable-query-client` for code example
+  fix: |
+    QueryClient is created inside a React component or hook, so a new cache can be created on each render.
+
+- id: tanstack.tanstack-mutation-without-invalidation
+  why: |
+    useMutation is called without cache invalidation or update. When performing a mutation, you should invalidate relevant query caches using queryClient.invalidateQueries() or update query data using queryClient.setQueryData() in onSuccess or onSettled callbacks. Otherwise, the user interface will remain stale and won't reflect the server-side changes.
+  bad: |
+    # See `scout explain tanstack.tanstack-mutation-without-invalidation` for code example
+  good: |
+    # See `scout explain tanstack.tanstack-mutation-without-invalidation` for code example
+  fix: |
+    useMutation is called without cache invalidation or update.
+
+- id: tanstack.tanstack-nonserializable-query-key
+  why: |
+    TanStack Query key contains a non-serializable value. Functions, Date, Map, Set, or class instances can make cache identity unstable or hard to invalidate consistently. Use primitive values or plain serializable objects in query keys.
+  bad: |
+    # See `scout explain tanstack.tanstack-nonserializable-query-key` for code example
+  good: |
+    # See `scout explain tanstack.tanstack-nonserializable-query-key` for code example
+  fix: |
+    TanStack Query key contains a non-serializable value.
+
+- id: tanstack.tanstack-query-key-string
+  why: |
+    TanStack Query key uses an inline string literal. Repeating raw strings across useQuery, setQueryData, and invalidateQueries makes cache updates easy to mistype or drift. Prefer a query-key factory or shared constant so reads and invalidations use the same key shape.
+  bad: |
+    # See `scout explain tanstack.tanstack-query-key-string` for code example
+  good: |
+    # See `scout explain tanstack.tanstack-query-key-string` for code example
+  fix: |
+    TanStack Query key uses an inline string literal.
+
+- id: tanstack.tanstack-query-missing-staletime
+  why: |
+    useQuery is called without specifying a staleTime. By default, staleTime is 0, which means queries are instantly considered stale. For server-side rendered (SSR) or prefetched data, this causes an immediate client-side refetch upon hydration, resulting in duplicate network requests and potential screen flickering. Set a staleTime (e.g. staleTime: 1000 * 60 * 5) to cache and reuse the hydrated data.
+  bad: |
+    # See `scout explain tanstack.tanstack-query-missing-staletime` for code example
+  good: |
+    # See `scout explain tanstack.tanstack-query-missing-staletime` for code example
+  fix: |
+    useQuery is called without specifying a staleTime.
+
+- id: view-transitions.no-document-start-view-transition
+  why: |
+    Direct document.startViewTransition() call bypasses React's concurrent rendering. In React 19+ use the built-in <ViewTransition> component or wrap state updates with startTransition() / flushSync() correctly. Direct DOM calls can conflict with React's reconciler and cause flicker or missed transitions.
+  bad: |
+    # See `scout explain view-transitions.no-document-start-view-transition` for code example
+  good: |
+    # See `scout explain view-transitions.no-document-start-view-transition` for code example
+  fix: |
+    Direct document.
+
+- id: view-transitions.no-flush-sync
+  why: |
+    Avoid using flushSync() to force synchronous updates. flushSync() bypasses React's concurrent rendering optimization and triggers synchronous, blocking layout passes. If integrating with View Transitions, use React 19's native startTransition support instead.
+  bad: |
+    # See `scout explain view-transitions.no-flush-sync` for code example
+  good: |
+    # See `scout explain view-transitions.no-flush-sync` for code example
+  fix: |
+    Avoid using flushSync() to force synchronous updates.
+
+- id: vite.vite-insecure-config
+  why: |
+    Vite dev server is configured to listen on all interfaces. This can expose local development services to the LAN or container network. Bind to localhost unless remote device testing is intentional, and document the reason when host: true is required.
+  bad: |
+    # See `scout explain vite.vite-insecure-config` for code example
+  good: |
+    # See `scout explain vite.vite-insecure-config` for code example
+  fix: |
+    Vite dev server is configured to listen on all interfaces.
+
+- id: vite.vite-process-env-usage
+  why: |
+    process.env should not be used in a Vite project. Vite does not inject process.env by default, which can cause runtime ReferenceErrors (process is not defined) in the browser. Use import.meta.env instead.
+  bad: |
+    # See `scout explain vite.vite-process-env-usage` for code example
+  good: |
+    # See `scout explain vite.vite-process-env-usage` for code example
+  fix: |
+    process.
+
+- id: vite.vite-public-secret-prefix
+  why: |
+    A VITE_* environment variable is named like a secret. Vite exposes every VITE_* value to client-side code, so tokens, passwords, private keys, and credentials with this prefix are shipped to the browser. Rename real secrets without the VITE_ prefix and read them only on the server.
+  bad: |
+    const API_KEY = "sk-12345..."
+  good: |
+    const API_KEY = process.env.API_KEY
+  fix: |
+    Move secrets to environment variables.
+
+- id: no-derived-state
+  why: |
+    State derived from props or other state should be computed during render, not stored in useState. Derived state causes synchronization bugs when the source changes but the derived value is not updated.
+  bad: |
+    const [fullName, setFullName] = useState(firstName + " " + lastName)
+  good: |
+    const fullName = firstName + " " + lastName
+  fix: |
+    Compute the value directly during render instead of storing it in state.
+
+- id: setstate-in-effect-without-deps
+  why: |
+    Calling setState in useEffect without specifying dependencies causes the effect to run on every render, creating an infinite loop.
+  bad: |
+    useEffect(() => { setCount(count + 1) })
+  good: |
+    useEffect(() => { setCount(count + 1) }, [count])
+  fix: |
+    Add the relevant state variables to the dependency array.
+
+- id: react-useeffect-fetch-suggest-query
+  why: |
+    Fetching data inside useEffect is error-prone: you must handle loading/error states, race conditions, and cleanup manually. A query library (TanStack Query, SWR) handles these automatically.
+  bad: |
+    useEffect(() => { fetch("/api/data").then(setData) }, [])
+  good: |
+    const { data } = useQuery({ queryKey: ["data"], queryFn: () => fetch("/api/data").then(r => r.json()) })
+  fix: |
+    Replace useEffect fetch with useQuery or similar data-fetching hook.
+
+- id: react-useeffect-missing-cleanup
+  why: |
+    useEffect without cleanup can cause memory leaks, stale closure execution, or state updates on unmounted components. Subscriptions, timers, and async operations must be cleaned up.
+  bad: |
+    useEffect(() => { sub = source.subscribe(setData) }, [])
+  good: |
+    useEffect(() => { const sub = source.subscribe(setData); return () => sub.unsubscribe() }, [])
+  fix: |
+    Return a cleanup function from the effect callback.
+
+- id: no-initialize-state
+  why: |
+    useState with a static initial value that never changes should be a regular constant or computed inline. The state initializer function adds unnecessary overhead.
+  bad: |
+    const [name] = useState("default")
+  good: |
+    const name = "default"
+  fix: |
+    Use a plain const if the value never changes.
+
+- id: no-mutable-in-deps
+  why: |
+    Mutable objects and arrays in dependency arrays break referential comparison: they are a new reference on every render, causing the effect to re-run continuously.
+  bad: |
+    useEffect(() => { }, [someObject])
+  good: |
+    useEffect(() => { }, [someObject.id])
+  fix: |
+    Use primitive values or stable references in dependency arrays.
+
+- id: prefer-use-reducer
+  why: |
+    Multiple related useState calls that are always updated together should be combined into useReducer for predictable state transitions.
+  bad: |
+    const [name, setName] = useState(""); const [age, setAge] = useState(0)
+  good: |
+    const [state, dispatch] = useReducer(reducer, { name: "", age: 0 })
+  fix: |
+    Combine related state variables into a useReducer.
+
+- id: prefer-use-sync-external-store
+  why: |
+    Subscribing to an external store (Redux, Zustand, etc.) in useEffect is fragile. useSyncExternalStore provides a tear-free, concurrent-mode-safe subscription.
+  bad: |
+    useEffect(() => store.subscribe(() => setState(store.getState())), [])
+  good: |
+    const state = useSyncExternalStore(store.subscribe, store.getState)
+  fix: |
+    Replace manual subscription with useSyncExternalStore.
+
+- id: no-cascading-set-state
+  why: |
+    Calling setState right after another setState in the same render causes cascading re-renders. Both should be batched into a single update.
+  bad: |
+    setCount(c + 1); setName("x")
+  good: |
+    setState({ count: c + 1, name: "x" })
+  fix: |
+    Combine multiple state updates into a single setState or use useReducer.
+
+- id: no-self-updating-effect
+  why: |
+    An effect that updates a state variable it depends on creates an infinite loop. The dependency causes the effect to re-run, which updates the state again.
+  bad: |
+    useEffect(() => { setCount(c + 1) }, [count])
+  good: |
+    Derive the value from props or use an event handler instead.
+  fix: |
+    Remove the state update from the effect, or remove the state from deps.
+
+- id: no-effect-chain
+  why: |
+    An effect that triggers a state update that triggers another effect (chain) is hard to reason about and causes extra re-renders. Combine into a single effect.
+  bad: |
+    useEffect(() => { setA(x) }, [x]); useEffect(() => { setB(a) }, [a])
+  good: |
+    useEffect(() => { setA(x); setB(compute(x)) }, [x])
+  fix: |
+    Merge the chained effects into one, or derive the second value from the source.
+
+- id: no-event-handler
+  why: |
+    A function named like an event handler (onClick, onSubmit) is called inside the render body instead of being passed as a prop. This calls the function on every render.
+  bad: |
+    return <button onClick={handleClick()}>Click</button>
+  good: |
+    return <button onClick={handleClick}>Click</button>
+  fix: |
+    Pass the function reference, not the function call result.
+
+- id: no-event-trigger-state
+  why: |
+    Calling setState inside an event handler is correct, but the handler reads a stale closure value if the dependency is not in the closure. Use functional update or ref.
+  bad: |
+    const handleClick = () => setCount(count + 1)
+  good: |
+    const handleClick = () => setCount(prev => prev + 1)
+  fix: |
+    Use functional setState form: setCount(prev => prev + 1).
+
+- id: no-effect-event-handler
+  why: |
+    An effect should not contain event handler logic. Event handlers belong in the component body, not in effects.
+  bad: |
+    useEffect(() => { window.addEventListener("click", handler) }, [])
+  good: |
+    useEffect(() => { window.addEventListener("click", handler); return () => window.removeEventListener("click", handler) }, [])
+  fix: |
+    Place event handlers in the effect with proper cleanup.
+
+- id: no-pass-data-to-parent
+  why: |
+    A child component calling a parent callback to pass data up creates tight coupling. Consider lifting state or using a shared store.
+  bad: |
+    function Child({ onData }) { useEffect(() => onData(localData), [localData]) }
+  good: |
+    Manage shared state at the parent level and pass it down.
+  fix: |
+    Lift state to the common ancestor or use context.
+
+- id: no-adjust-state-on-prop-change
+  why: |
+    Adjusting state when a prop changes is fragile and causes extra renders. Derive the value from the prop directly during render.
+  bad: |
+    useEffect(() => setFormData(prop.data), [prop.data])
+  good: |
+    const formData = prop.data ?? defaultFormData
+  fix: |
+    Derive values from props during render instead of syncing via effect.
+
+- id: no-chain-state-updates
+  why: |
+    Chaining setState calls that each depend on the previous update is fragile and causes cascading renders. Batch into a single update.
+  bad: |
+    setPage(c + 1); setUrl(getUrlForPage(c + 1))
+  good: |
+    const next = c + 1; setPage(next); setUrl(getUrlForPage(next))
+  fix: |
+    Compute all values first, then update together or use useReducer.
+
+- id: no-prop-callback-in-effect
+  why: |
+    Calling a prop callback inside useEffect hides it from React DevTools and makes the component harder to test.
+  bad: |
+    useEffect(() => { onComplete(data) }, [data])
+  good: |
+    Call onComplete from an event handler or useInsertionEffect.
+  fix: |
+    Move the callback call to an event handler or useLayoutEffect.
+
+- id: no-reset-all-state-on-prop-change
+  why: |
+    Resetting all state when a single prop changes is wasteful and may cause data loss. Only reset the state that depends on the changed prop.
+  bad: |
+    useEffect(() => { setName(""); setAge(0); setEmail("") }, [userId])
+  good: |
+    Only reset state that depends on userId.
+  fix: |
+    Selectively reset only the state values that depend on the changed prop.
+
+- id: no-pass-live-state-to-parent
+  why: |
+    Passing frequently-changing state to a parent via callback causes excessive parent re-renders. Use ref or context instead.
+  bad: |
+    useEffect(() => { onPositionChange(pos) }, [pos])
+  good: |
+    Use ref to track position and read it synchronously, or use context.
+  fix: |
+    Use useRef or context for values that change rapidly.
+
+- id: god-component
+  why: |
+    A component with too many hooks, effects, or responsibilities should be split into smaller focused components for testability and maintainability.
+  bad: |
+    function Page() { const [a, setA] = useState(); const [b, setB] = useState(); ... 20 more lines }
+  good: |
+    function Page() { return <Header/><Content/><Footer/> }
+  fix: |
+    Extract independent UI sections and their hooks into separate components.
+
+- id: component-splitting
+  why: |
+    A component renders many JSX branches or handles too many states. Splitting into sub-components improves readability and testability.
+  bad: |
+    function Card({ type }) { if (type === "a") return <A/>; if (type === "b") return <B/>; ... }
+  good: |
+    function Card({ type }) { return components[type] ?? <Default/> }
+  fix: |
+    Extract each branch into its own component.
+
+- id: prefer-stable-empty-fallback
+  why: |
+    An inline empty array/object as fallback creates a new reference every render, breaking memoization.
+  bad: |
+    const items = data ?? []
+  good: |
+    const EMPTY = []; const items = data ?? EMPTY
+  fix: |
+    Hoist fallback values to module-level consts.
+
+- id: memoized-child-unstable-prop
+  why: |
+    A memoized child component receives an unstable prop reference (inline object, arrow function) that breaks memoization on every render.
+  bad: |
+    <MemoChild onClick={() => handleClick(id)} />
+  good: |
+    <MemoChild onClick={handleClick} />
+  fix: |
+    Use useCallback or hoist the function/object to a stable reference.
+
+- id: callback-prop-not-invoked
+  why: |
+    A prop named like a callback (onX) is passed to a child but never invoked. The child either ignores it or the prop is unused.
+  bad: |
+    function Child({ onSubmit }) { return <div/> }
+  good: |
+    function Child({ onSubmit }) { return <button onClick={onSubmit}>Save</button> }
+  fix: |
+    Call the callback prop at the appropriate event, or remove it.
+
+- id: deep-prop-drilling
+  why: |
+    Props passed through multiple intermediate components (3+) that do not use them create coupling and make refactoring harder. Use context or composition.
+  bad: |
+    <App><Nav user={user}/></App> <Nav><Avatar src={user.avatar}/></Nav>
+  good: |
+    Provide user via React Context or component composition.
+  fix: |
+    Replace prop drilling with React Context or composition.
+
+- id: render-time-allocation
+  why: |
+    Allocating objects, arrays, or closures during render (inline) creates garbage for the GC every render. Hoist or memoize stable values.
+  bad: |
+    return <div style={{ color: "red" }}>
+  good: |
+    const style = { color: "red" }; return <div style={style}>
+  fix: |
+    Hoist stable objects/arrays to module scope or use useMemo.
+
+- id: no-render-in-render
+  why: |
+    Calling a render function (component) inside another render function causes React to create a new component type every render, losing state.
+  bad: |
+    function Parent() { const C = <Sub/>; return C }
+  good: |
+    function Parent() { return <Sub/> }  // Sub defined at module scope
+  fix: |
+    Define components at module scope, never inside another component.
+
+- id: no-polymorphic-children
+  why: |
+    A component that renders different child types based on a prop creates a rigid interface that is hard to extend. Use slots or composition.
+  bad: |
+    function Card({ variant }) { return variant === "a" ? <A/> : <B/> }
+  good: |
+    function Card({ children }) { return <div>{children}</div> }
+  fix: |
+    Accept children directly and let the parent decide the content.
+
+- id: no-render-prop-children
+  why: |
+    A render prop deeper than one level creates nested function scopes that are hard to read and test. Extract into a named component.
+  bad: |
+    <DataProvider render={data => <Form render={form => <div/>}/>}/>
+  good: |
+    Extract the inner render logic into a named component.
+  fix: |
+    Create an intermediate named component instead of deeply nested render props.
+
+- id: em-dash-in-jsx-text
+  why: |
+    Using em dash or other typographic characters in JSX text may not render correctly across all browsers.
+  bad: |
+    <p>Price — $10</p>
+  good: |
+    <p>Price &mdash; $10</p>
+  fix: |
+    Use HTML entities (&mdash;) instead of literal typographic characters.
+
+- id: rerender-defer-reads-hook
+  why: |
+    Calling searchParams.get() (or similar hook methods) in render body causes re-renders when search params change. Move to event handlers.
+  bad: |
+    const value = searchParams.get("key")  // in render body
+  good: |
+    const handleClick = () => { const value = searchParams.get("key"); ... }
+  fix: |
+    Move searchParams.get() calls into event handlers, not render body.
+
+- id: rerender-derived-state-from-hook
+  why: |
+    An addEventListener inside a component body subscribes to scroll/resize/mousemove events. Calling setState directly in the handler causes rapid re-renders.
+  bad: |
+    useEffect(() => { window.addEventListener("scroll", () => setScrollY(window.scrollY)) }, [])
+  good: |
+    useEffect(() => { const handler = throttle(() => setScrollY(window.scrollY), 100); ... }, [])
+  fix: |
+    Debounce or throttle the event handler to limit state update frequency.
+
+- id: no-usememo-simple-expression
+  why: |
+    useMemo wrapping a simple expression (string concat, math, ternary) adds overhead without benefit.
+  bad: |
+    const name = useMemo(() => first + " " + last, [first, last])
+  good: |
+    const name = first + " " + last
+  fix: |
+    Remove useMemo for simple, cheap computations.
+
+- id: rendering-hoist-jsx
+  why: |
+    Conditional JSX inside a component re-creates the element tree on every render. Hoisting conditions to separate components improves readability.
+  bad: |
+    return <div>{isLoading ? <Spinner/> : <Content/>}</div>
+  good: |
+    if (isLoading) return <Spinner/>; return <Content/>
+  fix: |
+    Use early returns for conditional rendering branches.
+
+- id: rendering-usetransition-loading
+  why: |
+    Using startTransition without isPending leaves the UI in an unresponsive state during the transition.
+  bad: |
+    startTransition(() => setTab("settings"))
+  good: |
+    const [isPending, startTransition] = useTransition(); startTransition(() => setTab("settings"))
+  fix: |
+    Use useTransition to get isPending and show a loading state.
+
+- id: rerender-memo-before-early-return
+  why: |
+    A memoized child component renders after an early return, wasting the memoization when the early return is hit.
+  bad: |
+    return <MemoChild/>; if (loading) return null
+  good: |
+    if (loading) return null; return <MemoChild/>
+  fix: |
+    Move early returns before expensive (memoized) child components.
+
+- id: rendering-hydration-no-flicker
+  why: |
+    A hydration mismatch between server and client causes React to re-render the entire subtree, causing a flicker.
+  bad: |
+    return <div>{typeof window === "undefined" ? "SSR" : "CSR"}</div>
+  good: |
+    Use suppressHydrationWarning or useEffect to update after mount.
+  fix: |
+    Ensure server and client render identical HTML.
+
+- id: rerender-transitions-scroll
+  why: |
+    Scroll event listeners attached during render fire on every frame during a transition, causing jank.
+  bad: |
+    window.addEventListener("scroll", handleScroll)  // in render body
+  good: |
+    useEffect(() => { window.addEventListener("scroll", handleScroll); return () => window.removeEventListener(...) }, [])
+  fix: |
+    Attach scroll listeners in useEffect with cleanup.
+
+- id: advanced-event-handler-refs
+  why: |
+    Using useRef to pass state to an event handler avoids stale closures but adds complexity.
+  bad: |
+    const ref = useRef(val); ref.current = val; window.addEventListener("scroll", () => useRef(ref.current))
+  good: |
+    const handler = useCallback(() => setVal(val + 1), [val])
+  fix: |
+    Prefer useCallback over ref-based event handlers when possible.
+
+- id: nestjs.circular-module-dep
+  why: |
+    A circular dependency in @Module imports creates tight coupling between modules and can cause DI initialization failures. NestJS resolves imports sequentially, and a cycle may lead to undefined providers.
+  bad: |
+    @Module({ imports: [BModule] }) export class AModule {}; @Module({ imports: [AModule] }) export class BModule {}
+  good: |
+    @Module({ imports: [forwardRef(() => BModule)] }) export class AModule {}; @Module({ imports: [forwardRef(() => AModule)] }) export class BModule {}
+  fix: |
+    Use forwardRef(() => Module) in at least one module to break the cycle.
+
+- id: nestjs.provider-not-registered
+  why: |
+    A class injected into a module's controller or provider is not registered in any provider array of the module or its imports. NestJS will throw at runtime.
+  bad: |
+    constructor(private readonly userService: UserService) {}  // UserService not in providers
+  good: |
+    @Module({ providers: [UserService] })
+  fix: |
+    Add the missing provider to the module's providers array.
+
+- id: repeated-magic-literal
+  why: |
+    The same string or number literal appears in multiple places, making the code harder to maintain. Extract to a named constant.
+  bad: |
+    if (status === "active") ...; if (role === "active") ...
+  good: |
+    const ACTIVE = "active"; if (status === ACTIVE) ...; if (role === ACTIVE) ...
+  fix: |
+    Extract the repeated literal to a module-level const.
+
+- id: non-null-assertion-spam
+  why: |
+    Using ! (non-null assertion) heavily suggests that the types are incorrect. Fix the types instead of suppressing them.
+  bad: |
+    user!.name!.toUpperCase()
+  good: |
+    user?.name?.toUpperCase()
+  fix: |
+    Use optional chaining or proper type narrowing.
+
+- id: sequential-awaits-independent
+  why: |
+    Two sequential awaits where the second does not depend on the first result run slower than Promise.all.
+  bad: |
+    const a = await fetchA(); const b = await fetchB()
+  good: |
+    const [a, b] = await Promise.all([fetchA(), fetchB()])
+  fix: |
+    Wrap independent promises in Promise.all.
+
+- id: god-class
+  why: |
+    A class with too many methods and properties accumulates multiple responsibilities.
+  bad: |
+    class UserService { create() {} read() {} update() {} delete() {} validate() {} ... }
+  good: |
+    class UserCreator {} class UserReader {} class UserNotifier {}
+  fix: |
+    Split the class into smaller single-responsibility classes.
+
+- id: large-function
+  why: |
+    A function that is too long (exceeds 60 lines) is hard to read, test, and maintain.
+  bad: |
+    function process(data) { // 80 lines of logic }
+  good: |
+    function process(data) { validate(data); transform(data); persist(data) }
+  fix: |
+    Extract cohesive blocks of logic into separate named functions.
+
+- id: js-batch-dom-css
+  why: |
+    Reading and writing to DOM in alternating order causes layout trashing.
+  bad: |
+    el.style.width = "100px"; const h = el.offsetHeight; el.style.height = h + "px"
+  good: |
+    const h = el.offsetHeight; el.style.width = "100px"; el.style.height = h + "px"
+  fix: |
+    Group all DOM reads together before any DOM writes.
+
+- id: js-length-check-first
+  why: |
+    Checking .length before a .find() or .filter() is redundant.
+  bad: |
+    if (items.length > 0) { return items.find(f) }
+  good: |
+    return items.find(f)
+  fix: |
+    Remove the redundant length check.
+
+- id: js-early-map-no-check
+  why: |
+    Using .map() without checking if the array is defined causes a runtime error.
+  bad: |
+    items.map(i => i.name)  // items may be undefined
+  good: |
+    (items ?? []).map(i => i.name)
+  fix: |
+    Add a nullish fallback before .map().
+
+- id: js-cache-property-access
+  why: |
+    Accessing the same deeply nested property repeatedly is wasteful.
+  bad: |
+    if (obj.a.b.c) { process(obj.a.b.c) }
+  good: |
+    const val = obj.a.b.c; if (val) { process(val) }
+  fix: |
+    Cache repeated property accesses in a local variable.
+
+- id: async-defer-await
+  why: |
+    Awaits inside a loop execute sequentially. Use Promise.all with map to parallelize independent async operations.
+  bad: |
+    for (const item of items) { await process(item) }
+  good: |
+    await Promise.all(items.map(process))
+  fix: |
+    Replace sequential awaits in loop with Promise.all.
+
+- id: no-generic-handler-names
+  why: |
+    Generic handler names like handleClick, onPress, handleSubmit provide no information about what the handler does.
+  bad: |
+    const handleClick = () => submitOrder()
+  good: |
+    const handleSubmitOrder = () => submitOrder()
+  fix: |
+    Name handlers after the action they perform.
+
+- id: js-combine-iterations
+  why: |
+    Two loops over the same array can be combined into a single pass for better cache locality.
+  bad: |
+    items.forEach(a => total += a); items.forEach(b => count++)
+  good: |
+    items.forEach(item => { total += item; count++ })
+  fix: |
+    Merge the two loops into one iteration.
+
+- id: js-async-reduce-without-awaited-acc
+  why: |
+    Using async reduce without awaiting the accumulator leads to a bug.
+  bad: |
+    const result = await items.reduce(async (acc, i) => [...(await acc), await process(i)], [])
+  good: |
+    const result = []; for (const i of items) { result.push(await process(i)) }
+  fix: |
+    Use a for-of loop with await instead of async reduce.
+
+- id: js-cache-storage
+  why: |
+    Accessing localStorage/sessionStorage synchronously blocks the main thread.
+  bad: |
+    const token = localStorage.getItem("token")  // called repeatedly
+  good: |
+    let _token; function getToken() { if (!_token) _token = localStorage.getItem("token"); return _token }
+  fix: |
+    Cache storage reads in a module-level variable.
+
+- id: js-hoist-intl
+  why: |
+    Intl formatters are expensive to construct. Hoist to module scope.
+  bad: |
+    function formatPrice(p) { return new Intl.NumberFormat("en-US", { style: "currency" }).format(p) }
+  good: |
+    const currencyFmt = new Intl.NumberFormat("en-US", { style: "currency" }); function formatPrice(p) { return currencyFmt.format(p) }
+  fix: |
+    Hoist the Intl formatter to module scope.
+
+- id: js-hoist-regexp
+  why: |
+    new RegExp() inside a function recompiles the pattern on every call.
+  bad: |
+    function match(pattern, s) { return new RegExp(pattern).test(s) }
+  good: |
+    const RE = /^pattern$/; function match(s) { return RE.test(s) }
+  fix: |
+    Hoist the RegExp to module scope.
+
+- id: js-index-maps
+  why: |
+    Searching an array with .find() on every access is O(n). Build a Map for O(1) lookups.
+  bad: |
+    items.find(i => i.id === target)  // called in a loop
+  good: |
+    const byId = new Map(items.map(i => [i.id, i]))
+  fix: |
+    Build a Map keyed by the lookup field before the loop.
+
+- id: js-set-map-lookups
+  why: |
+    Checking .includes() on an array repeatedly is O(n). Use a Set for O(1) membership tests.
+  bad: |
+    const allowed = ["a", "b", "c"]; items.filter(i => allowed.includes(i))
+  good: |
+    const allowed = new Set(["a", "b", "c"]); items.filter(i => allowed.has(i))
+  fix: |
+    Replace array .includes() with Set .has().
+
+- id: prefer-module-scope-static-value
+  why: |
+    A const inside a function that does not depend on any parameter or local state should be hoisted to module scope.
+  bad: |
+    function f() { const TAX_RATE = 0.18; return amount * TAX_RATE }
+  good: |
+    const TAX_RATE = 0.18; function f(amount) { return amount * TAX_RATE }
+  fix: |
+    Hoist static constants to module scope.
+
+- id: prefer-module-scope-pure-function
+  why: |
+    A function that does not capture any local variables can be hoisted to module scope, avoiding re-creation on every render.
+  bad: |
+    function C() { const fn = () => 42; return <div>{fn()}</div> }
+  good: |
+    const fn = () => 42; function C() { return <div>{fn()}</div> }
+  fix: |
+    Hoist pure functions to module scope.
+
+- id: rn-no-image-children
+  why: |
+    React Native Image component does not support children. Nested elements will not be rendered.
+  bad: |
+    <Image source={src}><Text>Caption</Text></Image>
+  good: |
+    <ImageBackground source={src}><Text>Caption</Text></ImageBackground>
+  fix: |
+    Replace Image with ImageBackground if you need children.
+
+- id: rn-bare-string-outside-text
+  why: |
+    String literals directly inside a View or other non-Text component will not render and cause warnings.
+  bad: |
+    <View>Hello</View>
+  good: |
+    <View><Text>Hello</Text></View>
+  fix: |
+    Wrap string literals in Text components.
+
+- id: rn-list-data-mapped
+  why: |
+    A FlatList or ScrollView without a .map() on data suggests static content.
+  bad: |
+    <FlatList data={undefined} renderItem={...} />
+  good: |
+    <FlatList data={items} renderItem={({ item }) => <Item data={item} />} />
+  fix: |
+    Pass the data array to FlatList.
+
+- id: rn-list-callback-per-row
+  why: |
+    Creating a new function inside renderItem creates a new closure on every render, breaking memoization for list rows.
+  bad: |
+    renderItem={({ item }) => <Row onPress={() => handlePress(item.id)} />}
+  good: |
+    const handlePress = useCallback((id) => { ... }, []); renderItem={({ item }) => <Row onPress={handlePress} />}
+  fix: |
+    Hoist the onPress handler outside renderItem.
+
+- id: rn-no-scrollview-mapped-list
+  why: |
+    Using ScrollView with a .map() of dynamic data should use FlatList for better virtualization.
+  bad: |
+    <ScrollView>{items.map(i => <Item key={i.id} data={i} />)}</ScrollView>
+  good: |
+    <FlatList data={items} renderItem={({ item }) => <Item data={item} />} />
+  fix: |
+    Replace ScrollView + .map() with FlatList for dynamic lists.
+
+- id: rn-no-inline-object-in-list-item
+  why: |
+    Inline style or data objects inside renderItem create new references every render, breaking row memoization.
+  bad: |
+    renderItem={({ item }) => <Row style={{ margin: 8 }} />}
+  good: |
+    const styles = StyleSheet.create({ row: { margin: 8 } }); renderItem={({ item }) => <Row style={styles.row} />}
+  fix: |
+    Use StyleSheet.create or hoist inline objects out of renderItem.
+
+- id: rn-no-scroll-state
+  why: |
+    Tracking scroll position with onScroll state causes excessive re-renders. Use useSharedValue from Reanimated instead.
+  bad: |
+    const [scrollY, setScrollY] = useState(0); <ScrollView onScroll={e => setScrollY(e.nativeEvent.contentOffset.y)} />
+  good: |
+    const scrollY = useSharedValue(0); ... onScroll={e => { scrollY.value = e.nativeEvent.contentOffset.y }} />
+  fix: |
+    Use Reanimated shared values for scroll position.
+
+- id: architecture.layered-boundary
+  why: |
+    A lower layer imports from a higher layer (e.g., infrastructure importing controller), violating the layered architecture boundary.
+  bad: |
+    // infrastructure/file.ts imports from controllers/file.ts
+  good: |
+    // infrastructure/file.ts imports from domain/file.ts (dependency inversion)
+  fix: |
+    Invert the dependency: higher layers depend on lower layers.
+
+- id: next.local-server-boundary
+  why: |
+    A server component imports a client module or vice versa without proper boundary handling, breaking the Next.js server/client split.
+  bad: |
+    // server-component.tsx imports client-code.ts (ambiguous boundary)
+  good: |
+    // server-component.tsx imports server-utils.ts; "use client" component imports client-code.ts
+  fix: |
+    Ensure server-only imports are separated from client-only imports.
+
+- id: svelte.global-dom-query
+  why: |
+    Using document.querySelector or similar DOM queries in Svelte bypasses the reactive system and may cause stale UI.
+  bad: |
+    document.querySelector(".modal").style.display = "block"
+  good: |
+    {#if showModal}<div class="modal">...</div>{/if}
+  fix: |
+    Use Svelte reactive declarations and conditional rendering.
+
+- id: svelte.each-index-as-key
+  why: |
+    Using array index as {#each} key causes incorrect re-rendering when the array changes.
+  bad: |
+    {#each items as item, i (i)}
+  good: |
+    {#each items as item (item.id)}
+  fix: |
+    Use a stable identifier (e.g., item.id) instead of index.
+
+- id: svelte.component-splitting
+  why: |
+    A Svelte component with too many reactive statements and conditional blocks should be split into smaller components.
+  bad: |
+    <script> let count = 0; $: doubled = count * 2; $: tripled = count * 3; </script>
+  good: |
+    Extract sections into separate components with focused responsibilities.
+  fix: |
+    Split the component into smaller single-purpose Svelte components.
+

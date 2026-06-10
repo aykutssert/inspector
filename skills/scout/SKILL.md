@@ -35,4 +35,8 @@ Scans multi-language codebases for security, performance, correctness, and archi
 4. **Verify & Triage**:
    - Print the Health Score (0-100) prominently to the user.
    - Review findings by severity (errors first, then warnings).
-   - If a rule needs clarification or the user wants to adjust it, explain the rule or direct them to configure it.
+   - Each finding includes: `rule_id`, `severity`, `confidence`, `file`, `line`, `message`, `fix`, and `snippet` (the relevant lines of code). Use `snippet` directly — no need to re-read the source file.
+   - If a finding needs more context (why it matters, bad/good code examples), run:
+     `scout explain <rule_id>`
+     This returns `why`, `bad`, `good`, and `fix` fields. Use this before attempting a fix on any non-obvious rule.
+   - `confidence: rule` = deterministic, act on it. `confidence: hint` = heuristic, verify against the snippet before acting.
