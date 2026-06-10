@@ -1,0 +1,24 @@
+rules:
+  - id: dynamic-object-key-assignment
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      An object property is assigned using a key taken directly from user input
+      (req.body / req.query / req.params). A key of __proto__ or
+      constructor.prototype pollutes Object.prototype, enabling privilege
+      escalation or RCE. Reject those keys, or store data in a Map /
+      Object.create(null).
+    metadata:
+      category: security
+      confidence: rule
+    patterns:
+      - pattern-either:
+          - pattern: $O[$REQ.body.$F] = $V
+          - pattern: $O[$REQ.query.$F] = $V
+          - pattern: $O[$REQ.params.$F] = $V
+          - pattern: $O[$REQ.body[$F]] = $V
+          - pattern: $O[$REQ.query[$F]] = $V
+          - pattern: $O[$REQ.params[$F]] = $V
+      - metavariable-regex:
+          metavariable: $REQ
+          regex: ^(req|request|ctx)$

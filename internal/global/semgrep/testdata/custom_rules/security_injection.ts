@@ -33,6 +33,23 @@ function staticCall() {
   window.fetch("/api"); // NO FIRE (static property)
 }
 
+// --- dynamic-object-key-assignment: positive ---
+function assignFromReq(req: any) {
+  const target: any = {};
+  target[req.body.key] = "x"; // FIRE
+  target[req.query.field] = 1; // FIRE
+  return target;
+}
+
+// --- dynamic-object-key-assignment: negative ---
+function safeAssign(req: any) {
+  const target: any = {};
+  const { name } = req.body;
+  target.name = name; // NO FIRE (static key)
+  target["fixed"] = 1; // NO FIRE (literal key)
+  return target;
+}
+
 // --- error-detail-leak-to-response: positive ---
 router.use((err: any, req: any, res: any, next: any) => {
   res.status(500).send(err.stack); // FIRE

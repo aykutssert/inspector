@@ -234,6 +234,24 @@
     "message": "A function is invoked through a dynamically-indexed global object (globalThis / window / global / self [expr]()). If the index derives from user input this is arbitrary code execution. Dispatch through an explicit allow-list lookup table instead of indexing a global with a variable.\n"
   },
   {
+    "rule_id": "general.dynamic-object-key-assignment",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "rule",
+    "file": "security_injection.ts",
+    "line": 39,
+    "message": "An object property is assigned using a key taken directly from user input (req.body / req.query / req.params). A key of __proto__ or constructor.prototype pollutes Object.prototype, enabling privilege escalation or RCE. Reject those keys, or store data in a Map / Object.create(null).\n"
+  },
+  {
+    "rule_id": "general.dynamic-object-key-assignment",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "rule",
+    "file": "security_injection.ts",
+    "line": 40,
+    "message": "An object property is assigned using a key taken directly from user input (req.body / req.query / req.params). A key of __proto__ or constructor.prototype pollutes Object.prototype, enabling privilege escalation or RCE. Reject those keys, or store data in a Map / Object.create(null).\n"
+  },
+  {
     "rule_id": "general.empty-catch-block",
     "severity": "warning",
     "category": "bug",
@@ -248,7 +266,7 @@
     "category": "security",
     "confidence": "rule",
     "file": "security_injection.ts",
-    "line": 38,
+    "line": 55,
     "message": "A raw error stack trace is sent in an HTTP response. Stack traces expose file paths, library versions, and internal structure to clients, handing attackers reconnaissance. Log the detail server-side and return a generic message, e.g. res.status(500).json({ error: \"Internal error\" }).\n"
   },
   {
@@ -257,7 +275,7 @@
     "category": "security",
     "confidence": "rule",
     "file": "security_injection.ts",
-    "line": 39,
+    "line": 56,
     "message": "A raw error stack trace is sent in an HTTP response. Stack traces expose file paths, library versions, and internal structure to clients, handing attackers reconnaissance. Log the detail server-side and return a generic message, e.g. res.status(500).json({ error: \"Internal error\" }).\n"
   },
   {
