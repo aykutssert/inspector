@@ -1,5 +1,14 @@
 [
   {
+    "rule_id": "server.server-after-nonblocking",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "server.tsx",
+    "line": 52,
+    "message": "Logging or analytics call inside a request handler may block the response. Use after() from next/after to defer non-critical work until after the response is sent to the client.\n"
+  },
+  {
     "rule_id": "server.server-auth-actions",
     "severity": "warning",
     "category": "security",
@@ -178,6 +187,24 @@
     "file": "server.tsx",
     "line": 45,
     "message": "JSON.stringify() used as a JSX prop value. Passing serialized data as a string prop forces the client to JSON.parse() it manually. Pass the raw value directly — React serializes Server Component props automatically. If the raw prop is also passed alongside the JSON version, remove the duplicate.\n"
+  },
+  {
+    "rule_id": "server.server-fetch-without-revalidate",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "server.tsx",
+    "line": 68,
+    "message": "fetch() inside a server handler without cache or revalidation configuration. In Next.js App Router, fetched data is cached by default (equivalent to cache: 'force-cache'). If this data should be fresh on every request, add cache: 'no-store' or next: { revalidate: 0 }.\n"
+  },
+  {
+    "rule_id": "server.server-fetch-without-revalidate",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "server.tsx",
+    "line": 68,
+    "message": "fetch() inside a server handler without cache or revalidation configuration. In Next.js App Router, fetched data is cached by default (equivalent to cache: 'force-cache'). If this data should be fresh on every request, add cache: 'no-store' or next: { revalidate: 0 }.\n"
   },
   {
     "rule_id": "server.server-hoist-static-io",

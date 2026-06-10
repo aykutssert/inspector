@@ -286,5 +286,23 @@
     "file": "express_sensitive_route_no_auth.ts",
     "line": 13,
     "message": "A sensitive Express route (e.g., containing 'admin', 'delete', 'update', 'secure', 'private', or 'remove') does not seem to use any authorization or authentication middleware. Ensure that route handlers for sensitive paths are protected using an authentication or permission-checking middleware.\n"
+  },
+  {
+    "rule_id": "express.express-trust-proxy-misconfig",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "rule",
+    "file": "express.ts",
+    "line": 141,
+    "message": "Express trust proxy setting is missing, disabled, or not set to the correct proxy count. Without proper trust proxy configuration behind a reverse proxy (NGINX, Cloudflare, ELB), req.ip is spoofable via X-Forwarded-For and secure cookies may malfunction.\n"
+  },
+  {
+    "rule_id": "express.express-trust-proxy-misconfig",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "rule",
+    "file": "express.ts",
+    "line": 144,
+    "message": "Express trust proxy setting is missing, disabled, or not set to the correct proxy count. Without proper trust proxy configuration behind a reverse proxy (NGINX, Cloudflare, ELB), req.ip is spoofable via X-Forwarded-For and secure cookies may malfunction.\n"
   }
 ]

@@ -41,6 +41,42 @@ function SafePage({ items }: { items: Item[] }) {
 }
 
 // Safe: different variables
-function SafePage2({ items, meta }: { items: Item[]; meta: object }) {
+export function SafePage2({ items, meta }: { items: Item[]; meta: object }) {
   return <ClientWidget items={items} metaJson={JSON.stringify(meta)} />;
+}
+
+// ─── server-after-nonblocking ─────────────────────────────────────────────────
+
+// Violation: console.log inside request handler blocks response
+export async function AFTER_LOG(request: Request) {
+  console.log("Fetching users");
+  const data = await db.query("SELECT * FROM users");
+  return Response.json(data);
+}
+
+// Violation: analytics.track inside request handler
+export async function AFTER_ANALYTICS(request: Request) {
+  const body = await request.json();
+  analytics.track("order.created", body);
+  return Response.json({ ok: true });
+}
+
+// ─── server-fetch-without-revalidate ──────────────────────────────────────────
+
+// Violation: fetch without cache config inside request handler
+export async function FETCH_DATA(request: Request) {
+  const data = await fetch("https://api.example.com/data");
+  return Response.json(await data.json());
+}
+
+// Safe: fetch with cache config
+export async function FETCH_WITH_REVALIDATE(request: Request) {
+  const data = await fetch("https://api.example.com/data", { next: { revalidate: 60 } });
+  return Response.json(await data.json());
+}
+
+// Safe: fetch with no-store
+export async function FETCH_NOSTORE(request: Request) {
+  const data = await fetch("https://api.example.com/data", { cache: "no-store" });
+  return Response.json(await data.json());
 }

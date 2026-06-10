@@ -1,0 +1,27 @@
+rules:
+  - id: rn-pressable-shared-value-mutation
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Shared value mutated inside onPress/onLongPress callback runs on the JS
+      thread, causing dropped frames on animation-dependent components. Use
+      Reanimated worklets (withTiming/withSpring) instead of direct `.value =`
+      assignment in press handlers.
+    metadata:
+      category: performance
+      confidence: hint
+    patterns:
+      - pattern-inside: |
+          import { ..., Pressable, ... } from "react-native";
+          ...
+      - pattern-either:
+          - patterns:
+              - pattern: <$C onPress={(...) => { ... $X.value = $Y; ... }} />
+              - metavariable-regex:
+                  metavariable: $C
+                  regex: "^(Pressable|TouchableOpacity|TouchableHighlight)$"
+          - patterns:
+              - pattern: <$C onLongPress={(...) => { ... $X.value = $Y; ... }} />
+              - metavariable-regex:
+                  metavariable: $C
+                  regex: "^(Pressable|TouchableOpacity|TouchableHighlight)$"

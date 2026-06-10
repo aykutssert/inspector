@@ -1,0 +1,18 @@
+rules:
+  - id: tanstack-start-serverfn-missing-csrf-middleware
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      createServerFn() in this file does not use CSRF middleware. TanStack
+      Start recommends createCsrfMiddleware() to protect against cross-site
+      request forgery on state-changing endpoints.
+    metadata:
+      category: security
+      confidence: hint
+    patterns:
+      - pattern-inside: |
+          import { ..., createServerFn, ... } from "@tanstack/start";
+          ...
+      - pattern-either:
+          - pattern: createServerFn().$CHAIN
+      - pattern-not-regex: csrf|CSRF|createCsrfMiddleware

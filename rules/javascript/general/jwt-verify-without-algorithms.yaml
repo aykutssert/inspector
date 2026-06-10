@@ -1,0 +1,23 @@
+rules:
+  - id: jwt-verify-without-algorithms
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      jwt.verify() called without explicit `algorithms` option. Without
+      restricting accepted algorithms, an attacker can craft a token with
+      `alg: none` (or a symmetric algorithm mismatch) to bypass signature
+      verification and forge arbitrary claims.
+    metadata:
+      category: security
+      confidence: rule
+    patterns:
+      - pattern-inside: |
+          import $JWT from "jsonwebtoken";
+          ...
+      - pattern-either:
+          - pattern: jwt.verify($TOKEN, $SECRET)
+          - patterns:
+              - pattern: jwt.verify($TOKEN, $SECRET, $OPTS)
+              - metavariable-regex:
+                  metavariable: $OPTS
+                  regex: ^(?!.*\balgorithms\b).*$

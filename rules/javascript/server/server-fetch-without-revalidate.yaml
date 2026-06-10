@@ -1,0 +1,24 @@
+rules:
+  - id: server-fetch-without-revalidate
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      fetch() inside a server handler without cache or revalidation configuration.
+      In Next.js App Router, fetched data is cached by default (equivalent to
+      cache: 'force-cache'). If this data should be fresh on every request, add
+      cache: 'no-store' or next: { revalidate: 0 }.
+    metadata:
+      category: performance
+      confidence: hint
+    patterns:
+      - pattern-inside: |
+          export async function $FUNC($REQ: Request) {
+            ...
+          }
+      - pattern-either:
+          - patterns:
+              - pattern: await fetch($URL)
+              - pattern-not: await fetch($URL, $OPTS)
+          - patterns:
+              - pattern: fetch($URL)
+              - pattern-not: fetch($URL, $OPTS)

@@ -1,0 +1,31 @@
+rules:
+  - id: js-hoist-intl
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      new Intl.*Format(...) created inside a function/render scope. Intl
+      formatters are relatively expensive to construct — locale data parsing
+      and pattern compilation happen on every instantiation. Hoist to module
+      scope so the formatter is created once.
+    metadata:
+      category: performance
+      confidence: rule
+    pattern-either:
+      - patterns:
+          - pattern-inside: |
+              function $FUNC(...) {
+                ...
+              }
+          - pattern-either:
+              - pattern: new Intl.NumberFormat(...)
+              - pattern: new Intl.DateTimeFormat(...)
+              - pattern: new Intl.RelativeTimeFormat(...)
+      - patterns:
+          - pattern-inside: |
+              const $FUNC = (...) => {
+                ...
+              }
+          - pattern-either:
+              - pattern: new Intl.NumberFormat(...)
+              - pattern: new Intl.DateTimeFormat(...)
+              - pattern: new Intl.RelativeTimeFormat(...)

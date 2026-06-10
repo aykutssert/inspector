@@ -1,0 +1,30 @@
+rules:
+  - id: js-hoist-regexp
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      new RegExp(...) created inside a function/render scope. The regular
+      expression is recompiled on every invocation. Hoist RegExp creation to
+      module scope — the pattern is static and compiling it once is sufficient.
+    metadata:
+      category: performance
+      confidence: rule
+    pattern-either:
+      - patterns:
+          - pattern-inside: |
+              function $FUNC(...) {
+                ...
+              }
+          - pattern: new RegExp(...)
+      - patterns:
+          - pattern-inside: |
+              const $FUNC = (...) => {
+                ...
+              }
+          - pattern: new RegExp(...)
+      - patterns:
+          - pattern-inside: |
+              $CLASS.prototype.$METHOD = function(...) {
+                ...
+              }
+          - pattern: new RegExp(...)

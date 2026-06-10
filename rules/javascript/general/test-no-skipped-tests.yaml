@@ -1,0 +1,16 @@
+rules:
+  - id: test-no-skipped-tests
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      A test or suite is skipped with `.skip()`. Skipped tests are never
+      executed, so they silently stop providing coverage and can mask
+      regressions. Remove the .skip() once the test is ready, or delete
+      the test if the scenario is no longer relevant.
+    metadata:
+      category: testing
+      confidence: rule
+    pattern-either:
+      - pattern: describe.skip(...)
+      - pattern: it.skip(...)
+      - pattern: test.skip(...)

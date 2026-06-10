@@ -1,0 +1,19 @@
+rules:
+  - id: express-trust-proxy-misconfig
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Express trust proxy setting is missing, disabled, or not set to the
+      correct proxy count. Without proper trust proxy configuration behind a
+      reverse proxy (NGINX, Cloudflare, ELB), req.ip is spoofable via
+      X-Forwarded-For and secure cookies may malfunction.
+    metadata:
+      category: security
+      confidence: rule
+    patterns:
+      - pattern-inside: |
+          import $EXPRESS from "express";
+          ...
+      - pattern-either:
+          - pattern: $APP.set("trust proxy", false)
+          - pattern: $APP.set("trust proxy", "none")

@@ -1,0 +1,14 @@
+rules:
+  - id: prefer-html-dialog
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Use native <dialog> instead of role="dialog" on a generic element.
+      Native <dialog> provides built-in accessibility (focus trap, escape to close,
+      inert background) without extra ARIA attributes or imperative JavaScript.
+    metadata:
+      category: quality
+      confidence: rule
+    patterns:
+      - pattern: <$TAG role="dialog" ... />
+      - pattern-not: <dialog ... />

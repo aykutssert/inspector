@@ -1,39 +1,71 @@
 [
   {
+    "rule_id": "tanstack-start.tanstack-start-get-mutation",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "tanstack_start.tsx",
+    "line": 144,
+    "message": "GET serverFn detected. GET requests should be idempotent and safe — they should not create, update, or delete data. If this handler mutates data, change the method to POST to prevent CSRF vulnerabilities via prefetching.\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-missing-head-content",
+    "severity": "warning",
+    "confidence": "rule",
+    "file": "tanstack_start.tsx",
+    "line": 157,
+    "message": "Root route component missing \u003cHeadContent /\u003e. TanStack Start requires \u003cHeadContent /\u003e in the root route component to render \u003ctitle\u003e and other head elements defined by child routes. Without it, meta tags are silently dropped during rendering.\n"
+  },
+  {
     "rule_id": "tanstack-start.tanstack-start-no-direct-fetch-in-loader",
     "severity": "warning",
     "category": "performance",
     "confidence": "hint",
     "file": "tanstack_start.tsx",
-    "line": 11,
+    "line": 17,
     "message": "Direct fetch() call inside a TanStack Start route loader. Loaders run on the client during navigation; using fetch() directly creates client-side waterfalls and bypasses server-side data fetching. Wrap the call in createServerFn() so it runs on the server with full Node.js access.\n"
   },
   {
-    "rule_id": "tanstack-start.tanstack-start-no-secrets-in-loader",
-    "severity": "error",
-    "category": "security",
-    "confidence": "hint",
-    "file": "tanstack_start.tsx",
-    "line": 31,
-    "message": "Secret environment variable accessed inside a TanStack Start route loader. Route loaders can be compiled into the client bundle, which would expose the secret. Move secret access into a createServerFn() to guarantee server-only execution.\n"
-  },
-  {
-    "rule_id": "tanstack-start.tanstack-start-no-secrets-in-loader",
-    "severity": "error",
-    "category": "security",
-    "confidence": "hint",
-    "file": "tanstack_start.tsx",
-    "line": 39,
-    "message": "Secret environment variable accessed inside a TanStack Start route loader. Route loaders can be compiled into the client bundle, which would expose the secret. Move secret access into a createServerFn() to guarantee server-only execution.\n"
-  },
-  {
-    "rule_id": "tanstack-start.tanstack-start-no-use-server-in-handler",
+    "rule_id": "tanstack-start.tanstack-start-no-dynamic-server-fn-import",
     "severity": "warning",
-    "category": "bug",
+    "confidence": "rule",
+    "file": "tanstack_start.tsx",
+    "line": 179,
+    "message": "Dynamic import() inside a serverFn handler or route. Dynamic imports of serverFn break the RPC stub that TanStack Start generates at build time. Use a static import at the top of the file instead.\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-no-navigate-in-render",
+    "severity": "warning",
     "confidence": "hint",
     "file": "tanstack_start.tsx",
-    "line": 89,
-    "message": "\"use server\" is redundant inside a createServerFn().handler() callback. TanStack Start automatically creates a server boundary at the handler boundary — the directive has no effect here and misleads readers. Remove it.\n"
+    "line": 207,
+    "message": "navigate() called in component render body instead of a route loader or user event handler. Call redirect() in the route's loader for declarative redirects, or place navigate() inside an event handler / useEffect.\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-no-navigate-in-render",
+    "severity": "warning",
+    "confidence": "hint",
+    "file": "tanstack_start.tsx",
+    "line": 215,
+    "message": "navigate() called in component render body instead of a route loader or user event handler. Call redirect() in the route's loader for declarative redirects, or place navigate() inside an event handler / useEffect.\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-no-secrets-in-loader",
+    "severity": "error",
+    "category": "security",
+    "confidence": "hint",
+    "file": "tanstack_start.tsx",
+    "line": 37,
+    "message": "Secret environment variable accessed inside a TanStack Start route loader. Route loaders can be compiled into the client bundle, which would expose the secret. Move secret access into a createServerFn() to guarantee server-only execution.\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-no-secrets-in-loader",
+    "severity": "error",
+    "category": "security",
+    "confidence": "hint",
+    "file": "tanstack_start.tsx",
+    "line": 45,
+    "message": "Secret environment variable accessed inside a TanStack Start route loader. Route loaders can be compiled into the client bundle, which would expose the secret. Move secret access into a createServerFn() to guarantee server-only execution.\n"
   },
   {
     "rule_id": "tanstack-start.tanstack-start-no-use-server-in-handler",
@@ -42,6 +74,15 @@
     "confidence": "hint",
     "file": "tanstack_start.tsx",
     "line": 95,
+    "message": "\"use server\" is redundant inside a createServerFn().handler() callback. TanStack Start automatically creates a server boundary at the handler boundary — the directive has no effect here and misleads readers. Remove it.\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-no-use-server-in-handler",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "hint",
+    "file": "tanstack_start.tsx",
+    "line": 101,
     "message": "\"use server\" is redundant inside a createServerFn().handler() callback. TanStack Start automatically creates a server boundary at the handler boundary — the directive has no effect here and misleads readers. Remove it.\n"
   },
   {
@@ -58,8 +99,17 @@
     "severity": "warning",
     "category": "performance",
     "confidence": "hint",
-    "file": "tanstack_start.tsx",
-    "line": 58,
+    "file": "react19.tsx",
+    "line": 33,
+    "message": "useEffect + fetch() used for data fetching in a TanStack Start route component. TanStack Router provides a loader function that runs before the component renders, eliminating this pattern and preventing client-side waterfalls. Move the fetch call to the route's loader and access data via useLoaderData().\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-no-useeffect-fetch",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "react19.tsx",
+    "line": 44,
     "message": "useEffect + fetch() used for data fetching in a TanStack Start route component. TanStack Router provides a loader function that runs before the component renders, eliminating this pattern and preventing client-side waterfalls. Move the fetch call to the route's loader and access data via useLoaderData().\n"
   },
   {
@@ -68,7 +118,16 @@
     "category": "performance",
     "confidence": "hint",
     "file": "tanstack_start.tsx",
-    "line": 71,
+    "line": 64,
+    "message": "useEffect + fetch() used for data fetching in a TanStack Start route component. TanStack Router provides a loader function that runs before the component renders, eliminating this pattern and preventing client-side waterfalls. Move the fetch call to the route's loader and access data via useLoaderData().\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-no-useeffect-fetch",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "tanstack_start.tsx",
+    "line": 77,
     "message": "useEffect + fetch() used for data fetching in a TanStack Start route component. TanStack Router provides a loader function that runs before the component renders, eliminating this pattern and preventing client-side waterfalls. Move the fetch call to the route's loader and access data via useLoaderData().\n"
   },
   {
@@ -103,7 +162,160 @@
     "severity": "warning",
     "confidence": "hint",
     "file": "tanstack_start.tsx",
-    "line": 110,
+    "line": 116,
     "message": "createServerFn() chain has .handler() before .validator(). The correct order is createServerFn().validator(schema).handler(fn) — calling .handler() first means the validator schema is attached after the handler is already set, so input validation does not run.\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-serverfn-missing-csrf-middleware",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "tanstack_start.tsx",
+    "line": 23,
+    "message": "createServerFn() in this file does not use CSRF middleware. TanStack Start recommends createCsrfMiddleware() to protect against cross-site request forgery on state-changing endpoints.\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-serverfn-missing-csrf-middleware",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "tanstack_start.tsx",
+    "line": 95,
+    "message": "createServerFn() in this file does not use CSRF middleware. TanStack Start recommends createCsrfMiddleware() to protect against cross-site request forgery on state-changing endpoints.\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-serverfn-missing-csrf-middleware",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "tanstack_start.tsx",
+    "line": 101,
+    "message": "createServerFn() in this file does not use CSRF middleware. TanStack Start recommends createCsrfMiddleware() to protect against cross-site request forgery on state-changing endpoints.\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-serverfn-missing-csrf-middleware",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "tanstack_start.tsx",
+    "line": 109,
+    "message": "createServerFn() in this file does not use CSRF middleware. TanStack Start recommends createCsrfMiddleware() to protect against cross-site request forgery on state-changing endpoints.\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-serverfn-missing-csrf-middleware",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "tanstack_start.tsx",
+    "line": 116,
+    "message": "createServerFn() in this file does not use CSRF middleware. TanStack Start recommends createCsrfMiddleware() to protect against cross-site request forgery on state-changing endpoints.\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-serverfn-missing-csrf-middleware",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "tanstack_start.tsx",
+    "line": 121,
+    "message": "createServerFn() in this file does not use CSRF middleware. TanStack Start recommends createCsrfMiddleware() to protect against cross-site request forgery on state-changing endpoints.\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-serverfn-missing-csrf-middleware",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "tanstack_start.tsx",
+    "line": 178,
+    "message": "createServerFn() in this file does not use CSRF middleware. TanStack Start recommends createCsrfMiddleware() to protect against cross-site request forgery on state-changing endpoints.\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-serverfn-missing-csrf-middleware",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "tanstack_start.tsx",
+    "line": 186,
+    "message": "createServerFn() in this file does not use CSRF middleware. TanStack Start recommends createCsrfMiddleware() to protect against cross-site request forgery on state-changing endpoints.\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-serverfn-missing-csrf-middleware",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "tanstack_start.tsx",
+    "line": 191,
+    "message": "createServerFn() in this file does not use CSRF middleware. TanStack Start recommends createCsrfMiddleware() to protect against cross-site request forgery on state-changing endpoints.\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-serverfn-missing-input-validator",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "rule",
+    "file": "tanstack_start.tsx",
+    "line": 23,
+    "message": "createServerFn() chain missing .inputValidator(schema). Without input validation, untrusted client data reaches the server function unchecked, opening the route to injection and type-confusion attacks. TanStack Start docs show inputValidator as the standard contract.\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-serverfn-missing-input-validator",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "rule",
+    "file": "tanstack_start.tsx",
+    "line": 95,
+    "message": "createServerFn() chain missing .inputValidator(schema). Without input validation, untrusted client data reaches the server function unchecked, opening the route to injection and type-confusion attacks. TanStack Start docs show inputValidator as the standard contract.\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-serverfn-missing-input-validator",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "rule",
+    "file": "tanstack_start.tsx",
+    "line": 109,
+    "message": "createServerFn() chain missing .inputValidator(schema). Without input validation, untrusted client data reaches the server function unchecked, opening the route to injection and type-confusion attacks. TanStack Start docs show inputValidator as the standard contract.\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-serverfn-missing-input-validator",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "rule",
+    "file": "tanstack_start.tsx",
+    "line": 116,
+    "message": "createServerFn() chain missing .inputValidator(schema). Without input validation, untrusted client data reaches the server function unchecked, opening the route to injection and type-confusion attacks. TanStack Start docs show inputValidator as the standard contract.\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-serverfn-missing-input-validator",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "rule",
+    "file": "tanstack_start.tsx",
+    "line": 144,
+    "message": "createServerFn() chain missing .inputValidator(schema). Without input validation, untrusted client data reaches the server function unchecked, opening the route to injection and type-confusion attacks. TanStack Start docs show inputValidator as the standard contract.\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-serverfn-missing-input-validator",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "rule",
+    "file": "tanstack_start.tsx",
+    "line": 150,
+    "message": "createServerFn() chain missing .inputValidator(schema). Without input validation, untrusted client data reaches the server function unchecked, opening the route to injection and type-confusion attacks. TanStack Start docs show inputValidator as the standard contract.\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-serverfn-missing-input-validator",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "rule",
+    "file": "tanstack_start.tsx",
+    "line": 178,
+    "message": "createServerFn() chain missing .inputValidator(schema). Without input validation, untrusted client data reaches the server function unchecked, opening the route to injection and type-confusion attacks. TanStack Start docs show inputValidator as the standard contract.\n"
+  },
+  {
+    "rule_id": "tanstack-start.tanstack-start-serverfn-missing-input-validator",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "rule",
+    "file": "tanstack_start.tsx",
+    "line": 186,
+    "message": "createServerFn() chain missing .inputValidator(schema). Without input validation, untrusted client data reaches the server function unchecked, opening the route to injection and type-confusion attacks. TanStack Start docs show inputValidator as the standard contract.\n"
   }
 ]

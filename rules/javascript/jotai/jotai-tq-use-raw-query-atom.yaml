@@ -1,0 +1,29 @@
+rules:
+  - id: jotai-tq-use-raw-query-atom
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      This component subscribes to the full TanStack Query atom. That broad
+      subscription causes unnecessary re-renders when only a slice is needed.
+      Use selectAtom() to derive the minimal state the component actually reads.
+    metadata:
+      category: performance
+      confidence: hint
+    patterns:
+      - pattern-either:
+          - pattern: |
+              const $ATOM = atomWithQuery(...)
+              ...
+              useAtomValue($ATOM)
+          - pattern: |
+              const $ATOM = atomWithQuery(...)
+              ...
+              useAtom($ATOM)
+          - pattern: |
+              const $ATOM = atomWithInfiniteQuery(...)
+              ...
+              useAtomValue($ATOM)
+          - pattern: |
+              const $ATOM = atomWithInfiniteQuery(...)
+              ...
+              useAtom($ATOM)

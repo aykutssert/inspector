@@ -1,0 +1,22 @@
+rules:
+  - id: jotai-selectatom-without-stable-equality
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      selectAtom selector returns an object or array literal without an
+      equality function (3rd argument). Each evaluation creates a new reference,
+      causing downstream atoms/subscribers to re-render infinitely. Add a deep
+      equality function as the third argument (e.g., shallowEqual).
+    metadata:
+      category: bug
+      confidence: hint
+    patterns:
+      - pattern-inside: |
+          import { ..., selectAtom, ... } from "jotai/utils";
+          ...
+      - patterns:
+          - pattern-either:
+              - pattern: selectAtom($BASE, ($PARAM) => ({ ... }))
+              - pattern: selectAtom($BASE, ($PARAM) => [...])
+              - pattern: selectAtom($BASE, function($PARAM) { return { ... }; })
+              - pattern: selectAtom($BASE, function($PARAM) { return [...]; })

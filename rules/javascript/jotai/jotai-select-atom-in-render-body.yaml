@@ -1,0 +1,34 @@
+rules:
+  - id: jotai-select-atom-in-render-body
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      selectAtom() is created inside a component render body. That recreates the
+      selector on every render and weakens Jotai memoization. Hoist the selector
+      to module scope or extract it outside the component.
+    metadata:
+      category: performance
+      confidence: hint
+    patterns:
+      - pattern-either:
+          - pattern-inside: |
+              function $COMP(...) {
+                ...
+                selectAtom(...);
+                ...
+              }
+          - pattern-inside: |
+              const $COMP = (...) => {
+                ...
+                selectAtom(...);
+                ...
+              }
+          - pattern-inside: |
+              const $COMP = function(...) {
+                ...
+                selectAtom(...);
+                ...
+              }
+      - metavariable-regex:
+          metavariable: $COMP
+          regex: ^[A-Z][A-Za-z0-9_]*$

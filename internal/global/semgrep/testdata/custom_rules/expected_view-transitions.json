@@ -5,7 +5,7 @@
     "category": "bug",
     "confidence": "hint",
     "file": "tanstack_start.tsx",
-    "line": 124,
+    "line": 130,
     "message": "Direct document.startViewTransition() call bypasses React's concurrent rendering. In React 19+ use the built-in \u003cViewTransition\u003e component or wrap state updates with startTransition() / flushSync() correctly. Direct DOM calls can conflict with React's reconciler and cause flicker or missed transitions.\n"
   },
   {

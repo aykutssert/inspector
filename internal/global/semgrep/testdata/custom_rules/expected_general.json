@@ -9,6 +9,15 @@
     "message": "An await sits directly inside a loop, so the iterations run strictly one after another: each waits for the previous to finish. When the operations are independent (e.g. fetching N urls), this is needlessly slow and should be parallelized with Promise.all(items.map(...)). If each iteration genuinely depends on the previous, or you are intentionally rate-limiting, the serial form is correct.\n"
   },
   {
+    "rule_id": "general.await-in-loop",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "js_async_foreach.ts",
+    "line": 26,
+    "message": "An await sits directly inside a loop, so the iterations run strictly one after another: each waits for the previous to finish. When the operations are independent (e.g. fetching N urls), this is needlessly slow and should be parallelized with Promise.all(items.map(...)). If each iteration genuinely depends on the previous, or you are intentionally rate-limiting, the serial form is correct.\n"
+  },
+  {
     "rule_id": "general.bcrypt-weak-cost",
     "severity": "warning",
     "category": "security",
@@ -225,6 +234,15 @@
     "message": "fetch() is called from inside a loop. This often creates an N+1 network pattern or forces requests to run one by one when combined with await. Prefer batching, a backend bulk endpoint, or Promise.all over a mapped collection when the requests are independent.\n"
   },
   {
+    "rule_id": "general.fetch-in-loop",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "js_async_foreach.ts",
+    "line": 26,
+    "message": "fetch() is called from inside a loop. This often creates an N+1 network pattern or forces requests to run one by one when combined with await. Prefer batching, a backend bulk endpoint, or Promise.all over a mapped collection when the requests are independent.\n"
+  },
+  {
     "rule_id": "general.hardcoded-api-url",
     "severity": "warning",
     "category": "quality",
@@ -249,6 +267,33 @@
     "confidence": "hint",
     "file": "client_data_fetch.tsx",
     "line": 56,
+    "message": "A hardcoded HTTP/HTTPS URL is used directly in a network request. To ensure flexibility across different environments (development, staging, production), avoid hardcoding base URLs. Load the base URL from an environment variable or use an API client with a configured baseURL.\n"
+  },
+  {
+    "rule_id": "general.hardcoded-api-url",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "server.tsx",
+    "line": 68,
+    "message": "A hardcoded HTTP/HTTPS URL is used directly in a network request. To ensure flexibility across different environments (development, staging, production), avoid hardcoding base URLs. Load the base URL from an environment variable or use an API client with a configured baseURL.\n"
+  },
+  {
+    "rule_id": "general.hardcoded-api-url",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "server.tsx",
+    "line": 74,
+    "message": "A hardcoded HTTP/HTTPS URL is used directly in a network request. To ensure flexibility across different environments (development, staging, production), avoid hardcoding base URLs. Load the base URL from an environment variable or use an API client with a configured baseURL.\n"
+  },
+  {
+    "rule_id": "general.hardcoded-api-url",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "server.tsx",
+    "line": 80,
     "message": "A hardcoded HTTP/HTTPS URL is used directly in a network request. To ensure flexibility across different environments (development, staging, production), avoid hardcoding base URLs. Load the base URL from an environment variable or use an API client with a configured baseURL.\n"
   },
   {
@@ -292,8 +337,8 @@
     "severity": "warning",
     "category": "quality",
     "confidence": "hint",
-    "file": "tanstack_start.tsx",
-    "line": 11,
+    "file": "skipped_tests.ts",
+    "line": 15,
     "message": "A hardcoded HTTP/HTTPS URL is used directly in a network request. To ensure flexibility across different environments (development, staging, production), avoid hardcoding base URLs. Load the base URL from an environment variable or use an API client with a configured baseURL.\n"
   },
   {
@@ -302,7 +347,16 @@
     "category": "quality",
     "confidence": "hint",
     "file": "tanstack_start.tsx",
-    "line": 18,
+    "line": 17,
+    "message": "A hardcoded HTTP/HTTPS URL is used directly in a network request. To ensure flexibility across different environments (development, staging, production), avoid hardcoding base URLs. Load the base URL from an environment variable or use an API client with a configured baseURL.\n"
+  },
+  {
+    "rule_id": "general.hardcoded-api-url",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "tanstack_start.tsx",
+    "line": 24,
     "message": "A hardcoded HTTP/HTTPS URL is used directly in a network request. To ensure flexibility across different environments (development, staging, production), avoid hardcoding base URLs. Load the base URL from an environment variable or use an API client with a configured baseURL.\n"
   },
   {
@@ -432,6 +486,69 @@
     "message": "A javascript: URL executes code when the link is activated. Use a real route, button handler, or safe URL instead.\n"
   },
   {
+    "rule_id": "general.js-async-foreach",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "js_async_foreach.ts",
+    "line": 6,
+    "message": "An async callback is passed to a .forEach() call. forEach ignores the returned promise, so none of the asynchronous work is awaited — the callback runs unsequenced and errors are silently lost. Use a for...of loop with await, or Promise.all(ids.map(...)) for parallel execution.\n"
+  },
+  {
+    "rule_id": "general.js-async-foreach",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "js_async_foreach.ts",
+    "line": 12,
+    "message": "An async callback is passed to a .forEach() call. forEach ignores the returned promise, so none of the asynchronous work is awaited — the callback runs unsequenced and errors are silently lost. Use a for...of loop with await, or Promise.all(items.map(...)) for parallel execution.\n"
+  },
+  {
+    "rule_id": "general.js-async-foreach",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
+    "file": "js_async_foreach.ts",
+    "line": 18,
+    "message": "An async callback is passed to a .forEach() call. forEach ignores the returned promise, so none of the asynchronous work is awaited — the callback runs unsequenced and errors are silently lost. Use a for...of loop with await, or Promise.all(entries.map(...)) for parallel execution.\n"
+  },
+  {
+    "rule_id": "general.js-hoist-intl",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "express.ts",
+    "line": 181,
+    "message": "new Intl.*Format(...) created inside a function/render scope. Intl formatters are relatively expensive to construct — locale data parsing and pattern compilation happen on every instantiation. Hoist to module scope so the formatter is created once.\n"
+  },
+  {
+    "rule_id": "general.js-hoist-regexp",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "express.ts",
+    "line": 170,
+    "message": "new RegExp(...) created inside a function/render scope. The regular expression is recompiled on every invocation. Hoist RegExp creation to module scope — the pattern is static and compiling it once is sufficient.\n"
+  },
+  {
+    "rule_id": "general.js-prototype-pollution-merge",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "rule",
+    "file": "express.ts",
+    "line": 150,
+    "message": "Untrusted user input (req.body / req.params / req.query) passed directly to Object.assign() or _.merge(). An attacker can inject __proto__ or constructor.prototype properties to pollute all object prototypes, leading to privilege escalation or RCE.\n"
+  },
+  {
+    "rule_id": "general.js-prototype-pollution-merge",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "rule",
+    "file": "express.ts",
+    "line": 156,
+    "message": "Untrusted user input (req.body / req.params / req.query) passed directly to Object.assign() or _.merge(). An attacker can inject __proto__ or constructor.prototype properties to pollute all object prototypes, leading to privilege escalation or RCE.\n"
+  },
+  {
     "rule_id": "general.json-parse-without-guard",
     "severity": "warning",
     "category": "security",
@@ -457,6 +574,24 @@
     "file": "express.ts",
     "line": 23,
     "message": "A JWT is read with jwt.decode(), which only base64-decodes the token and does NOT check the signature. Any value derived from a decoded-but-unverified token (user id, role, expiry) is attacker-controlled: a forged token passes. Use jwt.verify(token, secret) before trusting the payload. decode() is only safe for reading the header to pick a key, never for authorization decisions.\n"
+  },
+  {
+    "rule_id": "general.jwt-verify-without-algorithms",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "rule",
+    "file": "express.ts",
+    "line": 122,
+    "message": "jwt.verify() called without explicit `algorithms` option. Without restricting accepted algorithms, an attacker can craft a token with `alg: none` (or a symmetric algorithm mismatch) to bypass signature verification and forge arbitrary claims.\n"
+  },
+  {
+    "rule_id": "general.jwt-verify-without-algorithms",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "rule",
+    "file": "express.ts",
+    "line": 128,
+    "message": "jwt.verify() called without explicit `algorithms` option. Without restricting accepted algorithms, an attacker can craft a token with `alg: none` (or a symmetric algorithm mismatch) to bypass signature verification and forge arbitrary claims.\n"
   },
   {
     "rule_id": "general.leftover-console-statement",
@@ -564,6 +699,15 @@
     "confidence": "hint",
     "file": "next_no_redirect_in_try_catch.tsx",
     "line": 27,
+    "message": "A console.log/console.debug call was left in the source. These are typically debugging leftovers (a common artifact of AI-generated or rushed code) that leak data to the browser console and add noise in production. Remove it, or route it through an intentional logger. console.warn/console.error are not flagged, since those are usually deliberate.\n"
+  },
+  {
+    "rule_id": "general.leftover-console-statement",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "server.tsx",
+    "line": 52,
     "message": "A console.log/console.debug call was left in the source. These are typically debugging leftovers (a common artifact of AI-generated or rushed code) that leak data to the browser console and add noise in production. Remove it, or route it through an intentional logger. console.warn/console.error are not flagged, since those are usually deliberate.\n"
   },
   {
@@ -726,6 +870,15 @@
     "confidence": "hint",
     "file": "case.tsx",
     "line": 295,
+    "message": "This file mixes ESM imports with CommonJS require(). Mixed module systems often behave differently across Node, bundlers, and test runners, especially under \"type\": \"module\". Use one module system consistently in a file, or isolate interop behind a small adapter.\n"
+  },
+  {
+    "rule_id": "general.mixed-esm-cjs",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "case.tsx",
+    "line": 557,
     "message": "This file mixes ESM imports with CommonJS require(). Mixed module systems often behave differently across Node, bundlers, and test runners, especially under \"type\": \"module\". Use one module system consistently in a file, or isolate interop behind a small adapter.\n"
   },
   {
@@ -1169,7 +1322,7 @@
     "category": "quality",
     "confidence": "hint",
     "file": "tanstack_start.tsx",
-    "line": 31,
+    "line": 37,
     "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
   },
   {
@@ -1178,7 +1331,7 @@
     "category": "quality",
     "confidence": "hint",
     "file": "tanstack_start.tsx",
-    "line": 39,
+    "line": 45,
     "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
   },
   {
@@ -1187,7 +1340,7 @@
     "category": "quality",
     "confidence": "hint",
     "file": "tanstack_start.tsx",
-    "line": 47,
+    "line": 53,
     "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
   },
   {
@@ -1297,24 +1450,6 @@
     "file": "case.tsx",
     "line": 452,
     "message": "User-controlled request data reaches an OS command execution sink. An attacker can inject shell metacharacters to run arbitrary commands on the server. Avoid passing request data into a shell; use a fixed command with an argument array (no shell), or validate the input against a strict allowlist before execution.\n"
-  },
-  {
-    "rule_id": "general.tainted-dom-xss",
-    "severity": "warning",
-    "category": "security",
-    "confidence": "hint",
-    "file": "case.tsx",
-    "line": 426,
-    "message": "Browser-controlled input reaches an HTML-injection sink without sanitization, leading to DOM-based Cross-Site Scripting (XSS). An attacker can craft a URL, fragment, or request field that injects script into the page. Render untrusted data as text (textContent), or sanitize it with a trusted library (e.g. DOMPurify.sanitize) before assigning it to an HTML sink.\n"
-  },
-  {
-    "rule_id": "general.tainted-dom-xss",
-    "severity": "warning",
-    "category": "security",
-    "confidence": "hint",
-    "file": "case.tsx",
-    "line": 430,
-    "message": "Browser-controlled input reaches an HTML-injection sink without sanitization, leading to DOM-based Cross-Site Scripting (XSS). An attacker can craft a URL, fragment, or request field that injects script into the page. Render untrusted data as text (textContent), or sanitize it with a trusted library (e.g. DOMPurify.sanitize) before assigning it to an HTML sink.\n"
   },
   {
     "rule_id": "general.tainted-dom-xss",
@@ -1450,6 +1585,30 @@
     "file": "case.tsx",
     "line": 471,
     "message": "User-controlled request data reaches an outbound HTTP request URL. This can lead to Server-Side Request Forgery (SSRF), where attackers make the server call internal services or attacker-controlled hosts. Resolve the destination from trusted route names or validate it against a strict allowlist before making the request.\n"
+  },
+  {
+    "rule_id": "general.test-no-skipped-tests",
+    "severity": "warning",
+    "confidence": "rule",
+    "file": "skipped_tests.ts",
+    "line": 5,
+    "message": "A test or suite is skipped with `.skip()`. Skipped tests are never executed, so they silently stop providing coverage and can mask regressions. Remove the .skip() once the test is ready, or delete the test if the scenario is no longer relevant.\n"
+  },
+  {
+    "rule_id": "general.test-no-skipped-tests",
+    "severity": "warning",
+    "confidence": "rule",
+    "file": "skipped_tests.ts",
+    "line": 10,
+    "message": "A test or suite is skipped with `.skip()`. Skipped tests are never executed, so they silently stop providing coverage and can mask regressions. Remove the .skip() once the test is ready, or delete the test if the scenario is no longer relevant.\n"
+  },
+  {
+    "rule_id": "general.test-no-skipped-tests",
+    "severity": "warning",
+    "confidence": "rule",
+    "file": "skipped_tests.ts",
+    "line": 14,
+    "message": "A test or suite is skipped with `.skip()`. Skipped tests are never executed, so they silently stop providing coverage and can mask regressions. Remove the .skip() once the test is ready, or delete the test if the scenario is no longer relevant.\n"
   },
   {
     "rule_id": "general.ts-as-any-escape",

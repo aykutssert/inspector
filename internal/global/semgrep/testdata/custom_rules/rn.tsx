@@ -201,6 +201,34 @@ export function SafeKeyList({ users }: any) {
   );
 }
 
+// ─── rn-list-recyclable-without-types ─────────────────────────────────────────
+
+// Violation: FlashList with multi-type renderItem, no getItemType
+export function RecyclableList({ data }: any) {
+  return (
+    <FlashList
+      data={data}
+      renderItem={({ item }: any) => {
+        switch (item.kind) {
+          case "header": return <Text>{item.title}</Text>;
+          case "row": return <Text>{item.name}</Text>;
+        }
+      }}
+    />
+  );
+}
+
+// Safe: FlashList with getItemType
+export function SafeRecyclableList({ data }: any) {
+  return (
+    <FlashList
+      data={data}
+      renderItem={({ item }: any) => <Text>{item.name}</Text>}
+      getItemType={(item: any) => item.kind}
+    />
+  );
+}
+
 export function SetNativePropsTest(ref: any, inputRef: any) {
   // Violations: setNativeProps usage (triggers rn.rn-no-set-native-props)
   ref.setNativeProps({ text: "hello" });
@@ -209,6 +237,138 @@ export function SetNativePropsTest(ref: any, inputRef: any) {
   // Safe: regular ref methods or state updates
   ref.current.focus();
   inputRef.current.clear();
+}
+
+// ─── rn-pressable-shared-value-mutation ──────────────────────────────────────
+
+import { SafeAreaView } from "react-native";
+import { GestureDetector, Gesture } from "react-native-gesture-handler";
+import { useSharedValue } from "react-native-reanimated";
+
+// Violation: shared value mutation in onPress (triggers rn.rn-pressable-shared-value-mutation)
+export function SharedValueInOnPress() {
+  const opacity = useSharedValue(1);
+  return (
+    <Pressable onPress={() => { opacity.value = 0.5; }}>
+      <Text>press</Text>
+    </Pressable>
+  );
+}
+
+// Violation: shared value mutation in onLongPress (triggers rn.rn-pressable-shared-value-mutation)
+export function SharedValueInOnLongPress() {
+  const scale = useSharedValue(1);
+  return (
+    <TouchableOpacity onLongPress={() => { scale.value = 1.2; }}>
+      <Text>long press</Text>
+    </TouchableOpacity>
+  );
+}
+
+// Safe: onPress without shared value mutation
+export function SafeOnPressNoSharedValue() {
+  const [count, setCount] = React.useState(0);
+  return (
+    <Pressable onPress={() => setCount(c => c + 1)}>
+      <Text>count {count}</Text>
+    </Pressable>
+  );
+}
+
+// ─── rn-scrollview-dynamic-padding ───────────────────────────────────────────
+
+// Violation: ScrollView with paddingTop in contentContainerStyle
+export function ScrollViewVerticalPadding() {
+  return (
+    <ScrollView contentContainerStyle={{ paddingTop: 44 }}>
+      <Text>content</Text>
+    </ScrollView>
+  );
+}
+
+// Violation: ScrollView with paddingBottom in style
+export function ScrollViewStylePaddingBottom() {
+  return (
+    <ScrollView style={{ paddingBottom: 20 }}>
+      <Text>content</Text>
+    </ScrollView>
+  );
+}
+
+// Safe: ScrollView without vertical padding
+export function SafeScrollViewNoPadding() {
+  return (
+    <ScrollView>
+      <Text>content</Text>
+    </ScrollView>
+  );
+}
+
+// Safe: ScrollView with horizontal padding only (not related to content inset)
+export function SafeScrollViewHorizontalOnly() {
+  return (
+    <ScrollView contentContainerStyle={{ paddingHorizontal: 16 }}>
+      <Text>content</Text>
+    </ScrollView>
+  );
+}
+
+// ─── rn-prefer-pressable-over-gesture-detector ───────────────────────────────
+
+// Violation: GestureDetector with only Tap (triggers rn.rn-prefer-pressable-over-gesture-detector)
+export function GestureTapOnly() {
+  return (
+    <GestureDetector gesture={Gesture.Tap()}>
+      <View />
+    </GestureDetector>
+  );
+}
+
+// Violation: GestureDetector with chained Tap methods (still tap-only)
+export function GestureTapChained() {
+  return (
+    <GestureDetector gesture={Gesture.Tap().onEnd((_, success) => {})}>
+      <View />
+    </GestureDetector>
+  );
+}
+
+// Safe: GestureDetector with Pan gesture (not tap-only)
+export function SafeGesturePan() {
+  return (
+    <GestureDetector gesture={Gesture.Pan()}>
+      <View />
+    </GestureDetector>
+  );
+}
+
+// Safe: GestureDetector with composed gestures
+export function SafeGestureComposed() {
+  return (
+    <GestureDetector gesture={Gesture.Simultaneous(Gesture.Tap(), Gesture.Pan())}>
+      <View />
+    </GestureDetector>
+  );
+}
+
+// ─── rn-prefer-content-inset-adjustment ──────────────────────────────────────
+
+// Violation: SafeAreaView with manual paddingTop (triggers rn.rn-prefer-content-inset-adjustment)
+export function SafeViewManualPaddingTop() {
+  return (
+    <SafeAreaView style={{ paddingTop: 44 }}>
+      <Text>content</Text>
+    </SafeAreaView>
+  );
+}
+
+// Safe: SafeAreaView without manual padding
+export function SafeViewNoPadding() {
+  return (
+    <SafeAreaView>
+      <Text>content</Text>
+    </SafeAreaView>
+  );
 }
 
 

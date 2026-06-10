@@ -1,0 +1,16 @@
+rules:
+  - id: tanstack-start-get-mutation
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      GET serverFn detected. GET requests should be idempotent and safe — they
+      should not create, update, or delete data. If this handler mutates data,
+      change the method to POST to prevent CSRF vulnerabilities via prefetching.
+    metadata:
+      category: security
+      confidence: hint
+    patterns:
+      - pattern: createServerFn($ARGS).$REST
+      - metavariable-pattern:
+          metavariable: $ARGS
+          pattern-regex: method:\s*"GET"

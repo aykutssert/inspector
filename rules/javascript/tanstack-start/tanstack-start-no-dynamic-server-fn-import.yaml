@@ -1,0 +1,15 @@
+rules:
+  - id: tanstack-start-no-dynamic-server-fn-import
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Dynamic import() inside a serverFn handler or route. Dynamic imports of
+      serverFn break the RPC stub that TanStack Start generates at build time.
+      Use a static import at the top of the file instead.
+    metadata:
+      category: bug
+      confidence: rule
+    patterns:
+      - pattern-inside: |
+          createServerFn().handler(...)
+      - pattern-regex: import\(

@@ -117,6 +117,51 @@
     "message": "A Shopify FlashList is rendered without estimatedItemSize. FlashList uses it to size the recycle pool up front; without it the first scroll janks and blanks while it measures. Set estimatedItemSize to the average row height.\n"
   },
   {
+    "rule_id": "rn.rn-list-missing-estimated-item-size",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 208,
+    "message": "A Shopify FlashList is rendered without estimatedItemSize. FlashList uses it to size the recycle pool up front; without it the first scroll janks and blanks while it measures. Set estimatedItemSize to the average row height.\n"
+  },
+  {
+    "rule_id": "rn.rn-list-missing-estimated-item-size",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 223,
+    "message": "A Shopify FlashList is rendered without estimatedItemSize. FlashList uses it to size the recycle pool up front; without it the first scroll janks and blanks while it measures. Set estimatedItemSize to the average row height.\n"
+  },
+  {
+    "rule_id": "rn.rn-list-recyclable-without-types",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 91,
+    "message": "FlashList without getItemType prop. When rows have different layouts/types, getItemType enables per-type view recycling. Without it, all rows are treated as the same type and FlashList cannot recycle across different row layouts.\n"
+  },
+  {
+    "rule_id": "rn.rn-list-recyclable-without-types",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 92,
+    "message": "FlashList without getItemType prop. When rows have different layouts/types, getItemType enables per-type view recycling. Without it, all rows are treated as the same type and FlashList cannot recycle across different row layouts.\n"
+  },
+  {
+    "rule_id": "rn.rn-list-recyclable-without-types",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 208,
+    "message": "FlashList without getItemType prop. When rows have different layouts/types, getItemType enables per-type view recycling. Without it, all rows are treated as the same type and FlashList cannot recycle across different row layouts.\n"
+  },
+  {
     "rule_id": "rn.rn-no-deep-imports",
     "severity": "warning",
     "category": "quality",
@@ -257,7 +302,7 @@
     "category": "bug",
     "confidence": "rule",
     "file": "rn.tsx",
-    "line": 206,
+    "line": 234,
     "message": "Deprecated setNativeProps() call detected. setNativeProps is deprecated and not compatible with the Fabric new architecture. Use component state or Reanimated shared values to dynamically update component properties instead.\n"
   },
   {
@@ -266,7 +311,7 @@
     "category": "bug",
     "confidence": "rule",
     "file": "rn.tsx",
-    "line": 207,
+    "line": 235,
     "message": "Deprecated setNativeProps() call detected. setNativeProps is deprecated and not compatible with the Fabric new architecture. Use component state or Reanimated shared values to dynamically update component properties instead.\n"
   },
   {
@@ -277,6 +322,14 @@
     "file": "rn.tsx",
     "line": 161,
     "message": "Single-element style arrays create a new array reference on every render, defeating React Native's style caching. Use the style value directly: style={styles.box} instead of style={[styles.box]}.\n"
+  },
+  {
+    "rule_id": "rn.rn-prefer-content-inset-adjustment",
+    "severity": "info",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 358,
+    "message": "Manual paddingTop/paddingBottom on SafeAreaView adds redundant safe-area inset — SafeAreaView already handles this natively on iOS. Remove manual padding and let SafeAreaView manage safe-area insets automatically. For ScrollView, use contentInsetAdjustmentBehavior=\"automatic\" instead.\n"
   },
   {
     "rule_id": "rn.rn-prefer-expo-image",
@@ -306,6 +359,33 @@
     "message": "TouchableOpacity, TouchableHighlight, and TouchableNativeFeedback are legacy gesture components. Use \u003cPressable\u003e instead — it offers more flexible state-based styling (pressed, hovered, focused) and integrates better with concurrent React.\n"
   },
   {
+    "rule_id": "rn.rn-prefer-pressable",
+    "severity": "info",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 261,
+    "message": "TouchableOpacity, TouchableHighlight, and TouchableNativeFeedback are legacy gesture components. Use \u003cPressable\u003e instead — it offers more flexible state-based styling (pressed, hovered, focused) and integrates better with concurrent React.\n"
+  },
+  {
+    "rule_id": "rn.rn-prefer-pressable-over-gesture-detector",
+    "severity": "info",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 320,
+    "message": "GestureDetector with only a Tap gesture is heavier than necessary. The Gesture.Tap API initializes the full gesture handler pipeline on the JS thread. For simple tap interactions, Pressable is lighter, works on both threads, and requires no native setup.\n"
+  },
+  {
+    "rule_id": "rn.rn-prefer-pressable-over-gesture-detector",
+    "severity": "info",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 329,
+    "message": "GestureDetector with only a Tap gesture is heavier than necessary. The Gesture.Tap API initializes the full gesture handler pipeline on the JS thread. For simple tap interactions, Pressable is lighter, works on both threads, and requires no native setup.\n"
+  },
+  {
     "rule_id": "rn.rn-prefer-reanimated",
     "severity": "warning",
     "category": "performance",
@@ -331,6 +411,42 @@
     "file": "rn.tsx",
     "line": 145,
     "message": "React Native's Animated API runs on the JavaScript thread, which causes dropped frames under heavy JS workloads. Replace with react-native-reanimated which executes animations on the UI thread: useSharedValue, useAnimatedStyle, withTiming, withSpring.\n"
+  },
+  {
+    "rule_id": "rn.rn-pressable-shared-value-mutation",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 251,
+    "message": "Shared value mutated inside onPress/onLongPress callback runs on the JS thread, causing dropped frames on animation-dependent components. Use Reanimated worklets (withTiming/withSpring) instead of direct `.value =` assignment in press handlers.\n"
+  },
+  {
+    "rule_id": "rn.rn-pressable-shared-value-mutation",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 261,
+    "message": "Shared value mutated inside onPress/onLongPress callback runs on the JS thread, causing dropped frames on animation-dependent components. Use Reanimated worklets (withTiming/withSpring) instead of direct `.value =` assignment in press handlers.\n"
+  },
+  {
+    "rule_id": "rn.rn-scrollview-dynamic-padding",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 282,
+    "message": "ScrollView (or FlatList) has paddingTop/paddingBottom in its style or contentContainerStyle. Padding on scroll content shifts the visible area during scroll and can cause layout jank. Use the native `contentInset` prop instead to adjust scroll indicator insets without moving content boundaries.\n"
+  },
+  {
+    "rule_id": "rn.rn-scrollview-dynamic-padding",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "rn.tsx",
+    "line": 291,
+    "message": "ScrollView (or FlatList) has paddingTop/paddingBottom in its style or contentContainerStyle. Padding on scroll content shifts the visible area during scroll and can cause layout jank. Use the native `contentInset` prop instead to adjust scroll indicator insets without moving content boundaries.\n"
   },
   {
     "rule_id": "rn.rn-scrollview-flex-in-content-container",

@@ -355,6 +355,42 @@
     "severity": "warning",
     "category": "performance",
     "confidence": "rule",
+    "file": "js_async_foreach.ts",
+    "line": 7,
+    "message": "Server Component fetches its own API route. Server Components can access databases, services, or internal APIs directly in Next.js. Fetching an internal /api/... route adds unnecessary HTTP request overhead (serialization, latency, network hop). Call the database or service function directly instead of performing an HTTP fetch.\n"
+  },
+  {
+    "rule_id": "nextjs.next-server-component-api-hop",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "js_async_foreach.ts",
+    "line": 27,
+    "message": "Server Component fetches its own API route. Server Components can access databases, services, or internal APIs directly in Next.js. Fetching an internal /api/... route adds unnecessary HTTP request overhead (serialization, latency, network hop). Call the database or service function directly instead of performing an HTTP fetch.\n"
+  },
+  {
+    "rule_id": "nextjs.next-server-component-api-hop",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "react19.tsx",
+    "line": 35,
+    "message": "Server Component fetches its own API route. Server Components can access databases, services, or internal APIs directly in Next.js. Fetching an internal /api/... route adds unnecessary HTTP request overhead (serialization, latency, network hop). Call the database or service function directly instead of performing an HTTP fetch.\n"
+  },
+  {
+    "rule_id": "nextjs.next-server-component-api-hop",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "react19.tsx",
+    "line": 46,
+    "message": "Server Component fetches its own API route. Server Components can access databases, services, or internal APIs directly in Next.js. Fetching an internal /api/... route adds unnecessary HTTP request overhead (serialization, latency, network hop). Call the database or service function directly instead of performing an HTTP fetch.\n"
+  },
+  {
+    "rule_id": "nextjs.next-server-component-api-hop",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
     "file": "server_api_hop.tsx",
     "line": 7,
     "message": "Server Component fetches its own API route. Server Components can access databases, services, or internal APIs directly in Next.js. Fetching an internal /api/... route adds unnecessary HTTP request overhead (serialization, latency, network hop). Call the database or service function directly instead of performing an HTTP fetch.\n"
@@ -383,7 +419,7 @@
     "category": "performance",
     "confidence": "rule",
     "file": "tanstack_start.tsx",
-    "line": 59,
+    "line": 65,
     "message": "Server Component fetches its own API route. Server Components can access databases, services, or internal APIs directly in Next.js. Fetching an internal /api/... route adds unnecessary HTTP request overhead (serialization, latency, network hop). Call the database or service function directly instead of performing an HTTP fetch.\n"
   },
   {
@@ -392,7 +428,16 @@
     "category": "performance",
     "confidence": "rule",
     "file": "tanstack_start.tsx",
-    "line": 72,
+    "line": 78,
+    "message": "Server Component fetches its own API route. Server Components can access databases, services, or internal APIs directly in Next.js. Fetching an internal /api/... route adds unnecessary HTTP request overhead (serialization, latency, network hop). Call the database or service function directly instead of performing an HTTP fetch.\n"
+  },
+  {
+    "rule_id": "nextjs.next-server-component-api-hop",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "rule",
+    "file": "tanstack_start.tsx",
+    "line": 145,
     "message": "Server Component fetches its own API route. Server Components can access databases, services, or internal APIs directly in Next.js. Fetching an internal /api/... route adds unnecessary HTTP request overhead (serialization, latency, network hop). Call the database or service function directly instead of performing an HTTP fetch.\n"
   },
   {
@@ -498,8 +543,26 @@
     "severity": "warning",
     "category": "security",
     "confidence": "hint",
+    "file": "js_async_foreach.ts",
+    "line": 7,
+    "message": "Server-side fetch() is called with a dynamic or unvalidated URL. If this URL is built from user-controlled input, it can lead to Server-Side Request Forgery (SSRF), allowing attackers to query internal services, bypass firewalls, or leak credentials. Validate the URL against a strict allowlist of allowed domains, or ensure the input is sanitized and mapped to safe endpoints.\n"
+  },
+  {
+    "rule_id": "nextjs.next-ssrf-prone-fetch",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "js_async_foreach.ts",
+    "line": 27,
+    "message": "Server-side fetch() is called with a dynamic or unvalidated URL. If this URL is built from user-controlled input, it can lead to Server-Side Request Forgery (SSRF), allowing attackers to query internal services, bypass firewalls, or leak credentials. Validate the URL against a strict allowlist of allowed domains, or ensure the input is sanitized and mapped to safe endpoints.\n"
+  },
+  {
+    "rule_id": "nextjs.next-ssrf-prone-fetch",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
     "file": "tanstack_start.tsx",
-    "line": 48,
+    "line": 54,
     "message": "Server-side fetch() is called with a dynamic or unvalidated URL. If this URL is built from user-controlled input, it can lead to Server-Side Request Forgery (SSRF), allowing attackers to query internal services, bypass firewalls, or leak credentials. Validate the URL against a strict allowlist of allowed domains, or ensure the input is sanitized and mapped to safe endpoints.\n"
   },
   {

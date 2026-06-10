@@ -3,6 +3,12 @@ import { createFileRoute, useLoaderData } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/start";
 import { useEffect, useState } from "react";
 
+// Mock navigate function for semgrep fixture
+function navigate(opts: { to: string }) {}
+function createRootRoute(opts: any) { return opts; }
+function Outlet() { return null; }
+function HeadContent() { return null; }
+
 // ─── tanstack-start-no-direct-fetch-in-loader ─────────────────────────────────
 
 // Violation: raw fetch inside loader
@@ -131,3 +137,81 @@ function NavigateWithTransition() {
 // Safe: React 19 approach via startTransition
 // import { startTransition } from "react";
 // startTransition(() => navigate("/next-page"));
+
+// ─── tanstack-start-get-mutation ─────────────────────────────────────────────
+
+// Violation: GET serverFn (should not mutate)
+const getMutation = createServerFn({ method: "GET" }).handler(async () => {
+  const data = await fetch("/api/data");
+  return data.json();
+});
+
+// Safe: POST serverFn
+const postMutation = createServerFn({ method: "POST" }).handler(async () => {
+  return { created: true };
+});
+
+// ─── tanstack-start-missing-head-content ─────────────────────────────────────
+
+// Violation: root route without HeadContent
+export const MissingHeadRoute = createRootRoute({
+  component: () => (
+    <>
+      <Outlet />
+    </>
+  ),
+});
+
+// Safe: root route with HeadContent
+export const SafeRootRoute = createRootRoute({
+  component: () => (
+    <>
+      <HeadContent />
+      <Outlet />
+    </>
+  ),
+});
+
+// ─── tanstack-start-no-dynamic-server-fn-import ──────────────────────────────
+
+// Violation: dynamic import inside createServerFn handler
+export const DynamicImportFn = createServerFn().handler(async () => {
+  const mod = await import("./some-module");
+  return mod.default();
+});
+
+// ─── tanstack-start-serverfn-missing-input-validator ─────────────────────────
+
+// Violation: createServerFn without inputValidator (triggers tanstack-start-serverfn-missing-input-validator)
+const noValidatorFn = createServerFn().handler(async () => {
+  return { data: "unvalidated" };
+});
+
+// Safe: createServerFn with inputValidator
+const validatedFn = createServerFn()
+  .inputValidator((input: unknown) => input as { id: string })
+  .handler(async ({ id }) => {
+    return { id };
+  });
+
+// ─── tanstack-start-serverfn-missing-csrf-middleware ──────────────────────────
+
+// Violation: createServerFn in file without CSRF middleware reference
+
+// ─── tanstack-start-no-navigate-in-render ────────────────────────────────────
+
+// Violation: navigate() called in render body
+export function NavigateInRender() {
+  const user = useLoaderData({ from: "/users" });
+  if (!user) {
+    navigate({ to: "/login" });
+  }
+  return <div>{user?.name}</div>;
+}
+
+// Safe: navigate() in event handler
+export function NavigateOnEvent() {
+  return (
+    <button onClick={() => navigate({ to: "/home" })}>Go home</button>
+  );
+}

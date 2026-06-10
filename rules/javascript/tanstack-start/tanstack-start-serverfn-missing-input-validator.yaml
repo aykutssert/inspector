@@ -1,0 +1,20 @@
+rules:
+  - id: tanstack-start-serverfn-missing-input-validator
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      createServerFn() chain missing .inputValidator(schema). Without input
+      validation, untrusted client data reaches the server function unchecked,
+      opening the route to injection and type-confusion attacks. TanStack
+      Start docs show inputValidator as the standard contract.
+    metadata:
+      category: security
+      confidence: rule
+    patterns:
+      - pattern-inside: |
+          import { ..., createServerFn, ... } from "@tanstack/start";
+          ...
+      - pattern: createServerFn(...).$CHAIN
+      - metavariable-regex:
+          metavariable: $CHAIN
+          regex: ^(?!validator|inputValidator).*$

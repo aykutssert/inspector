@@ -1,0 +1,17 @@
+rules:
+  - id: js-async-foreach
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      An async callback is passed to a .forEach() call. forEach ignores the
+      returned promise, so none of the asynchronous work is awaited — the
+      callback runs unsequenced and errors are silently lost. Use a for...of
+      loop with await, or Promise.all($ARR.map(...)) for parallel execution.
+    metadata:
+      category: correctness
+      confidence: rule
+    patterns:
+      - pattern: $ARR.forEach($CB)
+      - metavariable-regex:
+          metavariable: $CB
+          regex: \basync\b

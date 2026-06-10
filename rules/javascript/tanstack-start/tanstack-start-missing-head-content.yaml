@@ -1,0 +1,30 @@
+rules:
+  - id: tanstack-start-missing-head-content
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Root route component missing <HeadContent />. TanStack Start requires
+      <HeadContent /> in the root route component to render <title> and other
+      head elements defined by child routes. Without it, meta tags are silently
+      dropped during rendering.
+    metadata:
+      category: bug
+      confidence: rule
+    patterns:
+      - pattern: |
+          createRootRoute({
+            component: () => (
+              <>
+                ...
+              </>
+            ),
+          })
+      - pattern-not: |
+          createRootRoute({
+            component: () => (
+              <>
+                <HeadContent />
+                ...
+              </>
+            ),
+          })

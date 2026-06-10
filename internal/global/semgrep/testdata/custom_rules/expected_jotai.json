@@ -5,7 +5,7 @@
     "category": "performance",
     "confidence": "hint",
     "file": "jotai.ts",
-    "line": 8,
+    "line": 10,
     "message": "Derived atom returns a new object/array literal on every read. Each evaluation of atom(get =\u003e ({ ... })) produces a new reference, so every subscriber re-renders even when underlying values are unchanged. Use selectAtom with an equality function, or stabilize the shape with atom(get =\u003e derived, equal) to avoid unnecessary re-renders.\n"
   },
   {
@@ -14,7 +14,7 @@
     "category": "performance",
     "confidence": "hint",
     "file": "jotai.ts",
-    "line": 14,
+    "line": 16,
     "message": "Derived atom returns a new object/array literal on every read. Each evaluation of atom(get =\u003e ({ ... })) produces a new reference, so every subscriber re-renders even when underlying values are unchanged. Use selectAtom with an equality function, or stabilize the shape with atom(get =\u003e derived, equal) to avoid unnecessary re-renders.\n"
   },
   {
@@ -23,7 +23,50 @@
     "category": "performance",
     "confidence": "hint",
     "file": "jotai.ts",
-    "line": 17,
+    "line": 19,
     "message": "Derived atom returns a new object/array literal on every read. Each evaluation of atom(get =\u003e ({ ... })) produces a new reference, so every subscriber re-renders even when underlying values are unchanged. Use selectAtom with an equality function, or stabilize the shape with atom(get =\u003e derived, equal) to avoid unnecessary re-renders.\n"
+  },
+  {
+    "rule_id": "jotai.jotai-select-atom-in-render-body",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "jotai.ts",
+    "line": 31,
+    "message": "selectAtom() is created inside a component render body. That recreates the selector on every render and weakens Jotai memoization. Hoist the selector to module scope or extract it outside the component.\n"
+  },
+  {
+    "rule_id": "jotai.jotai-select-atom-in-render-body",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "jotai.ts",
+    "line": 36,
+    "message": "selectAtom() is created inside a component render body. That recreates the selector on every render and weakens Jotai memoization. Hoist the selector to module scope or extract it outside the component.\n"
+  },
+  {
+    "rule_id": "jotai.jotai-selectatom-without-stable-equality",
+    "severity": "warning",
+    "confidence": "hint",
+    "file": "jotai.ts",
+    "line": 71,
+    "message": "selectAtom selector returns an object or array literal without an equality function (3rd argument). Each evaluation creates a new reference, causing downstream atoms/subscribers to re-render infinitely. Add a deep equality function as the third argument (e.g., shallowEqual).\n"
+  },
+  {
+    "rule_id": "jotai.jotai-selectatom-without-stable-equality",
+    "severity": "warning",
+    "confidence": "hint",
+    "file": "jotai.ts",
+    "line": 74,
+    "message": "selectAtom selector returns an object or array literal without an equality function (3rd argument). Each evaluation creates a new reference, causing downstream atoms/subscribers to re-render infinitely. Add a deep equality function as the third argument (e.g., shallowEqual).\n"
+  },
+  {
+    "rule_id": "jotai.jotai-tq-use-raw-query-atom",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "jotai.ts",
+    "line": 45,
+    "message": "This component subscribes to the full TanStack Query atom. That broad subscription causes unnecessary re-renders when only a slice is needed. Use selectAtom() to derive the minimal state the component actually reads.\n"
   }
 ]

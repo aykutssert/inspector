@@ -1,0 +1,59 @@
+rules:
+  - id: rn-scrollview-dynamic-padding
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      ScrollView (or FlatList) has paddingTop/paddingBottom in its style or
+      contentContainerStyle. Padding on scroll content shifts the visible area
+      during scroll and can cause layout jank. Use the native `contentInset` prop
+      instead to adjust scroll indicator insets without moving content boundaries.
+    metadata:
+      category: performance
+      confidence: hint
+    patterns:
+      - pattern-inside: |
+          import { ..., FlatList, ScrollView, ... } from "react-native";
+          ...
+      - pattern-either:
+          - patterns:
+              - pattern-either:
+                  - pattern: <ScrollView contentContainerStyle={$S}>...</ScrollView>
+                  - pattern: <ScrollView contentContainerStyle={$S} />
+              - metavariable-regex:
+                  metavariable: $S
+                  regex: "(?s).*paddingTop.*"
+          - patterns:
+              - pattern-either:
+                  - pattern: <ScrollView contentContainerStyle={$S}>...</ScrollView>
+                  - pattern: <ScrollView contentContainerStyle={$S} />
+              - metavariable-regex:
+                  metavariable: $S
+                  regex: "(?s).*paddingBottom.*"
+          - patterns:
+              - pattern-either:
+                  - pattern: <ScrollView style={$S}>...</ScrollView>
+                  - pattern: <ScrollView style={$S} />
+              - metavariable-regex:
+                  metavariable: $S
+                  regex: "(?s).*paddingTop.*"
+          - patterns:
+              - pattern-either:
+                  - pattern: <ScrollView style={$S}>...</ScrollView>
+                  - pattern: <ScrollView style={$S} />
+              - metavariable-regex:
+                  metavariable: $S
+                  regex: "(?s).*paddingBottom.*"
+          - patterns:
+              - pattern-either:
+                  - pattern: <FlatList contentContainerStyle={$S}>...</FlatList>
+                  - pattern: <FlatList contentContainerStyle={$S} />
+              - metavariable-regex:
+                  metavariable: $S
+                  regex: "(?s).*paddingTop.*"
+          - patterns:
+              - pattern-either:
+                  - pattern: <FlatList contentContainerStyle={$S}>...</FlatList>
+                  - pattern: <FlatList contentContainerStyle={$S} />
+              - metavariable-regex:
+                  metavariable: $S
+                  regex: "(?s).*paddingBottom.*"

@@ -1,0 +1,24 @@
+rules:
+  - id: js-prototype-pollution-merge
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Untrusted user input (req.body / req.params / req.query) passed directly
+      to Object.assign() or _.merge(). An attacker can inject
+      __proto__ or constructor.prototype properties to pollute all object
+      prototypes, leading to privilege escalation or RCE.
+    metadata:
+      category: security
+      confidence: rule
+    pattern-either:
+      - pattern: Object.assign($TGT, ..., req.body, ...)
+      - pattern: Object.assign($TGT, ..., req.params, ...)
+      - pattern: Object.assign($TGT, ..., req.query, ...)
+      - patterns:
+          - pattern-inside: |
+              import _ from "lodash";
+              ...
+          - pattern-either:
+            - pattern: _.merge($TGT, ..., req.body, ...)
+            - pattern: _.merge($TGT, ..., req.params, ...)
+            - pattern: _.merge($TGT, ..., req.query, ...)

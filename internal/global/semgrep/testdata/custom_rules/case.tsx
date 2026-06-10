@@ -520,3 +520,43 @@ export function tanstackQueryKeys(userId: string) {
   useQuery({ queryKey: ["users", new Date()], queryFn: fetchUsers }); // should trigger tanstack-nonserializable-query-key
   useQuery({ queryKey: ["users", () => userId], queryFn: fetchUsers }); // should trigger tanstack-nonserializable-query-key
 }
+
+// ─── prefer-html-dialog ────────────────────────────────────────────────────────
+
+// Violations: role="dialog" on non-dialog elements
+export function DialogComponents() {
+  return (
+    <>
+      <div role="dialog" aria-modal="true">Modal content</div>
+      <section role="dialog">Section as dialog</section>
+      {/* Safe: native dialog element */}
+      <dialog open>Native dialog</dialog>
+    </>
+  );
+}
+
+// ─── no-inline-exhaustive-style ────────────────────────────────────────────────
+
+// Violation: style with many properties
+export function ExhaustiveInlineStyle() {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "space-between", padding: "16px", margin: "8px", backgroundColor: "#fff", borderRadius: "8px", boxShadow: "0 2px 4px rgba(0,0,0,0.1)" }}>
+      Content
+    </div>
+  );
+}
+
+// Safe: style with few properties
+export function SafeInlineStyle() {
+  return <div style={{ color: "red", fontSize: "14px" }}>Content</div>;
+}
+
+// ─── jwt-verify-without-algorithms ───────────────────────────────────────────
+
+export function verifyJwtClaims(token: string) {
+  const jwt = require("jsonwebtoken");
+  const claims = jwt.verify(token, "shh");
+  const claimsWithOtherOptions = jwt.verify(token, "shh", { issuer: "example" });
+  const safeClaims = jwt.verify(token, "shh", { algorithms: ["HS256"] });
+  return { claims, claimsWithOtherOptions, safeClaims };
+}

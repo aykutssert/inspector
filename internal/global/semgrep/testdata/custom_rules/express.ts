@@ -114,3 +114,73 @@ appSafe.use(express.urlencoded({ extended: true, limit: "500kb" }));
 appSafe.use(session({ secret: "test", cookie: { httpOnly: false, secure: true } })); // triggers express-insecure-session-cookie
 appSafe.use(session({ secret: "test", cookie: { httpOnly: true, secure: false } })); // triggers express-insecure-session-cookie
 appSafe.use(session({ secret: "test", cookie: { httpOnly: true, secure: true } }));
+
+// ─── jwt-verify-without-algorithms ───────────────────────────────────────────
+
+// Violation: jwt.verify without algorithms option (triggers jwt-verify-without-algorithms)
+export function UnsafeTokenVerify() {
+  const claims = jwt.verify(token, secret);
+  return { userId: claims.sub };
+}
+
+// Violation: jwt.verify with options but no algorithms (triggers jwt-verify-without-algorithms)
+export function UnsafeTokenVerifyWithOpts() {
+  const claims = jwt.verify(token, secret, { expiresIn: "1h" });
+  return { userId: claims.sub };
+}
+
+// Safe: jwt.verify with algorithms
+export function SafeTokenVerify() {
+  const claims = jwt.verify(token, secret, { algorithms: ["HS256"] });
+  return { userId: claims.sub };
+}
+
+// ─── express-trust-proxy-misconfig ───────────────────────────────────────────
+
+// Violation: trust proxy disabled (triggers express-trust-proxy-misconfig)
+appUnsafe.set("trust proxy", false);
+
+// Violation: trust proxy set to "none" (triggers express-trust-proxy-misconfig)
+appUnsafe.set("trust proxy", "none");
+
+// ─── js-prototype-pollution-merge ────────────────────────────────────────────
+
+// Violation: Object.assign with req.body (triggers js-prototype-pollution-merge)
+export function UnsafeMerge(req: any, res: any) {
+  const config = Object.assign({}, req.body);
+  res.json(config);
+}
+
+// Violation: Object.assign with req.query (triggers js-prototype-pollution-merge)
+export function UnsafeQueryMerge(req: any, res: any) {
+  const filters = Object.assign({}, req.query);
+  res.json(filters);
+}
+
+// Safe: Object.assign with trusted source
+export function SafeMerge(req: any, res: any) {
+  const config = Object.assign({}, { key: "trusted" });
+  res.json(config);
+}
+
+// ─── js-hoist-regexp ─────────────────────────────────────────────────────────
+
+// Violation: new RegExp inside function (triggers js-hoist-regexp)
+export function MatchUserAgent(req: any, res: any) {
+  const pattern = new RegExp("^Mozilla/");
+  res.json({ matched: pattern.test(req.headers["user-agent"]) });
+}
+
+// Safe: new RegExp at module scope
+const modulePattern = new RegExp("^Mozilla/");
+
+// ─── js-hoist-intl ───────────────────────────────────────────────────────────
+
+// Violation: new Intl.NumberFormat inside function (triggers js-hoist-intl)
+export function FormatPrice(price: number) {
+  const fmt = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
+  return fmt.format(price);
+}
+
+// Safe: new Intl.NumberFormat at module scope
+const currencyFormatter = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });

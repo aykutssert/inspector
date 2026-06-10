@@ -1,0 +1,29 @@
+rules:
+  - id: js-react-missing-interval-cleanup
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      setInterval() called inside useEffect() without a corresponding
+      clearInterval() in the cleanup function. When the component unmounts,
+      the interval continues running, holding references and executing stale
+      closures. Add a return () => clearInterval($ID).
+    metadata:
+      category: bug
+      confidence: rule
+    patterns:
+      - pattern-inside: |
+          import { ..., useEffect, ... } from "react";
+          ...
+      - patterns:
+          - pattern: |
+              useEffect(() => {
+                ...
+                setInterval(...)
+                ...
+              }, ...)
+          - pattern-not: |
+              useEffect(() => {
+                ...
+                clearInterval(...)
+                ...
+              }, ...)

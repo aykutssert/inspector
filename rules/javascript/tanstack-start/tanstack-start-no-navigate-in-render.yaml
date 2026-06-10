@@ -1,0 +1,17 @@
+rules:
+  - id: tanstack-start-no-navigate-in-render
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      navigate() called in component render body instead of a route loader or
+      user event handler. Call redirect() in the route's loader for declarative
+      redirects, or place navigate() inside an event handler / useEffect.
+    metadata:
+      category: bug
+      confidence: hint
+    patterns:
+      - pattern: navigate($ARGS)
+      - pattern-inside: |
+          export function $COMP(...) {
+            ...
+          }

@@ -1,0 +1,17 @@
+rules:
+  - id: rn-list-recyclable-without-types
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      FlashList without getItemType prop. When rows have different layouts/types,
+      getItemType enables per-type view recycling. Without it, all rows are treated
+      as the same type and FlashList cannot recycle across different row layouts.
+    metadata:
+      category: performance
+      confidence: hint
+    patterns:
+      - pattern-inside: |
+          import { ..., FlashList, ... } from "@shopify/flash-list";
+          ...
+      - pattern: <FlashList ... />
+      - pattern-not: <FlashList ... getItemType={...} ... />
