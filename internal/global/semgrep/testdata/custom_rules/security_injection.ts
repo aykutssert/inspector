@@ -62,4 +62,21 @@ router.use((err: any, req: any, res: any, next: any) => {
   res.status(500).json({ error: "Internal error" }); // NO FIRE
 });
 
+// --- express-no-code-after-response: positive ---
+function handlerBug(req: any, res: any) {
+  if (!req.user) {
+    res.status(401).send("unauthorized"); // FIRE (no return, falls through)
+  }
+  deleteAccount(req.user); // runs even when unauthorized
+}
+
+// --- express-no-code-after-response: negative ---
+function handlerSafe(req: any, res: any) {
+  if (!req.user) {
+    return res.status(401).send("unauthorized"); // NO FIRE (returned)
+  }
+  deleteAccount(req.user);
+}
+declare function deleteAccount(u: any): void;
+
 export { router };

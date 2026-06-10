@@ -270,6 +270,41 @@
     "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
   },
   {
+    "rule_id": "express.express-missing-rate-limit",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "security_injection.ts",
+    "line": 9,
+    "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
+  },
+  {
+    "rule_id": "express.express-missing-rate-limit",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "security_injection.ts",
+    "line": 12,
+    "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
+  },
+  {
+    "rule_id": "express.express-missing-rate-limit",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "security_injection.ts",
+    "line": 18,
+    "message": "This Express route handler does not appear to be protected by a rate-limiter. Without rate limiting, endpoints are vulnerable to brute-force and denial-of-service (DDoS) attacks. Apply express-rate-limit (or a similar middleware) to this router or globally via app.use(rateLimit({ ... })).\n"
+  },
+  {
+    "rule_id": "express.express-no-code-after-response",
+    "severity": "warning",
+    "confidence": "rule",
+    "file": "security_injection.ts",
+    "line": 67,
+    "message": "A guard sends a response (res.send/json/end/redirect/sendStatus) as the last statement of an if-block but does not `return`, so execution falls through to the code after the if. The handler's main logic runs even when the guard fired, and a second response throws \"Cannot set headers after they are sent\". Add `return` before the response call.\n"
+  },
+  {
     "rule_id": "express.express-sensitive-route-no-auth",
     "severity": "warning",
     "category": "security",

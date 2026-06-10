@@ -1,0 +1,39 @@
+rules:
+  - id: express-no-code-after-response
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      A guard sends a response (res.send/json/end/redirect/sendStatus) as the
+      last statement of an if-block but does not `return`, so execution falls
+      through to the code after the if. The handler's main logic runs even when
+      the guard fired, and a second response throws "Cannot set headers after
+      they are sent". Add `return` before the response call.
+    metadata:
+      category: bug
+      confidence: rule
+    patterns:
+      - pattern: |
+          if (...) {
+            ...
+            $CALL;
+          }
+          $NEXT
+      - pattern-not: |
+          if (...) {
+            ...
+            return ...;
+          }
+          $NEXT
+      - metavariable-pattern:
+          metavariable: $CALL
+          patterns:
+            - pattern-either:
+                - pattern: $RES.$M(...)
+                - pattern: $RES.status(...).$M(...)
+                - pattern: $RES.status(...).$M(...).$M2(...)
+            - metavariable-regex:
+                metavariable: $M
+                regex: ^(send|json|end|sendStatus|redirect|sendFile|jsonp)$
+            - metavariable-regex:
+                metavariable: $RES
+                regex: ^(res|response|reply)$
