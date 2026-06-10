@@ -52,8 +52,11 @@ func parseFile(root, rel string, resolver *importResolver) (*fileInfo, error) {
 	}
 	rootNode := tree.RootNode()
 	walk(rootNode, func(n *sitter.Node) {
-		if n.Type() == "import_statement" {
+		switch n.Type() {
+		case "import_statement":
 			collectImport(fi, n, src)
+		case "lexical_declaration", "variable_declaration":
+			collectMutableVar(fi, n, src)
 		}
 	})
 	walk(rootNode, func(n *sitter.Node) {
@@ -73,6 +76,9 @@ func parseFile(root, rel string, resolver *importResolver) (*fileInfo, error) {
 		fi.Classes[name] = c
 		if c.Decorators["Module"] {
 			fi.Modules = append(fi.Modules, moduleFromDecorator(rel, fi, c, n, src))
+		}
+		if c.Decorators["Injectable"] {
+			c.InjectableScope = extractInjectableScope(n, src)
 		}
 	})
 	return fi, nil

@@ -410,6 +410,119 @@ func TestAsyncReduceWithoutAwaitedAcc(t *testing.T) {
 	}
 }
 
+func TestDeferredAwaitViolation(t *testing.T) {
+	src := `
+		async function handler(data: any) {
+			const result = await fetchData();
+			if (!data) return null;
+			return result;
+		}
+	`
+	findings := scanSrc(t, "handler.ts", src)
+	if !hasRule(findings, "async-defer-await") {
+		t.Fatalf("expected async-defer-await violation, got %#v", findings)
+	}
+}
+
+func TestDeferredAwaitNoViolationWhenGuardUsesAwaitedVar(t *testing.T) {
+	src := `
+		async function handler() {
+			const result = await fetchData();
+			if (!result) return null;
+			return process(result);
+		}
+	`
+	findings := scanSrc(t, "handler.ts", src)
+	if hasRule(findings, "async-defer-await") {
+		t.Fatalf("did not expect async-defer-await when guard uses awaited var, got %#v", findings)
+	}
+}
+
+func TestDeferredAwaitNoViolationWithoutAwait(t *testing.T) {
+	src := `
+		async function handler(data: any) {
+			if (!data) return null;
+			const result = await fetchData();
+			return result;
+		}
+	`
+	findings := scanSrc(t, "handler.ts", src)
+	if hasRule(findings, "async-defer-await") {
+		t.Fatalf("did not expect async-defer-await without await-before-guard, got %#v", findings)
+	}
+}
+
+func TestDeferredAwaitNoViolationOnSyncFunction(t *testing.T) {
+	src := `
+		function handler(data: any) {
+			const result = fetchData();
+			if (!data) return null;
+			return result;
+		}
+	`
+	findings := scanSrc(t, "handler.ts", src)
+	if hasRule(findings, "async-defer-await") {
+		t.Fatalf("sync function must not trigger async-defer-await, got %#v", findings)
+	}
+}
+
+func TestBatchDOMCssWriteThenReadInLoop(t *testing.T) {
+	src := `
+		function process(items: any[]) {
+			for (const item of items) {
+				item.style.height = "100px";
+				console.log(item.offsetHeight);
+			}
+		}
+	`
+	findings := scanSrc(t, "process.ts", src)
+	if !hasRule(findings, "js-batch-dom-css") {
+		t.Fatalf("expected js-batch-dom-css violation, got %#v", findings)
+	}
+}
+
+func TestBatchDOMCssSafeReadBeforeWrite(t *testing.T) {
+	src := `
+		function process(items: any[]) {
+			for (const item of items) {
+				const h = item.offsetHeight;
+				item.style.height = h + "px";
+			}
+		}
+	`
+	findings := scanSrc(t, "process.ts", src)
+	if hasRule(findings, "js-batch-dom-css") {
+		t.Fatalf("read-then-write is safe, got %#v", findings)
+	}
+}
+
+func TestBatchDOMCssSafeOutsideLoop(t *testing.T) {
+	src := `
+		function process(item: any) {
+			item.style.height = "100px";
+			console.log(item.offsetHeight);
+		}
+	`
+	findings := scanSrc(t, "process.ts", src)
+	if hasRule(findings, "js-batch-dom-css") {
+		t.Fatalf("outside loop is safe, got %#v", findings)
+	}
+}
+
+func TestBatchDOMCssNoDOMOps(t *testing.T) {
+	src := `
+		function process(items: any[]) {
+			for (const item of items) {
+				console.log(item.name);
+			}
+		}
+	`
+	findings := scanSrc(t, "process.ts", src)
+	if hasRule(findings, "js-batch-dom-css") {
+		t.Fatalf("no DOM operations is safe, got %#v", findings)
+	}
+}
+
 func TestCacheStorage(t *testing.T) {
 	src := `
 		function process() {
@@ -437,5 +550,3 @@ func TestCacheStorage(t *testing.T) {
 		t.Fatalf("expected no js-cache-storage violation, got %#v", findingsSafe)
 	}
 }
-
-

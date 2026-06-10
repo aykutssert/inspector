@@ -8,6 +8,15 @@ import (
 	"github.com/aykutssert/scout/internal/core"
 )
 
+func hasRule(findings []core.Finding, ruleID string) bool {
+	for _, f := range findings {
+		if f.RuleID == ruleID {
+			return true
+		}
+	}
+	return false
+}
+
 func scanSource(t *testing.T, name, src string) []core.Finding {
 	t.Helper()
 	dir := t.TempDir()
@@ -207,6 +216,89 @@ func TestRNPerformanceSafe(t *testing.T) {
 	findings := scanSource(t, "App.tsx", src)
 	if len(findings) != 0 {
 		t.Fatalf("did not expect any performance findings, got: %#v", findings)
+	}
+}
+
+func TestListInlineObjectDetected(t *testing.T) {
+	src := `
+		import { FlatList } from "react-native";
+		import { View } from "react-native";
+		export function App({ items }) {
+			return (
+				<FlatList
+					data={items}
+					renderItem={({ item }) => (
+						<View style={{ margin: 8, padding: 4 }}>
+							<Item item={item} />
+						</View>
+					)}
+				/>
+			);
+		}
+	`
+	findings := scanSource(t, "App.tsx", src)
+	if !hasRule(findings, "rn-no-inline-object-in-list-item") {
+		t.Fatalf("expected rn-no-inline-object-in-list-item finding, got %#v", findings)
+	}
+}
+
+func TestListInlineObjectSafeWhenReferenced(t *testing.T) {
+	src := `
+		import { FlatList } from "react-native";
+		import { View } from "react-native";
+		const styles = { item: { margin: 8 } };
+		export function App({ items }) {
+			return (
+				<FlatList
+					data={items}
+					renderItem={({ item }) => (
+						<View style={styles.item}>
+							<Item item={item} />
+						</View>
+					)}
+				/>
+			);
+		}
+	`
+	findings := scanSource(t, "App.tsx", src)
+	if hasRule(findings, "rn-no-inline-object-in-list-item") {
+		t.Fatalf("expected no rn-no-inline-object-in-list-item findings, got %#v", findings)
+	}
+}
+
+func TestScrollStateDetected(t *testing.T) {
+	src := `
+		import { ScrollView } from "react-native";
+		import { useState } from "react";
+		export function App() {
+			const [y, setY] = useState(0);
+			return (
+				<ScrollView
+					onScroll={(e) => setY(e.nativeEvent.contentOffset.y)}
+				/>
+			);
+		}
+	`
+	findings := scanSource(t, "App.tsx", src)
+	if !hasRule(findings, "rn-no-scroll-state") {
+		t.Fatalf("expected rn-no-scroll-state finding, got %#v", findings)
+	}
+}
+
+func TestScrollStateSafeWithoutSetter(t *testing.T) {
+	src := `
+		import { ScrollView } from "react-native";
+		export function App() {
+			return (
+				<ScrollView
+					onScroll={(e) => console.log(e.nativeEvent.contentOffset.y)}
+				/>
+			);
+		}
+	`
+	findings := scanSource(t, "App.tsx", src)
+	if hasRule(findings, "rn-no-scroll-state") {
+		t.Fatalf("expected no rn-no-scroll-state findings, got %#v", findings)
 	}
 }
 

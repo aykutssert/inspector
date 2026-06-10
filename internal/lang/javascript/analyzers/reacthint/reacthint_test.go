@@ -1328,3 +1328,121 @@ func TestMemoBeforeEarlyReturn_Fires(t *testing.T) {
 		t.Fatalf("expected rerender-memo-before-early-return, got %v", ids)
 	}
 }
+
+func TestNoUseMemoSimpleExpression_FiresOnBinary(t *testing.T) {
+	src := `function C({ a, b }) {
+  const total = useMemo(() => a + b, [a, b]);
+  return <div>{total}</div>;
+}`
+	if ids := parseSrc(t, ".tsx", src); !has(ids, "no-usememo-simple-expression") {
+		t.Fatalf("expected no-usememo-simple-expression, got %v", ids)
+	}
+}
+
+func TestNoUseMemoSimpleExpression_FiresOnMember(t *testing.T) {
+	src := `function C({ obj }) {
+  const val = useMemo(() => obj.name, [obj]);
+  return <div>{val}</div>;
+}`
+	if ids := parseSrc(t, ".tsx", src); !has(ids, "no-usememo-simple-expression") {
+		t.Fatalf("expected no-usememo-simple-expression, got %v", ids)
+	}
+}
+
+func TestNoUseMemoSimpleExpression_SafeOnCall(t *testing.T) {
+	src := `function C({ items }) {
+  const filtered = useMemo(() => items.filter(x => x.active), [items]);
+  return <div>{filtered}</div>;
+}`
+	if ids := parseSrc(t, ".tsx", src); has(ids, "no-usememo-simple-expression") {
+		t.Fatalf("did not expect no-usememo-simple-expression for call expression, got %v", ids)
+	}
+}
+
+func TestNoUseMemoSimpleExpression_SafeOnBlockBody(t *testing.T) {
+	src := `function C({ a, b }) {
+  const total = useMemo(() => { return a + b; }, [a, b]);
+  return <div>{total}</div>;
+}`
+	if ids := parseSrc(t, ".tsx", src); has(ids, "no-usememo-simple-expression") {
+		t.Fatalf("did not expect no-usememo-simple-expression for block body, got %v", ids)
+	}
+}
+
+func TestNoUseMemoSimpleExpression_SafeOnUndepVar(t *testing.T) {
+	src := `function C({ a, b }) {
+  const total = useMemo(() => a + b + c, [a, b]);
+  return <div>{total}</div>;
+}`
+	if ids := parseSrc(t, ".tsx", src); has(ids, "no-usememo-simple-expression") {
+		t.Fatalf("did not expect no-usememo-simple-expression when expression uses undepended var, got %v", ids)
+	}
+}
+
+func TestRerenderDeferReadsHook_Fires(t *testing.T) {
+	src := `function Sidebar() {
+  const [searchParams] = useSearchParams();
+  const view = searchParams.get('view');
+  return <div>{view}</div>;
+}`
+	if ids := parseSrc(t, ".tsx", src); !has(ids, "rerender-defer-reads-hook") {
+		t.Fatalf("expected rerender-defer-reads-hook, got %v", ids)
+	}
+}
+
+func TestRerenderDeferReadsHook_HandlerSafe(t *testing.T) {
+	src := `function Sidebar() {
+  const [searchParams] = useSearchParams();
+  const handleClick = () => {
+    const view = searchParams.get('view');
+  };
+  return <div onClick={handleClick}>open</div>;
+}`
+	if ids := parseSrc(t, ".tsx", src); has(ids, "rerender-defer-reads-hook") {
+		t.Fatalf("did not expect rerender-defer-reads-hook when get() is inside handler, got %v", ids)
+	}
+}
+
+func TestRerenderDerivedStateFromHook_Fires(t *testing.T) {
+	src := `function App() {
+  const [scrollY, setScrollY] = useState(0);
+  useEffect(() => {
+    const onScroll = () => setScrollY(window.scrollY);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+  return <div>{scrollY}</div>;
+}`
+	if ids := parseSrc(t, ".tsx", src); !has(ids, "rerender-derived-state-from-hook") {
+		t.Fatalf("expected rerender-derived-state-from-hook, got %v", ids)
+	}
+}
+
+func TestRerenderDerivedStateFromHook_SafeNoState(t *testing.T) {
+	src := `function App() {
+  useEffect(() => {
+    const onScroll = () => console.log(window.scrollY);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+  return <div />;
+}`
+	if ids := parseSrc(t, ".tsx", src); has(ids, "rerender-derived-state-from-hook") {
+		t.Fatalf("did not expect rerender-derived-state-from-hook when no useState setter is called, got %v", ids)
+	}
+}
+
+func TestRerenderDerivedStateFromHook_SafeNonHighFreqEvent(t *testing.T) {
+	src := `function App() {
+  const [clicked, setClicked] = useState(false);
+  useEffect(() => {
+    const onClick = () => setClicked(true);
+    window.addEventListener('click', onClick);
+    return () => window.removeEventListener('click', onClick);
+  }, []);
+  return <div>{clicked ? 'yes' : 'no'}</div>;
+}`
+	if ids := parseSrc(t, ".tsx", src); has(ids, "rerender-derived-state-from-hook") {
+		t.Fatalf("did not expect rerender-derived-state-from-hook for click event, got %v", ids)
+	}
+}

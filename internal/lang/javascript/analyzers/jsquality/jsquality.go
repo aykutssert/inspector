@@ -102,6 +102,8 @@ func scanFile(abs, rel string) ([]core.Finding, error) {
 	}
 	findings = append(findings, detectSequentialAwaits(tree.RootNode(), lang, src, rel)...)
 	findings = append(findings, detectPerformancePatterns(tree.RootNode(), lang, src, rel)...)
+	findings = append(findings, detectDeferredAwait(tree.RootNode(), lang, src, rel)...)
+	findings = append(findings, detectBatchDOMCss(tree.RootNode(), lang, src, rel)...)
 	return findings, nil
 }
 

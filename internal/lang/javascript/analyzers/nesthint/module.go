@@ -9,13 +9,14 @@ func moduleFromDecorator(rel string, fi *fileInfo, c *classInfo, classNode *sitt
 		Line:        c.Line,
 		IsGlobal:    c.Decorators["Global"],
 		Imports:     map[string]bool{},
+		ForwardRefs: map[string]bool{},
 		Controllers: map[string]bool{},
 		Providers:   map[string]bool{},
 		Exports:     map[string]bool{},
 	}
 	if dec := findClassDecorator(classNode, "Module", src); dec != nil {
 		if obj := firstChildOfType(dec, "object"); obj != nil {
-			readModuleArray(rel, fi, obj, "imports", m.Imports, &m.UnknownImports, src)
+			readModuleArrayWithForwardRef(rel, fi, obj, "imports", m.Imports, m.ForwardRefs, &m.UnknownImports, src)
 			readModuleArray(rel, fi, obj, "controllers", m.Controllers, nil, src)
 			readModuleArray(rel, fi, obj, "providers", m.Providers, &m.UnknownProvider, src)
 			readModuleArray(rel, fi, obj, "exports", m.Exports, &m.UnknownExports, src)
@@ -25,6 +26,13 @@ func moduleFromDecorator(rel string, fi *fileInfo, c *classInfo, classNode *sitt
 }
 
 func readModuleArray(rel string, fi *fileInfo, obj *sitter.Node, prop string, out map[string]bool, unknown *bool, src []byte) {
+	readModuleArrayWithForwardRef(rel, fi, obj, prop, out, nil, unknown, src)
+}
+
+// readModuleArrayWithForwardRef extends readModuleArray with optional forwardRef
+// tracking. When forwardRefs is non-nil, call_expression entries (forwardRef)
+// are added to both out and forwardRefs.
+func readModuleArrayWithForwardRef(rel string, fi *fileInfo, obj *sitter.Node, prop string, out map[string]bool, forwardRefs map[string]bool, unknown *bool, src []byte) {
 	pair := objectPair(obj, prop, src)
 	if pair == nil {
 		return
@@ -52,6 +60,9 @@ func readModuleArray(rel string, fi *fileInfo, obj *sitter.Node, prop string, ou
 			}
 			if ref := forwardRefModule(rel, fi, el, src); ref.key() != "" {
 				out[ref.key()] = true
+				if forwardRefs != nil {
+					forwardRefs[ref.key()] = true
+				}
 				continue
 			}
 			if unknown != nil {

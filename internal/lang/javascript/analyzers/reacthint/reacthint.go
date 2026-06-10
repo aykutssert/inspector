@@ -82,6 +82,10 @@ var detectors = []detector{
 	detectHydrationNoFlicker,
 	detectTransitionsScroll,
 	detectEventHandlerRefs,
+	// P2 quality (#127, #152)
+	detectNoUseMemoSimpleExpression,
+	detectRerenderDeferReadsHook,
+	detectRerenderDerivedStateFromHook,
 }
 
 // jsxDetectors need JSX grammar (text/elements) and only run on js/jsx/tsx.

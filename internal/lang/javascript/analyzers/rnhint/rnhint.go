@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"time"
 
@@ -83,6 +84,8 @@ func scanFile(abs, rel string) ([]core.Finding, error) {
 	findings = append(findings, detectListDataMapped(tree.RootNode(), src, rel, importedNames, namespaces)...)
 	findings = append(findings, detectListCallbackPerRow(tree.RootNode(), src, rel, importedNames, namespaces)...)
 	findings = append(findings, detectScrollViewMappedList(tree.RootNode(), src, rel, importedNames, namespaces)...)
+	findings = append(findings, detectListInlineObject(tree.RootNode(), src, rel, importedNames, namespaces)...)
+	findings = append(findings, detectScrollState(tree.RootNode(), src, rel, importedNames, namespaces)...)
 	return findings, nil
 }
 
@@ -501,10 +504,208 @@ func isInlineMapCall(node *sitter.Node, src []byte) bool {
 	return false
 }
 
+func detectListInlineObject(root *sitter.Node, src []byte, file string, importedNames map[string]string, namespaces map[string]bool) []core.Finding {
+	var findings []core.Finding
+	walk(root, func(node *sitter.Node) {
+		if node.Type() != "jsx_element" && node.Type() != "jsx_self_closing_element" {
+			return
+		}
+		var opening *sitter.Node
+		if node.Type() == "jsx_element" {
+			opening = directChildOfType(node, "jsx_opening_element")
+		} else {
+			opening = node
+		}
+		if opening == nil {
+			return
+		}
+		tag := jsxTagName(opening, src)
+		isList := tag == "FlatList" || tag == "FlashList" || importedNames[tag] == "FlatList" || importedNames[tag] == "FlashList"
+		if !isList {
+			for namespace := range namespaces {
+				if tag == namespace+".FlatList" || tag == namespace+".FlashList" {
+					isList = true
+					break
+				}
+			}
+		}
+		if !isList {
+			return
+		}
+
+		walk(opening, func(attr *sitter.Node) {
+			if attr.Type() != "jsx_attribute" {
+				return
+			}
+			nameNode := attr.NamedChild(0)
+			if nameNode == nil || nameNode.Content(src) != "renderItem" {
+				return
+			}
+			valNode := attr.NamedChild(1)
+			if valNode == nil || valNode.Type() != "jsx_expression" {
+				return
+			}
+			for i := 0; i < int(valNode.NamedChildCount()); i++ {
+				cb := valNode.NamedChild(i)
+				if !isInlineFunction(cb) {
+					continue
+				}
+				findings = append(findings, findInlineObjectInCallback(cb, src, file)...)
+			}
+		})
+	})
+	return findings
+}
+
+func findInlineObjectInCallback(cb *sitter.Node, src []byte, file string) []core.Finding {
+	var findings []core.Finding
+	walk(cb, func(n *sitter.Node) {
+		if n.Type() != "jsx_element" && n.Type() != "jsx_self_closing_element" {
+			return
+		}
+		var opening *sitter.Node
+		if n.Type() == "jsx_element" {
+			opening = directChildOfType(n, "jsx_opening_element")
+		} else {
+			opening = n
+		}
+		if opening == nil {
+			return
+		}
+		walk(opening, func(attr *sitter.Node) {
+			if attr.Type() != "jsx_attribute" {
+				return
+			}
+			valNode := attr.NamedChild(1)
+			if valNode == nil || valNode.Type() != "jsx_expression" {
+				return
+			}
+			for i := 0; i < int(valNode.NamedChildCount()); i++ {
+				expr := valNode.NamedChild(i)
+				if expr.Type() == "object" || expr.Type() == "array" {
+					findings = append(findings, core.Finding{
+						Analyzer:   "rn-hint",
+						RuleID:     "rn-no-inline-object-in-list-item",
+						Severity:   core.SeverityWarning,
+						Level:      core.SeverityWarning.String(),
+						Category:   "performance",
+						Confidence: core.ConfidenceHint,
+						File:       file,
+						Line:       int(attr.StartPoint().Row) + 1,
+						Message:    "Inline object/array literal in JSX prop inside list renderItem. This creates a new reference on every render, breaking memo optimization for list items.",
+						Fix:        "Extract the object/array to a module-scope constant, StyleSheet.create(), or useMemo.",
+					})
+				}
+			}
+		})
+	})
+	return findings
+}
+
+func detectScrollState(root *sitter.Node, src []byte, file string, importedNames map[string]string, namespaces map[string]bool) []core.Finding {
+	var findings []core.Finding
+	walk(root, func(node *sitter.Node) {
+		if node.Type() != "jsx_element" && node.Type() != "jsx_self_closing_element" {
+			return
+		}
+		var opening *sitter.Node
+		if node.Type() == "jsx_element" {
+			opening = directChildOfType(node, "jsx_opening_element")
+		} else {
+			opening = node
+		}
+		if opening == nil {
+			return
+		}
+		tag := jsxTagName(opening, src)
+		isScrollable := tag == "ScrollView" || tag == "FlatList" || tag == "FlashList" || tag == "Animated.ScrollView" ||
+			importedNames[tag] == "ScrollView" || importedNames[tag] == "FlatList" || importedNames[tag] == "FlashList"
+		if !isScrollable {
+			for namespace := range namespaces {
+				if tag == namespace+".ScrollView" || tag == namespace+".FlatList" || tag == namespace+".FlashList" {
+					isScrollable = true
+					break
+				}
+			}
+		}
+		if !isScrollable {
+			return
+		}
+
+		walk(opening, func(attr *sitter.Node) {
+			if attr.Type() != "jsx_attribute" {
+				return
+			}
+			nameNode := attr.NamedChild(0)
+			if nameNode == nil || nameNode.Content(src) != "onScroll" {
+				return
+			}
+			valNode := attr.NamedChild(1)
+			if valNode == nil || valNode.Type() != "jsx_expression" {
+				return
+			}
+			for i := 0; i < int(valNode.NamedChildCount()); i++ {
+				handler := valNode.NamedChild(i)
+				var fnBody *sitter.Node
+				if handler.Type() == "arrow_function" || handler.Type() == "function_expression" {
+					fnBody = handler.ChildByFieldName("body")
+				} else if handler.Type() == "identifier" {
+					// Named handler — find its definition
+					// For now, only handle inline functions
+					continue
+				}
+				if fnBody == nil {
+					continue
+				}
+				if hasSetterCall(fnBody, src) {
+					findings = append(findings, core.Finding{
+						Analyzer:   "rn-hint",
+						RuleID:     "rn-no-scroll-state",
+						Severity:   core.SeverityWarning,
+						Level:      core.SeverityWarning.String(),
+						Category:   "performance",
+						Confidence: core.ConfidenceHint,
+						File:       file,
+						Line:       int(attr.StartPoint().Row) + 1,
+						Message:    "onScroll handler calls a state setter. Scroll events fire at high frequency (60fps) and setState triggers a synchronous render cycle, causing jank.",
+						Fix:        "Use Reanimated's useSharedValue + useAnimatedScrollHandler to update scroll position without JS thread re-renders.",
+					})
+				}
+			}
+		})
+	})
+	return findings
+}
+
+var setterRe = regexp.MustCompile(`^set[A-Z]`)
+
+func hasSetterCall(body *sitter.Node, src []byte) bool {
+	if body == nil {
+		return false
+	}
+	found := false
+	walk(body, func(n *sitter.Node) {
+		if found {
+			return
+		}
+		if n.Type() != "call_expression" {
+			return
+		}
+		fn := n.ChildByFieldName("function")
+		if fn == nil {
+			return
+		}
+		name := nodeText(fn, src)
+		if setterRe.MatchString(name) {
+			found = true
+		}
+	})
+	return found
+}
+
 func isInlineFunction(node *sitter.Node) bool {
 	if node == nil {
 		return false
 	}
 	return node.Type() == "arrow_function" || node.Type() == "function_expression"
 }
-

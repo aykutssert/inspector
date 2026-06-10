@@ -559,6 +559,506 @@ export class UserModule {}
 	}
 }
 
+func TestDirectMutualModuleImport(t *testing.T) {
+	root := writeProject(t, map[string]string{
+		"a.module.ts": `
+import { Module } from "@nestjs/common";
+import { BModule } from "./b.module";
+
+@Module({
+  imports: [BModule],
+})
+export class AModule {}
+`,
+		"b.module.ts": `
+import { Module } from "@nestjs/common";
+import { AModule } from "./a.module";
+
+@Module({
+  imports: [AModule],
+})
+export class BModule {}
+`,
+	})
+
+	findings := scanProject(t, root)
+	var circular []core.Finding
+	for _, f := range findings {
+		if f.RuleID == "nestjs.circular-module-dep" {
+			circular = append(circular, f)
+		}
+	}
+	if len(circular) == 0 {
+		t.Fatalf("expected at least one circular finding, got 0")
+	}
+}
+
+func TestTransitiveCircularModuleImport(t *testing.T) {
+	root := writeProject(t, map[string]string{
+		"a.module.ts": `
+import { Module } from "@nestjs/common";
+import { BModule } from "./b.module";
+
+@Module({
+  imports: [BModule],
+})
+export class AModule {}
+`,
+		"b.module.ts": `
+import { Module } from "@nestjs/common";
+import { CModule } from "./c.module";
+
+@Module({
+  imports: [CModule],
+})
+export class BModule {}
+`,
+		"c.module.ts": `
+import { Module } from "@nestjs/common";
+import { AModule } from "./a.module";
+
+@Module({
+  imports: [AModule],
+})
+export class CModule {}
+`,
+	})
+
+	findings := scanProject(t, root)
+	var circular []core.Finding
+	for _, f := range findings {
+		if f.RuleID == "nestjs.circular-module-dep" {
+			circular = append(circular, f)
+		}
+	}
+	if len(circular) == 0 {
+		t.Fatalf("expected at least one circular finding, got 0")
+	}
+}
+
+func TestNoCircularModuleImport(t *testing.T) {
+	root := writeProject(t, map[string]string{
+		"a.module.ts": `
+import { Module } from "@nestjs/common";
+import { BModule } from "./b.module";
+
+@Module({
+  imports: [BModule],
+})
+export class AModule {}
+`,
+		"b.module.ts": `
+import { Module } from "@nestjs/common";
+import { CModule } from "./c.module";
+
+@Module({
+  imports: [CModule],
+})
+export class BModule {}
+`,
+		"c.module.ts": `
+import { Module } from "@nestjs/common";
+
+@Module({})
+export class CModule {}
+`,
+	})
+
+	findings := scanProject(t, root)
+	for _, f := range findings {
+		if f.RuleID == "nestjs.circular-module-dep" {
+			t.Fatalf("unexpected circular finding: %#v", f)
+		}
+	}
+}
+
+func TestCircularModuleDepWithForwardRef(t *testing.T) {
+	root := writeProject(t, map[string]string{
+		"a.module.ts": `
+import { Module, forwardRef } from "@nestjs/common";
+import { BModule } from "./b.module";
+
+@Module({
+  imports: [forwardRef(() => BModule)],
+})
+export class AModule {}
+`,
+		"b.module.ts": `
+import { Module, forwardRef } from "@nestjs/common";
+import { AModule } from "./a.module";
+
+@Module({
+  imports: [forwardRef(() => AModule)],
+})
+export class BModule {}
+`,
+	})
+
+	findings := scanProject(t, root)
+	for _, f := range findings {
+		if f.RuleID == "nestjs.circular-module-dep" {
+			t.Fatalf("unexpected circular finding with forwardRef: %#v", f)
+		}
+	}
+}
+
+func TestCircularModuleDepWithMixedImports(t *testing.T) {
+	root := writeProject(t, map[string]string{
+		"a.module.ts": `
+import { Module } from "@nestjs/common";
+import { BModule } from "./b.module";
+import { CModule } from "./c.module";
+
+@Module({
+  imports: [BModule, CModule],
+})
+export class AModule {}
+`,
+		"b.module.ts": `
+import { Module } from "@nestjs/common";
+import { AModule } from "./a.module";
+
+@Module({
+  imports: [AModule],
+})
+export class BModule {}
+`,
+		"c.module.ts": `
+import { Module } from "@nestjs/common";
+
+@Module({})
+export class CModule {}
+`,
+	})
+
+	findings := scanProject(t, root)
+	var circular []core.Finding
+	for _, f := range findings {
+		if f.RuleID == "nestjs.circular-module-dep" {
+			circular = append(circular, f)
+		}
+	}
+	if len(circular) == 0 {
+		t.Fatalf("expected at least one circular finding, got 0")
+	}
+}
+
+// ─── nestjs.request-scoped-overuse ──────────────────────────────────────────
+
+func TestRequestScopedOveruseFires(t *testing.T) {
+	root := writeProject(t, map[string]string{
+		"user.service.ts": `
+import { Injectable, Scope } from "@nestjs/common";
+
+@Injectable({ scope: Scope.REQUEST })
+export class UserService {}
+`,
+		"user.module.ts": `
+import { Module } from "@nestjs/common";
+import { UserService } from "./user.service";
+
+@Module({
+  providers: [UserService],
+})
+export class UserModule {}
+`,
+	})
+
+	findings := scanProject(t, root)
+	var scoped []core.Finding
+	for _, f := range findings {
+		if f.RuleID == "nestjs.request-scoped-overuse" {
+			scoped = append(scoped, f)
+		}
+	}
+	if len(scoped) == 0 {
+		t.Fatalf("expected request-scoped-overuse finding, got 0")
+	}
+	if scoped[0].File != "user.service.ts" || scoped[0].Line != 5 {
+		t.Fatalf("location = %s:%d, want user.service.ts:5", scoped[0].File, scoped[0].Line)
+	}
+}
+
+func TestDefaultScopedIsSafe(t *testing.T) {
+	root := writeProject(t, map[string]string{
+		"user.service.ts": `
+import { Injectable } from "@nestjs/common";
+
+@Injectable()
+export class UserService {}
+`,
+		"user.module.ts": `
+import { Module } from "@nestjs/common";
+import { UserService } from "./user.service";
+
+@Module({})
+export class UserModule {}
+`,
+	})
+
+	findings := scanProject(t, root)
+	for _, f := range findings {
+		if f.RuleID == "nestjs.request-scoped-overuse" {
+			t.Fatalf("unexpected request-scoped-overuse for @Injectable() with no scope: %#v", f)
+		}
+	}
+}
+
+func TestTransientScopeNotFlagged(t *testing.T) {
+	root := writeProject(t, map[string]string{
+		"user.service.ts": `
+import { Injectable, Scope } from "@nestjs/common";
+
+@Injectable({ scope: Scope.TRANSIENT })
+export class UserService {}
+`,
+		"user.module.ts": `
+import { Module } from "@nestjs/common";
+import { UserService } from "./user.service";
+
+@Module({})
+export class UserModule {}
+`,
+	})
+
+	findings := scanProject(t, root)
+	for _, f := range findings {
+		if f.RuleID == "nestjs.request-scoped-overuse" {
+			t.Fatalf("unexpected request-scoped-overuse for TRANSIENT scope: %#v", f)
+		}
+	}
+}
+
+func TestRequestScopedOveruseMultipleProviders(t *testing.T) {
+	root := writeProject(t, map[string]string{
+		"svc1.service.ts": `
+import { Injectable, Scope } from "@nestjs/common";
+
+@Injectable({ scope: Scope.REQUEST })
+export class Svc1Service {}
+`,
+		"svc2.service.ts": `
+import { Injectable, Scope } from "@nestjs/common";
+
+@Injectable({ scope: Scope.REQUEST })
+export class Svc2Service {}
+`,
+		"safe.service.ts": `
+import { Injectable } from "@nestjs/common";
+
+@Injectable()
+export class SafeService {}
+`,
+		"app.module.ts": `
+import { Module } from "@nestjs/common";
+import { Svc1Service } from "./svc1.service";
+import { Svc2Service } from "./svc2.service";
+import { SafeService } from "./safe.service";
+
+@Module({
+  providers: [Svc1Service, Svc2Service, SafeService],
+})
+export class AppModule {}
+`,
+	})
+
+	findings := scanProject(t, root)
+	var scoped []core.Finding
+	for _, f := range findings {
+		if f.RuleID == "nestjs.request-scoped-overuse" {
+			scoped = append(scoped, f)
+		}
+	}
+	if len(scoped) != 2 {
+		t.Fatalf("expected 2 request-scoped-overuse findings, got %d: %#v", len(scoped), scoped)
+	}
+}
+
+// ─── nestjs.server-mutable-module-state ─────────────────────────────────────
+
+func TestMutableModuleLetFires(t *testing.T) {
+	root := writeProject(t, map[string]string{
+		"server.ts": `
+import { Module } from "@nestjs/common";
+
+let cachedData: string;
+
+@Module({})
+export class AppModule {}
+`,
+	})
+
+	findings := scanProject(t, root)
+	var mutable []core.Finding
+	for _, f := range findings {
+		if f.RuleID == "nestjs.server-mutable-module-state" {
+			mutable = append(mutable, f)
+		}
+	}
+	if len(mutable) == 0 {
+		t.Fatalf("expected server-mutable-module-state finding, got 0")
+	}
+	if mutable[0].File != "server.ts" || mutable[0].Line != 4 {
+		t.Fatalf("location = %s:%d, want server.ts:4", mutable[0].File, mutable[0].Line)
+	}
+}
+
+func TestMutableModuleVarFires(t *testing.T) {
+	root := writeProject(t, map[string]string{
+		"server.ts": `
+import { Module } from "@nestjs/common";
+
+var counter = 0;
+
+@Module({})
+export class AppModule {}
+`,
+	})
+
+	findings := scanProject(t, root)
+	var mutable []core.Finding
+	for _, f := range findings {
+		if f.RuleID == "nestjs.server-mutable-module-state" {
+			mutable = append(mutable, f)
+		}
+	}
+	if len(mutable) == 0 {
+		t.Fatalf("expected server-mutable-module-state for var, got 0")
+	}
+}
+
+func TestMutableModuleConstIsSafe(t *testing.T) {
+	root := writeProject(t, map[string]string{
+		"server.ts": `
+import { Module } from "@nestjs/common";
+
+const API_URL = "https://example.com";
+
+@Module({})
+export class AppModule {}
+`,
+	})
+
+	findings := scanProject(t, root)
+	for _, f := range findings {
+		if f.RuleID == "nestjs.server-mutable-module-state" {
+			t.Fatalf("unexpected server-mutable-module-state for const: %#v", f)
+		}
+	}
+}
+
+func TestMutableInsideFunctionIsSafe(t *testing.T) {
+	root := writeProject(t, map[string]string{
+		"server.ts": `
+import { Module } from "@nestjs/common";
+
+function setup() {
+  let cache: string[] = [];
+}
+
+@Module({})
+export class AppModule {}
+`,
+	})
+
+	findings := scanProject(t, root)
+	for _, f := range findings {
+		if f.RuleID == "nestjs.server-mutable-module-state" {
+			t.Fatalf("unexpected server-mutable-module-state for let inside function: %#v", f)
+		}
+	}
+}
+
+func TestMutableInsideArrowIsSafe(t *testing.T) {
+	root := writeProject(t, map[string]string{
+		"server.ts": `
+import { Module } from "@nestjs/common";
+
+const setup = () => {
+  let cache: string[] = [];
+};
+
+@Module({})
+export class AppModule {}
+`,
+	})
+
+	findings := scanProject(t, root)
+	for _, f := range findings {
+		if f.RuleID == "nestjs.server-mutable-module-state" {
+			t.Fatalf("unexpected server-mutable-module-state for let inside arrow: %#v", f)
+		}
+	}
+}
+
+func TestMutableInsideClassBodyIsSafe(t *testing.T) {
+	root := writeProject(t, map[string]string{
+		"server.ts": `
+import { Module } from "@nestjs/common";
+
+class Cache {
+  private items: string[] = [];
+}
+
+@Module({})
+export class AppModule {}
+`,
+	})
+
+	findings := scanProject(t, root)
+	for _, f := range findings {
+		if f.RuleID == "nestjs.server-mutable-module-state" {
+			t.Fatalf("unexpected server-mutable-module-state for class body: %#v", f)
+		}
+	}
+}
+
+func TestMutableForLoopLetIsSafe(t *testing.T) {
+	root := writeProject(t, map[string]string{
+		"server.ts": `
+import { Module } from "@nestjs/common";
+
+for (let i = 0; i < 10; i++) {
+  console.log(i);
+}
+
+@Module({})
+export class AppModule {}
+`,
+	})
+
+	findings := scanProject(t, root)
+	for _, f := range findings {
+		if f.RuleID == "nestjs.server-mutable-module-state" {
+			t.Fatalf("unexpected server-mutable-module-state for for-loop let: %#v", f)
+		}
+	}
+}
+
+func TestExportMutableLetFires(t *testing.T) {
+	root := writeProject(t, map[string]string{
+		"server.ts": `
+import { Module } from "@nestjs/common";
+
+export let config: string;
+
+@Module({})
+export class AppModule {}
+`,
+	})
+
+	findings := scanProject(t, root)
+	var mutable []core.Finding
+	for _, f := range findings {
+		if f.RuleID == "nestjs.server-mutable-module-state" {
+			mutable = append(mutable, f)
+		}
+	}
+	if len(mutable) == 0 {
+		t.Fatalf("expected server-mutable-module-state for exported let, got 0")
+	}
+}
+
 func writeProject(t *testing.T, files map[string]string) string {
 	t.Helper()
 	root := t.TempDir()

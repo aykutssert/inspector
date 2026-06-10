@@ -46,10 +46,11 @@ type injectionDep struct {
 }
 
 type classInfo struct {
-	Ref         symbolRef
-	Line        int
-	Decorators  map[string]bool
-	Constructor []injectionDep
+	Ref             symbolRef
+	Line            int
+	Decorators      map[string]bool
+	InjectableScope string
+	Constructor     []injectionDep
 }
 
 type moduleInfo struct {
@@ -57,7 +58,8 @@ type moduleInfo struct {
 	File            string
 	Line            int
 	IsGlobal        bool
-	Imports         map[string]bool
+	Imports         map[string]bool // all resolved imports
+	ForwardRefs     map[string]bool // subset of Imports that use forwardRef
 	Controllers     map[string]bool
 	Providers       map[string]bool
 	Exports         map[string]bool
@@ -67,11 +69,12 @@ type moduleInfo struct {
 }
 
 type fileInfo struct {
-	Path     string
-	Resolver *importResolver
-	Imports  map[string]importBinding
-	Classes  map[string]*classInfo
-	Modules  []*moduleInfo
+	Path        string
+	Resolver    *importResolver
+	Imports     map[string]importBinding
+	Classes     map[string]*classInfo
+	Modules     []*moduleInfo
+	MutableVars []mutableVar
 }
 
 type project struct {
@@ -114,7 +117,11 @@ func (a *Analyzer) Scan(ctx core.ProjectContext) ([]core.Finding, error) {
 	if len(p.Modules) == 0 {
 		return nil, nil
 	}
-	return p.findMissingProviders(), nil
+	findings := p.findMissingProviders()
+	findings = append(findings, p.detectCircularModuleDep()...)
+	findings = append(findings, p.detectRequestScopedOveruse()...)
+	findings = append(findings, p.detectServerMutableState()...)
+	return findings, nil
 }
 
 func jstsFiles(files []string) []string {
