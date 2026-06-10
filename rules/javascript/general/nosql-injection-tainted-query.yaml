@@ -1,0 +1,32 @@
+rules:
+  - id: nosql-injection-tainted-query
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      User-controlled input (req.body / req.query / req.params) passed directly
+      as a MongoDB/Mongoose query. An attacker can inject query operators like
+      { $ne: null } or { $gt: "" } to bypass authentication or exfiltrate data.
+      Whitelist the expected fields first, e.g. const { email } = req.body;
+      Model.findOne({ email }).
+    metadata:
+      category: security
+      confidence: rule
+    patterns:
+      - pattern-either:
+          - pattern: $M.find($REQ.body)
+          - pattern: $M.find($REQ.query)
+          - pattern: $M.find($REQ.params)
+          - pattern: $M.findOne($REQ.body)
+          - pattern: $M.findOne($REQ.query)
+          - pattern: $M.findOne($REQ.params)
+          - pattern: $M.findOneAndUpdate($REQ.body, ...)
+          - pattern: $M.findOneAndDelete($REQ.body)
+          - pattern: $M.deleteOne($REQ.body)
+          - pattern: $M.deleteMany($REQ.body)
+          - pattern: $M.updateOne($REQ.body, ...)
+          - pattern: $M.updateMany($REQ.body, ...)
+          - pattern: $M.countDocuments($REQ.body)
+          - pattern: $M.countDocuments($REQ.query)
+      - metavariable-regex:
+          metavariable: $REQ
+          regex: ^(req|request|ctx)$

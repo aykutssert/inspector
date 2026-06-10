@@ -1,0 +1,24 @@
+rules:
+  - id: dynamic-global-invocation
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: >
+      A function is invoked through a dynamically-indexed global object
+      (globalThis / window / global / self [expr]()). If the index derives from
+      user input this is arbitrary code execution. Dispatch through an explicit
+      allow-list lookup table instead of indexing a global with a variable.
+    metadata:
+      category: security
+      confidence: rule
+    patterns:
+      - pattern-either:
+          - pattern: globalThis[$K]($...A)
+          - pattern: window[$K]($...A)
+          - pattern: global[$K]($...A)
+          - pattern: self[$K]($...A)
+      - metavariable-pattern:
+          metavariable: $K
+          patterns:
+            - pattern-not: '"..."'
+            - pattern-not: 'null'
+            - pattern-not: 'undefined'

@@ -216,6 +216,24 @@
     "message": "Dynamic code execution through eval()/Function() can execute attacker-controlled input as JavaScript. Avoid interpreting strings as code; use explicit parsing or a constrained dispatch table instead.\n"
   },
   {
+    "rule_id": "general.dynamic-global-invocation",
+    "severity": "error",
+    "category": "security",
+    "confidence": "rule",
+    "file": "security_injection.ts",
+    "line": 26,
+    "message": "A function is invoked through a dynamically-indexed global object (globalThis / window / global / self [expr]()). If the index derives from user input this is arbitrary code execution. Dispatch through an explicit allow-list lookup table instead of indexing a global with a variable.\n"
+  },
+  {
+    "rule_id": "general.dynamic-global-invocation",
+    "severity": "error",
+    "category": "security",
+    "confidence": "rule",
+    "file": "security_injection.ts",
+    "line": 27,
+    "message": "A function is invoked through a dynamically-indexed global object (globalThis / window / global / self [expr]()). If the index derives from user input this is arbitrary code execution. Dispatch through an explicit allow-list lookup table instead of indexing a global with a variable.\n"
+  },
+  {
     "rule_id": "general.empty-catch-block",
     "severity": "warning",
     "category": "bug",
@@ -223,6 +241,24 @@
     "file": "case.tsx",
     "line": 22,
     "message": "This catch block is empty, so the error is silently swallowed: failures vanish with no log, no rethrow, and no recovery, which hides bugs and makes incidents undebuggable. Handle the error, log it, or rethrow. If ignoring is truly intentional, leave a comment explaining why.\n"
+  },
+  {
+    "rule_id": "general.error-detail-leak-to-response",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "rule",
+    "file": "security_injection.ts",
+    "line": 38,
+    "message": "A raw error stack trace is sent in an HTTP response. Stack traces expose file paths, library versions, and internal structure to clients, handing attackers reconnaissance. Log the detail server-side and return a generic message, e.g. res.status(500).json({ error: \"Internal error\" }).\n"
+  },
+  {
+    "rule_id": "general.error-detail-leak-to-response",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "rule",
+    "file": "security_injection.ts",
+    "line": 39,
+    "message": "A raw error stack trace is sent in an HTTP response. Stack traces expose file paths, library versions, and internal structure to clients, handing attackers reconnaissance. Log the detail server-side and return a generic message, e.g. res.status(500).json({ error: \"Internal error\" }).\n"
   },
   {
     "rule_id": "general.fetch-in-loop",
@@ -1045,6 +1081,33 @@
     "file": "node_promise.ts",
     "line": 6,
     "message": "A promise is started as a standalone statement without await, return, or a rejection handler. If it rejects, Node reports an unhandled rejection and modern runtimes may terminate the process. Await/return it, or attach an explicit catch handler.\n"
+  },
+  {
+    "rule_id": "general.nosql-injection-tainted-query",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "rule",
+    "file": "security_injection.ts",
+    "line": 10,
+    "message": "User-controlled input (req.body / req.query / req.params) passed directly as a MongoDB/Mongoose query. An attacker can inject query operators like { $ne: null } or { $gt: \"\" } to bypass authentication or exfiltrate data. Whitelist the expected fields first, e.g. const { email } = req.body; Model.findOne({ email }).\n"
+  },
+  {
+    "rule_id": "general.nosql-injection-tainted-query",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "rule",
+    "file": "security_injection.ts",
+    "line": 13,
+    "message": "User-controlled input (req.body / req.query / req.params) passed directly as a MongoDB/Mongoose query. An attacker can inject query operators like { $ne: null } or { $gt: \"\" } to bypass authentication or exfiltrate data. Whitelist the expected fields first, e.g. const { email } = req.body; Model.findOne({ email }).\n"
+  },
+  {
+    "rule_id": "general.nosql-injection-tainted-query",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "rule",
+    "file": "security_injection.ts",
+    "line": 14,
+    "message": "User-controlled input (req.body / req.query / req.params) passed directly as a MongoDB/Mongoose query. An attacker can inject query operators like { $ne: null } or { $gt: \"\" } to bypass authentication or exfiltrate data. Whitelist the expected fields first, e.g. const { email } = req.body; Model.findOne({ email }).\n"
   },
   {
     "rule_id": "general.open-redirect-dynamic-url",

@@ -1,0 +1,20 @@
+rules:
+  - id: error-detail-leak-to-response
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      A raw error stack trace is sent in an HTTP response. Stack traces expose
+      file paths, library versions, and internal structure to clients, handing
+      attackers reconnaissance. Log the detail server-side and return a generic
+      message, e.g. res.status(500).json({ error: "Internal error" }).
+    metadata:
+      category: security
+      confidence: rule
+    pattern-either:
+      - pattern: "$RES.send($ERR.stack)"
+      - pattern: "$RES.end($ERR.stack)"
+      - pattern: "$RES.status($S).send($ERR.stack)"
+      - pattern: "$RES.status($S).json({..., $K: $ERR.stack, ...})"
+      - pattern: "$RES.json({..., $K: $ERR.stack, ...})"
+      - pattern: "$RES.status($S).send({..., $K: $ERR.stack, ...})"
+      - pattern: "$RES.send({..., $K: $ERR.stack, ...})"
