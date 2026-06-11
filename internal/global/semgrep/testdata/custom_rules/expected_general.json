@@ -414,6 +414,33 @@
     "message": "A hardcoded HTTP/HTTPS URL is used directly in a network request. To ensure flexibility across different environments (development, staging, production), avoid hardcoding base URLs. Load the base URL from an environment variable or use an API client with a configured baseURL.\n"
   },
   {
+    "rule_id": "general.hardcoded-api-url",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "tx_external_io.ts",
+    "line": 8,
+    "message": "A hardcoded HTTP/HTTPS URL is used directly in a network request. To ensure flexibility across different environments (development, staging, production), avoid hardcoding base URLs. Load the base URL from an environment variable or use an API client with a configured baseURL.\n"
+  },
+  {
+    "rule_id": "general.hardcoded-api-url",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "tx_external_io.ts",
+    "line": 15,
+    "message": "A hardcoded HTTP/HTTPS URL is used directly in a network request. To ensure flexibility across different environments (development, staging, production), avoid hardcoding base URLs. Load the base URL from an environment variable or use an API client with a configured baseURL.\n"
+  },
+  {
+    "rule_id": "general.hardcoded-api-url",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
+    "file": "tx_external_io.ts",
+    "line": 22,
+    "message": "A hardcoded HTTP/HTTPS URL is used directly in a network request. To ensure flexibility across different environments (development, staging, production), avoid hardcoding base URLs. Load the base URL from an environment variable or use an API client with a configured baseURL.\n"
+  },
+  {
     "rule_id": "general.hardcoded-secret",
     "severity": "error",
     "category": "security",
@@ -1741,6 +1768,24 @@
     "file": "incomplete.ts",
     "line": 42,
     "message": "@ts-ignore suppresses the TypeScript checker without documenting why. This can hide real type regressions permanently. Prefer @ts-expect-error with a short reason, or add an explicit reason if the suppression is unavoidable.\n"
+  },
+  {
+    "rule_id": "general.tx-block-external-io",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "tx_external_io.ts",
+    "line": 8,
+    "message": "A network request (fetch/axios) runs inside a database transaction callback. The transaction holds a pooled connection for the entire duration of the external call, so a slow or hanging endpoint exhausts the connection pool and triggers timeouts. Do the network I/O before or after the transaction, never inside it.\n"
+  },
+  {
+    "rule_id": "general.tx-block-external-io",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "tx_external_io.ts",
+    "line": 15,
+    "message": "A network request (fetch/axios) runs inside a database transaction callback. The transaction holds a pooled connection for the entire duration of the external call, so a slow or hanging endpoint exhausts the connection pool and triggers timeouts. Do the network I/O before or after the transaction, never inside it.\n"
   },
   {
     "rule_id": "general.use-lazy-motion",

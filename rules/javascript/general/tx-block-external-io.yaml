@@ -1,0 +1,26 @@
+rules:
+  - id: tx-block-external-io
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      A network request (fetch/axios) runs inside a database transaction
+      callback. The transaction holds a pooled connection for the entire
+      duration of the external call, so a slow or hanging endpoint exhausts the
+      connection pool and triggers timeouts. Do the network I/O before or after
+      the transaction, never inside it.
+    metadata:
+      category: performance
+      confidence: hint
+    patterns:
+      - pattern-inside: |
+          $DB.$TX(async (...) => {
+            ...
+          })
+      - metavariable-regex:
+          metavariable: $TX
+          regex: ^\$?transaction$
+      - pattern-either:
+          - pattern: fetch(...)
+          - pattern: axios(...)
+          - pattern: axios.$M(...)
+          - pattern: $H.fetch(...)
