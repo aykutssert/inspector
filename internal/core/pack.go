@@ -14,6 +14,7 @@ type Pack interface {
 	Toolchains() []Toolchain
 	ScanAdapters(rulesDir string) []LanguageAdapter
 	ContextAdapters() []LanguageAdapter
+	ContextParsers() []inspectctx.FileParser
 	ContextProviders() []inspectctx.Provider
 	Analyzers() []Analyzer
 }

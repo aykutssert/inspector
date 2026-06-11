@@ -60,6 +60,14 @@ func (r *Registry) ContextProviders() []inspectctx.Provider {
 	return out
 }
 
+func (r *Registry) ContextParsers() []inspectctx.FileParser {
+	var out []inspectctx.FileParser
+	for _, p := range r.packs {
+		out = append(out, p.ContextParsers()...)
+	}
+	return out
+}
+
 // Analyzers returns the analyzers to run for the scanned project. The global
 // scanners (semgrep, osv, gitlog) always run: semgrep is a language-agnostic
 // SAST, osv reads dependency manifests, gitlog inspects history. A pack's

@@ -35,6 +35,10 @@ func (tailwindPack) ContextAdapters() []core.LanguageAdapter {
 	return nil
 }
 
+func (tailwindPack) ContextParsers() []inspectctx.FileParser {
+	return nil
+}
+
 func (tailwindPack) ContextProviders() []inspectctx.Provider {
 	return nil
 }

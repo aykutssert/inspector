@@ -4,6 +4,7 @@ package context
 // New language adapters produce this struct by implementing FileParser.
 type FileParse struct {
 	Path     string   `json:"path"`
+	Language string   `json:"language"`
 	Imports  []Import `json:"imports,omitempty"`
 	Defs     []Def    `json:"defs,omitempty"`
 	Calls    []Call   `json:"calls,omitempty"`
@@ -12,8 +13,10 @@ type FileParse struct {
 
 // Import records one import statement.
 type Import struct {
-	Source string `json:"source"`
-	Line   int    `json:"line"`
+	Source  string `json:"source"`
+	Target  string `json:"target,omitempty"`
+	Package string `json:"package,omitempty"`
+	Line    int    `json:"line"`
 }
 
 // Def records one definition (function, class, const, etc.).
@@ -53,14 +56,26 @@ func (m *MultiLangParser) Add(p FileParser) {
 }
 
 func (m *MultiLangParser) Parse(root, path string) (*FileParse, error) {
+	var firstErr error
 	for _, p := range m.parsers {
 		fp, err := p.Parse(root, path)
 		if err != nil {
+			if firstErr == nil {
+				firstErr = err
+			}
 			continue
 		}
 		if fp != nil {
 			return fp, nil
 		}
 	}
-	return nil, nil
+	return nil, firstErr
+}
+
+func (m *MultiLangParser) EnrichMap(root string, graph *Graph, repo *RepoMap) {
+	for _, parser := range m.parsers {
+		if enricher, ok := parser.(MapEnricher); ok {
+			enricher.EnrichMap(root, graph, repo)
+		}
+	}
 }

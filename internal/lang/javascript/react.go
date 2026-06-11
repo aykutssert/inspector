@@ -40,6 +40,10 @@ func (reactPack) ContextAdapters() []core.LanguageAdapter {
 	return nil
 }
 
+func (reactPack) ContextParsers() []inspectctx.FileParser {
+	return nil
+}
+
 func (reactPack) ContextProviders() []inspectctx.Provider {
 	return nil
 }

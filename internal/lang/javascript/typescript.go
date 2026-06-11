@@ -37,6 +37,10 @@ func (typescriptPack) ContextAdapters() []core.LanguageAdapter {
 	return nil
 }
 
+func (typescriptPack) ContextParsers() []inspectctx.FileParser {
+	return nil
+}
+
 func (typescriptPack) ContextProviders() []inspectctx.Provider {
 	return nil
 }

@@ -26,6 +26,14 @@ it("snapshot", () => {
   expect(makeUser()).toMatchSnapshot(); // NO FIRE
 });
 
+it("handles setup before asserting", async () => {
+  const values: any[] = [];
+  const createValue = (id: number) => ({ id });
+  values.push(createValue(1));
+  const result = await Promise.resolve(values);
+  expect(result).toBe(values); // NO FIRE
+});
+
 declare function makeUser(): any;
 declare function render(): Promise<void>;
 declare function validate(x: any): Promise<void>;

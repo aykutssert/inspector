@@ -36,6 +36,10 @@ func (sveltePack) ContextAdapters() []core.LanguageAdapter {
 	return nil
 }
 
+func (sveltePack) ContextParsers() []inspectctx.FileParser {
+	return nil
+}
+
 func (sveltePack) ContextProviders() []inspectctx.Provider {
 	return nil
 }

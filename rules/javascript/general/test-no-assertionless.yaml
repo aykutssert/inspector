@@ -24,4 +24,4 @@ rules:
                 - pattern: async () => { ... }
                 - pattern: function () { ... }
                 - pattern: async function () { ... }
-            - pattern-not-regex: \b(expect|assert|should|chai|verify|done|fail|invariant)\b|\.(toMatch|toThrow|toEqual|toStrictEqual|toBe|resolves|rejects|toContain|toHaveBeen|toMatchSnapshot|toMatchInlineSnapshot|toHaveLength|toBeInstanceOf|toBeNull|toBeUndefined|toBeTruthy|toBeFalsy|toBeDefined|toBeGreaterThan|toBeLessThan|toBeCloseTo|assertEquals)
+      - pattern-not-regex: \bexpect\s*(?:<[^>]+>)?\s*\(|\bassert(?:\s*\(|\.)|\.should\b|\b(?:verify|done|fail|invariant)\s*\(

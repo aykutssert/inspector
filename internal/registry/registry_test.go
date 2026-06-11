@@ -25,6 +25,9 @@ func TestDefaultRegistryProvidesScanSurface(t *testing.T) {
 	if len(providers) != 1 || providers[0].Name() != "javascript" {
 		t.Fatalf("default registry should expose the JavaScript context provider, got %#v", providers)
 	}
+	if got := len(r.ContextParsers()); got != 1 {
+		t.Fatalf("default registry should expose one JavaScript/TypeScript file parser, got %d", got)
+	}
 }
 
 // A repo whose languages none of the packs match must still get the global

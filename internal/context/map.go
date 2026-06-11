@@ -10,10 +10,11 @@ package context
 // AST-extracted exports, and project manifests (package.json, go.mod, etc.).
 // No folder-naming heuristics or guesses.
 type RepoMap struct {
-	Language     string    `json:"language"`
-	Framework    string    `json:"framework,omitempty"`
-	FrameworkVer string    `json:"framework_ver,omitempty"`
-	EntryPoints  []string  `json:"entry_points,omitempty"`
+	Language     string     `json:"language"`
+	Languages    []string   `json:"languages,omitempty"`
+	Framework    string     `json:"framework,omitempty"`
+	FrameworkVer string     `json:"framework_ver,omitempty"`
+	EntryPoints  []string   `json:"entry_points,omitempty"`
 	HotFiles     []FileNode `json:"hot_files,omitempty"` // top files by import count
 	Dirs         []DirNode  `json:"dirs"`
 }
@@ -33,6 +34,7 @@ type DirNode struct {
 // likely an entry point; one with ImportedBy=20 is a critical shared module.
 type FileNode struct {
 	Path       string   `json:"path"`
+	Role       string   `json:"role,omitempty"`
 	ImportedBy int      `json:"imported_by"`
 	Exports    []Export `json:"exports,omitempty"`
 	Deps       []string `json:"deps,omitempty"` // external packages (npm, pip, etc.)
@@ -45,8 +47,8 @@ type Export struct {
 	Sig  string `json:"sig,omitempty"` // first-line signature (stripped of body opener)
 }
 
-// MapProvider builds a RepoMap from a project root.
-// Language adapters implement this interface; the app layer calls it.
-type MapProvider interface {
-	GetMap(root string, files []string) (RepoMap, error)
+// MapEnricher adds language/framework facts that cannot be inferred from the
+// common graph alone. FileParser implementations may optionally implement it.
+type MapEnricher interface {
+	EnrichMap(root string, graph *Graph, repo *RepoMap)
 }

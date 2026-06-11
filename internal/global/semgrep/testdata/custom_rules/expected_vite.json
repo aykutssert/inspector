@@ -67,6 +67,15 @@
     "severity": "warning",
     "category": "bug",
     "confidence": "rule",
+    "file": "security_crypto.ts",
+    "line": 20,
+    "message": "process.env should not be used in a Vite project. Vite does not inject process.env by default, which can cause runtime ReferenceErrors (process is not defined) in the browser. Use import.meta.env instead.\n"
+  },
+  {
+    "rule_id": "vite.vite-process-env-usage",
+    "severity": "warning",
+    "category": "bug",
+    "confidence": "rule",
     "file": "tanstack_start.tsx",
     "line": 37,
     "message": "process.env should not be used in a Vite project. Vite does not inject process.env by default, which can cause runtime ReferenceErrors (process is not defined) in the browser. Use import.meta.env instead.\n"

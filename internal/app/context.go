@@ -41,8 +41,7 @@ type MapOptions struct {
 	Root string
 }
 
-// Map builds a RepoMap for the project rooted at opts.Root.
-// It finds the first registered provider that implements MapProvider.
+// Map builds a RepoMap from all registered language parsers.
 func Map(opts MapOptions, reg *registry.Registry) (inspectctx.RepoMap, error) {
 	if reg == nil {
 		reg = registry.Default()
@@ -59,10 +58,9 @@ func Map(opts MapOptions, reg *registry.Registry) (inspectctx.RepoMap, error) {
 	if err != nil {
 		return inspectctx.RepoMap{}, err
 	}
-	for _, p := range reg.ContextProviders() {
-		if mp, ok := p.(inspectctx.MapProvider); ok {
-			return mp.GetMap(absRoot, files)
-		}
+	parsers := reg.ContextParsers()
+	if len(parsers) == 0 {
+		return inspectctx.RepoMap{}, errors.New("no file parsers registered")
 	}
-	return inspectctx.RepoMap{}, errors.New("no map provider registered")
+	return inspectctx.BuildRepoMap(absRoot, files, inspectctx.NewMultiLangParser(parsers...))
 }

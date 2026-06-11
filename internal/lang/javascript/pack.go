@@ -11,6 +11,7 @@ import (
 	"github.com/aykutssert/scout/internal/lang/javascript/analyzers/nexthint"
 	"github.com/aykutssert/scout/internal/lang/javascript/analyzers/oxlint"
 	"github.com/aykutssert/scout/internal/lang/javascript/analyzers/policycoverage"
+	"github.com/aykutssert/scout/internal/lang/javascript/analyzers/taintflow"
 	"github.com/aykutssert/scout/internal/lang/javascript/analyzers/validationcoverage"
 	jscontext "github.com/aykutssert/scout/internal/lang/javascript/context"
 )
@@ -44,10 +45,14 @@ func (javascriptPack) ContextAdapters() []core.LanguageAdapter {
 	return []core.LanguageAdapter{New("")}
 }
 
+func (javascriptPack) ContextParsers() []inspectctx.FileParser {
+	return []inspectctx.FileParser{jscontext.JSParser{}}
+}
+
 func (javascriptPack) ContextProviders() []inspectctx.Provider {
 	return []inspectctx.Provider{jscontext.NewProvider()}
 }
 
 func (javascriptPack) Analyzers() []core.Analyzer {
-	return []core.Analyzer{oxlint.New(), importcycle.New(), knip.New(), nesthint.New(), nexthint.New(), archhint.New(), jsquality.New(), policycoverage.New(), validationcoverage.New()}
+	return []core.Analyzer{oxlint.New(), importcycle.New(), knip.New(), nesthint.New(), nexthint.New(), archhint.New(), jsquality.New(), policycoverage.New(), validationcoverage.New(), taintflow.New()}
 }

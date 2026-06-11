@@ -30,6 +30,8 @@ func (reactNativePack) ScanAdapters(string) []core.LanguageAdapter { return nil 
 
 func (reactNativePack) ContextAdapters() []core.LanguageAdapter { return nil }
 
+func (reactNativePack) ContextParsers() []inspectctx.FileParser { return nil }
+
 func (reactNativePack) ContextProviders() []inspectctx.Provider { return nil }
 
 func (reactNativePack) Analyzers() []core.Analyzer {
