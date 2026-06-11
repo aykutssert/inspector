@@ -9,6 +9,15 @@
     "message": "Dynamic lookup of 'process.env[key]' detected in Expo project. Expo's compiler only inlines static property accesses (like 'process.env.EXPO_PUBLIC_VAR') at build time. Dynamic key lookups resolve to 'undefined' at runtime. Use explicit static property access instead.\n"
   },
   {
+    "rule_id": "rn.rn-animation-reaction-as-derived",
+    "severity": "info",
+    "category": "performance",
+    "confidence": "hint",
+    "file": "rn_animation.tsx",
+    "line": 8,
+    "message": "useAnimatedReaction whose reaction only copies the prepared value into a shared value (sv.value = prepared) is a derived value, not a reaction. Prefer useDerivedValue: it is declarative, recomputes automatically, and avoids the extra reaction subscription.\n"
+  },
+  {
     "rule_id": "rn.rn-anonymous-renderitem",
     "severity": "warning",
     "category": "performance",

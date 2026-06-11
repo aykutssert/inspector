@@ -1,0 +1,19 @@
+rules:
+  - id: rn-animation-reaction-as-derived
+    languages: [typescript, javascript]
+    severity: INFO
+    message: >
+      useAnimatedReaction whose reaction only copies the prepared value into a
+      shared value (sv.value = prepared) is a derived value, not a reaction.
+      Prefer useDerivedValue: it is declarative, recomputes automatically, and
+      avoids the extra reaction subscription.
+    metadata:
+      category: performance
+      confidence: hint
+    pattern-either:
+      - pattern: useAnimatedReaction($PREP, ($V) => { $SV.value = $V; })
+      - pattern: useAnimatedReaction($PREP, ($V) => { $SV.value = $V; }, $DEPS)
+      - pattern: useAnimatedReaction($PREP, ($V, $P) => { $SV.value = $V; })
+      - pattern: useAnimatedReaction($PREP, ($V, $P) => { $SV.value = $V; }, $DEPS)
+      - pattern: useAnimatedReaction($PREP, function ($V) { $SV.value = $V; })
+      - pattern: useAnimatedReaction($PREP, function ($V, $P) { $SV.value = $V; })
