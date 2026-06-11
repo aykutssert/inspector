@@ -1,0 +1,31 @@
+rules:
+  - id: weak-cipher-algorithm
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: >
+      A broken or deprecated symmetric cipher is used. DES/3DES, RC4, RC2,
+      Blowfish and any ECB mode are cryptographically weak (small key, biased
+      keystream, or pattern-leaking blocks). crypto.createCipher/createDecipher
+      (no IV) also derive the key insecurely. Use crypto.createCipheriv with
+      AES-256-GCM (or AES-256-CBC with a random IV).
+    metadata:
+      category: security
+      cwe:
+        - "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      confidence: rule
+    pattern-either:
+      # Legacy createCipher/createDecipher (insecure key derivation, no IV)
+      - pattern: crypto.createCipher(...)
+      - pattern: crypto.createDecipher(...)
+      - pattern: createCipher(...)
+      - pattern: createDecipher(...)
+      # createCipheriv/createDecipheriv with a weak algorithm
+      - patterns:
+          - pattern-either:
+              - pattern: crypto.createCipheriv($ALG, ...)
+              - pattern: crypto.createDecipheriv($ALG, ...)
+              - pattern: createCipheriv($ALG, ...)
+              - pattern: createDecipheriv($ALG, ...)
+          - metavariable-regex:
+              metavariable: $ALG
+              regex: (?i)^["'](des|des-ede|des-ede3|3des|desx|rc4|rc4-40|rc2|bf|blowfish|cast|cast5|seed)([-/].*)?["']$|(?i)^["'].*-ecb["']$

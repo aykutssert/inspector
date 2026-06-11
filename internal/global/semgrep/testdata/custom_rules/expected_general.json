@@ -558,6 +558,24 @@
     "message": "document.cookie is assigned without an obvious Secure attribute. Client-set cookies are also readable from JavaScript, so auth material should normally be set server-side with HttpOnly, Secure, and SameSite. If this is not auth material, still confirm the cookie is intentionally accessible to scripts.\n"
   },
   {
+    "rule_id": "general.insecure-tls-disabled-verification",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "rule",
+    "file": "security_crypto.ts",
+    "line": 19,
+    "message": "TLS certificate verification is disabled (rejectUnauthorized: false or NODE_TLS_REJECT_UNAUTHORIZED=0). The client accepts any certificate, so a man-in-the-middle can intercept and modify traffic. Keep verification on and, for self-signed certs, pin the CA via the `ca` option instead.\n"
+  },
+  {
+    "rule_id": "general.insecure-tls-disabled-verification",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "rule",
+    "file": "security_crypto.ts",
+    "line": 20,
+    "message": "TLS certificate verification is disabled (rejectUnauthorized: false or NODE_TLS_REJECT_UNAUTHORIZED=0). The client accepts any certificate, so a man-in-the-middle can intercept and modify traffic. Keep verification on and, for self-signed certs, pin the CA via the `ca` option instead.\n"
+  },
+  {
     "rule_id": "general.javascript-url",
     "severity": "error",
     "category": "security",
@@ -1429,6 +1447,15 @@
     "severity": "warning",
     "category": "quality",
     "confidence": "hint",
+    "file": "security_crypto.ts",
+    "line": 20,
+    "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
+  },
+  {
+    "rule_id": "general.process-env-dispersed-access",
+    "severity": "warning",
+    "category": "quality",
+    "confidence": "hint",
     "file": "tanstack_start.tsx",
     "line": 37,
     "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
@@ -1821,6 +1848,60 @@
     "file": "heavy_import_no_dynamic.tsx",
     "line": 38,
     "message": "Eagerly imported 'motion' from 'framer-motion' detected. This pulls in the entire bundle of framer-motion. To reduce bundle size, import 'm' instead of 'motion', and wrap your motion elements in '\u003cLazyMotion features={domAnimation}\u003e'.\n"
+  },
+  {
+    "rule_id": "general.weak-cipher-algorithm",
+    "severity": "error",
+    "category": "security",
+    "confidence": "rule",
+    "file": "security_crypto.ts",
+    "line": 6,
+    "message": "A broken or deprecated symmetric cipher is used. DES/3DES, RC4, RC2, Blowfish and any ECB mode are cryptographically weak (small key, biased keystream, or pattern-leaking blocks). crypto.createCipher/createDecipher (no IV) also derive the key insecurely. Use crypto.createCipheriv with AES-256-GCM (or AES-256-CBC with a random IV).\n"
+  },
+  {
+    "rule_id": "general.weak-cipher-algorithm",
+    "severity": "error",
+    "category": "security",
+    "confidence": "rule",
+    "file": "security_crypto.ts",
+    "line": 7,
+    "message": "A broken or deprecated symmetric cipher is used. DES/3DES, RC4, RC2, Blowfish and any ECB mode are cryptographically weak (small key, biased keystream, or pattern-leaking blocks). crypto.createCipher/createDecipher (no IV) also derive the key insecurely. Use crypto.createCipheriv with AES-256-GCM (or AES-256-CBC with a random IV).\n"
+  },
+  {
+    "rule_id": "general.weak-cipher-algorithm",
+    "severity": "error",
+    "category": "security",
+    "confidence": "rule",
+    "file": "security_crypto.ts",
+    "line": 8,
+    "message": "A broken or deprecated symmetric cipher is used. DES/3DES, RC4, RC2, Blowfish and any ECB mode are cryptographically weak (small key, biased keystream, or pattern-leaking blocks). crypto.createCipher/createDecipher (no IV) also derive the key insecurely. Use crypto.createCipheriv with AES-256-GCM (or AES-256-CBC with a random IV).\n"
+  },
+  {
+    "rule_id": "general.weak-cipher-algorithm",
+    "severity": "error",
+    "category": "security",
+    "confidence": "rule",
+    "file": "security_crypto.ts",
+    "line": 9,
+    "message": "A broken or deprecated symmetric cipher is used. DES/3DES, RC4, RC2, Blowfish and any ECB mode are cryptographically weak (small key, biased keystream, or pattern-leaking blocks). crypto.createCipher/createDecipher (no IV) also derive the key insecurely. Use crypto.createCipheriv with AES-256-GCM (or AES-256-CBC with a random IV).\n"
+  },
+  {
+    "rule_id": "general.weak-crypto-hash",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "security_crypto.ts",
+    "line": 31,
+    "message": "A cryptographically broken hash (MD5/SHA-1) is used. These are collision- prone and unsafe for passwords, signatures, tokens, or integrity checks of untrusted data. Use SHA-256+ (or a password KDF like bcrypt/scrypt/argon2 for passwords). MD5/SHA-1 are acceptable only for non-security checksums (e.g. cache keys) — verify the context before silencing.\n"
+  },
+  {
+    "rule_id": "general.weak-crypto-hash",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "hint",
+    "file": "security_crypto.ts",
+    "line": 32,
+    "message": "A cryptographically broken hash (MD5/SHA-1) is used. These are collision- prone and unsafe for passwords, signatures, tokens, or integrity checks of untrusted data. Use SHA-256+ (or a password KDF like bcrypt/scrypt/argon2 for passwords). MD5/SHA-1 are acceptable only for non-security checksums (e.g. cache keys) — verify the context before silencing.\n"
   },
   {
     "rule_id": "general.zod-v4-no-deprecated-error-apis",

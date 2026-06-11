@@ -1,0 +1,22 @@
+rules:
+  - id: weak-crypto-hash
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      A cryptographically broken hash (MD5/SHA-1) is used. These are collision-
+      prone and unsafe for passwords, signatures, tokens, or integrity checks of
+      untrusted data. Use SHA-256+ (or a password KDF like bcrypt/scrypt/argon2
+      for passwords). MD5/SHA-1 are acceptable only for non-security checksums
+      (e.g. cache keys) — verify the context before silencing.
+    metadata:
+      category: security
+      cwe:
+        - "CWE-328: Use of Weak Hash"
+      confidence: hint
+    patterns:
+      - pattern-either:
+          - pattern: crypto.createHash($ALG)
+          - pattern: createHash($ALG)
+      - metavariable-regex:
+          metavariable: $ALG
+          regex: (?i)^["'](md5|md4|sha1|sha-1)["']$

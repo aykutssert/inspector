@@ -1,0 +1,19 @@
+rules:
+  - id: insecure-tls-disabled-verification
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      TLS certificate verification is disabled (rejectUnauthorized: false or
+      NODE_TLS_REJECT_UNAUTHORIZED=0). The client accepts any certificate, so a
+      man-in-the-middle can intercept and modify traffic. Keep verification on
+      and, for self-signed certs, pin the CA via the `ca` option instead.
+    metadata:
+      category: security
+      cwe:
+        - "CWE-295: Improper Certificate Validation"
+      confidence: rule
+    pattern-either:
+      - pattern: "rejectUnauthorized: false"
+      - pattern: process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
+      - pattern: process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
+      - pattern: process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = "0"
