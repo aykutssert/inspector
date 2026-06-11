@@ -64,7 +64,7 @@
     "confidence": "rule",
     "file": "react19.tsx",
     "line": 33,
-    "message": "setInterval() called inside useEffect() without a corresponding clearInterval() in the cleanup function. When the component unmounts, the interval continues running, holding references and executing stale closures. Add a return () =\u003e clearInterval($ID).\n"
+    "message": "setInterval() called inside useEffect() without a corresponding clearInterval() in the cleanup function. When the component unmounts, the interval continues running, holding references and executing stale closures. Add a return () => clearInterval($ID).\n"
   },
   {
     "rule_id": "react.no-default-props",
@@ -74,32 +74,6 @@
     "file": "react19.tsx",
     "line": 9,
     "message": "A function component defines defaultProps. React 19 removed defaultProps support for function components. Use JavaScript default parameters or destructuring defaults so the fallback still applies after upgrading.\n"
-  },
-  {
-    "rule_id": "react.no-inline-exhaustive-style",
-    "severity": "warning",
-    "confidence": "hint",
-    "file": "case.tsx",
-    "line": 543,
-    "message": "Inline style object with many properties. Extract to a CSS class or Tailwind utility classes for better maintainability and smaller bundle size.\n"
-  },
-  {
-    "rule_id": "react.no-prevent-default",
-    "severity": "info",
-    "category": "bug",
-    "confidence": "hint",
-    "file": "client.tsx",
-    "line": 160,
-    "message": "Calling preventDefault() in link or form click/submit handlers. Instead of intercepting submissions/clicks with preventDefault() manually, prefer using native form action APIs, appropriate button types (like type=\"button\"), or framework-provided routing/link elements to manage default behaviors.\n"
-  },
-  {
-    "rule_id": "react.no-prevent-default",
-    "severity": "info",
-    "category": "bug",
-    "confidence": "hint",
-    "file": "client.tsx",
-    "line": 166,
-    "message": "Calling preventDefault() in link or form click/submit handlers. Instead of intercepting submissions/clicks with preventDefault() manually, prefer using native form action APIs, appropriate button types (like type=\"button\"), or framework-provided routing/link elements to manage default behaviors.\n"
   },
   {
     "rule_id": "react.no-prop-types",
@@ -235,22 +209,6 @@
     "file": "inputs.tsx",
     "line": 31,
     "message": "React controlled input conflict. Do not mix 'value' and 'defaultValue' (or 'checked' and 'defaultChecked') on the same input. Also, providing a 'value' (or 'checked') prop without an 'onChange' or 'readOnly' handler makes the input read-only and will cause React warnings.\n"
-  },
-  {
-    "rule_id": "react.prefer-html-dialog",
-    "severity": "warning",
-    "confidence": "rule",
-    "file": "case.tsx",
-    "line": 530,
-    "message": "Use native \u003cdialog\u003e instead of role=\"dialog\" on a generic element. Native \u003cdialog\u003e provides built-in accessibility (focus trap, escape to close, inert background) without extra ARIA attributes or imperative JavaScript.\n"
-  },
-  {
-    "rule_id": "react.prefer-html-dialog",
-    "severity": "warning",
-    "confidence": "rule",
-    "file": "case.tsx",
-    "line": 531,
-    "message": "Use native \u003cdialog\u003e instead of role=\"dialog\" on a generic element. Native \u003cdialog\u003e provides built-in accessibility (focus trap, escape to close, inert background) without extra ARIA attributes or imperative JavaScript.\n"
   },
   {
     "rule_id": "react.random-value-as-react-key",

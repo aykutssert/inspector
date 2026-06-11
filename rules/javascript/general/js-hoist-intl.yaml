@@ -3,10 +3,11 @@ rules:
     languages: [typescript, javascript]
     severity: WARNING
     message: >
-      new Intl.*Format(...) created inside a function/render scope. Intl
-      formatters are relatively expensive to construct — locale data parsing
-      and pattern compilation happen on every instantiation. Hoist to module
-      scope so the formatter is created once.
+      new Intl.*Format(...) created inside a function/render scope with a
+      static (or no) locale argument. Intl formatters are relatively
+      expensive to construct — locale data parsing and pattern compilation
+      happen on every instantiation. Hoist to module scope so the formatter
+      is created once.
     metadata:
       category: performance
       confidence: rule
@@ -17,15 +18,31 @@ rules:
                 ...
               }
           - pattern-either:
-              - pattern: new Intl.NumberFormat(...)
-              - pattern: new Intl.DateTimeFormat(...)
-              - pattern: new Intl.RelativeTimeFormat(...)
+              - pattern: new Intl.NumberFormat()
+              - pattern: new Intl.DateTimeFormat()
+              - pattern: new Intl.RelativeTimeFormat()
+              - patterns:
+                  - pattern-either:
+                      - pattern: new Intl.NumberFormat($LOCALE, ...)
+                      - pattern: new Intl.DateTimeFormat($LOCALE, ...)
+                      - pattern: new Intl.RelativeTimeFormat($LOCALE, ...)
+                  - metavariable-regex:
+                      metavariable: $LOCALE
+                      regex: ^(["'`]).*\1$|^undefined$
       - patterns:
           - pattern-inside: |
               const $FUNC = (...) => {
                 ...
               }
           - pattern-either:
-              - pattern: new Intl.NumberFormat(...)
-              - pattern: new Intl.DateTimeFormat(...)
-              - pattern: new Intl.RelativeTimeFormat(...)
+              - pattern: new Intl.NumberFormat()
+              - pattern: new Intl.DateTimeFormat()
+              - pattern: new Intl.RelativeTimeFormat()
+              - patterns:
+                  - pattern-either:
+                      - pattern: new Intl.NumberFormat($LOCALE, ...)
+                      - pattern: new Intl.DateTimeFormat($LOCALE, ...)
+                      - pattern: new Intl.RelativeTimeFormat($LOCALE, ...)
+                  - metavariable-regex:
+                      metavariable: $LOCALE
+                      regex: ^(["'`]).*\1$|^undefined$

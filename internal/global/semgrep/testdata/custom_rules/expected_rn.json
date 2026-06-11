@@ -72,15 +72,6 @@
     "message": "React Native AsyncStorage is used to persist a token, secret, credential, or auth value. AsyncStorage is not encrypted storage, so sensitive values can be recovered from device backups, rooted devices, or local compromise. Store auth material in SecureStore, Keychain, Keystore, or another platform-backed secure storage API.\n"
   },
   {
-    "rule_id": "rn.rn-bottom-sheet-prefer-native",
-    "severity": "info",
-    "category": "performance",
-    "confidence": "hint",
-    "file": "rn.tsx",
-    "line": 107,
-    "message": "JS-driven bottom sheet libraries (@gorhom/bottom-sheet, react-native-bottom-sheet) animate on the JS thread and require bridge calls for every frame. React Native 0.76+ / Expo SDK 52+ ships native Modal with presentationStyle=\"formSheet\" which runs entirely on the UI thread with zero JS overhead. Prefer the native approach for simple sheet use cases.\n"
-  },
-  {
     "rule_id": "rn.rn-detox-missing-await",
     "severity": "warning",
     "category": "bug",
@@ -222,7 +213,7 @@
     "confidence": "rule",
     "file": "rn.tsx",
     "line": 62,
-    "message": "In React Native, `{value \u0026\u0026 \u003cJSX/\u003e}` renders a bare 0 when value is 0 — a text node outside \u003cText\u003e — which crashes the screen (\"Text strings must be rendered within a \u003cText\u003e component\"). A numeric left operand (.length or a count-like variable) hits this whenever the list/value is empty. Guard with `value \u003e 0 \u0026\u0026 ...`, `!!value \u0026\u0026 ...`, or a ternary returning null.\n"
+    "message": "In React Native, `{value && <JSX/>}` renders a bare 0 when value is 0 \u2014 a text node outside <Text> \u2014 which crashes the screen (\"Text strings must be rendered within a <Text> component\"). A numeric left operand (.length or a count-like variable) hits this whenever the list/value is empty. Guard with `value > 0 && ...`, `!!value && ...`, or a ternary returning null.\n"
   },
   {
     "rule_id": "rn.rn-no-falsy-and-render",
@@ -231,7 +222,7 @@
     "confidence": "rule",
     "file": "rn.tsx",
     "line": 63,
-    "message": "In React Native, `{value \u0026\u0026 \u003cJSX/\u003e}` renders a bare 0 when value is 0 — a text node outside \u003cText\u003e — which crashes the screen (\"Text strings must be rendered within a \u003cText\u003e component\"). A numeric left operand (.length or a count-like variable) hits this whenever the list/value is empty. Guard with `value \u003e 0 \u0026\u0026 ...`, `!!value \u0026\u0026 ...`, or a ternary returning null.\n"
+    "message": "In React Native, `{value && <JSX/>}` renders a bare 0 when value is 0 \u2014 a text node outside <Text> \u2014 which crashes the screen (\"Text strings must be rendered within a <Text> component\"). A numeric left operand (.length or a count-like variable) hits this whenever the list/value is empty. Guard with `value > 0 && ...`, `!!value && ...`, or a ternary returning null.\n"
   },
   {
     "rule_id": "rn.rn-no-legacy-expo-packages",
@@ -288,15 +279,6 @@
     "message": "@react-navigation/stack uses a JS-driven card navigator that renders animations on the JavaScript thread, causing jank under heavy workloads. Replace with @react-navigation/native-stack which delegates transitions to the platform's native NavigationController / FragmentManager for butter-smooth 60/120fps navigation.\n"
   },
   {
-    "rule_id": "rn.rn-no-panresponder",
-    "severity": "warning",
-    "category": "performance",
-    "confidence": "rule",
-    "file": "rn.tsx",
-    "line": 134,
-    "message": "PanResponder runs gesture logic on the JavaScript thread, causing dropped frames when the JS thread is busy. Replace with react-native-gesture-handler's Gesture API which executes on the UI thread via Reanimated worklets.\n"
-  },
-  {
     "rule_id": "rn.rn-no-renderitem-key",
     "severity": "info",
     "category": "bug",
@@ -324,104 +306,6 @@
     "message": "Deprecated setNativeProps() call detected. setNativeProps is deprecated and not compatible with the Fabric new architecture. Use component state or Reanimated shared values to dynamically update component properties instead.\n"
   },
   {
-    "rule_id": "rn.rn-no-single-element-style-array",
-    "severity": "info",
-    "category": "performance",
-    "confidence": "hint",
-    "file": "rn.tsx",
-    "line": 161,
-    "message": "Single-element style arrays create a new array reference on every render, defeating React Native's style caching. Use the style value directly: style={styles.box} instead of style={[styles.box]}.\n"
-  },
-  {
-    "rule_id": "rn.rn-prefer-content-inset-adjustment",
-    "severity": "info",
-    "confidence": "hint",
-    "file": "rn.tsx",
-    "line": 358,
-    "message": "Manual paddingTop/paddingBottom on SafeAreaView adds redundant safe-area inset — SafeAreaView already handles this natively on iOS. Remove manual padding and let SafeAreaView manage safe-area insets automatically. For ScrollView, use contentInsetAdjustmentBehavior=\"automatic\" instead.\n"
-  },
-  {
-    "rule_id": "rn.rn-prefer-expo-image",
-    "severity": "info",
-    "category": "performance",
-    "confidence": "hint",
-    "file": "rn.tsx",
-    "line": 113,
-    "message": "React Native's built-in \u003cImage\u003e lacks memory caching, crossfade transitions, and blurhash placeholder support. Use expo-image's \u003cImage\u003e component instead: import { Image } from 'expo-image'\n"
-  },
-  {
-    "rule_id": "rn.rn-prefer-pressable",
-    "severity": "info",
-    "category": "quality",
-    "confidence": "hint",
-    "file": "rn.tsx",
-    "line": 121,
-    "message": "TouchableOpacity, TouchableHighlight, and TouchableNativeFeedback are legacy gesture components. Use \u003cPressable\u003e instead — it offers more flexible state-based styling (pressed, hovered, focused) and integrates better with concurrent React.\n"
-  },
-  {
-    "rule_id": "rn.rn-prefer-pressable",
-    "severity": "info",
-    "category": "quality",
-    "confidence": "hint",
-    "file": "rn.tsx",
-    "line": 122,
-    "message": "TouchableOpacity, TouchableHighlight, and TouchableNativeFeedback are legacy gesture components. Use \u003cPressable\u003e instead — it offers more flexible state-based styling (pressed, hovered, focused) and integrates better with concurrent React.\n"
-  },
-  {
-    "rule_id": "rn.rn-prefer-pressable",
-    "severity": "info",
-    "category": "quality",
-    "confidence": "hint",
-    "file": "rn.tsx",
-    "line": 261,
-    "message": "TouchableOpacity, TouchableHighlight, and TouchableNativeFeedback are legacy gesture components. Use \u003cPressable\u003e instead — it offers more flexible state-based styling (pressed, hovered, focused) and integrates better with concurrent React.\n"
-  },
-  {
-    "rule_id": "rn.rn-prefer-pressable-over-gesture-detector",
-    "severity": "info",
-    "category": "performance",
-    "confidence": "hint",
-    "file": "rn.tsx",
-    "line": 320,
-    "message": "GestureDetector with only a Tap gesture is heavier than necessary. The Gesture.Tap API initializes the full gesture handler pipeline on the JS thread. For simple tap interactions, Pressable is lighter, works on both threads, and requires no native setup.\n"
-  },
-  {
-    "rule_id": "rn.rn-prefer-pressable-over-gesture-detector",
-    "severity": "info",
-    "category": "performance",
-    "confidence": "hint",
-    "file": "rn.tsx",
-    "line": 329,
-    "message": "GestureDetector with only a Tap gesture is heavier than necessary. The Gesture.Tap API initializes the full gesture handler pipeline on the JS thread. For simple tap interactions, Pressable is lighter, works on both threads, and requires no native setup.\n"
-  },
-  {
-    "rule_id": "rn.rn-prefer-reanimated",
-    "severity": "warning",
-    "category": "performance",
-    "confidence": "hint",
-    "file": "rn.tsx",
-    "line": 143,
-    "message": "React Native's Animated API runs on the JavaScript thread, which causes dropped frames under heavy JS workloads. Replace with react-native-reanimated which executes animations on the UI thread: useSharedValue, useAnimatedStyle, withTiming, withSpring.\n"
-  },
-  {
-    "rule_id": "rn.rn-prefer-reanimated",
-    "severity": "warning",
-    "category": "performance",
-    "confidence": "hint",
-    "file": "rn.tsx",
-    "line": 144,
-    "message": "React Native's Animated API runs on the JavaScript thread, which causes dropped frames under heavy JS workloads. Replace with react-native-reanimated which executes animations on the UI thread: useSharedValue, useAnimatedStyle, withTiming, withSpring.\n"
-  },
-  {
-    "rule_id": "rn.rn-prefer-reanimated",
-    "severity": "warning",
-    "category": "performance",
-    "confidence": "hint",
-    "file": "rn.tsx",
-    "line": 145,
-    "message": "React Native's Animated API runs on the JavaScript thread, which causes dropped frames under heavy JS workloads. Replace with react-native-reanimated which executes animations on the UI thread: useSharedValue, useAnimatedStyle, withTiming, withSpring.\n"
-  },
-  {
     "rule_id": "rn.rn-pressable-shared-value-mutation",
     "severity": "warning",
     "category": "performance",
@@ -440,30 +324,12 @@
     "message": "Shared value mutated inside onPress/onLongPress callback runs on the JS thread, causing dropped frames on animation-dependent components. Use Reanimated worklets (withTiming/withSpring) instead of direct `.value =` assignment in press handlers.\n"
   },
   {
-    "rule_id": "rn.rn-scrollview-dynamic-padding",
-    "severity": "warning",
-    "category": "performance",
-    "confidence": "hint",
-    "file": "rn.tsx",
-    "line": 282,
-    "message": "ScrollView (or FlatList) has paddingTop/paddingBottom in its style or contentContainerStyle. Padding on scroll content shifts the visible area during scroll and can cause layout jank. Use the native `contentInset` prop instead to adjust scroll indicator insets without moving content boundaries.\n"
-  },
-  {
-    "rule_id": "rn.rn-scrollview-dynamic-padding",
-    "severity": "warning",
-    "category": "performance",
-    "confidence": "hint",
-    "file": "rn.tsx",
-    "line": 291,
-    "message": "ScrollView (or FlatList) has paddingTop/paddingBottom in its style or contentContainerStyle. Padding on scroll content shifts the visible area during scroll and can cause layout jank. Use the native `contentInset` prop instead to adjust scroll indicator insets without moving content boundaries.\n"
-  },
-  {
     "rule_id": "rn.rn-scrollview-flex-in-content-container",
     "severity": "warning",
     "confidence": "hint",
     "file": "rn.tsx",
     "line": 166,
-    "message": "Using flex: 1 in contentContainerStyle collapses the ScrollView content on iOS because flex: 1 means \"take all available space\" but a ScrollView has unbounded height. Use flexGrow: 1 instead — it expands content to fill the scroll area without collapsing.\n"
+    "message": "Using flex: 1 in contentContainerStyle collapses the ScrollView content on iOS because flex: 1 means \"take all available space\" but a ScrollView has unbounded height. Use flexGrow: 1 instead \u2014 it expands content to fill the scroll area without collapsing.\n"
   },
   {
     "rule_id": "rn.rn-scrollview-over-flatlist",

@@ -54,69 +54,6 @@
     "message": "bcrypt is configured with a cost factor below 10. Low bcrypt rounds make offline password cracking materially cheaper if password hashes leak. Use a cost of at least 10, then tune upward based on your production latency budget.\n"
   },
   {
-    "rule_id": "general.client-localstorage-no-version",
-    "severity": "warning",
-    "category": "bug",
-    "confidence": "rule",
-    "file": "case.tsx",
-    "line": 17,
-    "message": "Unversioned storage key access. When caching data in localStorage or sessionStorage, it is highly recommended to append a version suffix (e.g. 'user_data:v1') so that future schema updates do not cause JSON parsing failures or runtime crashes.\n"
-  },
-  {
-    "rule_id": "general.client-localstorage-no-version",
-    "severity": "warning",
-    "category": "bug",
-    "confidence": "rule",
-    "file": "case.tsx",
-    "line": 18,
-    "message": "Unversioned storage key access. When caching data in localStorage or sessionStorage, it is highly recommended to append a version suffix (e.g. 'user_data:v1') so that future schema updates do not cause JSON parsing failures or runtime crashes.\n"
-  },
-  {
-    "rule_id": "general.client-localstorage-no-version",
-    "severity": "warning",
-    "category": "bug",
-    "confidence": "rule",
-    "file": "client.tsx",
-    "line": 95,
-    "message": "Unversioned storage key access. When caching data in localStorage or sessionStorage, it is highly recommended to append a version suffix (e.g. 'user_data:v1') so that future schema updates do not cause JSON parsing failures or runtime crashes.\n"
-  },
-  {
-    "rule_id": "general.client-localstorage-no-version",
-    "severity": "warning",
-    "category": "bug",
-    "confidence": "rule",
-    "file": "client.tsx",
-    "line": 96,
-    "message": "Unversioned storage key access. When caching data in localStorage or sessionStorage, it is highly recommended to append a version suffix (e.g. 'user_data:v1') so that future schema updates do not cause JSON parsing failures or runtime crashes.\n"
-  },
-  {
-    "rule_id": "general.client-localstorage-no-version",
-    "severity": "warning",
-    "category": "bug",
-    "confidence": "rule",
-    "file": "client.tsx",
-    "line": 97,
-    "message": "Unversioned storage key access. When caching data in localStorage or sessionStorage, it is highly recommended to append a version suffix (e.g. 'user_data:v1') so that future schema updates do not cause JSON parsing failures or runtime crashes.\n"
-  },
-  {
-    "rule_id": "general.client-localstorage-no-version",
-    "severity": "warning",
-    "category": "bug",
-    "confidence": "rule",
-    "file": "client.tsx",
-    "line": 98,
-    "message": "Unversioned storage key access. When caching data in localStorage or sessionStorage, it is highly recommended to append a version suffix (e.g. 'user_data:v1') so that future schema updates do not cause JSON parsing failures or runtime crashes.\n"
-  },
-  {
-    "rule_id": "general.client-localstorage-no-version",
-    "severity": "warning",
-    "category": "bug",
-    "confidence": "rule",
-    "file": "page.tsx",
-    "line": 5,
-    "message": "Unversioned storage key access. When caching data in localStorage or sessionStorage, it is highly recommended to append a version suffix (e.g. 'user_data:v1') so that future schema updates do not cause JSON parsing failures or runtime crashes.\n"
-  },
-  {
     "rule_id": "general.client-passive-event-listeners",
     "severity": "warning",
     "category": "performance",
@@ -315,150 +252,6 @@
     "message": "fetch() is called from inside a loop. This often creates an N+1 network pattern or forces requests to run one by one when combined with await. Prefer batching, a backend bulk endpoint, or Promise.all over a mapped collection when the requests are independent.\n"
   },
   {
-    "rule_id": "general.hardcoded-api-url",
-    "severity": "warning",
-    "category": "quality",
-    "confidence": "hint",
-    "file": "case.tsx",
-    "line": 320,
-    "message": "A hardcoded HTTP/HTTPS URL is used directly in a network request. To ensure flexibility across different environments (development, staging, production), avoid hardcoding base URLs. Load the base URL from an environment variable or use an API client with a configured baseURL.\n"
-  },
-  {
-    "rule_id": "general.hardcoded-api-url",
-    "severity": "warning",
-    "category": "quality",
-    "confidence": "hint",
-    "file": "case.tsx",
-    "line": 321,
-    "message": "A hardcoded HTTP/HTTPS URL is used directly in a network request. To ensure flexibility across different environments (development, staging, production), avoid hardcoding base URLs. Load the base URL from an environment variable or use an API client with a configured baseURL.\n"
-  },
-  {
-    "rule_id": "general.hardcoded-api-url",
-    "severity": "warning",
-    "category": "quality",
-    "confidence": "hint",
-    "file": "client_data_fetch.tsx",
-    "line": 56,
-    "message": "A hardcoded HTTP/HTTPS URL is used directly in a network request. To ensure flexibility across different environments (development, staging, production), avoid hardcoding base URLs. Load the base URL from an environment variable or use an API client with a configured baseURL.\n"
-  },
-  {
-    "rule_id": "general.hardcoded-api-url",
-    "severity": "warning",
-    "category": "quality",
-    "confidence": "hint",
-    "file": "server.tsx",
-    "line": 68,
-    "message": "A hardcoded HTTP/HTTPS URL is used directly in a network request. To ensure flexibility across different environments (development, staging, production), avoid hardcoding base URLs. Load the base URL from an environment variable or use an API client with a configured baseURL.\n"
-  },
-  {
-    "rule_id": "general.hardcoded-api-url",
-    "severity": "warning",
-    "category": "quality",
-    "confidence": "hint",
-    "file": "server.tsx",
-    "line": 74,
-    "message": "A hardcoded HTTP/HTTPS URL is used directly in a network request. To ensure flexibility across different environments (development, staging, production), avoid hardcoding base URLs. Load the base URL from an environment variable or use an API client with a configured baseURL.\n"
-  },
-  {
-    "rule_id": "general.hardcoded-api-url",
-    "severity": "warning",
-    "category": "quality",
-    "confidence": "hint",
-    "file": "server.tsx",
-    "line": 80,
-    "message": "A hardcoded HTTP/HTTPS URL is used directly in a network request. To ensure flexibility across different environments (development, staging, production), avoid hardcoding base URLs. Load the base URL from an environment variable or use an API client with a configured baseURL.\n"
-  },
-  {
-    "rule_id": "general.hardcoded-api-url",
-    "severity": "warning",
-    "category": "quality",
-    "confidence": "hint",
-    "file": "server_api_hop.tsx",
-    "line": 14,
-    "message": "A hardcoded HTTP/HTTPS URL is used directly in a network request. To ensure flexibility across different environments (development, staging, production), avoid hardcoding base URLs. Load the base URL from an environment variable or use an API client with a configured baseURL.\n"
-  },
-  {
-    "rule_id": "general.hardcoded-api-url",
-    "severity": "warning",
-    "category": "quality",
-    "confidence": "hint",
-    "file": "server_api_hop.tsx",
-    "line": 21,
-    "message": "A hardcoded HTTP/HTTPS URL is used directly in a network request. To ensure flexibility across different environments (development, staging, production), avoid hardcoding base URLs. Load the base URL from an environment variable or use an API client with a configured baseURL.\n"
-  },
-  {
-    "rule_id": "general.hardcoded-api-url",
-    "severity": "warning",
-    "category": "quality",
-    "confidence": "hint",
-    "file": "server_api_hop.tsx",
-    "line": 33,
-    "message": "A hardcoded HTTP/HTTPS URL is used directly in a network request. To ensure flexibility across different environments (development, staging, production), avoid hardcoding base URLs. Load the base URL from an environment variable or use an API client with a configured baseURL.\n"
-  },
-  {
-    "rule_id": "general.hardcoded-api-url",
-    "severity": "warning",
-    "category": "quality",
-    "confidence": "hint",
-    "file": "server_api_hop.tsx",
-    "line": 40,
-    "message": "A hardcoded HTTP/HTTPS URL is used directly in a network request. To ensure flexibility across different environments (development, staging, production), avoid hardcoding base URLs. Load the base URL from an environment variable or use an API client with a configured baseURL.\n"
-  },
-  {
-    "rule_id": "general.hardcoded-api-url",
-    "severity": "warning",
-    "category": "quality",
-    "confidence": "hint",
-    "file": "skipped_tests.ts",
-    "line": 15,
-    "message": "A hardcoded HTTP/HTTPS URL is used directly in a network request. To ensure flexibility across different environments (development, staging, production), avoid hardcoding base URLs. Load the base URL from an environment variable or use an API client with a configured baseURL.\n"
-  },
-  {
-    "rule_id": "general.hardcoded-api-url",
-    "severity": "warning",
-    "category": "quality",
-    "confidence": "hint",
-    "file": "tanstack_start.tsx",
-    "line": 17,
-    "message": "A hardcoded HTTP/HTTPS URL is used directly in a network request. To ensure flexibility across different environments (development, staging, production), avoid hardcoding base URLs. Load the base URL from an environment variable or use an API client with a configured baseURL.\n"
-  },
-  {
-    "rule_id": "general.hardcoded-api-url",
-    "severity": "warning",
-    "category": "quality",
-    "confidence": "hint",
-    "file": "tanstack_start.tsx",
-    "line": 24,
-    "message": "A hardcoded HTTP/HTTPS URL is used directly in a network request. To ensure flexibility across different environments (development, staging, production), avoid hardcoding base URLs. Load the base URL from an environment variable or use an API client with a configured baseURL.\n"
-  },
-  {
-    "rule_id": "general.hardcoded-api-url",
-    "severity": "warning",
-    "category": "quality",
-    "confidence": "hint",
-    "file": "tx_external_io.ts",
-    "line": 8,
-    "message": "A hardcoded HTTP/HTTPS URL is used directly in a network request. To ensure flexibility across different environments (development, staging, production), avoid hardcoding base URLs. Load the base URL from an environment variable or use an API client with a configured baseURL.\n"
-  },
-  {
-    "rule_id": "general.hardcoded-api-url",
-    "severity": "warning",
-    "category": "quality",
-    "confidence": "hint",
-    "file": "tx_external_io.ts",
-    "line": 15,
-    "message": "A hardcoded HTTP/HTTPS URL is used directly in a network request. To ensure flexibility across different environments (development, staging, production), avoid hardcoding base URLs. Load the base URL from an environment variable or use an API client with a configured baseURL.\n"
-  },
-  {
-    "rule_id": "general.hardcoded-api-url",
-    "severity": "warning",
-    "category": "quality",
-    "confidence": "hint",
-    "file": "tx_external_io.ts",
-    "line": 22,
-    "message": "A hardcoded HTTP/HTTPS URL is used directly in a network request. To ensure flexibility across different environments (development, staging, production), avoid hardcoding base URLs. Load the base URL from an environment variable or use an API client with a configured baseURL.\n"
-  },
-  {
     "rule_id": "general.hardcoded-secret",
     "severity": "error",
     "category": "security",
@@ -609,7 +402,7 @@
     "confidence": "rule",
     "file": "js_async_foreach.ts",
     "line": 6,
-    "message": "An async callback is passed to a .forEach() call. forEach ignores the returned promise, so none of the asynchronous work is awaited — the callback runs unsequenced and errors are silently lost. Use a for...of loop with await, or Promise.all(ids.map(...)) for parallel execution.\n"
+    "message": "An async callback is passed to a .forEach() call. forEach ignores the returned promise, so none of the asynchronous work is awaited \u2014 the callback runs unsequenced and errors are silently lost. Use a for...of loop with await, or Promise.all(ids.map(...)) for parallel execution.\n"
   },
   {
     "rule_id": "general.js-async-foreach",
@@ -618,7 +411,7 @@
     "confidence": "rule",
     "file": "js_async_foreach.ts",
     "line": 12,
-    "message": "An async callback is passed to a .forEach() call. forEach ignores the returned promise, so none of the asynchronous work is awaited — the callback runs unsequenced and errors are silently lost. Use a for...of loop with await, or Promise.all(items.map(...)) for parallel execution.\n"
+    "message": "An async callback is passed to a .forEach() call. forEach ignores the returned promise, so none of the asynchronous work is awaited \u2014 the callback runs unsequenced and errors are silently lost. Use a for...of loop with await, or Promise.all(items.map(...)) for parallel execution.\n"
   },
   {
     "rule_id": "general.js-async-foreach",
@@ -627,7 +420,7 @@
     "confidence": "rule",
     "file": "js_async_foreach.ts",
     "line": 18,
-    "message": "An async callback is passed to a .forEach() call. forEach ignores the returned promise, so none of the asynchronous work is awaited — the callback runs unsequenced and errors are silently lost. Use a for...of loop with await, or Promise.all(entries.map(...)) for parallel execution.\n"
+    "message": "An async callback is passed to a .forEach() call. forEach ignores the returned promise, so none of the asynchronous work is awaited \u2014 the callback runs unsequenced and errors are silently lost. Use a for...of loop with await, or Promise.all(entries.map(...)) for parallel execution.\n"
   },
   {
     "rule_id": "general.js-hoist-intl",
@@ -636,7 +429,7 @@
     "confidence": "rule",
     "file": "express.ts",
     "line": 181,
-    "message": "new Intl.*Format(...) created inside a function/render scope. Intl formatters are relatively expensive to construct — locale data parsing and pattern compilation happen on every instantiation. Hoist to module scope so the formatter is created once.\n"
+    "message": "new Intl.*Format(...) created inside a function/render scope. Intl formatters are relatively expensive to construct \u2014 locale data parsing and pattern compilation happen on every instantiation. Hoist to module scope so the formatter is created once.\n"
   },
   {
     "rule_id": "general.js-hoist-regexp",
@@ -645,7 +438,7 @@
     "confidence": "rule",
     "file": "express.ts",
     "line": 170,
-    "message": "new RegExp(...) created inside a function/render scope. The regular expression is recompiled on every invocation. Hoist RegExp creation to module scope — the pattern is static and compiling it once is sufficient.\n"
+    "message": "new RegExp(...) created inside a function/render scope. The regular expression is recompiled on every invocation. Hoist RegExp creation to module scope \u2014 the pattern is static and compiling it once is sufficient.\n"
   },
   {
     "rule_id": "general.js-prototype-pollution-merge",
@@ -1112,29 +905,13 @@
     "message": "Import of legacy library 'moment' detected. Moment.js is a heavy library that lacks tree-shaking support and can lead to bundle bloat. Use modern, lightweight date libraries like 'date-fns', 'dayjs', or 'luxon' instead.\n"
   },
   {
-    "rule_id": "general.no-tiny-text",
-    "severity": "warning",
-    "confidence": "hint",
-    "file": "client.tsx",
-    "line": 177,
-    "message": "Tiny text size detected (less than 12px). Font sizes below 12px (0.75rem) are very difficult to read on most screens, especially for visually impaired users. Keep font sizes at 12px or larger (use standard Tailwind text-xs, text-sm, etc.).\n"
-  },
-  {
-    "rule_id": "general.no-tiny-text",
-    "severity": "warning",
-    "confidence": "hint",
-    "file": "client.tsx",
-    "line": 178,
-    "message": "Tiny text size detected (less than 12px). Font sizes below 12px (0.75rem) are very difficult to read on most screens, especially for visually impaired users. Keep font sizes at 12px or larger (use standard Tailwind text-xs, text-sm, etc.).\n"
-  },
-  {
     "rule_id": "general.no-undeferred-third-party",
     "severity": "warning",
     "category": "performance",
     "confidence": "rule",
     "file": "scripts.tsx",
     "line": 16,
-    "message": "Undeferred third-party script blocks page rendering. Add 'defer' or 'async' to standard HTML \u003cscript\u003e tags, or avoid 'beforeInteractive' strategy in Next.js \u003cScript\u003e components unless absolutely necessary for core initialization.\n"
+    "message": "Undeferred third-party script blocks page rendering. Add 'defer' or 'async' to standard HTML <script> tags, or avoid 'beforeInteractive' strategy in Next.js <Script> components unless absolutely necessary for core initialization.\n"
   },
   {
     "rule_id": "general.node-unhandled-promise-rejection",
@@ -1362,148 +1139,13 @@
     "message": "Eagerly imported heavy library detected. This library is large and can significantly increase your initial bundle size. Use dynamic imports (e.g. import() or React.lazy()) to load it asynchronously only when needed.\n"
   },
   {
-    "rule_id": "general.process-env-dispersed-access",
-    "severity": "warning",
-    "category": "quality",
-    "confidence": "hint",
-    "file": "case.tsx",
-    "line": 135,
-    "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
-  },
-  {
-    "rule_id": "general.process-env-dispersed-access",
-    "severity": "warning",
-    "category": "quality",
-    "confidence": "hint",
-    "file": "case.tsx",
-    "line": 136,
-    "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
-  },
-  {
-    "rule_id": "general.process-env-dispersed-access",
-    "severity": "warning",
-    "category": "quality",
-    "confidence": "hint",
-    "file": "case.tsx",
-    "line": 137,
-    "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
-  },
-  {
-    "rule_id": "general.process-env-dispersed-access",
-    "severity": "warning",
-    "category": "quality",
-    "confidence": "hint",
-    "file": "case.tsx",
-    "line": 138,
-    "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
-  },
-  {
-    "rule_id": "general.process-env-dispersed-access",
-    "severity": "warning",
-    "category": "quality",
-    "confidence": "hint",
-    "file": "case.tsx",
-    "line": 317,
-    "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
-  },
-  {
-    "rule_id": "general.process-env-dispersed-access",
-    "severity": "warning",
-    "category": "quality",
-    "confidence": "hint",
-    "file": "case.tsx",
-    "line": 318,
-    "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
-  },
-  {
-    "rule_id": "general.process-env-dispersed-access",
-    "severity": "warning",
-    "category": "quality",
-    "confidence": "hint",
-    "file": "client.tsx",
-    "line": 14,
-    "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
-  },
-  {
-    "rule_id": "general.process-env-dispersed-access",
-    "severity": "warning",
-    "category": "quality",
-    "confidence": "hint",
-    "file": "client.tsx",
-    "line": 15,
-    "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
-  },
-  {
-    "rule_id": "general.process-env-dispersed-access",
-    "severity": "warning",
-    "category": "quality",
-    "confidence": "hint",
-    "file": "rn.tsx",
-    "line": 81,
-    "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
-  },
-  {
-    "rule_id": "general.process-env-dispersed-access",
-    "severity": "warning",
-    "category": "quality",
-    "confidence": "hint",
-    "file": "rn.tsx",
-    "line": 82,
-    "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
-  },
-  {
-    "rule_id": "general.process-env-dispersed-access",
-    "severity": "warning",
-    "category": "quality",
-    "confidence": "hint",
-    "file": "rn.tsx",
-    "line": 83,
-    "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
-  },
-  {
-    "rule_id": "general.process-env-dispersed-access",
-    "severity": "warning",
-    "category": "quality",
-    "confidence": "hint",
-    "file": "security_crypto.ts",
-    "line": 20,
-    "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
-  },
-  {
-    "rule_id": "general.process-env-dispersed-access",
-    "severity": "warning",
-    "category": "quality",
-    "confidence": "hint",
-    "file": "tanstack_start.tsx",
-    "line": 37,
-    "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
-  },
-  {
-    "rule_id": "general.process-env-dispersed-access",
-    "severity": "warning",
-    "category": "quality",
-    "confidence": "hint",
-    "file": "tanstack_start.tsx",
-    "line": 45,
-    "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
-  },
-  {
-    "rule_id": "general.process-env-dispersed-access",
-    "severity": "warning",
-    "category": "quality",
-    "confidence": "hint",
-    "file": "tanstack_start.tsx",
-    "line": 53,
-    "message": "Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.\n"
-  },
-  {
     "rule_id": "general.reduce-spread-accumulator",
     "severity": "warning",
     "category": "performance",
     "confidence": "hint",
     "file": "case.tsx",
     "line": 67,
-    "message": "This reduce callback rebuilds the accumulator with [...acc, ...] on every iteration, which copies the growing array repeatedly and turns a linear collection step into O(n²) work. Prefer map/filter, or mutate a local accumulator inside the reduce callback when reduce is genuinely needed.\n"
+    "message": "This reduce callback rebuilds the accumulator with [...acc, ...] on every iteration, which copies the growing array repeatedly and turns a linear collection step into O(n\u00b2) work. Prefer map/filter, or mutate a local accumulator inside the reduce callback when reduce is genuinely needed.\n"
   },
   {
     "rule_id": "general.regex-dos-candidate",
@@ -1802,7 +1444,7 @@
     "confidence": "hint",
     "file": "incomplete.ts",
     "line": 76,
-    "message": "`as any` (and `Record\u003c_, any\u003e`) disables type checking at this point, so the compiler stops catching real bugs flowing through here. Unlike an incidental `: any`, this is an explicit escape hatch. Prefer `unknown` with a narrowing check, a precise generic, or a typed shape.\n"
+    "message": "`as any` (and `Record<_, any>`) disables type checking at this point, so the compiler stops catching real bugs flowing through here. Unlike an incidental `: any`, this is an explicit escape hatch. Prefer `unknown` with a narrowing check, a precise generic, or a typed shape.\n"
   },
   {
     "rule_id": "general.ts-as-any-escape",
@@ -1811,7 +1453,7 @@
     "confidence": "hint",
     "file": "incomplete.ts",
     "line": 77,
-    "message": "`as any` (and `Record\u003c_, any\u003e`) disables type checking at this point, so the compiler stops catching real bugs flowing through here. Unlike an incidental `: any`, this is an explicit escape hatch. Prefer `unknown` with a narrowing check, a precise generic, or a typed shape.\n"
+    "message": "`as any` (and `Record<_, any>`) disables type checking at this point, so the compiler stops catching real bugs flowing through here. Unlike an incidental `: any`, this is an explicit escape hatch. Prefer `unknown` with a narrowing check, a precise generic, or a typed shape.\n"
   },
   {
     "rule_id": "general.ts-ignore-without-reason",
@@ -1847,7 +1489,7 @@
     "confidence": "rule",
     "file": "animations.tsx",
     "line": 2,
-    "message": "Eagerly imported 'motion' from 'framer-motion' detected. This pulls in the entire bundle of framer-motion. To reduce bundle size, import 'm' instead of 'motion', and wrap your motion elements in '\u003cLazyMotion features={domAnimation}\u003e'.\n"
+    "message": "Eagerly imported 'motion' from 'framer-motion' detected. This pulls in the entire bundle of framer-motion. To reduce bundle size, import 'm' instead of 'motion', and wrap your motion elements in '<LazyMotion features={domAnimation}>'.\n"
   },
   {
     "rule_id": "general.use-lazy-motion",
@@ -1856,7 +1498,7 @@
     "confidence": "rule",
     "file": "heavy_import_no_dynamic.tsx",
     "line": 37,
-    "message": "Eagerly imported 'motion' from 'framer-motion' detected. This pulls in the entire bundle of framer-motion. To reduce bundle size, import 'm' instead of 'motion', and wrap your motion elements in '\u003cLazyMotion features={domAnimation}\u003e'.\n"
+    "message": "Eagerly imported 'motion' from 'framer-motion' detected. This pulls in the entire bundle of framer-motion. To reduce bundle size, import 'm' instead of 'motion', and wrap your motion elements in '<LazyMotion features={domAnimation}>'.\n"
   },
   {
     "rule_id": "general.use-lazy-motion",
@@ -1865,7 +1507,7 @@
     "confidence": "rule",
     "file": "heavy_import_no_dynamic.tsx",
     "line": 38,
-    "message": "Eagerly imported 'motion' from 'framer-motion' detected. This pulls in the entire bundle of framer-motion. To reduce bundle size, import 'm' instead of 'motion', and wrap your motion elements in '\u003cLazyMotion features={domAnimation}\u003e'.\n"
+    "message": "Eagerly imported 'motion' from 'framer-motion' detected. This pulls in the entire bundle of framer-motion. To reduce bundle size, import 'm' instead of 'motion', and wrap your motion elements in '<LazyMotion features={domAnimation}>'.\n"
   },
   {
     "rule_id": "general.weak-cipher-algorithm",
@@ -1910,7 +1552,7 @@
     "confidence": "hint",
     "file": "security_crypto.ts",
     "line": 31,
-    "message": "A cryptographically broken hash (MD5/SHA-1) is used. These are collision- prone and unsafe for passwords, signatures, tokens, or integrity checks of untrusted data. Use SHA-256+ (or a password KDF like bcrypt/scrypt/argon2 for passwords). MD5/SHA-1 are acceptable only for non-security checksums (e.g. cache keys) — verify the context before silencing.\n"
+    "message": "A cryptographically broken hash (MD5/SHA-1) is used. These are collision- prone and unsafe for passwords, signatures, tokens, or integrity checks of untrusted data. Use SHA-256+ (or a password KDF like bcrypt/scrypt/argon2 for passwords). MD5/SHA-1 are acceptable only for non-security checksums (e.g. cache keys) \u2014 verify the context before silencing.\n"
   },
   {
     "rule_id": "general.weak-crypto-hash",
@@ -1919,7 +1561,7 @@
     "confidence": "hint",
     "file": "security_crypto.ts",
     "line": 32,
-    "message": "A cryptographically broken hash (MD5/SHA-1) is used. These are collision- prone and unsafe for passwords, signatures, tokens, or integrity checks of untrusted data. Use SHA-256+ (or a password KDF like bcrypt/scrypt/argon2 for passwords). MD5/SHA-1 are acceptable only for non-security checksums (e.g. cache keys) — verify the context before silencing.\n"
+    "message": "A cryptographically broken hash (MD5/SHA-1) is used. These are collision- prone and unsafe for passwords, signatures, tokens, or integrity checks of untrusted data. Use SHA-256+ (or a password KDF like bcrypt/scrypt/argon2 for passwords). MD5/SHA-1 are acceptable only for non-security checksums (e.g. cache keys) \u2014 verify the context before silencing.\n"
   },
   {
     "rule_id": "general.zod-v4-no-deprecated-error-apis",
@@ -1946,7 +1588,7 @@
     "confidence": "rule",
     "file": "zod.ts",
     "line": 27,
-    "message": "The errorMap option was renamed to error in Zod v4. Replace { errorMap: (issue, ctx) =\u003e ({ message: \"...\" }) } with { error: (issue) =\u003e \"...\" } which is shorter and better typed.\n"
+    "message": "The errorMap option was renamed to error in Zod v4. Replace { errorMap: (issue, ctx) => ({ message: \"...\" }) } with { error: (issue) => \"...\" } which is shorter and better typed.\n"
   },
   {
     "rule_id": "general.zod-v4-no-deprecated-error-customization",
@@ -1955,7 +1597,7 @@
     "confidence": "rule",
     "file": "zod.ts",
     "line": 28,
-    "message": "The errorMap option was renamed to error in Zod v4. Replace { errorMap: (issue, ctx) =\u003e ({ message: \"...\" }) } with { error: (issue) =\u003e \"...\" } which is shorter and better typed.\n"
+    "message": "The errorMap option was renamed to error in Zod v4. Replace { errorMap: (issue, ctx) => ({ message: \"...\" }) } with { error: (issue) => \"...\" } which is shorter and better typed.\n"
   },
   {
     "rule_id": "general.zod-v4-no-deprecated-schema-apis",
@@ -1964,7 +1606,7 @@
     "confidence": "rule",
     "file": "zod.ts",
     "line": 36,
-    "message": "z.preprocess() is deprecated in Zod v4. Use z.pipe() with an explicit transform instead: z.pipe(z.unknown().transform(val =\u003e coerce(val)), targetSchema). This makes the transformation chain explicit and type-safe.\n"
+    "message": "z.preprocess() is deprecated in Zod v4. Use z.pipe() with an explicit transform instead: z.pipe(z.unknown().transform(val => coerce(val)), targetSchema). This makes the transformation chain explicit and type-safe.\n"
   },
   {
     "rule_id": "general.zod-v4-no-deprecated-schema-apis",
@@ -1973,7 +1615,7 @@
     "confidence": "rule",
     "file": "zod.ts",
     "line": 37,
-    "message": "z.preprocess() is deprecated in Zod v4. Use z.pipe() with an explicit transform instead: z.pipe(z.unknown().transform(val =\u003e coerce(val)), targetSchema). This makes the transformation chain explicit and type-safe.\n"
+    "message": "z.preprocess() is deprecated in Zod v4. Use z.pipe() with an explicit transform instead: z.pipe(z.unknown().transform(val => coerce(val)), targetSchema). This makes the transformation chain explicit and type-safe.\n"
   },
   {
     "rule_id": "general.zod-v4-prefer-top-level-string-formats",

@@ -171,51 +171,6 @@
     "message": "Calling 'redirect()' or 'permanentRedirect()' inside a try-catch block can prevent the redirect from working correctly because Next.js uses thrown errors internally to control routing. Call redirect() outside the try-catch block or ensure the redirect error is rethrown.\n"
   },
   {
-    "rule_id": "nextjs.next-prefer-image-component",
-    "severity": "warning",
-    "category": "performance",
-    "confidence": "hint",
-    "file": "case.tsx",
-    "line": 218,
-    "message": "A standard HTML \u003cimg\u003e tag is used. In Next.js, using \u003cimg\u003e bypasses automatic image optimization (lazy loading, responsive sizing, and modern format conversion). Use the '\u003cImage\u003e' component from 'next/image' instead.\n"
-  },
-  {
-    "rule_id": "nextjs.next-prefer-link-component",
-    "severity": "warning",
-    "category": "performance",
-    "confidence": "hint",
-    "file": "case.tsx",
-    "line": 30,
-    "message": "A standard HTML \u003ca\u003e tag is used with an internal route. In Next.js, using \u003ca\u003e for internal navigation causes a full page reload, losing client-side routing benefits. Use the '\u003cLink\u003e' component from 'next/link' instead.\n"
-  },
-  {
-    "rule_id": "nextjs.next-prefer-link-component",
-    "severity": "warning",
-    "category": "performance",
-    "confidence": "hint",
-    "file": "case.tsx",
-    "line": 212,
-    "message": "A standard HTML \u003ca\u003e tag is used with an internal route. In Next.js, using \u003ca\u003e for internal navigation causes a full page reload, losing client-side routing benefits. Use the '\u003cLink\u003e' component from 'next/link' instead.\n"
-  },
-  {
-    "rule_id": "nextjs.next-prefer-link-component",
-    "severity": "warning",
-    "category": "performance",
-    "confidence": "hint",
-    "file": "case.tsx",
-    "line": 213,
-    "message": "A standard HTML \u003ca\u003e tag is used with an internal route. In Next.js, using \u003ca\u003e for internal navigation causes a full page reload, losing client-side routing benefits. Use the '\u003cLink\u003e' component from 'next/link' instead.\n"
-  },
-  {
-    "rule_id": "nextjs.next-prefer-link-component",
-    "severity": "warning",
-    "category": "performance",
-    "confidence": "hint",
-    "file": "client.tsx",
-    "line": 166,
-    "message": "A standard HTML \u003ca\u003e tag is used with an internal route. In Next.js, using \u003ca\u003e for internal navigation causes a full page reload, losing client-side routing benefits. Use the '\u003cLink\u003e' component from 'next/link' instead.\n"
-  },
-  {
     "rule_id": "nextjs.next-public-env-secret",
     "severity": "warning",
     "category": "security",
@@ -644,7 +599,7 @@
     "confidence": "rule",
     "file": "image_sizes.tsx",
     "line": 8,
-    "message": "Next.js \u003cImage\u003e component is missing the 'sizes' property. For responsive images (especially those using 'fill' or responsive layouts), specifying 'sizes' is important for performance so the browser downloads the correct image size.\n"
+    "message": "Next.js <Image> component is missing the 'sizes' property. For responsive images (especially those using 'fill' or responsive layouts), specifying 'sizes' is important for performance so the browser downloads the correct image size.\n"
   },
   {
     "rule_id": "nextjs.nextjs-image-missing-sizes",
@@ -653,7 +608,7 @@
     "confidence": "rule",
     "file": "image_sizes.tsx",
     "line": 11,
-    "message": "Next.js \u003cImage\u003e component is missing the 'sizes' property. For responsive images (especially those using 'fill' or responsive layouts), specifying 'sizes' is important for performance so the browser downloads the correct image size.\n"
+    "message": "Next.js <Image> component is missing the 'sizes' property. For responsive images (especially those using 'fill' or responsive layouts), specifying 'sizes' is important for performance so the browser downloads the correct image size.\n"
   },
   {
     "rule_id": "nextjs.nextjs-image-missing-sizes",
@@ -662,7 +617,7 @@
     "confidence": "rule",
     "file": "image_sizes.tsx",
     "line": 14,
-    "message": "Next.js \u003cImage\u003e component is missing the 'sizes' property. For responsive images (especially those using 'fill' or responsive layouts), specifying 'sizes' is important for performance so the browser downloads the correct image size.\n"
+    "message": "Next.js <Image> component is missing the 'sizes' property. For responsive images (especially those using 'fill' or responsive layouts), specifying 'sizes' is important for performance so the browser downloads the correct image size.\n"
   },
   {
     "rule_id": "nextjs.nextjs-image-missing-sizes",
@@ -671,7 +626,7 @@
     "confidence": "rule",
     "file": "image_sizes.tsx",
     "line": 17,
-    "message": "Next.js \u003cImage\u003e component is missing the 'sizes' property. For responsive images (especially those using 'fill' or responsive layouts), specifying 'sizes' is important for performance so the browser downloads the correct image size.\n"
+    "message": "Next.js <Image> component is missing the 'sizes' property. For responsive images (especially those using 'fill' or responsive layouts), specifying 'sizes' is important for performance so the browser downloads the correct image size.\n"
   },
   {
     "rule_id": "nextjs.nextjs-inline-script-missing-id",
@@ -752,6 +707,6 @@
     "confidence": "hint",
     "file": "nextjs_no_use_search_params_without_suspense.tsx",
     "line": 5,
-    "message": "'useSearchParams()' is used in a Client Component. Next.js requires components using 'useSearchParams()' to be wrapped in a '\u003cSuspense\u003e' boundary at the parent level during static rendering. Without a Suspense boundary, the entire page will fallback to client-side rendering.\n"
+    "message": "'useSearchParams()' is used in a Client Component. Next.js requires components using 'useSearchParams()' to be wrapped in a '<Suspense>' boundary at the parent level during static rendering. Without a Suspense boundary, the entire page will fallback to client-side rendering.\n"
   }
 ]

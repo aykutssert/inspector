@@ -63,16 +63,6 @@
   fix: |
     bun:sqlite query is built with string concatenation or interpolation.
 
-- id: css.no-large-animated-blur
-  why: |
-    Large blur radius used in an animation. Animating blur() values above ~30px forces the GPU to re-composite on every frame, causing significant jank especially on mobile. Prefer smaller blur values (under 20px), or animate opacity/transform instead.
-  bad: |
-    # See `scout explain css.no-large-animated-blur` for code example
-  good: |
-    # See `scout explain css.no-large-animated-blur` for code example
-  fix: |
-    Large blur radius used in an animation.
-
 - id: css.no-layout-property-animation
   why: |
     Animation or transition targets a layout-triggering property. Animating layout properties (such as width, height, top, left, margin, padding, or 'all') causes the browser to re-layout the page on every frame, which is computationally expensive and causes jank. Use transform (e.g., scale, translate) and opacity instead.
@@ -82,16 +72,6 @@
     # See `scout explain css.no-layout-property-animation` for code example
   fix: |
     Animation or transition targets a layout-triggering property.
-
-- id: css.no-outline-none
-  why: |
-    Disabling focus outlines with outline: none or outline: 0. Focus outlines are critical for keyboard navigation accessibility (A11y). If you disable the default outline, you must provide an alternative visible focus indicator (e.g., custom border or box-shadow ring) for focus states.
-  bad: |
-    # See `scout explain css.no-outline-none` for code example
-  good: |
-    # See `scout explain css.no-outline-none` for code example
-  fix: |
-    Disabling focus outlines with outline: none or outline: 0.
 
 - id: css.no-permanent-will-change
   why: |
@@ -203,16 +183,6 @@
   fix: |
     bcrypt is configured with a cost factor below 10.
 
-- id: general.client-localstorage-no-version
-  why: |
-    Unversioned storage key access. When caching data in localStorage or sessionStorage, it is highly recommended to append a version suffix (e.g. 'user_data:v1') so that future schema updates do not cause JSON parsing failures or runtime crashes.
-  bad: |
-    # See `scout explain general.client-localstorage-no-version` for code example
-  good: |
-    # See `scout explain general.client-localstorage-no-version` for code example
-  fix: |
-    Unversioned storage key access.
-
 - id: general.client-passive-event-listeners
   why: |
     Scroll/touch event listener registered without '{ passive: true }'. Touch and wheel event listeners ('touchstart', 'touchmove', 'wheel', 'mousewheel') should be registered with '{ passive: true }' to improve scroll performance and avoid layout/scroll jank, unless they call 'event.preventDefault()'.
@@ -252,16 +222,6 @@
     # See `scout explain general.fetch-in-loop` for code example
   fix: |
     fetch() is called from inside a loop.
-
-- id: general.hardcoded-api-url
-  why: |
-    A hardcoded HTTP/HTTPS URL is used directly in a network request. To ensure flexibility across different environments (development, staging, production), avoid hardcoding base URLs. Load the base URL from an environment variable or use an API client with a configured baseURL.
-  bad: |
-    # See `scout explain general.hardcoded-api-url` for code example
-  good: |
-    # See `scout explain general.hardcoded-api-url` for code example
-  fix: |
-    A hardcoded HTTP/HTTPS URL is used directly in a network request.
 
 - id: general.hardcoded-secret
   why: |
@@ -473,16 +433,6 @@
   fix: |
     Import of legacy library 'moment' detected.
 
-- id: general.no-tiny-text
-  why: |
-    Tiny text size detected (less than 12px). Font sizes below 12px (0.75rem) are very difficult to read on most screens, especially for visually impaired users. Keep font sizes at 12px or larger (use standard Tailwind text-xs, text-sm, etc.).
-  bad: |
-    # See `scout explain general.no-tiny-text` for code example
-  good: |
-    # See `scout explain general.no-tiny-text` for code example
-  fix: |
-    Tiny text size detected (less than 12px).
-
 - id: general.no-undeferred-third-party
   why: |
     Undeferred third-party script blocks page rendering. Add 'defer' or 'async' to standard HTML <script> tags, or avoid 'beforeInteractive' strategy in Next.js <Script> components unless absolutely necessary for core initialization.
@@ -552,16 +502,6 @@
     # See `scout explain general.prefer-dynamic-import` for code example
   fix: |
     Eagerly imported heavy library detected.
-
-- id: general.process-env-dispersed-access
-  why: |
-    Direct access to 'process.env' detected outside of configuration files. To prevent undefined runtime variables and ensure clean architecture, centralize all environment variable access in a dedicated configuration file (e.g., config.ts or config.js) and import the configuration instead.
-  bad: |
-    # See `scout explain general.process-env-dispersed-access` for code example
-  good: |
-    # See `scout explain general.process-env-dispersed-access` for code example
-  fix: |
-    Direct access to 'process.
 
 - id: general.reduce-spread-accumulator
   why: |
@@ -843,26 +783,6 @@
   fix: |
     Calling 'redirect()' or 'permanentRedirect()' inside a try-catch block can prevent the redirect from working correctly because Next.
 
-- id: nextjs.next-prefer-image-component
-  why: |
-    A standard HTML <img> tag is used. In Next.js, using <img> bypasses automatic image optimization (lazy loading, responsive sizing, and modern format conversion). Use the '<Image>' component from 'next/image' instead.
-  bad: |
-    # See `scout explain nextjs.next-prefer-image-component` for code example
-  good: |
-    # See `scout explain nextjs.next-prefer-image-component` for code example
-  fix: |
-    A standard HTML <img> tag is used.
-
-- id: nextjs.next-prefer-link-component
-  why: |
-    A standard HTML <a> tag is used with an internal route. In Next.js, using <a> for internal navigation causes a full page reload, losing client-side routing benefits. Use the '<Link>' component from 'next/link' instead.
-  bad: |
-    # See `scout explain nextjs.next-prefer-link-component` for code example
-  good: |
-    # See `scout explain nextjs.next-prefer-link-component` for code example
-  fix: |
-    A standard HTML <a> tag is used with an internal route.
-
 - id: nextjs.next-public-env-secret
   why: |
     A NEXT_PUBLIC_* environment variable named like a secret (secret, token, password, credential, private/api key) is read here. Next.js inlines every NEXT_PUBLIC_* value into the client JavaScript bundle, so this value is shipped to the browser and readable by anyone. If it is a real secret, drop the NEXT_PUBLIC_ prefix and read it only in server code (route handlers, server components, getServerSideProps). If the value is genuinely public (e.g. a publishable key), rename it so it no longer looks like a secret.
@@ -1023,26 +943,6 @@
   fix: |
     'useSearchParams()' is used in a Client Component.
 
-- id: react-ui.design-no-redundant-padding-axes
-  why: |
-    Equal px-N and py-N Tailwind classes can be simplified to p-N. Use the shorthand utility to reduce class list noise.
-  bad: |
-    # See `scout explain react-ui.design-no-redundant-padding-axes` for code example
-  good: |
-    # See `scout explain react-ui.design-no-redundant-padding-axes` for code example
-  fix: |
-    Equal px-N and py-N Tailwind classes can be simplified to p-N.
-
-- id: react-ui.design-no-redundant-size-axes
-  why: |
-    Equal w-N and h-N Tailwind classes can be simplified to size-N (Tailwind v3.4+). Use the shorthand utility to reduce class list noise.
-  bad: |
-    # See `scout explain react-ui.design-no-redundant-size-axes` for code example
-  good: |
-    # See `scout explain react-ui.design-no-redundant-size-axes` for code example
-  fix: |
-    Equal w-N and h-N Tailwind classes can be simplified to size-N (Tailwind v3.
-
 - id: react-ui.design-no-space-on-flex-children
   why: |
     Tailwind class 'space-x' or 'space-y' detected. Using space-x/y utilities on flex layouts can cause layout bugs (especially in RTL or with hidden children). Prefer using flexbox gap utilities ('gap-x', 'gap-y', or 'gap') instead.
@@ -1052,26 +952,6 @@
     # See `scout explain react-ui.design-no-space-on-flex-children` for code example
   fix: |
     Tailwind class 'space-x' or 'space-y' detected.
-
-- id: react-ui.design-no-three-period-ellipsis
-  why: |
-    Three ASCII periods '...' used as an ellipsis in JSX text content. Use the typographic ellipsis character '…' (U+2026) instead for correct spacing and screen-reader pronunciation.
-  bad: |
-    # See `scout explain react-ui.design-no-three-period-ellipsis` for code example
-  good: |
-    # See `scout explain react-ui.design-no-three-period-ellipsis` for code example
-  fix: |
-    Three ASCII periods '.
-
-- id: react-ui.rendering-animate-svg-wrapper
-  why: |
-    Animating an SVG element directly with motion.svg causes browser repaint issues on many devices because SVG elements cannot be composited to their own GPU layer. Wrap the SVG in a motion.div (or motion.span) and animate the wrapper instead, keeping the SVG inside as a static child.
-  bad: |
-    # See `scout explain react-ui.rendering-animate-svg-wrapper` for code example
-  good: |
-    # See `scout explain react-ui.rendering-animate-svg-wrapper` for code example
-  fix: |
-    Animating an SVG element directly with motion.
 
 - id: react.dangerously-set-inner-html-variable
   why: |
@@ -1112,26 +992,6 @@
     # See `scout explain react.no-default-props` for code example
   fix: |
     A function component defines defaultProps.
-
-- id: react.no-inline-exhaustive-style
-  why: |
-    Inline style object with many properties. Extract to a CSS class or Tailwind utility classes for better maintainability and smaller bundle size.
-  bad: |
-    # See `scout explain react.no-inline-exhaustive-style` for code example
-  good: |
-    # See `scout explain react.no-inline-exhaustive-style` for code example
-  fix: |
-    Inline style object with many properties.
-
-- id: react.no-prevent-default
-  why: |
-    Calling preventDefault() in link or form click/submit handlers. Instead of intercepting submissions/clicks with preventDefault() manually, prefer using native form action APIs, appropriate button types (like type="button"), or framework-provided routing/link elements to manage default behaviors.
-  bad: |
-    # See `scout explain react.no-prevent-default` for code example
-  good: |
-    # See `scout explain react.no-prevent-default` for code example
-  fix: |
-    Calling preventDefault() in link or form click/submit handlers.
 
 - id: react.no-prop-types
   why: |
@@ -1183,16 +1043,6 @@
   fix: |
     React controlled input conflict.
 
-- id: react.prefer-html-dialog
-  why: |
-    Use native <dialog> instead of role="dialog" on a generic element. Native <dialog> provides built-in accessibility (focus trap, escape to close, inert background) without extra ARIA attributes or imperative JavaScript.
-  bad: |
-    # See `scout explain react.prefer-html-dialog` for code example
-  good: |
-    # See `scout explain react.prefer-html-dialog` for code example
-  fix: |
-    Use native <dialog> instead of role="dialog" on a generic element.
-
 - id: react.redux-useselector-inline-derivation
   why: |
     Inline data derivation inside useSelector creates a new reference on every render, defeating referential equality and causing unnecessary re-renders. Extract the selector to a memoized function with createSelector or move derivation outside.
@@ -1242,16 +1092,6 @@
     # See `scout explain rn.rn-async-storage-token` for code example
   fix: |
     React Native AsyncStorage is used to persist a token, secret, credential, or auth value.
-
-- id: rn.rn-bottom-sheet-prefer-native
-  why: |
-    JS-driven bottom sheet libraries (@gorhom/bottom-sheet, react-native-bottom-sheet) animate on the JS thread and require bridge calls for every frame. React Native 0.76+ / Expo SDK 52+ ships native Modal with presentationStyle="formSheet" which runs entirely on the UI thread with zero JS overhead. Prefer the native approach for simple sheet use cases.
-  bad: |
-    # See `scout explain rn.rn-bottom-sheet-prefer-native` for code example
-  good: |
-    # See `scout explain rn.rn-bottom-sheet-prefer-native` for code example
-  fix: |
-    JS-driven bottom sheet libraries (@gorhom/bottom-sheet, react-native-bottom-sheet) animate on the JS thread and require bridge calls for every frame.
 
 - id: rn.rn-detox-missing-await
   why: |
@@ -1353,16 +1193,6 @@
   fix: |
     @react-navigation/stack uses a JS-driven card navigator that renders animations on the JavaScript thread, causing jank under heavy workloads.
 
-- id: rn.rn-no-panresponder
-  why: |
-    PanResponder runs gesture logic on the JavaScript thread, causing dropped frames when the JS thread is busy. Replace with react-native-gesture-handler's Gesture API which executes on the UI thread via Reanimated worklets.
-  bad: |
-    # See `scout explain rn.rn-no-panresponder` for code example
-  good: |
-    # See `scout explain rn.rn-no-panresponder` for code example
-  fix: |
-    PanResponder runs gesture logic on the JavaScript thread, causing dropped frames when the JS thread is busy.
-
 - id: rn.rn-no-renderitem-key
   why: |
     Adding a key prop to the root element of a FlatList renderItem when keyExtractor is already provided is redundant. FlatList uses keyExtractor for reconciliation; the key prop on the rendered element is ignored. Remove the key prop from renderItem and rely on keyExtractor exclusively.
@@ -1383,66 +1213,6 @@
   fix: |
     Deprecated setNativeProps() call detected.
 
-- id: rn.rn-no-single-element-style-array
-  why: |
-    Single-element style arrays create a new array reference on every render, defeating React Native's style caching. Use the style value directly: style={styles.box} instead of style={[styles.box]}.
-  bad: |
-    # See `scout explain rn.rn-no-single-element-style-array` for code example
-  good: |
-    # See `scout explain rn.rn-no-single-element-style-array` for code example
-  fix: |
-    Single-element style arrays create a new array reference on every render, defeating React Native's style caching.
-
-- id: rn.rn-prefer-content-inset-adjustment
-  why: |
-    Manual paddingTop/paddingBottom on SafeAreaView adds redundant safe-area inset — SafeAreaView already handles this natively on iOS. Remove manual padding and let SafeAreaView manage safe-area insets automatically. For ScrollView, use contentInsetAdjustmentBehavior="automatic" instead.
-  bad: |
-    # See `scout explain rn.rn-prefer-content-inset-adjustment` for code example
-  good: |
-    # See `scout explain rn.rn-prefer-content-inset-adjustment` for code example
-  fix: |
-    Manual paddingTop/paddingBottom on SafeAreaView adds redundant safe-area inset — SafeAreaView already handles this natively on iOS.
-
-- id: rn.rn-prefer-expo-image
-  why: |
-    React Native's built-in <Image> lacks memory caching, crossfade transitions, and blurhash placeholder support. Use expo-image's <Image> component instead: import { Image } from 'expo-image'
-  bad: |
-    # See `scout explain rn.rn-prefer-expo-image` for code example
-  good: |
-    # See `scout explain rn.rn-prefer-expo-image` for code example
-  fix: |
-    React Native's built-in <Image> lacks memory caching, crossfade transitions, and blurhash placeholder support.
-
-- id: rn.rn-prefer-pressable-over-gesture-detector
-  why: |
-    GestureDetector with only a Tap gesture is heavier than necessary. The Gesture.Tap API initializes the full gesture handler pipeline on the JS thread. For simple tap interactions, Pressable is lighter, works on both threads, and requires no native setup.
-  bad: |
-    # See `scout explain rn.rn-prefer-pressable-over-gesture-detector` for code example
-  good: |
-    # See `scout explain rn.rn-prefer-pressable-over-gesture-detector` for code example
-  fix: |
-    GestureDetector with only a Tap gesture is heavier than necessary.
-
-- id: rn.rn-prefer-pressable
-  why: |
-    TouchableOpacity, TouchableHighlight, and TouchableNativeFeedback are legacy gesture components. Use <Pressable> instead — it offers more flexible state-based styling (pressed, hovered, focused) and integrates better with concurrent React.
-  bad: |
-    # See `scout explain rn.rn-prefer-pressable` for code example
-  good: |
-    # See `scout explain rn.rn-prefer-pressable` for code example
-  fix: |
-    TouchableOpacity, TouchableHighlight, and TouchableNativeFeedback are legacy gesture components.
-
-- id: rn.rn-prefer-reanimated
-  why: |
-    React Native's Animated API runs on the JavaScript thread, which causes dropped frames under heavy JS workloads. Replace with react-native-reanimated which executes animations on the UI thread: useSharedValue, useAnimatedStyle, withTiming, withSpring.
-  bad: |
-    # See `scout explain rn.rn-prefer-reanimated` for code example
-  good: |
-    # See `scout explain rn.rn-prefer-reanimated` for code example
-  fix: |
-    React Native's Animated API runs on the JavaScript thread, which causes dropped frames under heavy JS workloads.
-
 - id: rn.rn-pressable-shared-value-mutation
   why: |
     Shared value mutated inside onPress/onLongPress callback runs on the JS thread, causing dropped frames on animation-dependent components. Use Reanimated worklets (withTiming/withSpring) instead of direct `.value =` assignment in press handlers.
@@ -1452,16 +1222,6 @@
     # See `scout explain rn.rn-pressable-shared-value-mutation` for code example
   fix: |
     Shared value mutated inside onPress/onLongPress callback runs on the JS thread, causing dropped frames on animation-dependent components.
-
-- id: rn.rn-scrollview-dynamic-padding
-  why: |
-    ScrollView (or FlatList) has paddingTop/paddingBottom in its style or contentContainerStyle. Padding on scroll content shifts the visible area during scroll and can cause layout jank. Use the native `contentInset` prop instead to adjust scroll indicator insets without moving content boundaries.
-  bad: |
-    # See `scout explain rn.rn-scrollview-dynamic-padding` for code example
-  good: |
-    # See `scout explain rn.rn-scrollview-dynamic-padding` for code example
-  fix: |
-    ScrollView (or FlatList) has paddingTop/paddingBottom in its style or contentContainerStyle.
 
 - id: rn.rn-scrollview-flex-in-content-container
   why: |
@@ -1482,16 +1242,6 @@
     # See `scout explain rn.rn-scrollview-over-flatlist` for code example
   fix: |
     ScrollView renders every child eagerly while this code maps over a dynamic collection.
-
-- id: server.server-after-nonblocking
-  why: |
-    Logging or analytics call inside a request handler may block the response. Use after() from next/after to defer non-critical work until after the response is sent to the client.
-  bad: |
-    # See `scout explain server.server-after-nonblocking` for code example
-  good: |
-    # See `scout explain server.server-after-nonblocking` for code example
-  fix: |
-    Logging or analytics call inside a request handler may block the response.
 
 - id: server.server-auth-actions
   why: |
@@ -1522,16 +1272,6 @@
     # See `scout explain server.server-dedup-props` for code example
   fix: |
     JSON.
-
-- id: server.server-fetch-without-revalidate
-  why: |
-    fetch() inside a server handler without cache or revalidation configuration. In Next.js App Router, fetched data is cached by default (equivalent to cache: 'force-cache'). If this data should be fresh on every request, add cache: 'no-store' or next: { revalidate: 0 }.
-  bad: |
-    # See `scout explain server.server-fetch-without-revalidate` for code example
-  good: |
-    # See `scout explain server.server-fetch-without-revalidate` for code example
-  fix: |
-    fetch() inside a server handler without cache or revalidation configuration.
 
 - id: server.server-hoist-static-io
   why: |
@@ -1762,16 +1502,6 @@
     # See `scout explain view-transitions.no-document-start-view-transition` for code example
   fix: |
     Direct document.
-
-- id: view-transitions.no-flush-sync
-  why: |
-    Avoid using flushSync() to force synchronous updates. flushSync() bypasses React's concurrent rendering optimization and triggers synchronous, blocking layout passes. If integrating with View Transitions, use React 19's native startTransition support instead.
-  bad: |
-    # See `scout explain view-transitions.no-flush-sync` for code example
-  good: |
-    # See `scout explain view-transitions.no-flush-sync` for code example
-  fix: |
-    Avoid using flushSync() to force synchronous updates.
 
 - id: vite.vite-insecure-config
   why: |

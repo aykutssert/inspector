@@ -6,15 +6,6 @@
     "confidence": "hint",
     "file": "tanstack_start.tsx",
     "line": 130,
-    "message": "Direct document.startViewTransition() call bypasses React's concurrent rendering. In React 19+ use the built-in \u003cViewTransition\u003e component or wrap state updates with startTransition() / flushSync() correctly. Direct DOM calls can conflict with React's reconciler and cause flicker or missed transitions.\n"
-  },
-  {
-    "rule_id": "view-transitions.no-flush-sync",
-    "severity": "warning",
-    "category": "performance",
-    "confidence": "rule",
-    "file": "client.tsx",
-    "line": 147,
-    "message": "Avoid using flushSync() to force synchronous updates. flushSync() bypasses React's concurrent rendering optimization and triggers synchronous, blocking layout passes. If integrating with View Transitions, use React 19's native startTransition support instead.\n"
+    "message": "Direct document.startViewTransition() call bypasses React's concurrent rendering. In React 19+ use the built-in <ViewTransition> component or wrap state updates with startTransition() / flushSync() correctly. Direct DOM calls can conflict with React's reconciler and cause flicker or missed transitions.\n"
   }
 ]
