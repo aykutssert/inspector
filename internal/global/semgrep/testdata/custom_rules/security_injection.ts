@@ -80,3 +80,16 @@ function handlerSafe(req: any, res: any) {
 declare function deleteAccount(u: any): void;
 
 export { router };
+
+// --- cors-origin-reflection: positive ---
+function corsBad(req: any, res: any, next: any) {
+  res.setHeader("Access-Control-Allow-Origin", req.headers.origin); // FIRE
+  next();
+}
+const corsAll = cors({ origin: true }); // FIRE
+
+// --- cors-origin-reflection: negative ---
+function corsSafe(req: any, res: any) {
+  res.setHeader("Access-Control-Allow-Origin", "https://app.example.com"); // NO FIRE
+}
+declare function cors(opts: any): any;

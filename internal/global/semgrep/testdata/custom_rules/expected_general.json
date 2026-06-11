@@ -162,6 +162,24 @@
     "message": "Scroll/touch event listener registered without '{ passive: true }'. Touch and wheel event listeners ('touchstart', 'touchmove', 'wheel', 'mousewheel') should be registered with '{ passive: true }' to improve scroll performance and avoid layout/scroll jank, unless they call 'event.preventDefault()'.\n"
   },
   {
+    "rule_id": "general.cors-origin-reflection",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "rule",
+    "file": "security_injection.ts",
+    "line": 86,
+    "message": "The request Origin header is reflected straight back as Access-Control-Allow-Origin (or cors({ origin: true })). This trusts every origin; combined with credentials it lets any site read authenticated responses. Allow-list the origins you actually trust instead of echoing the caller's Origin.\n"
+  },
+  {
+    "rule_id": "general.cors-origin-reflection",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "rule",
+    "file": "security_injection.ts",
+    "line": 89,
+    "message": "The request Origin header is reflected straight back as Access-Control-Allow-Origin (or cors({ origin: true })). This trusts every origin; combined with credentials it lets any site read authenticated responses. Allow-list the origins you actually trust instead of echoing the caller's Origin.\n"
+  },
+  {
     "rule_id": "general.crypto-sync-in-request-path",
     "severity": "warning",
     "category": "security",

@@ -1,0 +1,23 @@
+rules:
+  - id: cors-origin-reflection
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      The request Origin header is reflected straight back as
+      Access-Control-Allow-Origin (or cors({ origin: true })). This trusts every
+      origin; combined with credentials it lets any site read authenticated
+      responses. Allow-list the origins you actually trust instead of echoing
+      the caller's Origin.
+    metadata:
+      category: security
+      cwe:
+        - "CWE-942: Permissive Cross-domain Policy with Untrusted Domains"
+      confidence: rule
+    pattern-either:
+      - pattern: $RES.setHeader("Access-Control-Allow-Origin", $REQ.headers.origin)
+      - pattern: $RES.header("Access-Control-Allow-Origin", $REQ.headers.origin)
+      - pattern: $RES.set("Access-Control-Allow-Origin", $REQ.headers.origin)
+      - pattern: $RES.setHeader("Access-Control-Allow-Origin", $REQ.headers["origin"])
+      - pattern: $RES.header("Access-Control-Allow-Origin", $REQ.headers["origin"])
+      - pattern: $RES.set("Access-Control-Allow-Origin", $REQ.headers["origin"])
+      - pattern: "cors({..., origin: true, ...})"
