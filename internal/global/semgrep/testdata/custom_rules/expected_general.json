@@ -1497,6 +1497,14 @@
     "message": "A token/secret/credential is written to localStorage or sessionStorage. Web storage is readable by any script on the page, so any XSS can exfiltrate it; unlike an httpOnly cookie it is not protected from JavaScript. Prefer an httpOnly, Secure, SameSite cookie for auth material, or keep it in memory.\n"
   },
   {
+    "rule_id": "general.stream-pipe-missing-error-handler",
+    "severity": "warning",
+    "confidence": "hint",
+    "file": "stream_pipe.ts",
+    "line": 8,
+    "message": "An inline createReadStream(...).pipe(...) has no error handler. .pipe() does not forward source errors, so a read failure (missing file, EACCES) emits 'error' with no listener and crashes the process with an uncaughtException. Use stream.pipeline(src, dst, cb), or attach .on('error', ...) to the source stream.\n"
+  },
+  {
     "rule_id": "general.sync-fs-in-server",
     "severity": "warning",
     "category": "security",

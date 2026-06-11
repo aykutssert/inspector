@@ -1,0 +1,21 @@
+rules:
+  - id: stream-pipe-missing-error-handler
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      An inline createReadStream(...).pipe(...) has no error handler. .pipe()
+      does not forward source errors, so a read failure (missing file, EACCES)
+      emits 'error' with no listener and crashes the process with an
+      uncaughtException. Use stream.pipeline(src, dst, cb), or attach
+      .on('error', ...) to the source stream.
+    metadata:
+      category: bug
+      confidence: hint
+    patterns:
+      - pattern-either:
+          - pattern: $FS.createReadStream(...).pipe(...)
+          - pattern: createReadStream(...).pipe(...)
+      - pattern-not: $FS.createReadStream(...).on(...)
+      - pattern-not: createReadStream(...).on(...)
+      - pattern-not: $FS.createReadStream(...).pipe(...).on(...)
+      - pattern-not: createReadStream(...).pipe(...).on(...)
