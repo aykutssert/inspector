@@ -1,0 +1,27 @@
+rules:
+  - id: test-no-assertionless
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      This test case has an inline body with no assertion (no expect/assert/
+      should/snapshot call). It passes as long as nothing throws, so it provides
+      almost no regression protection and can mask real failures. Add an
+      assertion, or delete the test if the scenario is obsolete.
+    metadata:
+      category: testing
+      confidence: hint
+    patterns:
+      - pattern-either:
+          - pattern: it($DESC, $FN)
+          - pattern: test($DESC, $FN)
+          - pattern: it.only($DESC, $FN)
+          - pattern: test.only($DESC, $FN)
+      - metavariable-pattern:
+          metavariable: $FN
+          patterns:
+            - pattern-either:
+                - pattern: () => { ... }
+                - pattern: async () => { ... }
+                - pattern: function () { ... }
+                - pattern: async function () { ... }
+            - pattern-not-regex: \b(expect|assert|should|chai|verify|done|fail|invariant)\b|\.(toMatch|toThrow|toEqual|toStrictEqual|toBe|resolves|rejects|toContain|toHaveBeen|toMatchSnapshot|toMatchInlineSnapshot|toHaveLength|toBeInstanceOf|toBeNull|toBeUndefined|toBeTruthy|toBeFalsy|toBeDefined|toBeGreaterThan|toBeLessThan|toBeCloseTo|assertEquals)

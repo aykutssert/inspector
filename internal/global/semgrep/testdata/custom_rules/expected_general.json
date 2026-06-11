@@ -1668,6 +1668,30 @@
     "message": "User-controlled request data reaches an outbound HTTP request URL. This can lead to Server-Side Request Forgery (SSRF), where attackers make the server call internal services or attacker-controlled hosts. Resolve the destination from trusted route names or validate it against a strict allowlist before making the request.\n"
   },
   {
+    "rule_id": "general.test-no-assertionless",
+    "severity": "warning",
+    "confidence": "hint",
+    "file": "skipped_tests.ts",
+    "line": 20,
+    "message": "This test case has an inline body with no assertion (no expect/assert/ should/snapshot call). It passes as long as nothing throws, so it provides almost no regression protection and can mask real failures. Add an assertion, or delete the test if the scenario is obsolete.\n"
+  },
+  {
+    "rule_id": "general.test-no-assertionless",
+    "severity": "warning",
+    "confidence": "hint",
+    "file": "test_assertionless.ts",
+    "line": 2,
+    "message": "This test case has an inline body with no assertion (no expect/assert/ should/snapshot call). It passes as long as nothing throws, so it provides almost no regression protection and can mask real failures. Add an assertion, or delete the test if the scenario is obsolete.\n"
+  },
+  {
+    "rule_id": "general.test-no-assertionless",
+    "severity": "warning",
+    "confidence": "hint",
+    "file": "test_assertionless.ts",
+    "line": 7,
+    "message": "This test case has an inline body with no assertion (no expect/assert/ should/snapshot call). It passes as long as nothing throws, so it provides almost no regression protection and can mask real failures. Add an assertion, or delete the test if the scenario is obsolete.\n"
+  },
+  {
     "rule_id": "general.test-no-skipped-tests",
     "severity": "warning",
     "confidence": "rule",
