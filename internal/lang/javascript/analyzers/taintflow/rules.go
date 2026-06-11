@@ -2,6 +2,7 @@ package taintflow
 
 import (
 	"fmt"
+	"strings"
 
 	sitter "github.com/smacker/go-tree-sitter"
 
@@ -30,6 +31,40 @@ var massAssignMethods = map[string]bool{
 var commandFuncs = map[string]bool{
 	"exec": true, "execSync": true, "execFile": true, "execFileSync": true,
 	"spawn": true, "spawnSync": true,
+}
+
+// llmMemberSuffixes are dotted callee-path suffixes of LLM SDK calls that
+// accept a prompt/messages/input payload, e.g. `openai.chat.completions.create`,
+// `anthropic.messages.create`, `ai.models.generateContent`.
+var llmMemberSuffixes = []string{
+	"chat.completions.create", // OpenAI Chat Completions API
+	"responses.create",        // OpenAI Responses API
+	"messages.create",         // Anthropic Messages API
+	"models.generateContent",  // Google @google/genai
+	"models.generateContentStream",
+	"generateContent",       // legacy @google/generative-ai model.generateContent
+	"generateContentStream", // legacy streaming variant
+}
+
+// llmExactPaths are full callee paths matched exactly, for SDKs whose method
+// names (chat, generate, invoke, call) are too generic to suffix-match.
+var llmExactPaths = map[string]bool{
+	"ollama.chat":     true, // ollama JS client
+	"ollama.generate": true,
+	"llm.invoke":      true, // LangChain runnables
+	"model.invoke":    true,
+	"chain.invoke":    true,
+	"agent.invoke":    true,
+	"llm.call":        true,
+	"chain.call":      true,
+}
+
+// llmBareFuncs are top-level functions from the Vercel AI SDK (`ai` package).
+var llmBareFuncs = map[string]bool{
+	"generateText":   true,
+	"streamText":     true,
+	"generateObject": true,
+	"streamObject":   true,
 }
 
 const maxSinkTextLen = 80
@@ -75,6 +110,68 @@ func callArgs(call *sitter.Node) []*sitter.Node {
 	return out
 }
 
+// memberPath builds the dotted callee path of a (possibly chained) member
+// expression, e.g. `openai.chat.completions.create` -> "openai.chat.completions.create".
+func memberPath(node *sitter.Node, src []byte) string {
+	if node == nil {
+		return ""
+	}
+	switch node.Type() {
+	case "identifier":
+		return node.Content(src)
+	case "member_expression":
+		prop := node.ChildByFieldName("property")
+		if prop == nil {
+			return ""
+		}
+		obj := memberPath(node.ChildByFieldName("object"), src)
+		if obj == "" {
+			return prop.Content(src)
+		}
+		return obj + "." + prop.Content(src)
+	}
+	return ""
+}
+
+// isLLMSink reports whether call invokes a known LLM SDK method that accepts
+// a prompt/messages/input payload.
+func isLLMSink(call *sitter.Node, src []byte, method string, isMember bool) bool {
+	if !isMember {
+		return llmBareFuncs[method]
+	}
+	path := memberPath(call.ChildByFieldName("function"), src)
+	if llmExactPaths[path] {
+		return true
+	}
+	for _, suffix := range llmMemberSuffixes {
+		if path == suffix || strings.HasSuffix(path, "."+suffix) {
+			return true
+		}
+	}
+	return false
+}
+
+// taintedInSubtree reports whether any identifier inside node refers to a
+// tainted variable. Used for sinks where the tainted value may be nested
+// inside an options object (e.g. `{ messages: [{ role: "user", content: prompt }] }`).
+func taintedInSubtree(node *sitter.Node, src []byte, tainted map[string]taintInfo) (string, bool) {
+	var name string
+	var found bool
+	walkAll(node, func(n *sitter.Node) {
+		if found {
+			return
+		}
+		if t := n.Type(); t != "identifier" && t != "shorthand_property_identifier" {
+			return
+		}
+		if _, ok := tainted[n.Content(src)]; ok {
+			name = n.Content(src)
+			found = true
+		}
+	})
+	return name, found
+}
+
 // checkSink matches a call_expression against the known sink table and, if
 // one of its relevant arguments is tainted, builds a Finding.
 func checkSink(call *sitter.Node, src []byte, file string, tainted map[string]taintInfo) []core.Finding {
@@ -88,6 +185,16 @@ func checkSink(call *sitter.Node, src []byte, file string, tainted map[string]ta
 	}
 
 	switch {
+	case isLLMSink(call, src, method, isMember):
+		for _, arg := range args {
+			if name, ok := taintedInSubtree(arg, src, tainted); ok {
+				return []core.Finding{buildFinding(call, src, file, "taint-prompt-injection",
+					fmt.Sprintf("`%s` is assigned from `%s` (line %d) and flows into the prompt sent to `%s` here. Attacker-controlled text reaching the model as instructions/context can override the system prompt, exfiltrate data, or trigger unintended tool calls. (OWASP LLM01: Prompt Injection)",
+						name, tainted[name].source, tainted[name].line, sinkText(call, src)),
+					"Keep user input out of the system/instruction prompt — pass it as clearly delimited data, and validate/sanitize it before sending to the model.",
+					core.SeverityWarning)}
+			}
+		}
 	case isMember && nosqlMethods[method]:
 		if name, ok := taintedRoot(args[0], src, tainted); ok {
 			return []core.Finding{buildFinding(call, src, file, "taint-nosql-query",

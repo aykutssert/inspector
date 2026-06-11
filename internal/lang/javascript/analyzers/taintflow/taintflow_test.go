@@ -149,6 +149,47 @@ function handler(req, res) {
 	}
 }
 
+func TestPromptInjectionOpenAIChatCompletions(t *testing.T) {
+	src := `
+function handler(req, res) {
+  const question = req.body.question;
+  openai.chat.completions.create({
+    model: "gpt-4",
+    messages: [{ role: "user", content: ` + "`Answer this: ${question}`" + ` }],
+  });
+}
+`
+	findings := scanSource(t, "handler.js", src)
+	if got := ruleIDs(findings); len(got) != 1 || got[0] != "taint-prompt-injection" {
+		t.Fatalf("expected taint-prompt-injection, got %v", findings)
+	}
+}
+
+func TestPromptInjectionVercelAISDK(t *testing.T) {
+	src := `
+function handler(req, res) {
+  const prompt = req.body.prompt;
+  generateText({ model: openai("gpt-4o"), prompt });
+}
+`
+	findings := scanSource(t, "handler.js", src)
+	if got := ruleIDs(findings); len(got) != 1 || got[0] != "taint-prompt-injection" {
+		t.Fatalf("expected taint-prompt-injection, got %v", findings)
+	}
+}
+
+func TestPromptInjectionSafeStaticPrompt(t *testing.T) {
+	src := `
+function handler(req, res) {
+  generateText({ model: openai("gpt-4o"), prompt: "Summarize the weekly report." });
+}
+`
+	findings := scanSource(t, "handler.js", src)
+	if len(findings) != 0 {
+		t.Fatalf("expected no findings for static prompt, got %#v", findings)
+	}
+}
+
 func TestDirectSourceArgumentNotDoubleReported(t *testing.T) {
 	// req.body passed directly (no variable indirection) is the job of the
 	// semgrep nosql-injection-tainted-query rule, not this analyzer.
